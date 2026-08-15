@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mathlete MTB — Math Tutoring</title>
+<style>
+  /* ---------- Feel free to tweak colors/fonts here ---------- */
+  body {
+    background-color: #faf7f0; /* off-white */
+    color: #2b2b2b;
+    font-family: Georgia, 'Times New Roman', serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  .wrapper {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+    position: relative;
+  }
+
+  /* ---------- Logo (centered hero) ---------- */
+  .logo {
+    display: block;
+    max-width: 320px;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  header h1 {
+    font-size: 2.2rem;
+    margin: 0;
+    letter-spacing: 1px;
+  }
+
+  header p {
+    margin-top: 8px;
+    font-style: italic;
+    color: #6b6b6b;
+  }
+
+  .block {
+    margin-bottom: 40px;
+  }
+
+  .block h2 {
+    font-size: 1.3rem;
+    border-bottom: 2px solid #d8cfbc;
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+  }
+
+  .block p {
+    margin: 0 0 12px 0;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 60px;
+    font-size: 0.9rem;
+    color: #888;
+  }
+
+  a {
+    color: #4a5d47;
+  }
+
+  /* ---------- Photo placeholders ---------- */
+  .photo-placeholder {
+    background-color: #efe9dc;
+    border: 2px dashed #c9bfa8;
+    color: #9a9080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    border-radius: 4px;
+    margin: 0 auto;
+  }
+
+  .photo-round {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+  }
+
+  .photo-wide {
+    width: 100%;
+    height: 260px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+
+  .photo-row {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .photo-row .photo-placeholder {
+    flex: 1;
+    height: 140px;
+    margin: 0;
+  }
+
+  /* ---------- Testimonials ---------- */
+  .testimonial {
+    background-color: #f2ede1;
+    border-left: 3px solid #a9b89f;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    font-style: italic;
+    border-radius: 2px;
+  }
+
+  .testimonial p {
+    margin: 0 0 8px 0;
+  }
+
+  .testimonial cite {
+    display: block;
+    font-style: normal;
+    font-size: 0.85rem;
+    color: #7a7a7a;
+  }
+
+  /* ---------- Subjects list ---------- */
+  .subjects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .subjects li {
+    background-color: #efe9dc;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+  }
+
+  /* ---------- Big contact button ---------- */
+  .contact-button-wrap {
+    text-align: center;
+    margin-top: 24px;
+  }
+
+  .contact-button {
+    display: inline-block;
+    background-color: #4a5d47;
+    color: #faf7f0;
+    text-decoration: none;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.15rem;
+    padding: 16px 40px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    transition: background-color 0.15s ease-in-out;
+  }
+
+  .contact-button:hover {
+    background-color: #3a4a38;
+  }
+
+  /* ---------- Coming soon badge ---------- */
+  .coming-soon {
+    display: inline-block;
+    background-color: #e5ded0;
+    color: #6b6250;
+    font-size: 0.8rem;
+    font-style: normal;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- ============ HEADER — logo replaces the title here ============ -->
+  <header>
+    <img class="logo" src="data:image/png;base64,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" alt="Mathlete MTB logo">
+    <p>Math tutoring that actually clicks.</p>
+  </header>
+
+  <!-- ============ ABOUT ME BLOCK ============ -->
+  <div class="block">
+    <h2>About Me</h2>
+
+    <!-- Profile photo — replace this div with:
+         <img class="photo-round" src="your-photo.jpg" alt="Your Name"> -->
+    <div class="photo-placeholder photo-round">Your Photo</div>
+
+    <p>
+      Hi, I'm [Your Name] — the tutor behind Mathlete MTB. I've spent
+      [X years] helping students build real confidence in math, from
+      basic arithmetic all the way through calculus. I believe math
+      makes sense when it's explained the right way, at the right pace,
+      for the person learning it.
+    </p>
+    <p>
+      When I'm not tutoring, you'll probably find me out on my mountain
+      bike — which is where the "MTB" comes from.
+    </p>
+  </div>
+
+  <!-- ============ EXPERIENCE BLOCK ============ -->
+  <div class="block">
+    <h2>Experience</h2>
+    <ul>
+      <li>Computer Science degree from CU Boulder</li>
+      <li>Teacher of math and physics</li>
+      <li>Taught at a traveling high school built around mountain biking</li>
+      <li>Taught students in multiple countries</li>
+      <li>Experience teaching Calculus, Pre-Calculus, Geometry, and Physics</li>
+      <li>Experience coaching and mentoring teenagers</li>
+      <li>Professional-level mountain biker</li>
+    </ul>
+  </div>
+
+  <!-- ============ MY APPROACH BLOCK ============ -->
+  <div class="block">
+    <h2>My Approach</h2>
+    <p>
+      Every student learns differently. I focus on building strong
+      fundamentals, explaining the "why" behind the math, and helping
+      students feel genuinely capable — not just getting through the
+      next test.
+    </p>
+    <p>
+      Sessions are relaxed but focused. We move at the pace that
+      actually works for you or your student, revisiting the basics
+      when needed and pushing ahead when things click.
+    </p>
+  </div>
+
+  <!-- Wide banner photo — e.g. you tutoring, or out on the mountain bike.
+       Replace this div with:
+       <img class="photo-placeholder photo-wide" src="banner.jpg" alt="..."> -->
+  <div class="photo-placeholder photo-wide">Wide Photo (e.g. action shot, workspace, or bike photo)</div>
+
+  <!-- ============ WHY MOUNTAIN BIKING + MATH BLOCK ============ -->
+  <div class="block">
+    <h2>Why Mountain Biking + Math</h2>
+    <p>
+      Mountain biking and math have more in common than people expect.
+      Both reward patience, both involve reading the terrain ahead of
+      you, and both get easier — and more fun — the more comfortable
+      you get with falling down and trying again.
+    </p>
+    <p>
+      Learning math is a lot like learning to ride. You don't become
+      confident by only doing things you already know how to do. You
+      become confident by trying something difficult, making mistakes,
+      figuring out what went wrong, and trying again.
+    </p>
+    <p>
+      My job isn't to make sure a student never gets a problem wrong.
+      It's to help them become comfortable enough with being wrong
+      that they're willing to keep trying.
+    </p>
+  </div>
+
+  <!-- ============ MTB COACHING BLOCK ============ -->
+  <div class="block">
+    <h2>MTB Coaching <span class="coming-soon">Coming Soon</span></h2>
+    <p>
+      I'm putting together weekly mountain bike coaching sessions for
+      riders who want to build skills and confidence on the trail —
+      same philosophy as the tutoring, just on two wheels.
+    </p>
+    <p>
+      Details on schedule, location, and skill levels are still being
+      worked out. If you'd like to be notified when spots open up,
+      reach out below and I'll add you to the list.
+    </p>
+  </div>
+
+  <!-- ============ MENTORING BLOCK ============ -->
+  <div class="block">
+    <h2>Mentoring <span class="coming-soon">Coming Soon</span></h2>
+    <p>
+      Beyond math and biking, I also work with students on the stuff
+      that doesn't show up on a test — the mental side of competing,
+      pushing through setbacks, and figuring out who you want to be.
+    </p>
+    <p>
+      <strong>Mental game for athletes.</strong> Confidence, focus, and
+      dealing with pressure are skills, not personality traits. I help
+      young athletes build the mental habits that let them perform
+      when it counts, instead of getting in their own way.
+    </p>
+    <p>
+      <strong>Bouncing back after injury.</strong> I've been through
+      the injury-recovery cycle more times than I'd like to admit —
+      the frustration, the fear of losing progress, the slow climb
+      back. I know what that actually feels like, and I help students
+      navigate it with patience instead of panic.
+    </p>
+    <p>
+      <strong>General life guidance.</strong> After years working
+      closely with high school students, I've learned that a lot of
+      what they need isn't more instruction — it's someone steady in
+      their corner. I'm glad to be that person, whether the conversation
+      is about school, sports, or just figuring things out.
+    </p>
+  </div>
+
+  <!-- ============ WHO I WORK WITH BLOCK ============ -->
+  <div class="block">
+    <h2>Who I Work With</h2>
+    <ul>
+      <li>Middle school and high school students</li>
+      <li>Students prepping for standardized tests (SAT/ACT, etc.)</li>
+      <li>Students who feel "behind" and want to rebuild confidence</li>
+      <li>Students aiming to get ahead or explore advanced topics</li>
+    </ul>
+  </div>
+
+  <!-- ============ SUBJECTS BLOCK ============ -->
+  <div class="block">
+    <h2>Subjects</h2>
+    <ul class="subjects">
+      <li>Pre-Algebra</li>
+      <li>Algebra I &amp; II</li>
+      <li>Geometry</li>
+      <li>Trigonometry</li>
+      <li>Pre-Calculus</li>
+      <li>Calculus</li>
+      <li>Test Prep</li>
+      <li>ACT/SAT Prep</li>
+    </ul>
+  </div>
+
+  <!-- ============ MINI GALLERY — 3 small photos side by side ============ -->
+  <div class="block">
+    <h2>Gallery</h2>
+    <!-- Replace each div with, e.g.:
+         <img class="photo-placeholder" src="photo1.jpg" alt="..."> -->
+    <div class="photo-row">
+      <div class="photo-placeholder">Photo 1</div>
+      <div class="photo-placeholder">Photo 2</div>
+      <div class="photo-placeholder">Photo 3</div>
+    </div>
+  </div>
+
+  <!-- ============ TESTIMONIALS / STUDENT STORIES BLOCK ============ -->
+  <div class="block">
+    <h2>Testimonials / Student Stories</h2>
+
+    <div class="testimonial">
+      <p>
+        "My son went from dreading math homework to actually asking
+        for extra practice problems. His confidence going into the
+        school year was completely different."
+      </p>
+      <cite>— Parent of an 8th grade student</cite>
+    </div>
+
+    <div class="testimonial">
+      <p>
+        "I was failing Algebra II and honestly thought I just 'wasn't
+        a math person.' A few months in, I brought my grade up two
+        full letter grades and actually understood why the methods
+        worked."
+      </p>
+      <cite>— High school sophomore</cite>
+    </div>
+
+    <div class="testimonial">
+      <p>
+        "We tried a couple of tutors before this and nothing stuck.
+        The pacing here finally matched what my daughter needed —
+        patient, but never condescending."
+      </p>
+      <cite>— Parent of a 10th grade student</cite>
+    </div>
+
+    <!-- Add more testimonials by copying a .testimonial block above -->
+  </div>
+
+  <!-- ============ LET'S TALK BLOCK — big contact button ============ -->
+  <div class="block">
+    <h2>Let's Talk</h2>
+    <p>
+      Not sure where to start? Reach out and tell me a bit about what
+      you or your student are working on — we can figure out the right
+      plan together.
+    </p>
+    <p>
+      Email: <a href="mailto:you@example.com">you@example.com</a><br>
+      Phone: (555) 123-4567
+    </p>
+
+    <div class="contact-button-wrap">
+      <a class="contact-button" href="mailto:you@example.com">Get In Touch</a>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 Mathlete MTB. All rights reserved.
+  </footer>
+
+</div>
+
+</body>
+</html>
