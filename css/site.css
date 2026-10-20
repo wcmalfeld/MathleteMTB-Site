@@ -323,7 +323,7 @@ button:focus-visible {
 /* headline + lede on the left, round portrait to the side */
 .hero-intro {
   display: grid;
-  grid-template-columns: minmax(0, 38rem) auto;
+  grid-template-columns: minmax(0, 40rem) minmax(0, 1fr);
   grid-template-areas:
     "title photo"
     "lede  photo";
@@ -332,11 +332,13 @@ button:focus-visible {
 }
 .hero-intro .hero-title { grid-area: title; }
 .hero-intro .hero-lede { grid-area: lede; }
-.hero-intro .hero-portrait { grid-area: photo; }
+.hero-intro .hero-portrait { grid-area: photo; justify-self: end; }
+/* Fixed width AND height (not aspect-ratio) so Safari keeps it a circle. */
 .hero-portrait {
+  position: relative;
   margin: 0;
   width: 220px;
-  aspect-ratio: 1;
+  height: 220px;
   border-radius: 50%;
   border: 2px solid var(--ink);
   overflow: hidden;
@@ -345,6 +347,8 @@ button:focus-visible {
 /* Zoom in on the face: the source photo is tall, so scale it up
    around the face before the circle crops it. */
 .hero-portrait img {
+  position: absolute;
+  inset: 0;
   transform: scale(1.6);
   transform-origin: 100% 30%;
 }
@@ -357,7 +361,7 @@ button:focus-visible {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0 20px;
   }
-  .hero-portrait { width: 120px; }
+  .hero-portrait { width: 120px; height: 120px; }
 }
 
 /* ---------- wide photograph band ---------- */
