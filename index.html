@@ -165,14 +165,40 @@
           </div>
         </div>
       </details>
-      <article class="tool-card tool-card--soon" data-tool="tool-03">
-        <span class="tool-thumb"><img src="assets/photos/tool-03.svg" alt="" loading="lazy" decoding="async"></span>
-        <div class="tool-card-body">
-          <p class="kicker"><span class="service-num">Tool 03</span><span class="kicker-flag">In development</span></p>
-          <h3 class="tool-card-title">Coming Soon</h3>
-          <p class="tool-card-desc">A new learning tool is in the works. Check back soon.</p>
+      <details class="tool-card" id="tool-stravashowdown" data-tool="strava-showdown">
+        <summary>
+          <span class="tool-thumb"><img src="assets/strava-showdown.jpg" alt="Strava Showdown ride graph" loading="lazy" decoding="async"></span>
+          <span class="tool-card-body">
+            <span class="kicker"><span class="service-num">Tool 03</span>Data game</span>
+            <h3 class="tool-card-title">Strava Showdown</h3>
+            <span class="tool-card-desc">Students become a mountain bike team&rsquo;s race analyst, crunching ride data to decide who gets picked to race.</span>
+            <span class="tool-card-more">See details <span aria-hidden="true">+</span></span>
+          </span>
+        </summary>
+        <div class="tool-detail">
+          <figure class="tool-shot" data-gallery>
+            <a class="fig-frame" href="assets/strava-showdown.jpg" data-lightbox data-caption="Strava Showdown — plotting the field on a distance–time graph"><img src="assets/strava-showdown.jpg" alt="Strava Showdown graph step: six riders plotted on a distance–time graph, with two riders' four split points traced as bent lines" width="1400" height="1093" loading="lazy" decoding="async"></a>
+            <figcaption class="meta">The graph step: every line&rsquo;s slope is a rider&rsquo;s speed.</figcaption>
+          </figure>
+          <div class="tool-text">
+            <ul class="tool-tags">
+              <li class="pill">Algebra I &ndash; Calculus</li>
+              <li class="pill">Statistics</li>
+              <li class="pill">In person or online</li>
+            </ul>
+            <p class="service-desc">Students play the data analyst for a mountain bike team. They&rsquo;re dealt a field of riders, each with a Strava-style ride card &mdash; distance, moving time, elevation gain, and four split times &mdash; and a race brief saying what the team needs: the fastest rider, the best climber, the steadiest pacer, or the strongest single effort.</p>
+            <ul class="service-points">
+              <li><strong>Call it, then prove it.</strong> Students predict the podium before doing any math, then work out each rider&rsquo;s average speed, climb rate, or split range on an analyst sheet to see whether their gut was right.</li>
+              <li><strong>Math matched to the class.</strong> Pick Algebra I, Geometry, Algebra II, Precalculus, Statistics, or Calculus for an extra problem about the same riders &mdash; from catch-up problems with d = rt to z-scores and the Mean Value Theorem. A wrong answer gets a hint before the solution is shown.</li>
+              <li><strong>Graph it.</strong> Students plot the whole field on a distance&ndash;time graph and see that slope is speed &mdash; including two riders with identical totals whose rides tell very different stories.</li>
+              <li><strong>Make the case.</strong> A coach&rsquo;s question asks them to pick a rider and defend it with numbers and the graph. I score the answer with a rubric, and each round earns a score and a medal as students rank up from Junior Analyst to Head of Data.</li>
+            </ul>
+            <div class="tool-actions">
+              <a class="button" data-tool-launch href="https://wcmalfeld.github.io/StravaShowdown_LearningTool/" target="_blank" rel="noopener">Play Strava Showdown <span aria-hidden="true">&rarr;</span></a>
+            </div>
+          </div>
         </div>
-      </article>
+      </details>
       <article class="tool-card tool-card--soon" data-tool="tool-04" hidden>
         <span class="tool-thumb"><img src="assets/photos/tool-04.svg" alt="" loading="lazy" decoding="async"></span>
         <div class="tool-card-body">
@@ -248,7 +274,7 @@
         <ul class="service-points">
           <li><strong>Pre-Algebra through Calculus,</strong> plus Physics</li>
           <li><strong>Test prep</strong> for the SAT, ACT, and more</li>
-          <li><strong>Custom learning tools</strong> like Summit Expedition and Trail Builder</li>
+          <li><strong>Custom learning tools</strong> like Summit Expedition, Trail Builder, and Strava Showdown</li>
         </ul>
         <a class="read-link" href="#tutoring">How tutoring works <span aria-hidden="true">&rarr;</span></a>
       </div>
@@ -439,7 +465,7 @@
   </div>
 </footer>
 
-<script src="js/tools-config.js?v=7" defer></script>
+<script src="js/tools-config.js?v=8" defer></script>
 <script src="js/supabase-config.js?v=7" defer></script>
 <script src="js/auth.js?v=7" defer></script>
 <script src="js/site.js?v=7" defer></script>

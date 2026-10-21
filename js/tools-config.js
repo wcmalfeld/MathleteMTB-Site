@@ -36,10 +36,11 @@ window.MATHLETE_TOOLS = [
     url: 'https://wcmalfeld.github.io/TrailBuilder-Math/'
   },
   {
-    id: 'tool-03',
-    name: 'Tool 03',
+    id: 'strava-showdown',
+    name: 'Strava Showdown',
     access: 'public',
-    status: 'coming-soon'
+    status: 'live',
+    url: 'https://wcmalfeld.github.io/StravaShowdown_LearningTool/'
   },
   {
     id: 'tool-04',

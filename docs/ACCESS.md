@@ -37,15 +37,14 @@ that server-side check.
 |---|---|---|
 | `summit-expedition` | Summit Expedition | public |
 | `trail-builder` | Trail Builder | public |
-| `tool-03` | Tool 03 (placeholder, not built yet) | public |
+| `strava-showdown` | Strava Showdown | public |
 | `tool-04` | Tool 04 (placeholder) | private |
 | `tool-05` | Tool 05 (placeholder) | private |
 
 The codebase had no existing free/preview tools, so the first three tools in
-the listing were made public. Only two real tools exist today, so the third
-public slot is the Tool 03 placeholder, and **no finished tool is private
-yet**. The private side switches on as soon as you upload your first private
-tool (see below).
+the listing were made public. All three are live tools hosted on their own
+public GitHub Pages sites. **No finished tool is private yet**: the private
+side switches on as soon as you upload your first private tool (see below).
 
 ### Changing which tools are public
 
