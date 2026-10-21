@@ -568,45 +568,164 @@ button:focus-visible {
 }
 .pill--physics { border-color: rgba(62, 110, 142, 0.4); color: var(--chalk); }
 
-/* ---------- learning tools ---------- */
-.tool {
+/* ---------- learning tools: card grid ---------- */
+.tool-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-  gap: 56px;
-  align-items: start;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
 }
+@media (max-width: 960px) { .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .tool-grid { grid-template-columns: 1fr; } }
+
+.tool-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+  border: 1px solid var(--rule);
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .15s ease, transform .2s ease, box-shadow .2s ease;
+}
+.tool-card > summary {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  cursor: pointer;
+  list-style: none;
+}
+.tool-card > summary::-webkit-details-marker { display: none; }
+.tool-card:not(.tool-card--soon):hover {
+  border-color: var(--ink);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px -14px rgba(31, 43, 36, 0.35);
+}
+.tool-card > summary:focus-visible { outline: 2px solid var(--blaze); outline-offset: 3px; }
+
+.tool-thumb {
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--tint);
+  border-bottom: 1px solid var(--rule);
+}
+.tool-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform .8s cubic-bezier(.2, .6, .2, 1);
+}
+.tool-card:not(.tool-card--soon):hover .tool-thumb img { transform: scale(1.03); }
+
+.tool-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  padding: 20px 22px 22px;
+}
+.tool-card-title {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 0.95;
+  text-transform: uppercase;
+  margin: 2px 0 0;
+}
+.tool-card-desc {
+  display: block;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.tool-card-more {
+  margin-top: auto;
+  padding-top: 8px;
+  align-self: flex-start;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--blaze);
+  padding-bottom: 3px;
+}
+.tool-card:hover .tool-card-more { color: var(--blaze); }
+
+/* placeholders for tools still being built */
+.tool-card--soon { background: transparent; border-style: dashed; }
+.tool-card--soon .tool-thumb { opacity: 0.7; }
+.tool-card--soon .tool-card-title { color: var(--ink-soft); }
+.tool-card--idea {
+  justify-content: center;
+  border: 1px dashed var(--contour);
+  background: rgba(176, 141, 79, 0.08);
+}
+.tool-card--idea .tool-card-body { justify-content: center; flex: 0; }
+
+/* full description: in place without JS, in the pop-up with JS */
+.tool-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+  padding: 24px 22px 28px;
+  border-top: 1px solid var(--rule);
+}
+.tool-card .tool-detail { grid-template-columns: 1fr; gap: 20px; }
 .tool-shot { margin: 0; }
 .tool-shot .fig-frame { border: 1px solid var(--rule); }
 .tool-shot img { height: auto; }
 .tool-shot figcaption { margin-top: 10px; }
 .tool-tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0 0 22px; padding: 0; }
 .tool-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 26px; margin-top: 28px; }
-.tool-actions .read-link { margin-top: 0; }
-.tool + .tool {
-  margin-top: 88px;
-  padding-top: 88px;
-  border-top: 1px solid var(--rule);
+
+.tool-dialog {
+  width: min(1040px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 48px);
+  padding: 0;
+  border: 1px solid var(--ink);
+  background: var(--bg);
+  color: var(--ink);
+  overflow: auto;
 }
-/* alternate sides, like the services rows */
-.tool:nth-of-type(even) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
-.tool:nth-of-type(even) .tool-shot { order: 2; }
-@media (max-width: 860px) {
-  .tool,
-  .tool:nth-of-type(even) { grid-template-columns: 1fr; gap: 32px; }
-  .tool:nth-of-type(even) .tool-shot { order: 0; }
-  .tool + .tool { margin-top: 56px; padding-top: 56px; }
+.tool-dialog::backdrop { background: rgba(17, 23, 19, 0.72); }
+.tool-dialog-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 26px 28px 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
 }
-.tool-more {
-  margin-top: 64px;
-  border: 1px dashed var(--contour);
-  background: rgba(176, 141, 79, 0.08);
-  padding: 18px 22px;
-  font-size: 15px;
-  color: var(--ink-soft);
+.tool-dialog-head .kicker { margin-bottom: 10px; }
+.tool-dialog-head .service-title { margin: 0; }
+.tool-dialog-close {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  cursor: pointer;
 }
-.tool-more p { margin: 0; }
-.tool-more a { color: var(--ink); }
-.tool-more a:hover { color: var(--blaze); }
+.tool-dialog-close:hover { border-color: var(--ink); }
+.tool-dialog .tool-detail { border-top: 0; padding: 28px; }
+@media (max-width: 760px) {
+  .tool-dialog .tool-detail { grid-template-columns: 1fr; gap: 24px; padding: 20px; }
+  .tool-dialog-head { padding: 20px; }
+}
+body.dialog-open { overflow: hidden; }
 
 /* ---------- photo album ---------- */
 .album {

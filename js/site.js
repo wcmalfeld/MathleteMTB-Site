@@ -42,6 +42,72 @@
     });
   }
 
+  // ---------- learning tools: open a card's full description in a pop-up ----------
+  // Without JavaScript each card is a plain <details> that opens in place.
+  var toolCards = Array.prototype.slice.call(document.querySelectorAll('details.tool-card'));
+  if (toolCards.length && typeof HTMLDialogElement === 'function') setupToolDialog(toolCards);
+
+  function setupToolDialog(cards) {
+    var dlg = document.createElement('dialog');
+    dlg.className = 'tool-dialog';
+    dlg.setAttribute('aria-labelledby', 'tool-dialog-title');
+    dlg.innerHTML =
+      '<div class="tool-dialog-head"><div class="tool-dialog-title"></div>' +
+      '<button type="button" class="tool-dialog-close" aria-label="Close">' + icon('M6 6l12 12M18 6L6 18') + '</button></div>' +
+      '<div class="tool-dialog-body"></div>';
+    document.body.appendChild(dlg);
+
+    // Keep the address in sync (so a tool can be linked to) without
+    // scrolling. Some browsers refuse this on local files; that's fine.
+    function setHash(h) {
+      try { history.replaceState(null, '', h); } catch (e) {}
+    }
+
+    var titleBox = dlg.querySelector('.tool-dialog-title');
+    var body = dlg.querySelector('.tool-dialog-body');
+    var current = null;
+
+    function open(card) {
+      current = card;
+      var kicker = card.querySelector('.kicker').cloneNode(true);
+      var title = document.createElement('h3');
+      title.className = 'service-title';
+      title.id = 'tool-dialog-title';
+      title.textContent = card.querySelector('.tool-card-title').textContent;
+      titleBox.replaceChildren(kicker, title);
+      body.appendChild(card.querySelector('.tool-detail')); // move, so the photo viewer keeps working
+      dlg.showModal();
+      dlg.scrollTop = 0;
+      document.body.classList.add('dialog-open');
+      setHash('#' + card.id);
+    }
+
+    dlg.addEventListener('close', function () {
+      if (current) {
+        current.appendChild(body.firstElementChild);
+        current.querySelector('summary').focus();
+      }
+      current = null;
+      document.body.classList.remove('dialog-open');
+      setHash('#tools');
+    });
+
+    cards.forEach(function (card) {
+      card.querySelector('summary').addEventListener('click', function (e) {
+        e.preventDefault();
+        open(card);
+      });
+    });
+
+    dlg.querySelector('.tool-dialog-close').addEventListener('click', function () { dlg.close(); });
+    // Click on the dimmed background closes.
+    dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+
+    // A link straight to a tool (e.g. #tool-trailbuilder) opens it.
+    var linked = location.hash && document.getElementById(location.hash.slice(1));
+    if (linked && cards.indexOf(linked) !== -1) open(linked);
+  }
+
   // ---------- accessible lightbox for photographs ----------
   var links = Array.prototype.slice.call(document.querySelectorAll('a[data-lightbox]'));
   if (links.length && typeof HTMLDialogElement === 'function') setupLightbox(links);

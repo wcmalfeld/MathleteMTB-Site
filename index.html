@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=5">
+<link rel="stylesheet" href="css/site.css?v=6">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -74,8 +74,12 @@
 </figure>
 
 <!-- ============================================================
-     LEARNING TOOLS — to add another tool, copy the whole
-     <article class="tool"> block.
+     LEARNING TOOLS — a grid of cards. Each finished tool is a
+     <details class="tool-card">: the <summary> is the card face, and
+     .tool-detail holds the full description (shown in a pop-up when
+     JavaScript is on, or opened in place when it isn't).
+     To add a tool, copy a <details> block; to fill a placeholder,
+     replace a <article class="tool-card tool-card--soon"> with one.
      ============================================================ -->
 <section class="section section--panel" id="tools" aria-labelledby="tools-title">
   <div class="wrap">
@@ -85,60 +89,107 @@
       <p class="head-note">Worksheets rarely make anyone excited about math, so I build my own tools &mdash; games and activities that give students a reason to want the next problem.</p>
     </div>
 
-    <article class="tool">
-      <figure class="tool-shot" data-gallery>
-        <a class="fig-frame" href="assets/summit-expedition.jpg" data-lightbox data-caption="Summit Expedition — the trail up Mt. Axiom"><img src="assets/summit-expedition.jpg" alt="Summit Expedition game board: a trail winding up Mt. Axiom from Base Camp to the summit, with camps, supply caches, weather events, and an Ice Ridge shortcut" width="1200" height="963" loading="lazy" decoding="async"></a>
-        <figcaption class="meta">The trail up Mt. Axiom, from Base Camp (2,400 m) to the summit (4,350 m).</figcaption>
-      </figure>
-      <div class="tool-text">
-        <p class="kicker"><span class="service-num">Tool 01</span>Board game</p>
-        <h3 class="service-title">Summit Expedition</h3>
-        <ul class="tool-tags">
-          <li class="pill">Algebra I &ndash; Calculus</li>
-          <li class="pill">1&ndash;4 players</li>
-          <li class="pill">In person or online</li>
-        </ul>
-        <p class="service-desc">Students race to climb Mt. Axiom by solving math problems. On each turn, a player rolls a die and then chooses how hard a problem to take on &mdash; <em>Safe</em>, <em>Bold</em>, or <em>Daring</em>. Harder problems move them farther up the trail when they get them right.</p>
-        <ul class="service-points">
-          <li><strong>Mistakes never send anyone backward.</strong> After a wrong answer, the student sees a worked solution and earns insight tokens they can trade for power-ups like a hint or a second try.</li>
-          <li><strong>Fresh problems every game.</strong> I choose which topics are in play, and the difficulty quietly adjusts to how each student is doing.</li>
-          <li><strong>Something to aim for.</strong> Supply caches, weather events, camps, and a risky Ice Ridge shortcut guarded by an Ice Wall keep every climb different.</li>
-          <li><strong>A clear picture of progress.</strong> A session report at the end shows accuracy by skill and every problem a student missed, so we know exactly what to work on next.</li>
-        </ul>
-        <div class="tool-actions">
-          <a class="button" href="https://wcmalfeld.github.io/Summit-Expedition---Mathlete/" target="_blank" rel="noopener">Play Summit Expedition <span aria-hidden="true">&rarr;</span></a>
+    <div class="tool-grid">
+      <details class="tool-card" id="tool-summit">
+        <summary>
+          <span class="tool-thumb"><img src="assets/summit-expedition.jpg" alt="Summit Expedition game board" loading="lazy" decoding="async"></span>
+          <span class="tool-card-body">
+            <span class="kicker"><span class="service-num">Tool 01</span>Board game</span>
+            <h3 class="tool-card-title">Summit Expedition</h3>
+            <span class="tool-card-desc">A math race up Mt. Axiom. Students pick how hard a problem to take on, and harder problems climb faster.</span>
+            <span class="tool-card-more">See details <span aria-hidden="true">+</span></span>
+          </span>
+        </summary>
+        <div class="tool-detail">
+          <figure class="tool-shot" data-gallery>
+          <a class="fig-frame" href="assets/summit-expedition.jpg" data-lightbox data-caption="Summit Expedition — the trail up Mt. Axiom"><img src="assets/summit-expedition.jpg" alt="Summit Expedition game board: a trail winding up Mt. Axiom from Base Camp to the summit, with camps, supply caches, weather events, and an Ice Ridge shortcut" width="1200" height="963" loading="lazy" decoding="async"></a>
+          <figcaption class="meta">The trail up Mt. Axiom, from Base Camp (2,400 m) to the summit (4,350 m).</figcaption>
+          </figure>
+          <div class="tool-text">
+            <ul class="tool-tags">
+              <li class="pill">Algebra I &ndash; Calculus</li>
+              <li class="pill">1&ndash;4 players</li>
+              <li class="pill">In person or online</li>
+            </ul>
+            <p class="service-desc">Students race to climb Mt. Axiom by solving math problems. On each turn, a player rolls a die and then chooses how hard a problem to take on &mdash; <em>Safe</em>, <em>Bold</em>, or <em>Daring</em>. Harder problems move them farther up the trail when they get them right.</p>
+            <ul class="service-points">
+            <li><strong>Mistakes never send anyone backward.</strong> After a wrong answer, the student sees a worked solution and earns insight tokens they can trade for power-ups like a hint or a second try.</li>
+            <li><strong>Fresh problems every game.</strong> I choose which topics are in play, and the difficulty quietly adjusts to how each student is doing.</li>
+            <li><strong>Something to aim for.</strong> Supply caches, weather events, camps, and a risky Ice Ridge shortcut guarded by an Ice Wall keep every climb different.</li>
+            <li><strong>A clear picture of progress.</strong> A session report at the end shows accuracy by skill and every problem a student missed, so we know exactly what to work on next.</li>
+            </ul>
+            <div class="tool-actions">
+            <a class="button" href="https://wcmalfeld.github.io/Summit-Expedition---Mathlete/" target="_blank" rel="noopener">Play Summit Expedition <span aria-hidden="true">&rarr;</span></a>
+            </div>
+          </div>
         </div>
-      </div>
-    </article>
-
-    <article class="tool">
-      <figure class="tool-shot" data-gallery>
-        <a class="fig-frame" href="assets/trailbuilder.jpg" data-lightbox data-caption="Trail Builder — designing a trail for Pine Ridge Kids' Camp"><img src="assets/trailbuilder.jpg" alt="Trail Builder in the build phase: a client work order with requirements, a live elevation profile of the trail so far, a crew logbook of segments and costs, and a geometry question about a rock garden" width="1400" height="1093" loading="lazy" decoding="async"></a>
-        <figcaption class="meta">Mid-build: each new segment comes with a problem to solve before it goes in.</figcaption>
-      </figure>
-      <div class="tool-text">
-        <p class="kicker"><span class="service-num">Tool 02</span>Design game</p>
-        <h3 class="service-title">Trail Builder</h3>
-        <ul class="tool-tags">
-          <li class="pill">Algebra I &ndash; Calculus</li>
-          <li class="pill">Statistics</li>
-          <li class="pill">In person or online</li>
-        </ul>
-        <p class="service-desc">Students run a trail crew. They take a work order from a client &mdash; a youth bike camp, a city greenway, an enduro race &mdash; and design a trail that fits the budget, meets the client&rsquo;s requirements, and finishes at exactly the right elevation. Every segment they add comes with a math problem to solve first.</p>
-        <ul class="service-points">
-          <li><strong>Math matched to the class.</strong> Pick Algebra I, Geometry, Algebra II, Precalculus, Statistics, or Calculus, and each segment brings its own problem &mdash; slopes, the Pythagorean theorem, jump trajectories, banking angles, expected value, derivatives. A wrong answer gets a hint before the solution is shown.</li>
-          <li><strong>Real planning, real constraints.</strong> Students balance money, length, difficulty, and elevation while a live profile shows where the trail is headed. I can throw in change orders mid-round &mdash; a sponsor donation, a permit fee, a moved finish line &mdash; so they have to re-plan.</li>
-          <li><strong>A test ride with consequences.</strong> A rider rolls the die on every tougher segment. Crashes, flats, and washouts cost money or points, so risky designs have to be worth it.</li>
-          <li><strong>Explain the design.</strong> Each round ends with a score and a medal, then students name the trail and write a pitch to the client explaining, with numbers, why it works. Finished trails build into a network as they rank up from Trail Rookie to Master Builder.</li>
-        </ul>
-        <div class="tool-actions">
-          <a class="button" href="https://wcmalfeld.github.io/TrailBuilder-Math/" target="_blank" rel="noopener">Play Trail Builder <span aria-hidden="true">&rarr;</span></a>
+      </details>
+      <details class="tool-card" id="tool-trailbuilder">
+        <summary>
+          <span class="tool-thumb"><img src="assets/trailbuilder.jpg" alt="Trail Builder mid-build" loading="lazy" decoding="async"></span>
+          <span class="tool-card-body">
+            <span class="kicker"><span class="service-num">Tool 02</span>Design game</span>
+            <h3 class="tool-card-title">Trail Builder</h3>
+            <span class="tool-card-desc">Students design a mountain bike trail for a client, solving a math problem for every segment they build.</span>
+            <span class="tool-card-more">See details <span aria-hidden="true">+</span></span>
+          </span>
+        </summary>
+        <div class="tool-detail">
+          <figure class="tool-shot" data-gallery>
+          <a class="fig-frame" href="assets/trailbuilder.jpg" data-lightbox data-caption="Trail Builder — designing a trail for Pine Ridge Kids' Camp"><img src="assets/trailbuilder.jpg" alt="Trail Builder in the build phase: a client work order with requirements, a live elevation profile of the trail so far, a crew logbook of segments and costs, and a geometry question about a rock garden" width="1400" height="1093" loading="lazy" decoding="async"></a>
+          <figcaption class="meta">Mid-build: each new segment comes with a problem to solve before it goes in.</figcaption>
+          </figure>
+          <div class="tool-text">
+            <ul class="tool-tags">
+              <li class="pill">Algebra I &ndash; Calculus</li>
+              <li class="pill">Statistics</li>
+              <li class="pill">In person or online</li>
+            </ul>
+            <p class="service-desc">Students run a trail crew. They take a work order from a client &mdash; a youth bike camp, a city greenway, an enduro race &mdash; and design a trail that fits the budget, meets the client&rsquo;s requirements, and finishes at exactly the right elevation. Every segment they add comes with a math problem to solve first.</p>
+            <ul class="service-points">
+            <li><strong>Math matched to the class.</strong> Pick Algebra I, Geometry, Algebra II, Precalculus, Statistics, or Calculus, and each segment brings its own problem &mdash; slopes, the Pythagorean theorem, jump trajectories, banking angles, expected value, derivatives. A wrong answer gets a hint before the solution is shown.</li>
+            <li><strong>Real planning, real constraints.</strong> Students balance money, length, difficulty, and elevation while a live profile shows where the trail is headed. I can throw in change orders mid-round &mdash; a sponsor donation, a permit fee, a moved finish line &mdash; so they have to re-plan.</li>
+            <li><strong>A test ride with consequences.</strong> A rider rolls the die on every tougher segment. Crashes, flats, and washouts cost money or points, so risky designs have to be worth it.</li>
+            <li><strong>Explain the design.</strong> Each round ends with a score and a medal, then students name the trail and write a pitch to the client explaining, with numbers, why it works. Finished trails build into a network as they rank up from Trail Rookie to Master Builder.</li>
+            </ul>
+            <div class="tool-actions">
+            <a class="button" href="https://wcmalfeld.github.io/TrailBuilder-Math/" target="_blank" rel="noopener">Play Trail Builder <span aria-hidden="true">&rarr;</span></a>
+            </div>
+          </div>
         </div>
-      </div>
-    </article>
-
-    <div class="tool-more">
-      <p>More tools are on the way. Have an idea for one, or a topic your student is stuck on? <a href="#contact">Let me know.</a></p>
+      </details>
+      <article class="tool-card tool-card--soon">
+        <span class="tool-thumb"><img src="assets/photos/tool-03.svg" alt="" loading="lazy" decoding="async"></span>
+        <div class="tool-card-body">
+          <p class="kicker"><span class="service-num">Tool 03</span><span class="kicker-flag">In development</span></p>
+          <h3 class="tool-card-title">Coming Soon</h3>
+          <p class="tool-card-desc">A new learning tool is in the works. Check back soon.</p>
+        </div>
+      </article>
+      <article class="tool-card tool-card--soon">
+        <span class="tool-thumb"><img src="assets/photos/tool-04.svg" alt="" loading="lazy" decoding="async"></span>
+        <div class="tool-card-body">
+          <p class="kicker"><span class="service-num">Tool 04</span><span class="kicker-flag">In development</span></p>
+          <h3 class="tool-card-title">Coming Soon</h3>
+          <p class="tool-card-desc">A new learning tool is in the works. Check back soon.</p>
+        </div>
+      </article>
+      <article class="tool-card tool-card--soon">
+        <span class="tool-thumb"><img src="assets/photos/tool-05.svg" alt="" loading="lazy" decoding="async"></span>
+        <div class="tool-card-body">
+          <p class="kicker"><span class="service-num">Tool 05</span><span class="kicker-flag">In development</span></p>
+          <h3 class="tool-card-title">Coming Soon</h3>
+          <p class="tool-card-desc">A new learning tool is in the works. Check back soon.</p>
+        </div>
+      </article>
+      <a class="tool-card tool-card--idea" href="#contact">
+        <div class="tool-card-body">
+          <p class="kicker">Your idea here</p>
+          <h3 class="tool-card-title">Have an idea for a tool?</h3>
+          <p class="tool-card-desc">Tell me a topic your student is stuck on, and it might become the next one.</p>
+          <span class="tool-card-more">Let me know <span aria-hidden="true">&rarr;</span></span>
+        </div>
+      </a>
     </div>
   </div>
 </section>
@@ -370,6 +421,6 @@
   </div>
 </footer>
 
-<script src="js/site.js?v=4" defer></script>
+<script src="js/site.js?v=6" defer></script>
 </body>
 </html>
