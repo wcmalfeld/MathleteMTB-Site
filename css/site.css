@@ -218,10 +218,28 @@ button:focus-visible {
   border-color: var(--blaze);
 }
 .nav-links .nav-cta a { color: var(--blaze); }
-/* On narrow screens only About and the contact link stay in the bar. */
+/* Member "Log in" button (shown only when signed out) */
+.nav-links { align-items: center; }
+.nav-links .nav-login a {
+  display: inline-block;
+  padding: 7px 14px;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  transition: background-color .15s ease, color .15s ease;
+}
+.nav-links .nav-login a:hover {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+}
+/* On narrow screens only About, Log in / Log out and the contact link stay in the bar. */
 @media (max-width: 860px) {
   .nav-links { gap: 20px; }
   .nav-links li:not(.nav-cta):not(.nav-keep) { display: none; }
+}
+@media (max-width: 420px) {
+  .nav-links { gap: 14px; font-size: 12px; }
+  .nav-links .nav-login a { padding: 6px 10px; }
 }
 
 /* ---------- photo frames (crop to fill) ---------- */
