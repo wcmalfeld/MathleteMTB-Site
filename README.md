@@ -1,18 +1,33 @@
 # Mathlete MTB
 
-A simple, single-page website for Mathlete MTB math tutoring.
+The website for Mathlete MTB math and physics tutoring.
 
 ## What's in this folder
 
 ```
-mathlete-mtb-site/
-├── index.html      # The whole site — content, layout, and styling
-├── assets/
-│   └── logo.png     # Site logo
-└── README.md         # This file
+MathleteMTB-Site/
+├── index.html            # Homepage (learning tools, services, tutoring, photos, contact)
+├── about.html            # About page
+├── login.html            # Member login (invite-only)
+├── account.html          # Set / reset a member's password
+├── tool.html             # Opens members-only tools (tool.html?id=...)
+├── css/site.css          # All styling
+├── js/
+│   ├── tools-config.js   # WHICH TOOLS ARE PUBLIC OR MEMBERS-ONLY (edit here)
+│   ├── auth.js           # Member sign-in (Supabase)
+│   ├── site.js           # Photo viewer, tool pop-ups, nav
+│   └── ...               # login.js, account.js, tool-player.js
+├── assets/               # Logo, photos, screenshots
+├── supabase/setup.sql    # Database + storage rules for member access
+├── scripts/              # admin.mjs (manage members), check-site.mjs, test-access.mjs
+└── docs/ACCESS.md        # How member access works and how to manage it
 ```
 
-There's no build process, no dependencies, and no installation required — it's a plain HTML/CSS site.
+There's no build step and nothing to install for the website itself.
+
+**Member access** (three public learning tools, the rest invite-only) is
+documented in [docs/ACCESS.md](docs/ACCESS.md): setup, inviting and revoking
+members, adding private tools, and testing.
 
 ## Editing the content
 

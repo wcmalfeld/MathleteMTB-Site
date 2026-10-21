@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=6">
+<link rel="stylesheet" href="css/site.css?v=7">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -30,6 +30,7 @@
       <li><a href="#tutoring">Tutoring</a></li>
       <li><a href="#photos">Photos</a></li>
       <li class="nav-keep"><a href="about.html">About</a></li>
+      <li class="nav-keep" data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
       <li class="nav-cta"><a href="#contact">Let&rsquo;s Talk</a></li>
     </ul>
   </div>
@@ -80,6 +81,11 @@
      JavaScript is on, or opened in place when it isn't).
      To add a tool, copy a <details> block; to fill a placeholder,
      replace a <article class="tool-card tool-card--soon"> with one.
+     ACCESS: each card's data-tool="..." must match an id in
+     js/tools-config.js, which decides whether the tool is public or
+     members-only. Private cards start out `hidden` and are only shown
+     to signed-in members; their play button should use data-tool-launch
+     so it points at tool.html?id=... (see docs/ACCESS.md).
      ============================================================ -->
 <section class="section section--panel" id="tools" aria-labelledby="tools-title">
   <div class="wrap">
@@ -90,7 +96,7 @@
     </div>
 
     <div class="tool-grid">
-      <details class="tool-card" id="tool-summit">
+      <details class="tool-card" id="tool-summit" data-tool="summit-expedition">
         <summary>
           <span class="tool-thumb"><img src="assets/summit-expedition.jpg" alt="Summit Expedition game board" loading="lazy" decoding="async"></span>
           <span class="tool-card-body">
@@ -119,12 +125,12 @@
             <li><strong>A clear picture of progress.</strong> A session report at the end shows accuracy by skill and every problem a student missed, so we know exactly what to work on next.</li>
             </ul>
             <div class="tool-actions">
-            <a class="button" href="https://wcmalfeld.github.io/Summit-Expedition---Mathlete/" target="_blank" rel="noopener">Play Summit Expedition <span aria-hidden="true">&rarr;</span></a>
+            <a class="button" data-tool-launch href="https://wcmalfeld.github.io/Summit-Expedition---Mathlete/" target="_blank" rel="noopener">Play Summit Expedition <span aria-hidden="true">&rarr;</span></a>
             </div>
           </div>
         </div>
       </details>
-      <details class="tool-card" id="tool-trailbuilder">
+      <details class="tool-card" id="tool-trailbuilder" data-tool="trail-builder">
         <summary>
           <span class="tool-thumb"><img src="assets/trailbuilder.jpg" alt="Trail Builder mid-build" loading="lazy" decoding="async"></span>
           <span class="tool-card-body">
@@ -153,12 +159,12 @@
             <li><strong>Explain the design.</strong> Each round ends with a score and a medal, then students name the trail and write a pitch to the client explaining, with numbers, why it works. Finished trails build into a network as they rank up from Trail Rookie to Master Builder.</li>
             </ul>
             <div class="tool-actions">
-            <a class="button" href="https://wcmalfeld.github.io/TrailBuilder-Math/" target="_blank" rel="noopener">Play Trail Builder <span aria-hidden="true">&rarr;</span></a>
+            <a class="button" data-tool-launch href="https://wcmalfeld.github.io/TrailBuilder-Math/" target="_blank" rel="noopener">Play Trail Builder <span aria-hidden="true">&rarr;</span></a>
             </div>
           </div>
         </div>
       </details>
-      <article class="tool-card tool-card--soon">
+      <article class="tool-card tool-card--soon" data-tool="tool-03">
         <span class="tool-thumb"><img src="assets/photos/tool-03.svg" alt="" loading="lazy" decoding="async"></span>
         <div class="tool-card-body">
           <p class="kicker"><span class="service-num">Tool 03</span><span class="kicker-flag">In development</span></p>
@@ -166,7 +172,7 @@
           <p class="tool-card-desc">A new learning tool is in the works. Check back soon.</p>
         </div>
       </article>
-      <article class="tool-card tool-card--soon">
+      <article class="tool-card tool-card--soon" data-tool="tool-04" hidden>
         <span class="tool-thumb"><img src="assets/photos/tool-04.svg" alt="" loading="lazy" decoding="async"></span>
         <div class="tool-card-body">
           <p class="kicker"><span class="service-num">Tool 04</span><span class="kicker-flag">In development</span></p>
@@ -174,7 +180,7 @@
           <p class="tool-card-desc">A new learning tool is in the works. Check back soon.</p>
         </div>
       </article>
-      <article class="tool-card tool-card--soon">
+      <article class="tool-card tool-card--soon" data-tool="tool-05" hidden>
         <span class="tool-thumb"><img src="assets/photos/tool-05.svg" alt="" loading="lazy" decoding="async"></span>
         <div class="tool-card-body">
           <p class="kicker"><span class="service-num">Tool 05</span><span class="kicker-flag">In development</span></p>
@@ -182,6 +188,14 @@
           <p class="tool-card-desc">A new learning tool is in the works. Check back soon.</p>
         </div>
       </article>
+      <a class="tool-card tool-card--members" href="login.html" data-auth-show="guest">
+        <div class="tool-card-body">
+          <p class="kicker">Members</p>
+          <h3 class="tool-card-title">More tools for my students</h3>
+          <p class="tool-card-desc">Students I work with get the full set of learning tools. Already have an account?</p>
+          <span class="tool-card-more">Member login <span aria-hidden="true">&rarr;</span></span>
+        </div>
+      </a>
       <a class="tool-card tool-card--idea" href="#contact">
         <div class="tool-card-body">
           <p class="kicker">Your idea here</p>
@@ -417,10 +431,16 @@
 <footer class="footer">
   <div class="wrap">
     <span>&copy; 2026 Mathlete MTB LLC. All rights reserved.</span>
-    <a href="https://www.willmalfeld.com" target="_blank" rel="noopener">willmalfeld.com</a>
+    <span class="footer-links">
+      <a href="login.html" data-auth-show="guest">Member login</a>
+      <a href="https://www.willmalfeld.com" target="_blank" rel="noopener">willmalfeld.com</a>
+    </span>
   </div>
 </footer>
 
-<script src="js/site.js?v=6" defer></script>
+<script src="js/tools-config.js?v=7" defer></script>
+<script src="js/supabase-config.js?v=7" defer></script>
+<script src="js/auth.js?v=7" defer></script>
+<script src="js/site.js?v=7" defer></script>
 </body>
 </html>

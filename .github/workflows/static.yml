@@ -31,6 +31,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      # Member login: write js/supabase-config.js from the repository
+      # variables SUPABASE_URL and SUPABASE_ANON_KEY (Settings -> Secrets and
+      # variables -> Actions -> Variables). Only the public anon key belongs
+      # here; the build fails if a service_role key is supplied by mistake.
+      - name: Write Supabase browser config
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const url = (process.env.SUPABASE_URL || "").trim().replace(/\/+$/, "").replace(/\/(rest|auth|storage)\/v1$/, "");
+            const anonKey = (process.env.SUPABASE_ANON_KEY || "").trim();
+            if (anonKey) {
+              let role = "";
+              try { role = JSON.parse(Buffer.from(anonKey.split(".")[1], "base64url").toString()).role; } catch (e) {}
+              if (role && role !== "anon") { console.error("SUPABASE_ANON_KEY is a " + role + " key. Use the anon public key."); process.exit(1); }
+              if (/^sb_secret_/.test(anonKey)) { console.error("SUPABASE_ANON_KEY is a secret key. Use the publishable/anon key."); process.exit(1); }
+            }
+            if (!url || !anonKey) console.log("::warning::SUPABASE_URL / SUPABASE_ANON_KEY not set; member login will be disabled.");
+            fs.writeFileSync("js/supabase-config.js", "window.MATHLETE_SUPABASE = " + JSON.stringify({ url, anonKey }) + ";\n");
+          '
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

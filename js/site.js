@@ -68,6 +68,7 @@
     var current = null;
 
     function open(card) {
+      if (card.hidden) return; // members-only card for a visitor
       current = card;
       var kicker = card.querySelector('.kicker').cloneNode(true);
       var title = document.createElement('h3');

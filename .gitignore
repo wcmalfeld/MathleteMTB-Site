@@ -1,0 +1,13 @@
+# Secrets: the service_role key and other admin settings live here only.
+.env
+.env.*
+!.env.example
+
+# Generated on deploy from repository variables (see .github/workflows/static.yml).
+js/supabase-config.js
+
+# Source files for members-only tools. These are uploaded to the private
+# Supabase Storage bucket and must never be published with the site.
+private-tools/
+
+.DS_Store

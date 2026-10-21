@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Set Your Password — Mathlete MTB</title>
+<meta name="description" content="Set the password for your Mathlete MTB member account.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css?v=7">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main">
+  <div class="wrap">
+    <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
+    <ul class="nav-links">
+      <li><a href="index.html#tools">Learning Tools</a></li>
+      <li><a href="index.html#services">Services</a></li>
+      <li><a href="index.html#tutoring">Tutoring</a></li>
+      <li class="nav-keep"><a href="about.html">About</a></li>
+      <li class="nav-keep" data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
+      <li class="nav-cta"><a href="index.html#contact">Let&rsquo;s Talk</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="page-head">
+  <svg class="contour-field" viewBox="0 0 1100 420" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M-20,90 C 180,50 320,130 500,90 C 680,50 820,120 1120,80" fill="none" stroke="#1F2B24" stroke-opacity="0.10" stroke-width="1"/>
+    <path d="M-20,200 C 220,160 340,230 540,190 C 720,155 880,220 1120,185" fill="none" stroke="#C1502E" stroke-opacity="0.12" stroke-width="1"/>
+    <path d="M-20,310 C 240,275 360,340 560,300 C 740,265 900,325 1120,290" fill="none" stroke="#1F2B24" stroke-opacity="0.08" stroke-width="1"/>
+  </svg>
+  <div class="wrap">
+    <p class="eyebrow">Members</p>
+    <h1 class="page-title" id="account-heading">Set Your Password</h1>
+    <p class="hero-lede" id="account-lede">Choose a password for your member account.</p>
+  </div>
+</header>
+
+<section class="section" aria-labelledby="account-title">
+  <div class="wrap split">
+    <h2 class="label split-label" id="account-title">Password</h2>
+    <div class="form-panel">
+      <div class="notice" id="notice" role="status" aria-live="polite" hidden></div>
+
+      <form class="form" id="password-form" hidden novalidate>
+        <p class="form-note" id="account-email"></p>
+        <div class="field">
+          <label for="new-password">New password</label>
+          <input class="input" id="new-password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+          <p class="field-hint">At least 8 characters.</p>
+        </div>
+        <div class="field">
+          <label for="confirm-password">Confirm password</label>
+          <input class="input" id="confirm-password" name="confirm" type="password" autocomplete="new-password" minlength="8" required>
+        </div>
+        <div class="form-actions">
+          <button class="button" type="submit" id="password-button">Save password</button>
+        </div>
+      </form>
+
+      <p class="form-note"><a href="login.html">Back to member login</a></p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <span>&copy; 2026 Mathlete MTB LLC. All rights reserved.</span>
+    <span class="footer-links">
+      <a href="https://www.willmalfeld.com" target="_blank" rel="noopener">willmalfeld.com</a>
+    </span>
+  </div>
+</footer>
+
+<script src="js/tools-config.js?v=7" defer></script>
+<script src="js/supabase-config.js?v=7" defer></script>
+<script src="js/auth.js?v=7" defer></script>
+<script src="js/account.js?v=7" defer></script>
+</body>
+</html>
