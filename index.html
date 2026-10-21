@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=3">
+<link rel="stylesheet" href="css/site.css?v=5">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -25,11 +25,11 @@
   <div class="wrap">
     <a href="#top" class="brand">Mathlete<span>.</span>MTB</a>
     <ul class="nav-links">
-      <li><a href="#about">About</a></li>
+      <li><a href="#tools">Learning Tools</a></li>
       <li><a href="#services">Services</a></li>
       <li><a href="#tutoring">Tutoring</a></li>
-      <li><a href="#tools">Learning Tools</a></li>
       <li><a href="#photos">Photos</a></li>
+      <li class="nav-keep"><a href="about.html">About</a></li>
       <li class="nav-cta"><a href="#contact">Let&rsquo;s Talk</a></li>
     </ul>
   </div>
@@ -74,21 +74,84 @@
 </figure>
 
 <!-- ============================================================
-     ABOUT
+     LEARNING TOOLS — to add another tool, copy the whole
+     <article class="tool"> block.
+     ============================================================ -->
+<section class="section section--panel" id="tools" aria-labelledby="tools-title">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Learning Tools</p>
+      <h2 class="label head-title" id="tools-title">Built for Students</h2>
+      <p class="head-note">Worksheets rarely make anyone excited about math, so I build my own tools &mdash; games and activities that give students a reason to want the next problem.</p>
+    </div>
+
+    <article class="tool">
+      <figure class="tool-shot" data-gallery>
+        <a class="fig-frame" href="assets/summit-expedition.jpg" data-lightbox data-caption="Summit Expedition — the trail up Mt. Axiom"><img src="assets/summit-expedition.jpg" alt="Summit Expedition game board: a trail winding up Mt. Axiom from Base Camp to the summit, with camps, supply caches, weather events, and an Ice Ridge shortcut" width="1200" height="963" loading="lazy" decoding="async"></a>
+        <figcaption class="meta">The trail up Mt. Axiom, from Base Camp (2,400 m) to the summit (4,350 m).</figcaption>
+      </figure>
+      <div class="tool-text">
+        <p class="kicker"><span class="service-num">Tool 01</span>Board game</p>
+        <h3 class="service-title">Summit Expedition</h3>
+        <ul class="tool-tags">
+          <li class="pill">Algebra I &ndash; Calculus</li>
+          <li class="pill">1&ndash;4 players</li>
+          <li class="pill">In person or online</li>
+        </ul>
+        <p class="service-desc">Students race to climb Mt. Axiom by solving math problems. On each turn, a player rolls a die and then chooses how hard a problem to take on &mdash; <em>Safe</em>, <em>Bold</em>, or <em>Daring</em>. Harder problems move them farther up the trail when they get them right.</p>
+        <ul class="service-points">
+          <li><strong>Mistakes never send anyone backward.</strong> After a wrong answer, the student sees a worked solution and earns insight tokens they can trade for power-ups like a hint or a second try.</li>
+          <li><strong>Fresh problems every game.</strong> I choose which topics are in play, and the difficulty quietly adjusts to how each student is doing.</li>
+          <li><strong>Something to aim for.</strong> Supply caches, weather events, camps, and a risky Ice Ridge shortcut guarded by an Ice Wall keep every climb different.</li>
+          <li><strong>A clear picture of progress.</strong> A session report at the end shows accuracy by skill and every problem a student missed, so we know exactly what to work on next.</li>
+        </ul>
+        <div class="tool-actions">
+          <a class="button" href="https://wcmalfeld.github.io/Summit-Expedition---Mathlete/" target="_blank" rel="noopener">Play Summit Expedition <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+    </article>
+
+    <article class="tool">
+      <figure class="tool-shot" data-gallery>
+        <a class="fig-frame" href="assets/trailbuilder.jpg" data-lightbox data-caption="Trail Builder — designing a trail for Pine Ridge Kids' Camp"><img src="assets/trailbuilder.jpg" alt="Trail Builder in the build phase: a client work order with requirements, a live elevation profile of the trail so far, a crew logbook of segments and costs, and a geometry question about a rock garden" width="1400" height="1093" loading="lazy" decoding="async"></a>
+        <figcaption class="meta">Mid-build: each new segment comes with a problem to solve before it goes in.</figcaption>
+      </figure>
+      <div class="tool-text">
+        <p class="kicker"><span class="service-num">Tool 02</span>Design game</p>
+        <h3 class="service-title">Trail Builder</h3>
+        <ul class="tool-tags">
+          <li class="pill">Algebra I &ndash; Calculus</li>
+          <li class="pill">Statistics</li>
+          <li class="pill">In person or online</li>
+        </ul>
+        <p class="service-desc">Students run a trail crew. They take a work order from a client &mdash; a youth bike camp, a city greenway, an enduro race &mdash; and design a trail that fits the budget, meets the client&rsquo;s requirements, and finishes at exactly the right elevation. Every segment they add comes with a math problem to solve first.</p>
+        <ul class="service-points">
+          <li><strong>Math matched to the class.</strong> Pick Algebra I, Geometry, Algebra II, Precalculus, Statistics, or Calculus, and each segment brings its own problem &mdash; slopes, the Pythagorean theorem, jump trajectories, banking angles, expected value, derivatives. A wrong answer gets a hint before the solution is shown.</li>
+          <li><strong>Real planning, real constraints.</strong> Students balance money, length, difficulty, and elevation while a live profile shows where the trail is headed. I can throw in change orders mid-round &mdash; a sponsor donation, a permit fee, a moved finish line &mdash; so they have to re-plan.</li>
+          <li><strong>A test ride with consequences.</strong> A rider rolls the die on every tougher segment. Crashes, flats, and washouts cost money or points, so risky designs have to be worth it.</li>
+          <li><strong>Explain the design.</strong> Each round ends with a score and a medal, then students name the trail and write a pitch to the client explaining, with numbers, why it works. Finished trails build into a network as they rank up from Trail Rookie to Master Builder.</li>
+        </ul>
+        <div class="tool-actions">
+          <a class="button" href="https://wcmalfeld.github.io/TrailBuilder-Math/" target="_blank" rel="noopener">Play Trail Builder <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+    </article>
+
+    <div class="tool-more">
+      <p>More tools are on the way. Have an idea for one, or a topic your student is stuck on? <a href="#contact">Let me know.</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     ABOUT (short) — the full story lives on about.html
      ============================================================ -->
 <section class="section" id="about" aria-labelledby="about-title">
   <div class="wrap split">
     <h2 class="label split-label" id="about-title">About</h2>
     <div class="prose">
-      <p>Hi, I&rsquo;m Will &mdash; the tutor and coach behind Mathlete MTB.</p>
-      <p>I believe many students begin to identify themselves as &ldquo;bad at math&rdquo; far too early. Over time, that belief can become a barrier not only to academic achievement, but to a student&rsquo;s willingness to take on challenges and make mistakes. With the right approach, however, that mindset can change.</p>
-      <p>My goal is to help students develop both mathematical ability and confidence in themselves as learners. I use problem-solving, real-world applications, and connections to the things students are already passionate about &mdash; particularly mountain biking &mdash; to make math more engaging and meaningful. When students are genuinely interested in what they are learning, they are more willing to experiment, make mistakes, and persist through difficult problems. Those experiences are where lasting confidence is built.</p>
-      <p>My experience as a teacher, mentor, and mountain bike coach has given me the opportunity to work with students who don&rsquo;t always thrive in traditional classroom environments. I&rsquo;ve seen students go from believing they simply &ldquo;aren&rsquo;t good at math&rdquo; to approaching challenging problems with confidence and a willingness to figure things out.</p>
-      <p>If your student is struggling to find interest in math, isn&rsquo;t achieving the results they&rsquo;re capable of, or would simply benefit from additional support outside of school, Mathlete MTB offers a different approach &mdash; combining individualized math instruction with the motivation, community, and mindset that come from being part of the mountain biking world.</p>
-      <aside class="pullquote">
-        <blockquote><p>The goal isn&rsquo;t just to get better at math. It&rsquo;s to become more confident taking on difficult things.</p></blockquote>
-        <p class="pullquote-cite">Will, Mathlete MTB</p>
-      </aside>
+      <p>Hi, I&rsquo;m Will &mdash; the tutor and coach behind Mathlete MTB. I help students build both mathematical ability and confidence in themselves as learners, using problem-solving, real-world applications, and the things they already care about &mdash; particularly mountain biking.</p>
+      <a class="read-link" href="about.html">More about me <span aria-hidden="true">&rarr;</span></a>
     </div>
   </div>
 </section>
@@ -119,7 +182,7 @@
         <ul class="service-points">
           <li><strong>Pre-Algebra through Calculus,</strong> plus Physics</li>
           <li><strong>Test prep</strong> for the SAT, ACT, and more</li>
-          <li><strong>Custom learning tools</strong> like Summit Expedition</li>
+          <li><strong>Custom learning tools</strong> like Summit Expedition and Trail Builder</li>
         </ul>
         <a class="read-link" href="#tutoring">How tutoring works <span aria-hidden="true">&rarr;</span></a>
       </div>
@@ -212,50 +275,6 @@
 </section>
 
 <!-- ============================================================
-     LEARNING TOOLS — to add another tool, copy the whole
-     <article class="tool"> block.
-     ============================================================ -->
-<section class="section section--panel" id="tools" aria-labelledby="tools-title">
-  <div class="wrap">
-    <div class="head">
-      <p class="eyebrow">Learning Tools</p>
-      <h2 class="label head-title" id="tools-title">Built for Students</h2>
-      <p class="head-note">Worksheets rarely make anyone excited about math, so I build my own tools &mdash; games and activities that give students a reason to want the next problem.</p>
-    </div>
-
-    <article class="tool">
-      <figure class="tool-shot" data-gallery>
-        <a class="fig-frame" href="assets/summit-expedition.jpg" data-lightbox data-caption="Summit Expedition — the trail up Mt. Axiom"><img src="assets/summit-expedition.jpg" alt="Summit Expedition game board: a trail winding up Mt. Axiom from Base Camp to the summit, with camps, supply caches, weather events, and an Ice Ridge shortcut" width="1200" height="963" loading="lazy" decoding="async"></a>
-        <figcaption class="meta">The trail up Mt. Axiom, from Base Camp (2,400 m) to the summit (4,350 m).</figcaption>
-      </figure>
-      <div class="tool-text">
-        <p class="kicker"><span class="service-num">Tool 01</span>Board game</p>
-        <h3 class="service-title">Summit Expedition</h3>
-        <ul class="tool-tags">
-          <li class="pill">Algebra I &ndash; Calculus</li>
-          <li class="pill">1&ndash;4 players</li>
-          <li class="pill">In person or online</li>
-        </ul>
-        <p class="service-desc">Students race to climb Mt. Axiom by solving math problems. On each turn, a player rolls a die and then chooses how hard a problem to take on &mdash; <em>Safe</em>, <em>Bold</em>, or <em>Daring</em>. Harder problems move them farther up the trail when they get them right.</p>
-        <ul class="service-points">
-          <li><strong>Mistakes never send anyone backward.</strong> After a wrong answer, the student sees a worked solution and earns insight tokens they can trade for power-ups like a hint or a second try.</li>
-          <li><strong>Fresh problems every game.</strong> I choose which topics are in play, and the difficulty quietly adjusts to how each student is doing.</li>
-          <li><strong>Something to aim for.</strong> Supply caches, weather events, camps, and a risky Ice Ridge shortcut guarded by an Ice Wall keep every climb different.</li>
-          <li><strong>A clear picture of progress.</strong> A session report at the end shows accuracy by skill and every problem a student missed, so we know exactly what to work on next.</li>
-        </ul>
-        <div class="tool-actions">
-          <a class="button" href="https://wcmalfeld.github.io/Summit-Expedition---Mathlete/" target="_blank" rel="noopener">Play Summit Expedition <span aria-hidden="true">&rarr;</span></a>
-        </div>
-      </div>
-    </article>
-
-    <div class="tool-more">
-      <p>More tools are on the way. Have an idea for one, or a topic your student is stuck on? <a href="#contact">Let me know.</a></p>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
      STUDENT STORIES — copy the <div class="story"> block to add more.
      ============================================================ -->
 <section class="section" id="stories" aria-labelledby="stories-title">
@@ -321,52 +340,6 @@
 </section>
 
 <!-- ============================================================
-     EXPERIENCE & EDUCATION — delete a <figure> to show an entry
-     without a photo.
-     ============================================================ -->
-<section class="section" id="experience" aria-labelledby="experience-title">
-  <div class="wrap split">
-    <h2 class="label split-label" id="experience-title">Experience</h2>
-    <ol class="exp-list">
-      <li class="exp">
-        <figure class="exp-photo"><img src="assets/photos/exp-teaching.svg" alt="Placeholder for a teaching photograph" loading="lazy" decoding="async"></figure>
-        <div class="exp-body">
-          <p class="meta">Mar. 2024 &ndash; Jun. 2026</p>
-          <h3 class="exp-role">Physics &amp; Mathematics Instructor</h3>
-          <p class="exp-org"><span class="exp-co">World Class Academy</span> &middot; Teaching young athletes around the world</p>
-        </div>
-      </li>
-      <li class="exp">
-        <figure class="exp-photo"><img src="assets/photos/exp-coaching.svg" alt="Placeholder for a coaching photograph" loading="lazy" decoding="async"></figure>
-        <div class="exp-body">
-          <h3 class="exp-role">Mountain Bike Coach</h3>
-          <p class="exp-org"><span class="exp-co">Downhill, Dirt Jumping, Enduro</span></p>
-        </div>
-      </li>
-      <li class="exp">
-        <figure class="exp-photo"><img src="assets/photos/exp-mentoring.svg" alt="Placeholder for a mentoring photograph" loading="lazy" decoding="async"></figure>
-        <div class="exp-body">
-          <h3 class="exp-role">Mentor for Young Athletes</h3>
-          <p class="exp-org">Helping students set and reach academic, athletic, and social/life goals</p>
-        </div>
-      </li>
-    </ol>
-  </div>
-
-  <div class="wrap split">
-    <h2 class="label split-label" id="education-title">Education</h2>
-    <ol class="exp-list">
-      <li class="exp exp--plain">
-        <div class="exp-body">
-          <h3 class="exp-role">Computer Science</h3>
-          <p class="exp-org"><span class="exp-co">University of Colorado</span></p>
-        </div>
-      </li>
-    </ol>
-  </div>
-</section>
-
-<!-- ============================================================
      LET'S TALK
      ============================================================ -->
 <section class="section contact" id="contact" aria-labelledby="contact-title">
@@ -397,6 +370,6 @@
   </div>
 </footer>
 
-<script src="js/site.js?v=2" defer></script>
+<script src="js/site.js?v=4" defer></script>
 </body>
 </html>
