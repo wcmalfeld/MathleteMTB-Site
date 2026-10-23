@@ -22,13 +22,6 @@
    ============================================================ */
 window.MATHLETE_TOOLS = [
   {
-    id: 'summit-expedition',
-    name: 'Summit Expedition',
-    access: 'public',
-    status: 'live',
-    url: 'https://wcmalfeld.github.io/Summit-Expedition---Mathlete/'
-  },
-  {
     id: 'trail-builder',
     name: 'Trail Builder',
     access: 'public',
@@ -41,6 +34,20 @@ window.MATHLETE_TOOLS = [
     access: 'public',
     status: 'live',
     url: 'https://wcmalfeld.github.io/StravaShowdown_LearningTool/'
+  },
+  {
+    id: 'gear-ratio-lab',
+    name: 'Gear Ratio Lab',
+    access: 'public',
+    status: 'live',
+    url: 'https://wcmalfeld.github.io/GearRatioLab_LearningTool/'
+  },
+  {
+    id: 'summit-expedition',
+    name: 'Summit Expedition',
+    access: 'private',
+    status: 'live',
+    file: 'summit-expedition/index.html'
   },
   {
     id: 'tool-04',

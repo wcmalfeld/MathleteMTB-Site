@@ -674,6 +674,9 @@ button:focus-visible {
 }
 .tool-card:hover .tool-card-more { color: var(--blaze); }
 
+/* "#fried" in the Focus Training heading */
+.hashtag { color: var(--blaze); text-transform: none; }
+
 /* placeholders for tools still being built */
 .tool-card--soon { background: transparent; border-style: dashed; }
 .tool-card--soon .tool-thumb { opacity: 0.7; }

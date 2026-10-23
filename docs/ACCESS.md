@@ -35,16 +35,19 @@ that server-side check.
 
 | id | Tool | Access |
 |---|---|---|
-| `summit-expedition` | Summit Expedition | public |
 | `trail-builder` | Trail Builder | public |
 | `strava-showdown` | Strava Showdown | public |
+| `gear-ratio-lab` | Gear Ratio Lab | public |
+| `summit-expedition` | Summit Expedition | **private** (bucket: `summit-expedition/index.html`) |
 | `tool-04` | Tool 04 (placeholder) | private |
 | `tool-05` | Tool 05 (placeholder) | private |
 
-The codebase had no existing free/preview tools, so the first three tools in
-the listing were made public. All three are live tools hosted on their own
-public GitHub Pages sites. **No finished tool is private yet**: the private
-side switches on as soon as you upload your first private tool (see below).
+The three public tools are hosted on their own public GitHub Pages sites.
+Summit Expedition is members-only: its file lives in the private bucket, and
+its source is kept (git-ignored) in `private-tools/summit-expedition/`.
+**Its old public copy at `wcmalfeld.github.io/Summit-Expedition---Mathlete/`
+must be taken down** (delete or make private that GitHub repository, or turn
+off its Pages site) — until then, anyone with that link can still play it.
 
 ### Changing which tools are public
 
