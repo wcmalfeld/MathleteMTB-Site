@@ -1393,3 +1393,34 @@ textarea.input { resize: vertical; min-height: 120px; line-height: 1.5; }
 
 .contact--short { padding: 72px 0; }
 .contact--short .contact-title { font-size: clamp(36px, 6vw, 64px); }
+
+/* ---------- homepage: Learning Lab call-out (dark band on the light site) ---------- */
+.lab-callout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-top: 40px;
+  padding: 24px 28px;
+  background: #19201C;
+  color: #ECEFE7;
+}
+.lab-callout p { margin: 0; font-size: 16px; max-width: 36rem; }
+.lab-callout strong {
+  display: block;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 26px;
+  line-height: 1;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.lab-callout .button { background: #ECEFE7; color: #131815; }
+.lab-callout .button:hover { background: var(--blaze); color: #131815; }
+
+/* hero: secondary link beside the main button, contact line below */
+.hero-actions .hero-link { margin-top: 0; }
+.hero .hero-contact { margin-top: 24px; }
+/* Narrowest screens: Learning Lab, About and Contact stay; "Log in" is in the footer. */
+@media (max-width: 420px) { .nav-links .nav-login { display: none; } }

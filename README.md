@@ -12,18 +12,35 @@ MathleteMTB-Site/
 ├── login.html            # Member login (invite-only)
 ├── account.html          # Set / reset a member's password
 ├── tool.html             # Opens members-only tools (tool.html?id=...)
+├── learning-lab/         # Interactive Learning Lab pages (GENERATED, don't edit)
 ├── css/site.css          # All styling
+├── css/lab.css           # Learning Lab's dark theme and components
 ├── js/
-│   ├── tools-config.js   # WHICH TOOLS ARE PUBLIC OR MEMBERS-ONLY (edit here)
+│   ├── tools-config.js   # THE TOOL REGISTRY: access + Learning Lab listing (edit here)
+│   ├── lab-categories.js # Learning Lab categories (edit here)
+│   ├── lab.js            # Learning Lab filters
 │   ├── auth.js           # Member sign-in (Supabase)
 │   ├── site.js           # Photo viewer, tool pop-ups, nav
 │   ├── inquiry.js        # College & Beyond inquiry form (sends to Supabase)
 │   └── ...               # login.js, account.js, tool-player.js
 ├── assets/               # Logo, photos, screenshots
 ├── supabase/setup.sql    # Database + storage rules (member access, inquiries)
-├── scripts/              # admin.mjs (members, inquiries), check-site.mjs, test-access.mjs
-└── docs/ACCESS.md        # How member access works and how to manage it
+├── scripts/              # build-lab.mjs, admin.mjs (members, inquiries), check-site.mjs, test-access.mjs
+├── docs/ACCESS.md        # How member access works and how to manage it
+└── docs/LEARNING-LAB-PLAN.md  # Audit + plan for the Learning Lab rebuild
 ```
+
+**The Learning Lab** (`/learning-lab/`) is built from `js/tools-config.js` and
+`js/lab-categories.js`. After changing either, run:
+
+```bash
+node scripts/build-lab.mjs     # rewrites the pages in learning-lab/
+node scripts/check-site.mjs    # add --online to also check the tool links work
+```
+
+To add a tool: add its entry (with the Learning Lab fields described at the
+top of `js/tools-config.js`) and a preview image in `assets/`, then run both
+commands. It appears on the dashboard and its category page automatically.
 
 There's no build step and nothing to install for the website itself.
 
@@ -56,8 +73,13 @@ Photo and text placeholders are marked clearly so you know what to swap out.
 
 ## Viewing it locally
 
-Just double-click `index.html` and it'll open in your browser. That's it —
-no server needed to look at it.
+Double-click `index.html` to look at the homepage. The Learning Lab pages
+use clean folder addresses (`learning-lab/`), so to click through the whole
+site run a small local server from this folder and open http://localhost:8000:
+
+```bash
+python3 -m http.server 8000
+```
 
 ## Hosting it for free on GitHub Pages
 

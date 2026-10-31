@@ -7,10 +7,16 @@
 // - pages load the access scripts in the right order
 // - no secret keys and no private tool files in anything that would be
 //   committed or published
+// - Learning Lab: every live tool has its listing fields, and the generated
+//   pages in learning-lab/ match the registry
+//   node scripts/check-site.mjs --online   also checks that every live
+//   public tool's address responds
 
 import { readFileSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import vm from 'node:vm';
+import https from 'node:https';
+import { render as renderLab, loadRegistry, SUBJECTS, LEVELS, DURATIONS } from './build-lab.mjs';
 
 const root = new URL('..', import.meta.url).pathname;
 const read = p => readFileSync(root + p, 'utf8');
@@ -44,10 +50,41 @@ check('Public cards are visible without JavaScript', cards.filter(c => byId[c.id
 check('No private tool file is linked from the homepage', priv.every(t => !index.includes(t.file)));
 
 // ---- script order on pages ----
-for (const page of ['index.html', 'about.html', 'login.html', 'account.html', 'tool.html', 'college-beyond.html']) {
+const labPages = renderLab();
+for (const page of ['index.html', 'about.html', 'login.html', 'account.html', 'tool.html', 'college-beyond.html', ...Object.keys(labPages)]) {
   const html = read(page);
   const order = ['js/tools-config.js', 'js/supabase-config.js', 'js/auth.js'].map(s => html.indexOf(s));
   check(`${page} loads config, then Supabase config, then auth`, order.every(i => i > 0) && order[0] < order[1] && order[1] < order[2]);
+}
+
+// ---- Learning Lab ----
+const { categories } = loadRegistry();
+const catIds = categories.map(c => c.id);
+const listed = tools.filter(t => t.status === 'live');
+const within = (vals, allowed) => Array.isArray(vals) && vals.length > 0 && vals.every(v => v in allowed);
+const badListing = listed.filter(t =>
+  !(t.category === null || catIds.includes(t.category)) || !t.summary || !t.image || !existsSync(root + t.image) ||
+  !within(t.difficulty, LEVELS) || !within(t.subjects, SUBJECTS) || !(t.duration in DURATIONS) || !t.minutes || typeof t.featured !== 'boolean');
+check('Every live tool has valid Learning Lab fields', badListing.length === 0, badListing.map(t => t.id).join(', '));
+check('Category ids are unique', new Set(catIds).size === catIds.length);
+const stale = Object.entries(labPages).filter(([p, html]) => !existsSync(root + p) || read(p) !== html).map(([p]) => p);
+check('Learning Lab pages are up to date (node scripts/build-lab.mjs)', stale.length === 0, stale.join(', '));
+check('Homepage links to the Learning Lab', index.includes('href="learning-lab/"'));
+
+if (process.argv.includes('--online')) {
+  // node:https rather than fetch, so this runs on older Node too.
+  const status = (url, hops = 5) => new Promise(done => {
+    https.get(url, res => {
+      res.resume();
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location && hops) {
+        done(status(new URL(res.headers.location, url).href, hops - 1));
+      } else done(res.statusCode);
+    }).on('error', () => done(0));
+  });
+  for (const t of pub.filter(t => t.status === 'live')) {
+    const code = await status(t.url);
+    check(`${t.name} responds at ${t.url}`, code === 200, 'HTTP ' + code);
+  }
 }
 
 // ---- College & Beyond page ----

@@ -1,5 +1,5 @@
 /* ============================================================
-   LEARNING TOOLS: WHO CAN USE WHAT
+   LEARNING TOOLS: WHO CAN USE WHAT, AND HOW THEY'RE LISTED
    This is the one place that decides whether each tool is public
    or private. See docs/ACCESS.md for the full picture.
 
@@ -19,6 +19,21 @@
    the site warns in the browser console otherwise. Making a tool public also means
    hosting it publicly (`url`); making one private means taking its
    public copy down and uploading it with `node scripts/admin.mjs upload`.
+
+   LEARNING LAB LISTING (live tools only; placeholders are skipped):
+   category:   an id from js/lab-categories.js, or null for "all tools" only
+   summary:    one sentence for the card
+   image:      preview image, relative to the site root
+   difficulty: any of 'beginner', 'intermediate', 'advanced'
+   subjects:   any of 'algebra', 'geometry', 'trigonometry',
+               'statistics', 'calculus', 'physics'
+   duration:   'quick' (under 10 min), 'challenge' (10-30 min) or
+               'extended' (30 min or more)
+   minutes:    the time shown on the card, e.g. '20-40 min'
+   featured:   true to show it first
+
+   After changing anything here, run `node scripts/build-lab.mjs` to
+   rebuild the Learning Lab pages, then `node scripts/check-site.mjs`.
    ============================================================ */
 window.MATHLETE_TOOLS = [
   {
@@ -26,34 +41,75 @@ window.MATHLETE_TOOLS = [
     name: 'Trail Builder',
     access: 'public',
     status: 'live',
-    url: 'https://wcmalfeld.github.io/TrailBuilder_Math/'
+    url: 'https://wcmalfeld.github.io/TrailBuilder_Math/',
+    category: 'trail-crew',
+    summary: 'Design a mountain bike trail for a client, solving a math problem for every segment you build.',
+    image: 'assets/trailbuilder.jpg',
+    difficulty: ['intermediate', 'advanced'],
+    subjects: ['algebra', 'geometry', 'trigonometry', 'statistics', 'calculus'],
+    duration: 'extended',
+    minutes: '30-45 min',
+    featured: true
   },
   {
     id: 'physics-playground',
     name: 'MTB Physics Playground',
     access: 'public',
     status: 'live',
-    url: 'https://wcmalfeld.github.io/MTB_PhysicsPlayground/'
+    url: 'https://wcmalfeld.github.io/MTB_PhysicsPlayground/',
+    category: 'engineering',
+    summary: 'Launch a rider off a jump, predict the landing, then see the projectile-motion math that explains it.',
+    image: 'assets/physics-playground.jpg',
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    subjects: ['algebra', 'trigonometry', 'physics'],
+    duration: 'challenge',
+    minutes: '10-20 min',
+    featured: true
   },
   {
     id: 'gear-ratio-lab',
     name: 'Gear Ratio Lab',
     access: 'public',
     status: 'live',
-    url: 'https://wcmalfeld.github.io/GearRatioLab_LearningTool/'
+    url: 'https://wcmalfeld.github.io/GearRatioLab_LearningTool/',
+    category: 'bike-workshop',
+    summary: 'Gear a race bike for a course, then work out ratios, speeds and times to beat a rival.',
+    image: 'assets/gear-ratio-lab.jpg',
+    difficulty: ['intermediate', 'advanced'],
+    subjects: ['algebra', 'geometry', 'statistics', 'calculus'],
+    duration: 'extended',
+    minutes: '30-45 min',
+    featured: true
   },
   {
     id: 'strava-showdown',
     name: 'Strava Showdown',
     access: 'public',
     status: 'live',
-    url: 'https://wcmalfeld.github.io/StravaShowdown_LearningTool/'
+    url: 'https://wcmalfeld.github.io/StravaShowdown_LearningTool/',
+    category: 'race-team',
+    summary: 'Be the team’s race analyst: crunch ride data, graph the field and decide who gets picked to race.',
+    image: 'assets/strava-showdown.jpg',
+    difficulty: ['intermediate', 'advanced'],
+    subjects: ['algebra', 'statistics', 'calculus'],
+    duration: 'challenge',
+    minutes: '20-30 min',
+    featured: true
   },
   {
-    id: 'tool-04',
-    name: 'Tool 04',
+    id: 'jump-lab',
+    name: 'Jump Lab',
     access: 'public',
-    status: 'coming-soon'
+    status: 'live',
+    url: 'https://wcmalfeld.github.io/JumpLab_MTB/JumpLab_MTB/dist/jump-lab.html',
+    category: 'engineering',
+    summary: 'Set the speed, angle and heights of a jump, predict where the rider lands, then send it and check the projectile-motion math.',
+    image: 'assets/jump-lab.jpg',
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    subjects: ['algebra', 'trigonometry', 'physics'],
+    duration: 'challenge',
+    minutes: '15-30 min',
+    featured: true
   },
   {
     id: 'tool-05',
@@ -66,7 +122,15 @@ window.MATHLETE_TOOLS = [
     name: 'Summit Expedition',
     access: 'private',
     status: 'live',
-    file: 'summit-expedition/index.html'
+    file: 'summit-expedition/index.html',
+    category: null,
+    summary: 'A math race up Mt. Axiom: pick how hard a problem to take on, and harder problems climb faster.',
+    image: 'assets/summit-expedition.jpg',
+    difficulty: ['intermediate', 'advanced'],
+    subjects: ['algebra', 'geometry', 'trigonometry', 'calculus'],
+    duration: 'extended',
+    minutes: '30-60 min',
+    featured: false
   }
 ];
 
