@@ -15,7 +15,7 @@
    `id` must match the card's data-tool="..." attribute in index.html.
 
    To change which tools are public, change `access` here. The number of
-   public tools must match MATHLETE_PUBLIC_TOOL_COUNT at the bottom (now 4);
+   public tools must match MATHLETE_PUBLIC_TOOL_COUNT at the bottom (now 6);
    the site warns in the browser console otherwise. Making a tool public also means
    hosting it publicly (`url`); making one private means taking its
    public copy down and uploading it with `node scripts/admin.mjs upload`.
@@ -29,11 +29,11 @@ window.MATHLETE_TOOLS = [
     url: 'https://wcmalfeld.github.io/TrailBuilder-Math/'
   },
   {
-    id: 'strava-showdown',
-    name: 'Strava Showdown',
+    id: 'physics-playground',
+    name: 'MTB Physics Playground',
     access: 'public',
     status: 'live',
-    url: 'https://wcmalfeld.github.io/StravaShowdown_LearningTool/'
+    url: 'https://wcmalfeld.github.io/MTB_PhysicsPlayground/'
   },
   {
     id: 'gear-ratio-lab',
@@ -43,11 +43,23 @@ window.MATHLETE_TOOLS = [
     url: 'https://wcmalfeld.github.io/GearRatioLab_LearningTool/'
   },
   {
-    id: 'physics-playground',
-    name: 'MTB Physics Playground',
+    id: 'strava-showdown',
+    name: 'Strava Showdown',
     access: 'public',
     status: 'live',
-    url: 'https://wcmalfeld.github.io/MTB_PhysicsPlayground/'
+    url: 'https://wcmalfeld.github.io/StravaShowdown_LearningTool/'
+  },
+  {
+    id: 'tool-04',
+    name: 'Tool 04',
+    access: 'public',
+    status: 'coming-soon'
+  },
+  {
+    id: 'tool-05',
+    name: 'Tool 05',
+    access: 'public',
+    status: 'coming-soon'
   },
   {
     id: 'summit-expedition',
@@ -55,21 +67,7 @@ window.MATHLETE_TOOLS = [
     access: 'private',
     status: 'live',
     file: 'summit-expedition/index.html'
-  },
-  {
-    id: 'tool-04',
-    name: 'Tool 04',
-    access: 'private',
-    status: 'coming-soon',
-    file: 'tool-04/index.html'
-  },
-  {
-    id: 'tool-05',
-    name: 'Tool 05',
-    access: 'private',
-    status: 'coming-soon',
-    file: 'tool-05/index.html'
   }
 ];
 
-window.MATHLETE_PUBLIC_TOOL_COUNT = 4;
+window.MATHLETE_PUBLIC_TOOL_COUNT = 6;

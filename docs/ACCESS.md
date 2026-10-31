@@ -9,7 +9,7 @@ Supabase's database and file storage, not in the browser.
 | What | Who can use it | Where it's enforced |
 |---|---|---|
 | Homepage, About, Login, Account pages | Everyone | Not protected (public pages) |
-| **Public tools** (3) | Everyone, no login | Hosted publicly, e.g. `wcmalfeld.github.io/...` |
+| **Public tools** (4 live + 2 coming soon) | Everyone, no login | Hosted publicly, e.g. `wcmalfeld.github.io/...` |
 | **Private tools** | Signed-in members with active access | Supabase Storage row-level security |
 | Member list (`public.members`) | Each member sees only their own row; only you can change it | Postgres row-level security + revoked write privileges |
 
@@ -36,16 +36,16 @@ that server-side check.
 | id | Tool | Access |
 |---|---|---|
 | `trail-builder` | Trail Builder | public |
-| `strava-showdown` | Strava Showdown | public |
-| `gear-ratio-lab` | Gear Ratio Lab | public |
 | `physics-playground` | MTB Physics Playground | public |
+| `gear-ratio-lab` | Gear Ratio Lab | public |
+| `strava-showdown` | Strava Showdown | public |
+| `tool-04` | Tool 05 (Coming Soon placeholder) | public |
+| `tool-05` | Tool 06 (Coming Soon placeholder) | public |
 | `summit-expedition` | Summit Expedition | **private** (bucket: `summit-expedition/index.html`) |
-| `tool-04` | Tool 06 (placeholder) | private |
-| `tool-05` | Tool 07 (placeholder) | private |
 
-The four public tools are hosted on their own public GitHub Pages sites.
-(The public limit was raised from three to four for the Physics Playground;
-it's `MATHLETE_PUBLIC_TOOL_COUNT` at the bottom of `js/tools-config.js`.)
+The four live public tools are hosted on their own public GitHub Pages sites;
+the two Coming Soon placeholders are public too, so visitors see six cards.
+(`MATHLETE_PUBLIC_TOOL_COUNT` at the bottom of `js/tools-config.js` is now 6.)
 Summit Expedition is members-only: its file lives in the private bucket, and
 its source is kept (git-ignored) in `private-tools/summit-expedition/`.
 **Its old public copy at `wcmalfeld.github.io/Summit-Expedition---Mathlete/`
