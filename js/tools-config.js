@@ -26,7 +26,7 @@ window.MATHLETE_TOOLS = [
     name: 'Trail Builder',
     access: 'public',
     status: 'live',
-    url: 'https://wcmalfeld.github.io/TrailBuilder-Math/'
+    url: 'https://wcmalfeld.github.io/TrailBuilder_Math/'
   },
   {
     id: 'physics-playground',
