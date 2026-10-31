@@ -38,11 +38,14 @@ that server-side check.
 | `trail-builder` | Trail Builder | public |
 | `strava-showdown` | Strava Showdown | public |
 | `gear-ratio-lab` | Gear Ratio Lab | public |
+| `physics-playground` | MTB Physics Playground | public |
 | `summit-expedition` | Summit Expedition | **private** (bucket: `summit-expedition/index.html`) |
-| `tool-04` | Tool 04 (placeholder) | private |
-| `tool-05` | Tool 05 (placeholder) | private |
+| `tool-04` | Tool 06 (placeholder) | private |
+| `tool-05` | Tool 07 (placeholder) | private |
 
-The three public tools are hosted on their own public GitHub Pages sites.
+The four public tools are hosted on their own public GitHub Pages sites.
+(The public limit was raised from three to four for the Physics Playground;
+it's `MATHLETE_PUBLIC_TOOL_COUNT` at the bottom of `js/tools-config.js`.)
 Summit Expedition is members-only: its file lives in the private bucket, and
 its source is kept (git-ignored) in `private-tools/summit-expedition/`.
 **Its old public copy at `wcmalfeld.github.io/Summit-Expedition---Mathlete/`
@@ -51,9 +54,10 @@ off its Pages site) — until then, anyone with that link can still play it.
 
 ### Changing which tools are public
 
-1. Edit `access:` for the tools in `js/tools-config.js`. Keep exactly three
-   public; `node scripts/check-site.mjs` and the browser console both warn
-   otherwise.
+1. Edit `access:` for the tools in `js/tools-config.js`, and keep
+   `MATHLETE_PUBLIC_TOOL_COUNT` (bottom of that file) equal to the number of
+   public tools; `node scripts/check-site.mjs` and the browser console both
+   warn otherwise.
 2. Move the tool itself to match:
    - **Making a tool public:** host it publicly (its own GitHub Pages repo is
      fine), set its `url`, and remove `file`. In `index.html`, remove `hidden`
@@ -159,7 +163,7 @@ the next time they open it.
 
 ## Testing
 
-- `node scripts/check-site.mjs` (offline, any time): exactly three public
+- `node scripts/check-site.mjs` (offline, any time): the expected number of public
   tools, cards match the config, members-only cards start hidden, script order,
   and no secret keys or private tool files in the repository.
 - `node scripts/test-access.mjs` (needs `.env` and the setup above): creates

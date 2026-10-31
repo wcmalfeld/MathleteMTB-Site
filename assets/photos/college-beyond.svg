@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1600" viewBox="0 0 2400 1600">
+<rect width="2400" height="1600" fill="#EDE4D0"/>
+<g fill="none" stroke="#B08D4F" stroke-opacity="0.4" stroke-width="3.4">
+<path d="M-40,1380 C 400,1300 700,1440 1100,1360 C 1500,1280 1900,1400 2440,1320"/>
+<path d="M-40,1220 C 380,1130 760,1270 1160,1180 C 1560,1090 1960,1210 2440,1130"/>
+<path d="M-40,1060 C 360,960 800,1100 1220,1000 C 1640,900 2000,1010 2440,930"/>
+<path d="M-40,900 C 400,800 840,920 1260,820 C 1680,720 2040,820 2440,740"/>
+<path d="M-40,740 C 440,650 880,740 1300,640 C 1720,540 2060,620 2440,550"/>
+<path d="M-40,580 C 480,500 920,560 1340,460 C 1760,360 2080,420 2440,360"/>
+<path d="M-40,420 C 520,350 960,380 1380,290 C 1800,200 2100,240 2440,180"/>
+<path d="M-40,260 C 560,200 1000,210 1420,130 C 1840,50 2120,70 2440,20"/>
+</g>
+<path d="M260,1420 C 520,1340 640,1180 820,1120 C 1020,1050 1100,930 1280,860 C 1480,780 1540,640 1720,560 C 1880,490 1960,390 2060,300" fill="none" stroke="#C1502E" stroke-width="10" stroke-linecap="round" stroke-dasharray="4 30"/>
+<g font-family="ui-monospace, Menlo, monospace" font-size="54" letter-spacing="6" fill="#1F2B24">
+<circle cx="260" cy="1420" r="22" fill="#1F2B24"/><text x="310" y="1500">GR 9</text>
+<circle cx="820" cy="1120" r="22" fill="#1F2B24"/><text x="870" y="1200">GR 10</text>
+<circle cx="1280" cy="860" r="22" fill="#1F2B24"/><text x="1330" y="940">GR 11</text>
+<circle cx="1720" cy="560" r="22" fill="#1F2B24"/><text x="1770" y="640">GR 12</text>
+</g>
+<path d="M2060,300 L2060,110" stroke="#1F2B24" stroke-width="8"/>
+<path d="M2060,110 L2240,150 L2060,190 Z" fill="#C1502E"/>
+<text x="2020" y="380" font-family="ui-monospace, Menlo, monospace" font-size="54" letter-spacing="6" fill="#A8431F" text-anchor="end">WHAT&#8217;S NEXT</text>
+</svg>

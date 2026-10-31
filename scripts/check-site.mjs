@@ -44,11 +44,26 @@ check('Public cards are visible without JavaScript', cards.filter(c => byId[c.id
 check('No private tool file is linked from the homepage', priv.every(t => !index.includes(t.file)));
 
 // ---- script order on pages ----
-for (const page of ['index.html', 'about.html', 'login.html', 'account.html', 'tool.html']) {
+for (const page of ['index.html', 'about.html', 'login.html', 'account.html', 'tool.html', 'college-beyond.html']) {
   const html = read(page);
   const order = ['js/tools-config.js', 'js/supabase-config.js', 'js/auth.js'].map(s => html.indexOf(s));
   check(`${page} loads config, then Supabase config, then auth`, order.every(i => i > 0) && order[0] < order[1] && order[1] < order[2]);
 }
+
+// ---- College & Beyond page ----
+const cb = read('college-beyond.html');
+check('Homepage Services links to the College & Beyond page', /id="services"[\s\S]*href="college-beyond\.html"/.test(index));
+check('College & Beyond page has exactly one <h1>', (cb.match(/<h1\b/g) || []).length === 1);
+check('College & Beyond page has its own canonical URL', cb.includes('<link rel="canonical" href="https://www.mathletemtb.com/college-beyond.html">'));
+const anchors = [...cb.matchAll(/href="#([^"]+)"/g)].map(m => m[1]).filter(id => id !== 'main');
+check('Every in-page link on College & Beyond has a target', anchors.every(id => cb.includes(`id="${id}"`)), anchors.filter(id => !cb.includes(`id="${id}"`)).join(', '));
+check('Inquiry form identifies the service', /name="service" value="college-beyond"/.test(cb) && read('js/inquiry.js').includes("service: 'college-beyond'"));
+check('No prices published on College & Beyond', !/\$\s?\d/.test(cb.replace(/<!--[\s\S]*?-->/g, '')));
+check('No guarantee language on College & Beyond', !/\b(we|I) guarantee|guaranteed (admission|acceptance|results)|get into your dream school|secure admission/i.test(cb));
+const sql = read('supabase/setup.sql');
+const helpValues = [...cb.matchAll(/name="help_with" value="([^"]+)"/g)].map(m => m[1]);
+check('Every "help with" option is allowed by the database', helpValues.length === 8 && helpValues.every(v => sql.includes(`'${v}'`)));
+check('Inquiries are insert-only for visitors', /revoke all on public\.inquiries from anon, authenticated;/.test(sql) && !/grant select[^;]*public\.inquiries/i.test(sql));
 
 // ---- secrets / private files in the repo ----
 let files = [];

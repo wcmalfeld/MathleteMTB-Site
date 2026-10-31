@@ -14,9 +14,9 @@
 
    `id` must match the card's data-tool="..." attribute in index.html.
 
-   To change which tools are public, change `access` here. Exactly
-   three tools are meant to be public; the site warns in the browser
-   console if that is not the case. Making a tool public also means
+   To change which tools are public, change `access` here. The number of
+   public tools must match MATHLETE_PUBLIC_TOOL_COUNT at the bottom (now 4);
+   the site warns in the browser console otherwise. Making a tool public also means
    hosting it publicly (`url`); making one private means taking its
    public copy down and uploading it with `node scripts/admin.mjs upload`.
    ============================================================ */
@@ -43,6 +43,13 @@ window.MATHLETE_TOOLS = [
     url: 'https://wcmalfeld.github.io/GearRatioLab_LearningTool/'
   },
   {
+    id: 'physics-playground',
+    name: 'MTB Physics Playground',
+    access: 'public',
+    status: 'live',
+    url: 'https://wcmalfeld.github.io/MTB_PhysicsPlayground/'
+  },
+  {
     id: 'summit-expedition',
     name: 'Summit Expedition',
     access: 'private',
@@ -65,4 +72,4 @@ window.MATHLETE_TOOLS = [
   }
 ];
 
-window.MATHLETE_PUBLIC_TOOL_COUNT = 3;
+window.MATHLETE_PUBLIC_TOOL_COUNT = 4;

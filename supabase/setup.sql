@@ -87,3 +87,66 @@ create policy "Members can read private tools"
 
 -- No insert/update/delete policies on this bucket: only you can upload,
 -- via the dashboard or `node scripts/admin.mjs upload`.
+
+-- 4. College & Beyond inquiries ----------------------------------
+-- The inquiry form on college-beyond.html writes here. Visitors can
+-- add a row but can never read, change or delete one; only you can
+-- (dashboard, or `node scripts/admin.mjs inquiries`). The checks
+-- below reject anything the form wouldn't send.
+create table if not exists public.inquiries (
+  id                 uuid primary key default gen_random_uuid(),
+  created_at         timestamptz not null default now(),
+  service            text not null default 'college-beyond'
+                       check (service in ('college-beyond')),
+  name               text not null check (char_length(btrim(name)) between 1 and 120),
+  email              text not null check (char_length(email) <= 254 and email ~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$'),
+  reaching_out_as    text not null check (reaching_out_as in ('parent', 'student', 'other')),
+  grade              text not null check (grade in ('9', '10', '11', '12', 'graduated-other')),
+  help_with          text[] not null check (
+                       cardinality(help_with) between 1 and 8
+                       and help_with <@ array['direction', 'shortlist', 'applications', 'affordability',
+                                              'test-math', 'organization', 'life-after', 'not-sure']),
+  student_first_name text check (student_first_name is null or char_length(student_first_name) <= 60),
+  timeline           text check (timeline is null or timeline in ('exploring', 'within-3', '3-6', '6-12')),
+  message            text check (message is null or char_length(message) <= 2000),
+  consent            boolean not null check (consent),
+  source_page        text check (source_page is null or char_length(source_page) <= 200),
+  handled            boolean not null default false
+);
+
+alter table public.inquiries enable row level security;
+
+drop policy if exists "Anyone can send an inquiry" on public.inquiries;
+create policy "Anyone can send an inquiry"
+  on public.inquiries for insert
+  to anon, authenticated
+  with check (true);
+
+-- Insert only, and only the form's own columns (not id, created_at or handled).
+revoke all on public.inquiries from anon, authenticated;
+grant insert (service, name, email, reaching_out_as, grade, help_with,
+              student_first_name, timeline, message, consent, source_page)
+  on public.inquiries to anon, authenticated;
+
+-- Basic flood protection: at most 20 inquiries per 10 minutes site-wide.
+create or replace function public.inquiries_rate_limit()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if (select count(*) from public.inquiries
+      where created_at > now() - interval '10 minutes') >= 20 then
+    raise exception 'Too many inquiries right now. Please try again later.';
+  end if;
+  return new;
+end;
+$$;
+
+revoke all on function public.inquiries_rate_limit() from public;
+
+drop trigger if exists inquiries_rate_limit on public.inquiries;
+create trigger inquiries_rate_limit
+  before insert on public.inquiries
+  for each row execute function public.inquiries_rate_limit();

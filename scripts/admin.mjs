@@ -12,6 +12,8 @@
 //   node scripts/admin.mjs reset-link you@example.com  print that link instead (to send yourself)
 //   node scripts/admin.mjs upload path/to/tool.html tool-04/index.html
 //                                                      put a private tool in the private bucket
+//   node scripts/admin.mjs inquiries [all]             College & Beyond inquiries not yet handled (or all)
+//   node scripts/admin.mjs handled <inquiry-id>        mark an inquiry as handled
 
 import { readFileSync, existsSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
@@ -142,6 +144,28 @@ const commands = {
     console.log('');
   },
 
+  async inquiries(which) {
+    const filter = which === 'all' ? '' : '&handled=eq.false';
+    const rows = await api('GET', `/rest/v1/inquiries?select=*&order=created_at.desc${filter}`);
+    if (!rows.length) return console.log(`\n  No ${which === 'all' ? '' : 'open '}inquiries.\n`);
+    for (const r of rows) {
+      console.log(`\n  ${r.created_at.slice(0, 16).replace('T', ' ')}  ${r.handled ? '[handled] ' : ''}${r.service}`);
+      console.log(`  ${r.name} <${r.email}>  (${r.reaching_out_as}, grade: ${r.grade})`);
+      if (r.student_first_name) console.log(`  Student: ${r.student_first_name}`);
+      console.log(`  Help with: ${r.help_with.join(', ')}${r.timeline ? '  |  Timeline: ' + r.timeline : ''}`);
+      if (r.message) console.log(`  Message: ${r.message.replace(/\s+/g, ' ')}`);
+      console.log(`  id: ${r.id}`);
+    }
+    console.log(`\n  ${rows.length} inquir${rows.length === 1 ? 'y' : 'ies'}. Mark one done with: node scripts/admin.mjs handled <id>\n`);
+  },
+
+  async handled(id) {
+    if (!/^[0-9a-f-]{36}$/i.test(id || '')) die('Usage: handled <inquiry-id>  (the id printed by "inquiries")');
+    const rows = await api('PATCH', `/rest/v1/inquiries?id=eq.${id}`, { handled: true }, { Prefer: 'return=representation' });
+    if (!rows.length) die(`No inquiry with id ${id}.`);
+    console.log(`\n  Marked ${rows[0].name}'s inquiry as handled.\n`);
+  },
+
   async upload(localFile, objectPath) {
     if (!localFile || !objectPath) die('Usage: upload <local-file.html> <path-in-bucket, e.g. tool-04/index.html>');
     if (!existsSync(localFile)) die(`File not found: ${localFile}`);
@@ -158,7 +182,7 @@ async function main() {
   const [cmd, ...args] = process.argv.slice(2);
   if (typeof fetch !== 'function') die('This script needs Node 18 or newer (try: nvm use 20).');
   if (!cmd || !commands[cmd]) {
-    const header = readFileSync(new URL(import.meta.url), 'utf8').split('\n').filter(l => l.startsWith('//')).slice(0, 14);
+    const header = readFileSync(new URL(import.meta.url), 'utf8').split('\n').filter(l => l.startsWith('//')).slice(0, 15);
     console.log(header.map(l => l.replace(/^\/\/ ?/, '')).join('\n'));
     process.exit(cmd ? 1 : 0);
   }

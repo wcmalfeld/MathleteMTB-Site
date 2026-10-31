@@ -8,6 +8,7 @@ The website for Mathlete MTB math and physics tutoring.
 MathleteMTB-Site/
 ├── index.html            # Homepage (learning tools, services, tutoring, photos, contact)
 ├── about.html            # About page
+├── college-beyond.html   # College & Beyond Mentorship service page + inquiry form
 ├── login.html            # Member login (invite-only)
 ├── account.html          # Set / reset a member's password
 ├── tool.html             # Opens members-only tools (tool.html?id=...)
@@ -16,10 +17,11 @@ MathleteMTB-Site/
 │   ├── tools-config.js   # WHICH TOOLS ARE PUBLIC OR MEMBERS-ONLY (edit here)
 │   ├── auth.js           # Member sign-in (Supabase)
 │   ├── site.js           # Photo viewer, tool pop-ups, nav
+│   ├── inquiry.js        # College & Beyond inquiry form (sends to Supabase)
 │   └── ...               # login.js, account.js, tool-player.js
 ├── assets/               # Logo, photos, screenshots
-├── supabase/setup.sql    # Database + storage rules for member access
-├── scripts/              # admin.mjs (manage members), check-site.mjs, test-access.mjs
+├── supabase/setup.sql    # Database + storage rules (member access, inquiries)
+├── scripts/              # admin.mjs (members, inquiries), check-site.mjs, test-access.mjs
 └── docs/ACCESS.md        # How member access works and how to manage it
 ```
 
@@ -28,6 +30,22 @@ There's no build step and nothing to install for the website itself.
 **Member access** (three public learning tools, the rest invite-only) is
 documented in [docs/ACCESS.md](docs/ACCESS.md): setup, inviting and revoking
 members, adding private tools, and testing.
+
+**College & Beyond inquiries** go into the Supabase table `inquiries`
+(section 4 of `supabase/setup.sql`; visitors can add a row but never read
+one). Read them in the Supabase dashboard (Table Editor → inquiries) or with:
+
+```bash
+node scripts/admin.mjs inquiries        # open inquiries
+node scripts/admin.mjs inquiries all    # including handled ones
+node scripts/admin.mjs handled <id>     # mark one done
+```
+
+If the form can't send (for example, Supabase isn't configured), visitors
+are offered an email to wcmalfeld@gmail.com with their answers filled in.
+Supabase doesn't email you about new rows by default; to get alerts, add a
+Database Webhook on `inquiries` (Database → Webhooks) pointing at an email
+or automation service you use.
 
 ## Editing the content
 
