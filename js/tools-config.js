@@ -56,7 +56,7 @@ window.MATHLETE_TOOLS = [
     name: 'MTB Physics Playground',
     access: 'public',
     status: 'live',
-    url: 'https://wcmalfeld.github.io/MTB_PhysicsPlayground/',
+    url: 'https://wcmalfeld.github.io/mtb-physics/',
     category: 'engineering',
     summary: 'Launch a rider off a jump, predict the landing, then see the projectile-motion math that explains it.',
     image: 'assets/physics-playground.jpg',

@@ -173,7 +173,7 @@ ${body}
   </div>
 </footer>
 
-<script src="js/tools-config.js?v=13" defer></script>
+<script src="js/tools-config.js?v=14" defer></script>
 <script src="js/supabase-config.js?v=7" defer></script>
 <script src="js/auth.js?v=7" defer></script>
 <script src="js/lab.js?v=1" defer></script>

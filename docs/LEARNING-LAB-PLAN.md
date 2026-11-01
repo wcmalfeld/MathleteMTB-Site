@@ -29,7 +29,7 @@ should be fixed before any redesign (section 1).
 
 | # | Problem | Impact | Fix |
 |---|---|---|---|
-| 1 | **MTB Physics Playground link is dead.** `wcmalfeld.github.io/MTB_PhysicsPlayground/` returns 404. The repo is a React + TypeScript + Vite app in a `mtb-physics/` subfolder that has never been built; Pages serves the raw `index.html`, which points at `/src/main.tsx` and can't run. | Tool 02 on the homepage doesn't open. | In that repo: add a GitHub Actions workflow that runs `npm ci && npm run build` in `mtb-physics/` and deploys `dist/`, with Vite `base: '/MTB_PhysicsPlayground/'`. Or, per section 6, move the built app into this site. |
+| 1 | ~~**MTB Physics Playground link is dead.**~~ **Fixed 2026-10-31:** the app is now built and served from its own repo at `wcmalfeld.github.io/mtb-physics/`, and the site links there. | — | — |
 | 2 | **Summit Expedition's old public copy is still up.** `wcmalfeld.github.io/Summit-Expedition---Mathlete/` returns 200. | The members-only tool is free to anyone with that address. `docs/ACCESS.md` already flags this. | Delete that repo, make it private, or turn off its Pages site. |
 | 3 | Trail Builder URL (`TrailBuilder-Math` → `TrailBuilder_Math`). | Fixed in `4675c1a`, cache-busted in `ef4f5e4`. | Done. |
 
@@ -57,7 +57,7 @@ external tool URLs respond. Adding that check (section 9) would have caught #1.
 | Tool | Where it lives | Tech | PRD equivalent |
 |---|---|---|---|
 | Trail Builder | own repo `TrailBuilder_Math`, public Pages | one self-contained HTML file (~80 KB, inline CSS/JS, localStorage) | Trail Builder (Trail Crew) |
-| MTB Physics Playground | own repo `MTB_PhysicsPlayground` (**broken**, see 1.1) | React + TS + Vite. Has its own module registry (`src/modules/registry.tsx`), shared lab UI (`labShared.tsx`, `components/ui.tsx`), `TutorDrawer`, and four modules: **jump**, vector, braking, cornering | **Jump Lab** (Engineering Lab). Already has predict-first, guided challenges, hints and Tutor Mode. |
+| MTB Physics Playground | own repo, live at `wcmalfeld.github.io/mtb-physics/` | React + TS + Vite. Has its own module registry (`src/modules/registry.tsx`), shared lab UI (`labShared.tsx`, `components/ui.tsx`), `TutorDrawer`, and four modules: **jump**, vector, braking, cornering | **Jump Lab** (Engineering Lab). Already has predict-first, guided challenges, hints and Tutor Mode. |
 | Gear Ratio Lab | own repo, public Pages | one HTML file (~60 KB) | Gear Ratio Garage (Bike Workshop) |
 | Strava Showdown | own repo, public Pages | one HTML file (~52 KB) | Race Analyst (Race Team) |
 | Summit Expedition | private bucket (source git-ignored in `private-tools/`) | one HTML file | no category in the PRD (general math) |
