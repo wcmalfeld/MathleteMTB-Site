@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mathlete MTB — Math &amp; Physics Tutoring for Young Athletes</title>
-<meta name="description" content="Math and physics tutoring and interactive learning tools for young athletes, built around confidence, problem-solving, and mountain biking.">
+<title>Mathlete MTB — Online Math, Physics &amp; SAT Tutoring and the Mathlete Lab</title>
+<meta name="description" content="One-on-one online math tutoring, physics tutoring and SAT math prep with Will, plus the Mathlete Lab: interactive math and physics games and tools. Book a session online.">
 <link rel="canonical" href="https://www.mathletemtb.com/">
 <meta property="og:site_name" content="Mathlete MTB">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Mathlete MTB — Math &amp; Physics Tutoring for Young Athletes">
-<meta property="og:description" content="Math and physics tutoring and interactive learning tools for young athletes.">
+<meta property="og:title" content="Mathlete MTB — Online Math, Physics &amp; SAT Tutoring">
+<meta property="og:description" content="Personalized online tutoring and interactive learning tools that make math and physics easier to understand, practice, and apply.">
 <meta property="og:url" content="https://www.mathletemtb.com/">
 <meta property="og:image" content="https://www.mathletemtb.com/assets/photos/tutoring-1.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=11">
+<link rel="stylesheet" href="css/site.css?v=12">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -25,13 +25,14 @@
   <div class="wrap">
     <a href="#top" class="brand">Mathlete<span>.</span>MTB</a>
     <ul class="nav-links">
-      <li class="nav-keep"><a href="learning-lab/">Learning Lab</a></li>
-      <li><a href="#services">Tutoring</a></li>
-      <li class="nav-keep"><a href="about.html">About</a></li>
-      <li class="nav-keep" data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
-      <li class="nav-keep nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
-      <li class="nav-cta"><a href="#contact">Contact</a></li>
+      <li><a href="index.html" class="active" aria-current="page">Home</a></li>
+      <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
+      <li><a href="learning-lab/">The Lab</a></li>
+      <li><a href="about.html">About</a></li>
+      <li data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
+      <li class="nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
     </ul>
+    <a class="nav-book" href="book.html" data-track="book_cta_nav">Book a Session</a>
   </div>
 </nav>
 
@@ -50,13 +51,13 @@
   </svg>
   <div class="wrap hero-grid">
     <div class="hero-text">
-      <p class="eyebrow">Interactive Learning Lab &middot; Math &amp; Physics Tutoring</p>
+      <p class="eyebrow">Online Tutoring &middot; Math, Physics &amp; SAT &middot; The Mathlete Lab</p>
       <img class="hero-logo" src="assets/logo.png" alt="Mathlete MTB" width="972" height="231">
-      <h1 class="hero-title">The Physics <span>of Flow.</span></h1>
-      <p class="hero-lede">Explore the mathematics and physics of mountain biking through interactive games, engineering challenges, and personalized tutoring.</p>
+      <h1 class="hero-title">Become a Better <span>Mathlete.</span></h1>
+      <p class="hero-lede">Personalized tutoring and interactive learning tools that make Math and Physics easier to understand, practice, and apply.</p>
       <div class="hero-actions">
-        <a class="button" href="learning-lab/">Explore the Learning Lab</a>
-        <a class="read-link hero-link" href="#services">Explore tutoring <span aria-hidden="true">&rarr;</span></a>
+        <a class="button" href="book.html" data-track="book_cta_home_hero">Book a Session</a>
+        <a class="read-link hero-link" href="learning-lab/" data-track="lab_cta_home_hero">Explore the Lab <span aria-hidden="true">&rarr;</span></a>
       </div>
       <div class="hero-contact">
         <a href="mailto:wcmalfeld@gmail.com">wcmalfeld@gmail.com</a>
@@ -65,6 +66,32 @@
     </div>
   </div>
 </header>
+
+<!-- ============================================================
+     THE TWO OFFERS — Private Tutoring and The Mathlete Lab
+     ============================================================ -->
+<section class="section section--offers" id="offers" aria-label="What Mathlete offers">
+  <div class="wrap offer-grid">
+    <article class="offer">
+      <p class="kicker">One-on-one &middot; Online</p>
+      <h2 class="offer-title">Private Tutoring</h2>
+      <p>Personalized one-on-one virtual help with Math, Physics, and SAT preparation.</p>
+      <div class="offer-actions">
+        <a class="button" href="book.html" data-track="book_cta_home_offer">Book a Session</a>
+        <a class="read-link" href="tutoring.html">How tutoring works <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </article>
+    <article class="offer offer--lab">
+      <p class="kicker">Games &middot; Simulators &middot; Challenges</p>
+      <h2 class="offer-title">The Mathlete Lab</h2>
+      <p>Interactive games and learning tools designed to help you practice and master mathematical concepts.</p>
+      <div class="offer-actions">
+        <a class="button" href="learning-lab/" data-track="lab_cta_home_offer">Explore the Lab</a>
+        <a class="read-link" href="#tools">See the tools <span aria-hidden="true">&darr;</span></a>
+      </div>
+    </article>
+  </div>
+</section>
 
 <!-- Wide photograph band. Replace the src, href, and caption with your own photo. -->
 <figure class="band" data-gallery>
@@ -90,9 +117,9 @@
 <section class="section section--panel" id="tools" aria-labelledby="tools-title">
   <div class="wrap">
     <div class="head">
-      <p class="eyebrow">Learning Lab</p>
-      <h2 class="label head-title" id="tools-title">Built for Students</h2>
-      <p class="head-note">Worksheets rarely make anyone excited about math, so I build my own tools &mdash; games and activities that give students a reason to want the next problem.</p>
+      <p class="eyebrow">The Lab</p>
+      <h2 class="label head-title" id="tools-title">The Mathlete Lab</h2>
+      <p class="head-note">Learning doesn&rsquo;t have to stop when the tutoring session ends. Explore interactive tools, games, and challenges designed to make mathematics more visual, engaging, and fun.</p>
     </div>
 
     <div class="tool-grid">
@@ -327,8 +354,8 @@
     </div>
 
     <div class="lab-callout">
-      <p><strong>The Interactive Learning Lab</strong>Browse every tool by activity, math subject, level and time, from Engineering Lab to the Bike Workshop.</p>
-      <a class="button" href="learning-lab/">Explore the Learning Lab</a>
+      <p><strong>Explore the whole Lab</strong>Browse every tool by activity, math subject, level and time, from the Engineering Lab to the Bike Workshop.</p>
+      <a class="button" href="learning-lab/" data-track="lab_cta_home_tools">Explore the Lab</a>
     </div>
   </div>
 </section>
@@ -379,14 +406,84 @@
 </section>
 
 <!-- ============================================================
-     ABOUT (short) — the full story lives on about.html
+     MEET WILL (short) — the full story lives on about.html
      ============================================================ -->
 <section class="section" id="about" aria-labelledby="about-title">
-  <div class="wrap split">
-    <h2 class="label split-label" id="about-title">About</h2>
+  <div class="wrap feature feature--portrait">
+    <figure class="feature-photo" data-gallery>
+      <a class="fig-frame" href="assets/selfie.jpg" data-lightbox data-caption="Will, the tutor behind Mathlete MTB"><img src="assets/selfie.jpg" alt="Will, smiling, in a cap and black jacket" width="611" height="1285" loading="lazy" decoding="async"></a>
+    </figure>
     <div class="prose">
-      <p>Hi, I&rsquo;m Will &mdash; the tutor behind Mathlete MTB. I help students build both mathematical ability and confidence in themselves as learners, using problem-solving, real-world applications, and the things they already care about &mdash; particularly mountain biking.</p>
+      <h2 class="label" id="about-title">Meet Will</h2>
+      <p>Hi, I&rsquo;m Will &mdash; the tutor behind Mathlete MTB. I&rsquo;ve taught high school math and physics to student-athletes around the world, and I help students build both mathematical ability and confidence in themselves as learners, using problem-solving, real-world applications, and the things they already care about &mdash; particularly mountain biking.</p>
       <a class="read-link" href="about.html">More about me <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PRIVATE TUTORING — the session photo and subject highlights.
+     PHOTO: replace assets/photos/virtual-session.svg with a real photo
+     of Will tutoring on Zoom (same photo as tutoring.html).
+     ============================================================ -->
+<section class="section section--panel" id="private-tutoring" aria-labelledby="private-tutoring-title">
+  <div class="wrap feature">
+    <figure class="feature-photo" data-gallery>
+      <a class="fig-frame" href="assets/photos/virtual-session.svg" data-lightbox data-caption="A virtual tutoring session"><img src="assets/photos/virtual-session.svg" alt="Placeholder for a photograph of Will teaching a virtual session on a digital whiteboard" width="1200" height="900" loading="lazy" decoding="async"></a>
+      <figcaption class="meta">Sessions run on Zoom with a shared digital whiteboard.</figcaption>
+    </figure>
+    <div class="prose">
+      <h2 class="label" id="private-tutoring-title">Private Tutoring</h2>
+      <p>Every student learns differently. In one-on-one virtual sessions we work through problems together on a shared whiteboard, visualize the hard ideas, and build the problem-solving skills that carry over to the next test and beyond.</p>
+      <a class="read-link" href="tutoring.html">How tutoring works <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--panel" id="subjects" aria-labelledby="subjects-title">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Subjects</p>
+      <h2 class="label head-title" id="subjects-title">Math, Physics &amp; SAT</h2>
+    </div>
+    <!-- Same cards as tutoring.html#subjects -->
+    <div class="subject-grid">
+      <article class="subject-card subject-card--math">
+        <p class="kicker">Middle school &ndash; Calculus</p>
+        <h3 class="subject-title">Mathematics</h3>
+        <ul class="option-points">
+          <li>Algebra</li>
+          <li>Geometry</li>
+          <li>Pre-Calculus</li>
+          <li>Calculus</li>
+          <li>General homework and exam preparation</li>
+        </ul>
+        <a class="button" href="book.html?subject=math" data-track="book_cta_subject_math">Book a Math Session</a>
+      </article>
+      <article class="subject-card subject-card--physics">
+        <p class="kicker">High school physics</p>
+        <h3 class="subject-title">Physics</h3>
+        <ul class="option-points">
+          <li>High school physics</li>
+          <li>Mechanics and motion</li>
+          <li>Forces and energy</li>
+          <li>Vectors and projectile motion</li>
+          <li>Applied mathematics and problem solving</li>
+        </ul>
+        <a class="button" href="book.html?subject=physics" data-track="book_cta_subject_physics">Book a Physics Session</a>
+      </article>
+      <article class="subject-card subject-card--sat">
+        <p class="kicker">Test prep</p>
+        <h3 class="subject-title">SAT Preparation</h3>
+        <ul class="option-points">
+          <li>SAT Math</li>
+          <li>Problem-solving strategies</li>
+          <li>Practice questions</li>
+          <li>Test-taking techniques</li>
+          <li>Identifying and improving weak areas</li>
+        </ul>
+        <a class="button" href="book.html?subject=sat" data-track="book_cta_subject_sat">Book an SAT Session</a>
+      </article>
     </div>
   </div>
 </section>
@@ -419,7 +516,7 @@
           <li><strong>Test prep</strong> for the SAT, ACT, and more</li>
           <li><strong>Custom learning tools</strong> like Trail Builder, Jump Lab, the MTB Physics Playground, Gear Ratio Lab, and Strava Showdown</li>
         </ul>
-        <a class="read-link" href="#tutoring">How tutoring works <span aria-hidden="true">&rarr;</span></a>
+        <a class="read-link" href="tutoring.html">Private tutoring details <span aria-hidden="true">&rarr;</span></a>
       </div>
     </article>
 
@@ -461,53 +558,6 @@
         <a class="read-link" href="college-beyond.html">Explore College &amp; Beyond <span aria-hidden="true">&rarr;</span></a>
       </div>
     </article>
-  </div>
-</section>
-
-<!-- ============================================================
-     TUTORING — approach, who I work with, subjects
-     ============================================================ -->
-<section class="section" id="tutoring" aria-labelledby="tutoring-title">
-  <div class="wrap split">
-    <h2 class="label split-label" id="tutoring-title">Tutoring</h2>
-    <div>
-      <div class="prose">
-        <h3>My Approach</h3>
-        <p>Every student learns differently. I focus on building strong fundamentals, explaining the &ldquo;why&rdquo; behind the math, and helping students feel genuinely capable. While succeeding on tests is important, understanding the problem solving process and figuring out how one learns best is what I focus on.</p>
-        <p>Sessions are relaxed but focused. We move at the pace that actually works for you or your student, revisiting the basics when needed and pushing ahead when things click.</p>
-
-        <h3>Why Mountain Biking + Math</h3>
-        <p>Mountain biking and math have more in common than people expect. Both reward patience, both involve reading the terrain ahead of you, and both get easier &mdash; and more fun &mdash; the more comfortable you get with falling down and trying again.</p>
-        <p>Learning math is a lot like learning to ride. You don&rsquo;t become confident by only doing things you already know how to do. You become confident by trying something difficult, making mistakes, figuring out what went wrong, and trying again.</p>
-        <p>My job isn&rsquo;t to make sure a student never gets a problem wrong. It&rsquo;s to help them become comfortable enough with being wrong that they&rsquo;re willing to keep trying.</p>
-      </div>
-
-      <div class="detail-grid">
-        <div>
-          <h3 class="label">Who I Work With</h3>
-          <ul class="check-list">
-            <li>Middle school and high school students</li>
-            <li>Students prepping for standardized tests (SAT/ACT, etc.)</li>
-            <li>Students who feel &ldquo;behind&rdquo; and want to rebuild confidence</li>
-            <li>Students aiming to get ahead or explore advanced topics</li>
-          </ul>
-        </div>
-        <div>
-          <h3 class="label">Subjects</h3>
-          <ul class="pill-row">
-            <li class="pill">Pre-Algebra</li>
-            <li class="pill">Algebra I &amp; II</li>
-            <li class="pill">Geometry</li>
-            <li class="pill">Trigonometry</li>
-            <li class="pill">Pre-Calculus</li>
-            <li class="pill">Calculus</li>
-            <li class="pill pill--physics">Physics</li>
-            <li class="pill">Test Prep</li>
-            <li class="pill">ACT/SAT Prep</li>
-          </ul>
-        </div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -587,11 +637,11 @@
     <path d="M-20,350 C 260,320 380,380 580,345 C 760,315 920,365 1120,330" fill="none" stroke="#F7F5EE" stroke-opacity="0.08" stroke-width="1"/>
   </svg>
   <div class="wrap">
-    <p class="eyebrow">Let&rsquo;s Talk</p>
-    <h2 class="contact-title" id="contact-title">Not sure where to start?</h2>
-    <p class="contact-lede">Reach out and tell me a bit about what you or your student are working on &mdash; we can figure out the right plan together.</p>
+    <p class="eyebrow">Let&rsquo;s Get Started</p>
+    <h2 class="contact-title" id="contact-title">Ready to become a better Mathlete?</h2>
+    <p class="contact-lede">Book a session online, or reach out and tell me a bit about what you or your student are working on &mdash; we can figure out the right plan together.</p>
     <div class="contact-links">
-      <a class="button" href="mailto:wcmalfeld@gmail.com">Get in touch</a>
+      <a class="button" href="book.html" data-track="book_cta_home_footer">Book a Session</a>
       <a href="mailto:wcmalfeld@gmail.com">wcmalfeld@gmail.com</a>
       <a href="tel:+17192055531">(719) 205-5531</a>
     </div>
@@ -614,5 +664,6 @@
 <script src="js/supabase-config.js?v=7" defer></script>
 <script src="js/auth.js?v=7" defer></script>
 <script src="js/site.js?v=7" defer></script>
+<script src="js/track.js?v=1" defer></script>
 </body>
 </html>

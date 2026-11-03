@@ -24,21 +24,9 @@
   function field(name) { return form.elements.namedItem(name); }
 
   // ---------- analytics ----------
-  // There's no analytics on the site yet. If one is added later
-  // (Plausible, Google Analytics / Tag Manager), these events reach it
-  // automatically. Event names only: never personal details.
-  function track(name) {
-    try {
-      if (typeof window.plausible === 'function') window.plausible(name);
-      else if (typeof window.gtag === 'function') window.gtag('event', name);
-      else if (Array.isArray(window.dataLayer)) window.dataLayer.push({ event: name });
-    } catch (e) {}
-  }
+  // js/track.js sends events (and handles data-track clicks).
+  var track = window.mathleteTrack || function () {};
   track('college_beyond_page_view');
-  document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('[data-track]');
-    if (a) track(a.getAttribute('data-track'));
-  });
   var started = false;
   form.addEventListener('input', function () {
     if (started) return;

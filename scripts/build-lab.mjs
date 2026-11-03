@@ -72,7 +72,7 @@ function toolCard(t, cats, anchors) {
     <article class="tool-card lab-card" id="lab-${esc(t.id)}" data-lab-tool="${esc(t.id)}" data-category="${esc(t.category || '')}" data-subjects="${esc(t.subjects.join(' '))}" data-difficulty="${esc(t.difficulty.join(' '))}" data-duration="${esc(t.duration)}">
       <span class="tool-thumb">${flag}<img src="${esc(t.image)}" alt="" loading="lazy" decoding="async"></span>
       <div class="tool-card-body">
-        <p class="kicker">${esc(cat ? cat.name : 'Learning Lab')}</p>
+        <p class="kicker">${esc(cat ? cat.name : 'The Lab')}</p>
         <h3 class="tool-card-title"><a href="${esc(href)}"${ext}>${esc(t.name)}</a></h3>
         <p class="tool-card-desc">${esc(t.summary)}</p>
         <dl class="lab-facts">
@@ -125,8 +125,8 @@ function page({ path, depth, title, description, body }) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=11">
-<link rel="stylesheet" href="css/lab.css?v=1">
+<link rel="stylesheet" href="css/site.css?v=12">
+<link rel="stylesheet" href="css/lab.css?v=2">
 </head>
 <body class="lab">
 <a class="skip-link" href="${path}#main">Skip to content</a>
@@ -135,13 +135,14 @@ function page({ path, depth, title, description, body }) {
   <div class="wrap">
     <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
     <ul class="nav-links">
-      <li class="nav-keep"><a href="learning-lab/" class="active"${depth === 1 ? ' aria-current="page"' : ''}>Learning Lab</a></li>
-      <li><a href="index.html#services">Tutoring</a></li>
-      <li class="nav-keep"><a href="about.html">About</a></li>
-      <li class="nav-keep" data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
-      <li class="nav-keep nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
-      <li class="nav-cta"><a href="index.html#contact">Contact</a></li>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
+      <li><a href="learning-lab/" class="active"${depth === 1 ? ' aria-current="page"' : ''}>The Lab</a></li>
+      <li><a href="about.html">About</a></li>
+      <li data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
+      <li class="nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
     </ul>
+    <a class="nav-book" href="book.html" data-track="book_cta_nav">Book a Session</a>
   </div>
 </nav>
 
@@ -150,13 +151,13 @@ ${body}
 <section class="section lab-cta" aria-labelledby="lab-cta-title">
   <div class="wrap">
     <div>
-      <p class="eyebrow">Tutoring</p>
-      <h2 class="lab-cta-title" id="lab-cta-title">Work with a tutor</h2>
-      <p>Every tool here was built for real tutoring sessions. Mathlete combines mountain biking experience, math instruction and these interactive tools to help students understand concepts by applying them to things they love.</p>
+      <p class="eyebrow">Private Tutoring</p>
+      <h2 class="lab-cta-title" id="lab-cta-title">Work with Will one-on-one</h2>
+      <p>Every tool here was built for real tutoring sessions. Book a private online session in Math, Physics or SAT prep, and we&rsquo;ll work through the ideas behind these challenges together.</p>
     </div>
     <div class="lab-cta-actions">
-      <a class="button" href="index.html#services">Explore tutoring</a>
-      <a class="read-link" href="index.html#contact">Get in touch <span aria-hidden="true">&rarr;</span></a>
+      <a class="button" href="book.html" data-track="book_cta_lab">Book a Session</a>
+      <a class="read-link" href="tutoring.html">Private tutoring <span aria-hidden="true">&rarr;</span></a>
     </div>
   </div>
 </section>
@@ -176,6 +177,7 @@ ${body}
 <script src="js/tools-config.js?v=14" defer></script>
 <script src="js/supabase-config.js?v=7" defer></script>
 <script src="js/auth.js?v=7" defer></script>
+<script src="js/track.js?v=1" defer></script>
 <script src="js/lab.js?v=1" defer></script>
 </body>
 </html>
@@ -218,14 +220,14 @@ export function render() {
   pages['learning-lab/index.html'] = page({
     path: 'learning-lab/',
     depth: 1,
-    title: 'Interactive Learning Lab — Mathlete MTB',
+    title: 'The Mathlete Lab — Interactive Math & Physics Tools — Mathlete MTB',
     description: 'Interactive math and physics tools built around mountain biking: design trails, launch jumps, gear a race bike and analyze race data.',
     body: `
 <header class="page-head lab-head">${contour}
   <div class="wrap">
-    <p class="eyebrow">Learning Lab</p>
-    <h1 class="page-title">Interactive Learning Lab</h1>
-    <p class="hero-lede">Explore the mathematics and science behind mountain biking. Experiment, solve challenges, and discover how the world around you works.</p>
+    <p class="eyebrow">The Lab</p>
+    <h1 class="page-title">The Mathlete Lab</h1>
+    <p class="hero-lede">Learning doesn&rsquo;t have to stop when the tutoring session ends. Explore interactive tools, games, and challenges designed to make mathematics more visual, engaging, and fun.</p>
   </div>
 </header>
 
@@ -267,13 +269,13 @@ export function render() {
     pages[`learning-lab/${c.id}/index.html`] = page({
       path: `learning-lab/${c.id}/`,
       depth: 2,
-      title: `${c.name} — Learning Lab — Mathlete MTB`,
+      title: `${c.name} — The Mathlete Lab — Mathlete MTB`,
       description: `${c.name}: ${c.focus}`,
       body: `
 <header class="page-head lab-head">${contour}
   <div class="wrap">
-    <a class="lab-crumb" href="learning-lab/"><span aria-hidden="true">&larr;</span> Learning Lab</a>
-    <p class="eyebrow">Learning Lab</p>
+    <a class="lab-crumb" href="learning-lab/"><span aria-hidden="true">&larr;</span> The Mathlete Lab</a>
+    <p class="eyebrow">The Lab</p>
     <h1 class="page-title">${esc(c.name)}</h1>
     <p class="hero-lede">${esc(c.focus)}</p>
     <ul class="pill-row" aria-label="Math concepts">

@@ -6,13 +6,15 @@ The website for Mathlete MTB math and physics tutoring.
 
 ```
 MathleteMTB-Site/
-├── index.html            # Homepage (learning tools, services, tutoring, photos, contact)
+├── index.html            # Homepage (tutoring + Lab offers, Lab tools, subjects, services, photos)
+├── tutoring.html         # Private Tutoring page
+├── book.html             # Book a Session (Calendly; see docs/BOOKING.md)
 ├── about.html            # About page
 ├── college-beyond.html   # College & Beyond Mentorship service page + inquiry form
 ├── login.html            # Member login (invite-only)
 ├── account.html          # Set / reset a member's password
 ├── tool.html             # Opens members-only tools (tool.html?id=...)
-├── learning-lab/         # Interactive Learning Lab pages (GENERATED, don't edit)
+├── learning-lab/         # The Mathlete Lab pages (GENERATED, don't edit)
 ├── css/site.css          # All styling
 ├── css/lab.css           # Learning Lab's dark theme and components
 ├── js/
@@ -22,11 +24,15 @@ MathleteMTB-Site/
 │   ├── auth.js           # Member sign-in (Supabase)
 │   ├── site.js           # Photo viewer, tool pop-ups, nav
 │   ├── inquiry.js        # College & Beyond inquiry form (sends to Supabase)
+│   ├── booking-config.js # TUTORING BOOKINGS: Calendly link, subjects, prices (edit here)
+│   ├── booking.js        # Booking page: subject choice + Calendly scheduler
+│   ├── track.js          # Analytics events (data-track); no analytics service yet
 │   └── ...               # login.js, account.js, tool-player.js
 ├── assets/               # Logo, photos, screenshots
 ├── supabase/setup.sql    # Database + storage rules (member access, inquiries)
 ├── scripts/              # build-lab.mjs, admin.mjs (members, inquiries), check-site.mjs, test-access.mjs
 ├── docs/ACCESS.md        # How member access works and how to manage it
+├── docs/BOOKING.md       # Setting up Calendly, Stripe and Zoom for bookings
 └── docs/LEARNING-LAB-PLAN.md  # Audit + plan for the Learning Lab rebuild
 ```
 

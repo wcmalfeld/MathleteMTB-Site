@@ -8,12 +8,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <base href="../../">
-<title>Engineering Lab — Learning Lab — Mathlete MTB</title>
+<title>Engineering Lab — The Mathlete Lab — Mathlete MTB</title>
 <meta name="description" content="Engineering Lab: Physics, motion and mechanical systems: what happens when a rider leaves the lip of a jump, carves a berm or compresses the fork.">
 <link rel="canonical" href="https://www.mathletemtb.com/learning-lab/engineering/">
 <meta property="og:site_name" content="Mathlete MTB">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Engineering Lab — Learning Lab — Mathlete MTB">
+<meta property="og:title" content="Engineering Lab — The Mathlete Lab — Mathlete MTB">
 <meta property="og:description" content="Engineering Lab: Physics, motion and mechanical systems: what happens when a rider leaves the lip of a jump, carves a berm or compresses the fork.">
 <meta property="og:url" content="https://www.mathletemtb.com/learning-lab/engineering/">
 <meta property="og:image" content="https://www.mathletemtb.com/assets/trailbuilder.jpg">
@@ -21,8 +21,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=11">
-<link rel="stylesheet" href="css/lab.css?v=1">
+<link rel="stylesheet" href="css/site.css?v=12">
+<link rel="stylesheet" href="css/lab.css?v=2">
 </head>
 <body class="lab">
 <a class="skip-link" href="learning-lab/engineering/#main">Skip to content</a>
@@ -31,13 +31,14 @@
   <div class="wrap">
     <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
     <ul class="nav-links">
-      <li class="nav-keep"><a href="learning-lab/" class="active">Learning Lab</a></li>
-      <li><a href="index.html#services">Tutoring</a></li>
-      <li class="nav-keep"><a href="about.html">About</a></li>
-      <li class="nav-keep" data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
-      <li class="nav-keep nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
-      <li class="nav-cta"><a href="index.html#contact">Contact</a></li>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
+      <li><a href="learning-lab/" class="active">The Lab</a></li>
+      <li><a href="about.html">About</a></li>
+      <li data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
+      <li class="nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
     </ul>
+    <a class="nav-book" href="book.html" data-track="book_cta_nav">Book a Session</a>
   </div>
 </nav>
 
@@ -50,8 +51,8 @@
     <path d="M-20,310 C 240,275 360,340 560,300 C 740,265 900,325 1120,290" fill="none" stroke-opacity="0.06" stroke-width="1"/>
   </svg>
   <div class="wrap">
-    <a class="lab-crumb" href="learning-lab/"><span aria-hidden="true">&larr;</span> Learning Lab</a>
-    <p class="eyebrow">Learning Lab</p>
+    <a class="lab-crumb" href="learning-lab/"><span aria-hidden="true">&larr;</span> The Mathlete Lab</a>
+    <p class="eyebrow">The Lab</p>
     <h1 class="page-title">Engineering Lab</h1>
     <p class="hero-lede">Physics, motion and mechanical systems: what happens when a rider leaves the lip of a jump, carves a berm or compresses the fork.</p>
     <ul class="pill-row" aria-label="Math concepts">
@@ -137,13 +138,13 @@
 <section class="section lab-cta" aria-labelledby="lab-cta-title">
   <div class="wrap">
     <div>
-      <p class="eyebrow">Tutoring</p>
-      <h2 class="lab-cta-title" id="lab-cta-title">Work with a tutor</h2>
-      <p>Every tool here was built for real tutoring sessions. Mathlete combines mountain biking experience, math instruction and these interactive tools to help students understand concepts by applying them to things they love.</p>
+      <p class="eyebrow">Private Tutoring</p>
+      <h2 class="lab-cta-title" id="lab-cta-title">Work with Will one-on-one</h2>
+      <p>Every tool here was built for real tutoring sessions. Book a private online session in Math, Physics or SAT prep, and we&rsquo;ll work through the ideas behind these challenges together.</p>
     </div>
     <div class="lab-cta-actions">
-      <a class="button" href="index.html#services">Explore tutoring</a>
-      <a class="read-link" href="index.html#contact">Get in touch <span aria-hidden="true">&rarr;</span></a>
+      <a class="button" href="book.html" data-track="book_cta_lab">Book a Session</a>
+      <a class="read-link" href="tutoring.html">Private tutoring <span aria-hidden="true">&rarr;</span></a>
     </div>
   </div>
 </section>
@@ -163,6 +164,7 @@
 <script src="js/tools-config.js?v=14" defer></script>
 <script src="js/supabase-config.js?v=7" defer></script>
 <script src="js/auth.js?v=7" defer></script>
+<script src="js/track.js?v=1" defer></script>
 <script src="js/lab.js?v=1" defer></script>
 </body>
 </html>

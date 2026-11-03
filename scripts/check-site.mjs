@@ -9,6 +9,8 @@
 //   committed or published
 // - Learning Lab: every live tool has its listing fields, and the generated
 //   pages in learning-lab/ match the registry
+// - tutoring and booking: every page has "Book a Session", subject links
+//   match js/booking-config.js, and no prices are typed into the pages
 //   node scripts/check-site.mjs --online   also checks that every live
 //   public tool's address responds
 
@@ -51,7 +53,7 @@ check('No private tool file is linked from the homepage', priv.every(t => !index
 
 // ---- script order on pages ----
 const labPages = renderLab();
-for (const page of ['index.html', 'about.html', 'login.html', 'account.html', 'tool.html', 'college-beyond.html', ...Object.keys(labPages)]) {
+for (const page of ['index.html', 'about.html', 'login.html', 'account.html', 'tool.html', 'college-beyond.html', 'tutoring.html', 'book.html', ...Object.keys(labPages)]) {
   const html = read(page);
   const order = ['js/tools-config.js', 'js/supabase-config.js', 'js/auth.js'].map(s => html.indexOf(s));
   check(`${page} loads config, then Supabase config, then auth`, order.every(i => i > 0) && order[0] < order[1] && order[1] < order[2]);
@@ -85,6 +87,34 @@ if (process.argv.includes('--online')) {
     const code = await status(t.url);
     check(`${t.name} responds at ${t.url}`, code === 200, 'HTTP ' + code);
   }
+}
+
+// ---- tutoring & booking ----
+const bookingBox = { window: {} };
+vm.runInNewContext(read('js/booking-config.js'), bookingBox);
+const booking = bookingBox.window.MATHLETE_BOOKING || {};
+const subjectIds = (booking.subjects || []).map(x => x.id);
+const tutoring = read('tutoring.html');
+const book = read('book.html');
+const navPages = ['index.html', 'about.html', 'login.html', 'account.html', 'college-beyond.html', 'tutoring.html', 'book.html'];
+const noBook = navPages.filter(p => !/<a class="nav-book[^"]*" href="book\.html"/.test(read(p)))
+  .concat(Object.entries(labPages).filter(([, html]) => !html.includes('<a class="nav-book" href="book.html"')).map(([p]) => p));
+check('Every page has "Book a Session" in the nav', noBook.length === 0, noBook.join(', '));
+check('Booking subjects are math, physics and sat', subjectIds.join() === 'math,physics,sat', subjectIds.join());
+const radios = [...book.matchAll(/name="subject" value="([^"]+)"/g)].map(m => m[1]);
+check('book.html offers exactly the configured subjects', radios.join() === subjectIds.join(), radios.join());
+const subjectLinks = [index, tutoring].flatMap(h => [...h.matchAll(/href="book\.html\?subject=([^"#&]+)"/g)].map(m => m[1]));
+check('Every subject Book button names a configured subject', subjectLinks.length >= 6 && subjectLinks.every(id => subjectIds.includes(id)), subjectLinks.join(', '));
+const calUrls = [booking.calendlyUrl || ''].concat((booking.subjects || []).map(x => x.calendlyUrl || ''));
+check('Calendly links are empty or https://calendly.com/...', calUrls.every(u => u === '' || /^https:\/\/calendly\.com\//.test(u)));
+const noComments = h => h.replace(/<!--[\s\S]*?-->/g, '');
+check('No prices typed into tutoring.html or book.html (set them in booking-config.js)', ![tutoring, book].some(h => /\$\s?\d/.test(noComments(h))));
+check('Homepage links to Private Tutoring and booking', index.includes('href="tutoring.html"') && index.includes('href="book.html"'));
+check('Tutoring and booking pages have exactly one <h1> and their own canonical URL', [['tutoring.html', tutoring], ['book.html', book]].every(([p, h]) =>
+  (h.match(/<h1\b/g) || []).length === 1 && h.includes(`<link rel="canonical" href="https://www.mathletemtb.com/${p}">`)));
+for (const [p, h] of [['index.html', index], ['tutoring.html', tutoring], ['book.html', book], ['about.html', read('about.html')]]) {
+  const ids = [...h.matchAll(/href="#([^"]+)"/g)].map(m => m[1]).filter(id => id !== 'main');
+  check(`Every in-page link on ${p} has a target`, ids.every(id => h.includes(`id="${id}"`)), ids.filter(id => !h.includes(`id="${id}"`)).join(', '));
 }
 
 // ---- College & Beyond page ----

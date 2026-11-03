@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Tutoring Session | Mathlete MTB</title>
+<meta name="description" content="Book a one-on-one online math, physics or SAT math tutoring session with Will. Pick a subject, choose a time and pay securely online.">
+<link rel="canonical" href="https://www.mathletemtb.com/book.html">
+<meta property="og:site_name" content="Mathlete MTB">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Book a Tutoring Session — Mathlete MTB">
+<meta property="og:description" content="Book one-on-one online math, physics or SAT tutoring with Will.">
+<meta property="og:url" content="https://www.mathletemtb.com/book.html">
+<meta property="og:image" content="https://www.mathletemtb.com/assets/photos/tutoring-1.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css?v=12">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main">
+  <div class="wrap">
+    <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
+      <li><a href="learning-lab/">The Lab</a></li>
+      <li><a href="about.html">About</a></li>
+      <li data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
+      <li class="nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
+    </ul>
+    <a class="nav-book active" href="book.html" aria-current="page">Book a Session</a>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- ============================================================
+     BOOK A SESSION
+     Step 1 (subject) is on this page; step 2 is the Calendly scheduler,
+     loaded by js/booking.js using the settings in js/booking-config.js.
+     Subject values (math, physics, sat) must match the ids there.
+     Until Calendly is connected, step 2 offers an email request
+     instead. See docs/BOOKING.md.
+     ============================================================ -->
+<header class="page-head page-head--service">
+  <svg class="contour-field" viewBox="0 0 1100 420" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M-20,90 C 180,50 320,130 500,90 C 680,50 820,120 1120,80" fill="none" stroke="#1F2B24" stroke-opacity="0.10" stroke-width="1"/>
+    <path d="M-20,200 C 220,160 340,230 540,190 C 720,155 880,220 1120,185" fill="none" stroke="#C1502E" stroke-opacity="0.12" stroke-width="1"/>
+    <path d="M-20,310 C 240,275 360,340 560,300 C 740,265 900,325 1120,290" fill="none" stroke="#1F2B24" stroke-opacity="0.08" stroke-width="1"/>
+  </svg>
+  <div class="wrap">
+    <p class="eyebrow">Book a Session</p>
+    <h1 class="hero-title">Book a <span>tutoring session.</span></h1>
+    <p class="hero-lede">Choose a subject, then pick a day, time and session length that work for you. You&rsquo;ll pay securely when you book, and your Zoom link arrives by email.</p>
+  </div>
+</header>
+
+<section class="section" id="book" aria-label="Booking">
+  <div class="wrap">
+
+    <!-- STEP 1: SUBJECT -->
+    <div class="book-step">
+      <div class="book-step-head">
+        <span class="book-step-num" aria-hidden="true">01</span>
+        <h2 class="book-step-title" id="subject-title">Choose your subject</h2>
+      </div>
+      <form id="book-subjects" novalidate>
+        <fieldset class="subject-picks" aria-labelledby="subject-title">
+          <label class="subject-pick subject-pick--math">
+            <input type="radio" name="subject" value="math">
+            <span class="subject-pick-body">
+              <span class="subject-pick-name">Mathematics</span>
+              <span class="subject-pick-desc">Algebra, geometry, pre-calculus, calculus, homework and exam prep.</span>
+            </span>
+          </label>
+          <label class="subject-pick subject-pick--physics">
+            <input type="radio" name="subject" value="physics">
+            <span class="subject-pick-body">
+              <span class="subject-pick-name">Physics</span>
+              <span class="subject-pick-desc">Motion, forces and energy, vectors and projectile motion, problem solving.</span>
+            </span>
+          </label>
+          <label class="subject-pick subject-pick--sat">
+            <input type="radio" name="subject" value="sat">
+            <span class="subject-pick-body">
+              <span class="subject-pick-name">SAT Preparation</span>
+              <span class="subject-pick-desc">SAT Math, strategies, practice questions and test-taking technique.</span>
+            </span>
+          </label>
+        </fieldset>
+      </form>
+      <p class="book-note book-pick-hint" id="book-pick-hint">Pick one to see available times.</p>
+      <noscript>
+        <div class="book-fallback">
+          <p>The booking calendar needs JavaScript. You can still request a session by email: tell me the subject, the student&rsquo;s grade, and some days and times that work.</p>
+          <a class="button" href="mailto:wcmalfeld@gmail.com?subject=Tutoring%20session%20request">Email to book</a>
+        </div>
+      </noscript>
+    </div>
+
+    <!-- STEP 2: TIME, DETAILS AND PAYMENT (Calendly) -->
+    <div class="book-step" id="book-step-time" hidden>
+      <div class="book-step-head">
+        <span class="book-step-num" aria-hidden="true">02</span>
+        <h2 class="book-step-title">Pick a time: <span id="book-subject-name"></span></h2>
+      </div>
+
+      <div class="notice notice--success book-done" id="book-done" tabindex="-1" role="status" hidden>
+        <strong>You&rsquo;re booked.</strong> A confirmation with the date, time, subject and Zoom link is on its way to your email. If it doesn&rsquo;t arrive in a few minutes, check your spam folder or email <a href="mailto:wcmalfeld@gmail.com">wcmalfeld@gmail.com</a>.
+        <br><a class="read-link" href="learning-lab/" data-track="lab_cta_after_booking">While you wait, explore the Lab <span aria-hidden="true">&rarr;</span></a>
+      </div>
+
+      <p class="book-note">Choose a session length, date and time, then add the student&rsquo;s details: grade level, what they need help with, and a parent or guardian&rsquo;s contact information. Payment is the last step, and you&rsquo;ll see the price before you pay.</p>
+
+      <!-- Filled in from js/booking-config.js (prices); hidden while none are set. -->
+      <div class="price-box" data-booking-prices hidden>
+        <p class="kicker">Pricing</p>
+        <dl></dl>
+      </div>
+
+      <div class="book-calendar" id="book-calendar" hidden></div>
+
+      <div class="book-fallback" id="book-fallback" hidden>
+        <p><strong id="book-fallback-reason"></strong> You can still book by email: the button below opens a message with the subject filled in. Add the student&rsquo;s grade, the session length you&rsquo;d like and some days and times that work, and I&rsquo;ll reply to confirm a time and send payment details.</p>
+        <a class="button" id="book-fallback-link" href="mailto:wcmalfeld@gmail.com" data-track="booking_email_request">Email to book</a>
+        <p class="form-note">Or call or text <a href="tel:+17192055531">(719) 205-5531</a>.</p>
+      </div>
+    </div>
+
+    <!-- PRIVACY -->
+    <div class="book-privacy" id="privacy">
+      <h2 class="label">Your information</h2>
+      <p>Bookings are handled by Calendly and payments by Stripe. Card details go straight to Stripe; Mathlete MTB never sees or stores them. The details you enter are used only to schedule and run your sessions and to contact you about them, and are never sold or shared for marketing.</p>
+      <p>If the student is under 18, a parent or guardian should make the booking with their own email address. Please share only what&rsquo;s needed to prepare for the session: no grades, health information or other sensitive details.</p>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <span>&copy; 2026 Mathlete MTB LLC. All rights reserved.</span>
+    <span class="footer-links">
+      <a href="login.html" data-auth-show="guest">Member login</a>
+      <a href="https://www.willmalfeld.com" target="_blank" rel="noopener">willmalfeld.com</a>
+    </span>
+  </div>
+</footer>
+
+<script src="js/tools-config.js?v=14" defer></script>
+<script src="js/supabase-config.js?v=7" defer></script>
+<script src="js/auth.js?v=7" defer></script>
+<script src="js/site.js?v=7" defer></script>
+<script src="js/track.js?v=1" defer></script>
+<script src="js/booking-config.js?v=1" defer></script>
+<script src="js/booking.js?v=1" defer></script>
+</body>
+</html>

@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/site.css?v=11">
+<link rel="stylesheet" href="css/site.css?v=12">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -25,13 +25,14 @@
   <div class="wrap">
     <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
     <ul class="nav-links">
-      <li class="nav-keep"><a href="learning-lab/">Learning Lab</a></li>
-      <li><a href="index.html#services" class="active">Tutoring</a></li>
-      <li class="nav-keep"><a href="about.html">About</a></li>
-      <li class="nav-keep" data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
-      <li class="nav-keep nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
-      <li class="nav-cta"><a href="#inquiry">Contact</a></li>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
+      <li><a href="learning-lab/">The Lab</a></li>
+      <li><a href="about.html">About</a></li>
+      <li data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
+      <li class="nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
     </ul>
+    <a class="nav-book" href="book.html" data-track="book_cta_nav">Book a Session</a>
   </div>
 </nav>
 
@@ -276,7 +277,7 @@
       </details>
       <details class="faq">
         <summary class="faq-q">Do you also offer math or test-prep support?</summary>
-        <p>Math tutoring and relevant test-prep planning can be discussed as part of an individual plan, based on the student&rsquo;s needs and availability. <a href="index.html#tutoring">More about tutoring.</a></p>
+        <p>Math tutoring and relevant test-prep planning can be discussed as part of an individual plan, based on the student&rsquo;s needs and availability. <a href="tutoring.html">More about tutoring.</a></p>
       </details>
       <details class="faq">
         <summary class="faq-q">How involved are parents?</summary>
@@ -441,6 +442,7 @@
 <script src="js/supabase-config.js?v=7" defer></script>
 <script src="js/auth.js?v=7" defer></script>
 <script src="js/site.js?v=7" defer></script>
-<script src="js/inquiry.js?v=1" defer></script>
+<script src="js/track.js?v=1" defer></script>
+<script src="js/inquiry.js?v=2" defer></script>
 </body>
 </html>
