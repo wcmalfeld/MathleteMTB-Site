@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/site.css?v=12">
-<link rel="stylesheet" href="css/lab.css?v=2">
+<link rel="stylesheet" href="css/lab.css?v=3">
 </head>
 <body class="lab">
 <a class="skip-link" href="learning-lab/engineering/#main">Skip to content</a>
@@ -31,9 +31,8 @@
   <div class="wrap">
     <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
     <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html" class="active">The Lab</a></li>
       <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
-      <li><a href="learning-lab/" class="active">The Lab</a></li>
       <li><a href="about.html">About</a></li>
       <li data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
       <li class="nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
@@ -51,7 +50,7 @@
     <path d="M-20,310 C 240,275 360,340 560,300 C 740,265 900,325 1120,290" fill="none" stroke-opacity="0.06" stroke-width="1"/>
   </svg>
   <div class="wrap">
-    <a class="lab-crumb" href="learning-lab/"><span aria-hidden="true">&larr;</span> The Mathlete Lab</a>
+    <a class="lab-crumb" href="index.html#labs"><span aria-hidden="true">&larr;</span> The Mathlete Lab</a>
     <p class="eyebrow">The Lab</p>
     <h1 class="page-title">Engineering Lab</h1>
     <p class="hero-lede">Physics, motion and mechanical systems: what happens when a rider leaves the lip of a jump, carves a berm or compresses the fork.</p>
@@ -67,7 +66,7 @@
       <h2 class="label" id="tools-title">Tools</h2>
     </div>
     <div class="tool-grid">
-    <article class="tool-card lab-card" id="lab-physics-playground" data-lab-tool="physics-playground" data-category="engineering" data-subjects="algebra trigonometry physics" data-difficulty="beginner intermediate advanced" data-duration="challenge">
+    <article class="tool-card lab-card" id="tool-physicsplayground" data-lab-tool="physics-playground" data-category="engineering" data-subjects="algebra trigonometry physics" data-difficulty="beginner intermediate advanced" data-duration="challenge">
       <span class="tool-thumb"><span class="lab-flag lab-flag--featured">Featured</span><img src="assets/physics-playground.jpg" alt="" loading="lazy" decoding="async"></span>
       <div class="tool-card-body">
         <p class="kicker">Engineering Lab</p>
@@ -82,11 +81,36 @@
         </ul>
         <div class="lab-card-actions">
           <a class="button" href="https://wcmalfeld.github.io/mtb-physics/" target="_blank" rel="noopener">Launch <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> MTB Physics Playground (opens in a new tab)</span></a>
-          <a class="read-link" href="index.html#tool-physicsplayground">Details</a>
+          <details class="lab-more">
+            <summary class="read-link">Details</summary>
+            <div class="tool-detail">
+              <figure class="tool-shot" data-gallery>
+                <a class="fig-frame" href="assets/physics-playground.jpg" data-lightbox data-caption="MTB Physics Playground — the MTB Jump Lab"><img src="assets/physics-playground.jpg" alt="MTB Jump Lab: a rider launching off a 4 ft ramp at 20 mph and 20 degrees, the flight path landing inside a target zone, with results showing flight time, landing distance, and velocity components" width="1400" height="743" loading="lazy" decoding="async"></a>
+                <figcaption class="meta">The MTB Jump Lab: set speed, angle, and height, then see where the rider lands and why.</figcaption>
+              </figure>
+              <div class="tool-text">
+                <ul class="tool-tags">
+                  <li class="pill pill--physics">Physics</li>
+                  <li class="pill">Quadratics &middot; Vectors &middot; Trig</li>
+                  <li class="pill">In person or online</li>
+                </ul>
+                <p class="service-desc">A set of interactive physics labs built around riding. In the MTB Jump Lab, students set the launch speed, takeoff angle, and ramp height, predict where the rider will land, then launch and watch the path, with the equations that explain it right alongside. Three more labs cover splitting a velocity into its parts, braking distance, and why tight, fast corners feel so intense.</p>
+                <ul class="service-points">
+                  <li><strong>Predict first.</strong> With predictions on, the path and landing stay hidden until launch, so students commit to an answer before the physics reveals it.</li>
+                  <li><strong>Real equations, real numbers.</strong> Flight time, landing distance, and velocity components come straight from the projectile-motion equations, in US or metric units, with hints that get more specific each time.</li>
+                  <li><strong>One variable at a time.</strong> Guided challenges lock every setting except the one being investigated, and students can save attempts side by side to compare.</li>
+                  <li><strong>Tutor Mode.</strong> I choose challenges, turn equations and hints on or off, require predictions, read students&rsquo; written explanations, and mark each concept from &ldquo;Needs practice&rdquo; to &ldquo;Demonstrated independently.&rdquo;</li>
+                </ul>
+                <div class="tool-actions">
+                  <a class="button" data-tool-launch href="https://wcmalfeld.github.io/mtb-physics/" target="_blank" rel="noopener">Open the Physics Playground <span aria-hidden="true">&rarr;</span></a>
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
       </div>
     </article>
-    <article class="tool-card lab-card" id="lab-jump-lab" data-lab-tool="jump-lab" data-category="engineering" data-subjects="algebra trigonometry physics" data-difficulty="beginner intermediate advanced" data-duration="challenge">
+    <article class="tool-card lab-card" id="tool-jumplab" data-lab-tool="jump-lab" data-category="engineering" data-subjects="algebra trigonometry physics" data-difficulty="beginner intermediate advanced" data-duration="challenge">
       <span class="tool-thumb"><span class="lab-flag lab-flag--featured">Featured</span><img src="assets/jump-lab.jpg" alt="" loading="lazy" decoding="async"></span>
       <div class="tool-card-body">
         <p class="kicker">Engineering Lab</p>
@@ -101,7 +125,32 @@
         </ul>
         <div class="lab-card-actions">
           <a class="button" href="https://wcmalfeld.github.io/JumpLab_MTB/JumpLab_MTB/dist/jump-lab.html" target="_blank" rel="noopener">Launch <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> Jump Lab (opens in a new tab)</span></a>
-          <a class="read-link" href="index.html#tool-jumplab">Details</a>
+          <details class="lab-more">
+            <summary class="read-link">Details</summary>
+            <div class="tool-detail">
+              <figure class="tool-shot" data-gallery>
+                <a class="fig-frame" href="assets/jump-lab.jpg" data-lightbox data-caption="Jump Lab — a 20 mph, 20° launch landing in the zone"><img src="assets/jump-lab.jpg" alt="Jump Lab: a rider's flight path from a takeoff lip to a landing zone, with peak height and landing distance marked, sliders for takeoff speed, launch angle, elevations and target distance, and a math workbench showing the projectile-motion equations" width="1400" height="900" loading="lazy" decoding="async"></a>
+                <figcaption class="meta">Explore mode: every slider redraws the arc, and the workbench shows the equations behind it.</figcaption>
+              </figure>
+              <div class="tool-text">
+                <ul class="tool-tags">
+                  <li class="pill pill--physics">Physics</li>
+                  <li class="pill">Quadratics &middot; Trig</li>
+                  <li class="pill">In person or online</li>
+                </ul>
+                <p class="service-desc">Students set the takeoff speed, launch angle, takeoff and landing heights, and the size of the landing zone, then hit <em>Send it</em> to ride the jump. The flight path, airtime, distance, peak height and landing speed all come straight from the projectile-motion equations, in feet and mph or metric.</p>
+                <ul class="service-points">
+                  <li><strong>Predict, then send it.</strong> Students commit to a prediction before each jump, then scrub through the flight one moment at a time to see where they were right.</li>
+                  <li><strong>A math workbench alongside.</strong> Simple or advanced equations, the numbers plugged in live, and concept cards on why the path is a parabola and how sine and cosine split the speed.</li>
+                  <li><strong>Missions from beginner to expert.</strong> Clear a gap, find the minimum speed, hit the same distance two different ways, and finally solve the jump on paper before trying it.</li>
+                  <li><strong>Tutor mode and session summary.</strong> I can guide the session, and a summary of attempts and missions is ready to talk through at the end. No personal data is stored.</li>
+                </ul>
+                <div class="tool-actions">
+                  <a class="button" data-tool-launch href="https://wcmalfeld.github.io/JumpLab_MTB/JumpLab_MTB/dist/jump-lab.html" target="_blank" rel="noopener">Open Jump Lab <span aria-hidden="true">&rarr;</span></a>
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
       </div>
     </article>
@@ -130,7 +179,7 @@
       <li><a href="learning-lab/trail-crew/">Trail Crew</a></li>
       <li><a href="learning-lab/race-team/">Race Team</a></li>
       <li><a href="learning-lab/bike-workshop/">Bike Workshop</a></li>
-      <li><a href="learning-lab/#tools">All tools</a></li>
+      <li><a href="index.html#tools">All tools</a></li>
     </ul>
   </div>
 </section>
@@ -161,10 +210,10 @@
   </div>
 </footer>
 
-<script src="js/tools-config.js?v=14" defer></script>
+<script src="js/tools-config.js?v=15" defer></script>
 <script src="js/supabase-config.js?v=7" defer></script>
 <script src="js/auth.js?v=7" defer></script>
+<script src="js/site.js?v=8" defer></script>
 <script src="js/track.js?v=1" defer></script>
-<script src="js/lab.js?v=1" defer></script>
 </body>
 </html>

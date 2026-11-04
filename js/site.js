@@ -43,11 +43,13 @@
   }
 
   // ---------- learning tools: open a card's full description in a pop-up ----------
-  // Without JavaScript each card is a plain <details> that opens in place.
-  var toolCards = Array.prototype.slice.call(document.querySelectorAll('details.tool-card'));
-  if (toolCards.length && typeof HTMLDialogElement === 'function') setupToolDialog(toolCards);
+  // Either the whole card is a <details class="tool-card">, or a Lab card
+  // has a <details class="lab-more"> "Details" button inside it. Without
+  // JavaScript each <details> simply opens in place.
+  var toolDetails = Array.prototype.slice.call(document.querySelectorAll('details.tool-card, details.lab-more'));
+  if (toolDetails.length && typeof HTMLDialogElement === 'function') setupToolDialog(toolDetails);
 
-  function setupToolDialog(cards) {
+  function setupToolDialog(items) {
     var dlg = document.createElement('dialog');
     dlg.className = 'tool-dialog';
     dlg.setAttribute('aria-labelledby', 'tool-dialog-title');
@@ -63,20 +65,23 @@
       try { history.replaceState(null, '', h); } catch (e) {}
     }
 
+    function cardOf(d) { return d.classList.contains('tool-card') ? d : d.closest('.tool-card'); }
+
     var titleBox = dlg.querySelector('.tool-dialog-title');
     var body = dlg.querySelector('.tool-dialog-body');
     var current = null;
 
-    function open(card) {
-      if (card.hidden) return; // members-only card for a visitor
-      current = card;
+    function open(d) {
+      var card = cardOf(d);
+      if (card.hidden) return; // members-only card for a visitor, or filtered out
+      current = d;
       var kicker = card.querySelector('.kicker').cloneNode(true);
       var title = document.createElement('h3');
       title.className = 'service-title';
       title.id = 'tool-dialog-title';
       title.textContent = card.querySelector('.tool-card-title').textContent;
       titleBox.replaceChildren(kicker, title);
-      body.appendChild(card.querySelector('.tool-detail')); // move, so the photo viewer keeps working
+      body.appendChild(d.querySelector('.tool-detail')); // move, so the photo viewer keeps working
       dlg.showModal();
       dlg.scrollTop = 0;
       document.body.classList.add('dialog-open');
@@ -93,10 +98,10 @@
       setHash('#tools');
     });
 
-    cards.forEach(function (card) {
-      card.querySelector('summary').addEventListener('click', function (e) {
+    items.forEach(function (d) {
+      d.querySelector('summary').addEventListener('click', function (e) {
         e.preventDefault();
-        open(card);
+        open(d);
       });
     });
 
@@ -105,8 +110,9 @@
     dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
 
     // A link straight to a tool (e.g. #tool-trailbuilder) opens it.
-    var linked = location.hash && document.getElementById(location.hash.slice(1));
-    if (linked && cards.indexOf(linked) !== -1) open(linked);
+    var id = location.hash.slice(1);
+    var linked = id && items.filter(function (d) { return cardOf(d).id === id; })[0];
+    if (linked) open(linked);
   }
 
   // ---------- accessible lightbox for photographs ----------

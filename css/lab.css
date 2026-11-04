@@ -256,3 +256,30 @@ body.lab {
 /* "Book a Session" in the nav: dark text on the brighter rust */
 .lab .nav-book { color: var(--lab-deep); }
 .lab .nav-book:hover { background: var(--blaze-dim); }
+
+/* ---------- home page (index.html is the Lab) ---------- */
+.lab-home-title { margin: 0; line-height: 0; }  /* the logo is the page heading */
+.lab-extras { margin-top: 24px; }
+
+/* Members card and the closing call-to-action were dark-on-light in
+   site.css; in the Lab they sit on the deepest ground instead. */
+.lab .tool-card--members { background: var(--lab-deep); border-color: var(--rule); color: var(--ink); }
+.lab .tool-card--members .tool-card-desc { color: var(--ink-soft); }
+.lab .contact { background: var(--lab-deep); color: var(--ink); border-top: 1px solid var(--rule); }
+.lab .contact .button { color: var(--lab-deep); }
+.lab .contact-links a { color: var(--ink); border-bottom-color: var(--rule); }
+.lab .contact-links a:hover { color: var(--blaze); }
+
+/* "Details" on a Lab card: a <details>; js/site.js opens it in a pop-up */
+.lab-more > summary { list-style: none; cursor: pointer; margin-top: 0; font-size: 12px; }
+.lab-more > summary::-webkit-details-marker { display: none; }
+.lab-more[open] { flex-basis: 100%; }
+.lab-more[open] > .tool-detail { margin-top: 18px; }
+
+/* Private tutoring at the bottom of the home page */
+.lab-tutoring { background: var(--lab-deep); }
+.lab .section.lab-tutoring + .section.lab-tutoring { border-top: 0; padding-top: 0; }
+.lab-tutoring .prose .eyebrow { font-family: var(--f-mono); font-size: 12.5px; line-height: 1.4; }
+.lab-tutoring .label { font-size: clamp(30px, 4vw, 44px); }
+.lab .prose a.button { color: var(--lab-deep); text-decoration: none; }
+.lab .subject-card { background: var(--cream); }

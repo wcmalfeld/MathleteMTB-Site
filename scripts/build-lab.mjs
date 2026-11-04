@@ -1,14 +1,20 @@
 #!/usr/bin/env node
-// Builds the Learning Lab pages from the tool registry.
+// Builds the Learning Lab from the tool registry.
 //   node scripts/build-lab.mjs
-// Reads js/tools-config.js and js/lab-categories.js and writes
-//   learning-lab/index.html              (dashboard with filters)
+// Reads js/tools-config.js, js/lab-categories.js and the tool descriptions
+// in content/tool-details/<tool-id>.html, and writes
+//   index.html                           (only the parts between the
+//                                         <!-- BUILD:name --> markers: the
+//                                         lab tiles and the tool grid; the
+//                                         rest of the home page is hand-edited)
 //   learning-lab/<category>/index.html   (one per category)
+//   learning-lab/index.html              (redirect to the home page, which
+//                                         is now the Lab)
 // The output is plain HTML committed to the repo, so the site still has no
 // deploy-time build and the cards are readable by search engines and
 // without JavaScript. check-site.mjs fails if these pages are out of date.
 
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import vm from 'node:vm';
 
@@ -35,17 +41,20 @@ export function loadRegistry() {
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-// Homepage card ids (e.g. tool-trailbuilder) so a Lab card can link to the
-// full description in the homepage pop-up.
-function homepageAnchors() {
-  const index = read('index.html');
-  const out = {};
-  for (const m of index.matchAll(/<details\b[^>]*>/g)) {
-    const id = m[0].match(/\bid="([^"]+)"/);
-    const tool = m[0].match(/\bdata-tool="([^"]+)"/);
-    if (id && tool) out[tool[1]] = id[1];
-  }
-  return out;
+// Card id, e.g. trail-builder -> tool-trailbuilder. index.html#tool-trailbuilder
+// opens that tool's description (js/site.js).
+export const cardId = t => 'tool-' + t.id.replace(/-/g, '');
+
+// The full description shown in the "Details" pop-up, if the tool has one.
+export const detailsPath = t => `content/tool-details/${t.id}.html`;
+function details(t) {
+  if (!existsSync(root + detailsPath(t))) return '';
+  const html = read(detailsPath(t)).trim().split('\n').map(l => l ? '            ' + l : l).join('\n');
+  return `
+          <details class="lab-more">
+            <summary class="read-link">Details</summary>
+${html}
+          </details>`;
 }
 
 function launchHref(t) {
@@ -58,7 +67,7 @@ function levelRange(levels) {
   return order.length === 1 ? LEVELS[order[0]] : LEVELS[order[0]] + ' &ndash; ' + LEVELS[order[order.length - 1]];
 }
 
-function toolCard(t, cats, anchors) {
+function toolCard(t, cats) {
   const cat = cats.find(c => c.id === t.category);
   const href = launchHref(t);
   const ext = t.access === 'public' ? ' target="_blank" rel="noopener"' : '';
@@ -66,10 +75,8 @@ function toolCard(t, cats, anchors) {
   const flag = members
     ? '<span class="lab-flag">Members</span>'
     : t.featured ? '<span class="lab-flag lab-flag--featured">Featured</span>' : '';
-  const details = anchors[t.id]
-    ? `\n          <a class="read-link" href="index.html#${esc(anchors[t.id])}">Details</a>` : '';
   return `
-    <article class="tool-card lab-card" id="lab-${esc(t.id)}" data-lab-tool="${esc(t.id)}" data-category="${esc(t.category || '')}" data-subjects="${esc(t.subjects.join(' '))}" data-difficulty="${esc(t.difficulty.join(' '))}" data-duration="${esc(t.duration)}">
+    <article class="tool-card lab-card" id="${esc(cardId(t))}" data-lab-tool="${esc(t.id)}" data-category="${esc(t.category || '')}" data-subjects="${esc(t.subjects.join(' '))}" data-difficulty="${esc(t.difficulty.join(' '))}" data-duration="${esc(t.duration)}">
       <span class="tool-thumb">${flag}<img src="${esc(t.image)}" alt="" loading="lazy" decoding="async"></span>
       <div class="tool-card-body">
         <p class="kicker">${esc(cat ? cat.name : 'The Lab')}</p>
@@ -83,7 +90,7 @@ function toolCard(t, cats, anchors) {
           ${t.subjects.map(s => `<li class="pill${s === 'physics' ? ' pill--physics' : ''}">${esc(SUBJECTS[s] || s)}</li>`).join('')}
         </ul>${members ? '\n        <p class="lab-access">Student login required.</p>' : ''}
         <div class="lab-card-actions">
-          <a class="button" href="${esc(href)}"${ext}>Launch <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> ${esc(t.name)}${ext ? ' (opens in a new tab)' : ''}</span></a>${details}
+          <a class="button" href="${esc(href)}"${ext}>Launch <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> ${esc(t.name)}${ext ? ' (opens in a new tab)' : ''}</span></a>${details(t)}
         </div>
       </div>
     </article>`;
@@ -126,7 +133,7 @@ function page({ path, depth, title, description, body }) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/site.css?v=12">
-<link rel="stylesheet" href="css/lab.css?v=2">
+<link rel="stylesheet" href="css/lab.css?v=3">
 </head>
 <body class="lab">
 <a class="skip-link" href="${path}#main">Skip to content</a>
@@ -135,9 +142,8 @@ function page({ path, depth, title, description, body }) {
   <div class="wrap">
     <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
     <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html" class="active">The Lab</a></li>
       <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
-      <li><a href="learning-lab/" class="active"${depth === 1 ? ' aria-current="page"' : ''}>The Lab</a></li>
       <li><a href="about.html">About</a></li>
       <li data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
       <li class="nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
@@ -174,11 +180,11 @@ ${body}
   </div>
 </footer>
 
-<script src="js/tools-config.js?v=14" defer></script>
+<script src="js/tools-config.js?v=15" defer></script>
 <script src="js/supabase-config.js?v=7" defer></script>
 <script src="js/auth.js?v=7" defer></script>
+<script src="js/site.js?v=8" defer></script>
 <script src="js/track.js?v=1" defer></script>
-<script src="js/lab.js?v=1" defer></script>
 </body>
 </html>
 `;
@@ -195,9 +201,37 @@ function options(map, all) {
   return `<option value="">${all}</option>` + Object.entries(map).map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join('');
 }
 
+// Replace what's between <!-- BUILD:name --> and <!-- /BUILD:name -->.
+function fill(html, parts) {
+  for (const [name, content] of Object.entries(parts)) {
+    const re = new RegExp(`(<!-- BUILD:${name} -->)[\\s\\S]*?(\\n *<!-- /BUILD:${name} -->)`);
+    if (!re.test(html)) throw new Error(`index.html is missing the <!-- BUILD:${name} --> markers`);
+    html = html.replace(re, (m, open, close) => open + content + close);
+  }
+  return html;
+}
+
+const redirect = `<!DOCTYPE html>
+<!-- Generated by scripts/build-lab.mjs. The Lab dashboard moved to the
+     home page; this keeps old /learning-lab/ links (and their filters,
+     e.g. ?subjects=physics) working. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Mathlete Lab — Mathlete MTB</title>
+<link rel="canonical" href="${SITE}">
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0; url=../">
+<script>location.replace('../' + location.search + (location.hash || '#tools'));</script>
+</head>
+<body>
+<p>The Mathlete Lab is now on the <a href="../">home page</a>.</p>
+</body>
+</html>
+`;
+
 export function render() {
   const { tools, categories } = loadRegistry();
-  const anchors = homepageAnchors();
   // Featured tools first, then registry order.
   const live = tools.filter(t => t.status === 'live')
     .map((t, i) => [t, i]).sort((a, b) => (b[0].featured === true) - (a[0].featured === true) || a[1] - b[1]).map(x => x[0]);
@@ -217,35 +251,9 @@ export function render() {
 
   const catOptions = '<option value="">All activities</option>' + categories.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
 
-  pages['learning-lab/index.html'] = page({
-    path: 'learning-lab/',
-    depth: 1,
-    title: 'The Mathlete Lab — Interactive Math & Physics Tools — Mathlete MTB',
-    description: 'Interactive math and physics tools built around mountain biking: design trails, launch jumps, gear a race bike and analyze race data.',
-    body: `
-<header class="page-head lab-head">${contour}
-  <div class="wrap">
-    <p class="eyebrow">The Lab</p>
-    <h1 class="page-title">The Mathlete Lab</h1>
-    <p class="hero-lede">Learning doesn&rsquo;t have to stop when the tutoring session ends. Explore interactive tools, games, and challenges designed to make mathematics more visual, engaging, and fun.</p>
-  </div>
-</header>
-
-<section class="section" aria-labelledby="cats-title">
-  <div class="wrap">
-    <div class="lab-section-head">
-      <h2 class="label" id="cats-title">Pick a lab</h2>
-    </div>
-    <ul class="lab-cats">${catTiles}
-    </ul>
-  </div>
-</section>
-
-<section class="section section--panel" id="tools" aria-labelledby="tools-title">
-  <div class="wrap">
-    <div class="lab-section-head">
-      <h2 class="label" id="tools-title">All tools</h2>
-    </div>
+  pages['index.html'] = fill(read('index.html'), {
+    'lab-cats': catTiles,
+    'lab-tools': `
     <form class="lab-filters" data-lab-filters hidden aria-label="Filter tools">
       <div class="lab-filter"><label for="f-category">Activity</label><select id="f-category" name="category">${catOptions}</select></div>
       <div class="lab-filter"><label for="f-subject">Math</label><select id="f-subject" name="subjects">${options(SUBJECTS, 'All subjects')}</select></div>
@@ -254,13 +262,12 @@ export function render() {
       <button type="reset" class="lab-filter-reset">Clear</button>
     </form>
     <p class="meta lab-count" data-lab-count aria-live="polite" hidden></p>
-    <div class="tool-grid" data-lab-grid>${live.map(t => toolCard(t, categories, anchors)).join('')}
+    <div class="tool-grid" data-lab-grid>${live.map(t => toolCard(t, categories)).join('')}
     </div>
-    <p class="lab-empty" data-lab-empty hidden>No tools match those filters yet. <button type="button" class="lab-filter-reset" data-lab-clear>Clear filters</button></p>
-  </div>
-</section>
-`
+    <p class="lab-empty" data-lab-empty hidden>No tools match those filters yet. <button type="button" class="lab-filter-reset" data-lab-clear>Clear filters</button></p>`
   });
+
+  pages['learning-lab/index.html'] = redirect;
 
   for (const c of categories) {
     const mine = live.filter(t => t.category === c.id);
@@ -274,7 +281,7 @@ export function render() {
       body: `
 <header class="page-head lab-head">${contour}
   <div class="wrap">
-    <a class="lab-crumb" href="learning-lab/"><span aria-hidden="true">&larr;</span> The Mathlete Lab</a>
+    <a class="lab-crumb" href="index.html#labs"><span aria-hidden="true">&larr;</span> The Mathlete Lab</a>
     <p class="eyebrow">The Lab</p>
     <h1 class="page-title">${esc(c.name)}</h1>
     <p class="hero-lede">${esc(c.focus)}</p>
@@ -289,7 +296,7 @@ export function render() {
     <div class="lab-section-head">
       <h2 class="label" id="tools-title">Tools</h2>
     </div>
-    <div class="tool-grid">${mine.map(t => toolCard(t, categories, anchors)).join('')}${soon.map(soonCard).join('')}
+    <div class="tool-grid">${mine.map(t => toolCard(t, categories)).join('')}${soon.map(soonCard).join('')}
     </div>
   </div>
 </section>
@@ -301,7 +308,7 @@ export function render() {
     </div>
     <ul class="lab-also">
       ${others.map(o => `<li><a href="learning-lab/${o.id}/">${esc(o.name)}</a></li>`).join('\n      ')}
-      <li><a href="learning-lab/#tools">All tools</a></li>
+      <li><a href="index.html#tools">All tools</a></li>
     </ul>
   </div>
 </section>

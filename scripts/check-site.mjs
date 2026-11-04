@@ -2,13 +2,13 @@
 // Offline checks for the access setup (any Node version that runs .mjs).
 //   node scripts/check-site.mjs
 // - exactly the expected number of public tools in js/tools-config.js
-// - every tool card on the homepage matches the config, and members-only
-//   cards start out hidden
+// - the home page (the Lab) has a card and a description for every live
+//   tool, and links to no private tool file
 // - pages load the access scripts in the right order
 // - no secret keys and no private tool files in anything that would be
 //   committed or published
 // - Learning Lab: every live tool has its listing fields, and the generated
-//   pages in learning-lab/ match the registry
+//   parts of index.html and the pages in learning-lab/ match the registry
 // - tutoring and booking: every page has "Book a Session", subject links
 //   match js/booking-config.js, and no prices are typed into the pages
 //   node scripts/check-site.mjs --online   also checks that every live
@@ -18,7 +18,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import vm from 'node:vm';
 import https from 'node:https';
-import { render as renderLab, loadRegistry, SUBJECTS, LEVELS, DURATIONS } from './build-lab.mjs';
+import { render as renderLab, loadRegistry, detailsPath, SUBJECTS, LEVELS, DURATIONS } from './build-lab.mjs';
 
 const root = new URL('..', import.meta.url).pathname;
 const read = p => readFileSync(root + p, 'utf8');
@@ -41,19 +41,21 @@ check('Tool ids are unique', new Set(tools.map(t => t.id)).size === tools.length
 check('Live public tools have an https url', pub.filter(t => t.status === 'live').every(t => /^https:\/\//.test(t.url || '')));
 check('Private tools point at a file in the bucket, not a public url', priv.every(t => t.file && !t.url));
 
-// ---- homepage cards ----
+// ---- home page (the Lab) ----
 const index = read('index.html');
-const cards = [...index.matchAll(/<(details|article|a)\b[^>]*\bdata-tool="([^"]+)"[^>]*>/g)].map(m => ({ id: m[2], tag: m[0] }));
-const byId = Object.fromEntries(tools.map(t => [t.id, t]));
-check('Every card on the homepage is in the config', cards.every(c => byId[c.id]), cards.filter(c => !byId[c.id]).map(c => c.id).join(', '));
-check('Every tool in the config has a card', tools.every(t => cards.some(c => c.id === t.id)));
-check('Members-only cards start hidden', cards.filter(c => byId[c.id] && byId[c.id].access === 'private').every(c => /\shidden(\s|>|=)/.test(c.tag)));
-check('Public cards are visible without JavaScript', cards.filter(c => byId[c.id] && byId[c.id].access === 'public').every(c => !/\shidden(\s|>|=)/.test(c.tag)));
-check('No private tool file is linked from the homepage', priv.every(t => !index.includes(t.file)));
+const cards = [...index.matchAll(/<article\b[^>]*\bdata-lab-tool="([^"]+)"/g)].map(m => m[1]);
+const liveIds = tools.filter(t => t.status === 'live').map(t => t.id);
+check('Every live tool has a card on the home page', liveIds.every(id => cards.includes(id)), liveIds.filter(id => !cards.includes(id)).join(', '));
+check('Every card on the home page is a live tool in the config', cards.every(id => liveIds.includes(id)), cards.filter(id => !liveIds.includes(id)).join(', '));
+const noDetails = tools.filter(t => t.status === 'live' && !existsSync(root + detailsPath(t))).map(t => t.id);
+check('Every live tool has a description in content/tool-details/', noDetails.length === 0, noDetails.join(', '));
+check('No private tool file is linked from the home page', priv.every(t => !index.includes(t.file)));
 
 // ---- script order on pages ----
 const labPages = renderLab();
-for (const page of ['index.html', 'about.html', 'login.html', 'account.html', 'tool.html', 'college-beyond.html', 'tutoring.html', 'book.html', ...Object.keys(labPages)]) {
+const REDIRECT = 'learning-lab/index.html';
+const labContent = Object.keys(labPages).filter(p => p !== REDIRECT && p !== 'index.html');
+for (const page of ['index.html', 'about.html', 'login.html', 'account.html', 'tool.html', 'college-beyond.html', 'tutoring.html', 'book.html', ...labContent]) {
   const html = read(page);
   const order = ['js/tools-config.js', 'js/supabase-config.js', 'js/auth.js'].map(s => html.indexOf(s));
   check(`${page} loads config, then Supabase config, then auth`, order.every(i => i > 0) && order[0] < order[1] && order[1] < order[2]);
@@ -71,7 +73,8 @@ check('Every live tool has valid Learning Lab fields', badListing.length === 0, 
 check('Category ids are unique', new Set(catIds).size === catIds.length);
 const stale = Object.entries(labPages).filter(([p, html]) => !existsSync(root + p) || read(p) !== html).map(([p]) => p);
 check('Learning Lab pages are up to date (node scripts/build-lab.mjs)', stale.length === 0, stale.join(', '));
-check('Homepage links to the Learning Lab', index.includes('href="learning-lab/"'));
+check('Home page links to every lab', categories.every(c => index.includes(`href="learning-lab/${c.id}/"`)));
+check('learning-lab/ redirects to the home page', /http-equiv="refresh" content="0; url=\.\.\/"/.test(labPages[REDIRECT]));
 
 if (process.argv.includes('--online')) {
   // node:https rather than fetch, so this runs on older Node too.
@@ -98,7 +101,7 @@ const tutoring = read('tutoring.html');
 const book = read('book.html');
 const navPages = ['index.html', 'about.html', 'login.html', 'account.html', 'college-beyond.html', 'tutoring.html', 'book.html'];
 const noBook = navPages.filter(p => !/<a class="nav-book[^"]*" href="book\.html"/.test(read(p)))
-  .concat(Object.entries(labPages).filter(([, html]) => !html.includes('<a class="nav-book" href="book.html"')).map(([p]) => p));
+  .concat(labContent.filter(p => !labPages[p].includes('<a class="nav-book" href="book.html"')));
 check('Every page has "Book a Session" in the nav', noBook.length === 0, noBook.join(', '));
 check('Booking subjects are math, physics and sat', subjectIds.join() === 'math,physics,sat', subjectIds.join());
 const radios = [...book.matchAll(/name="subject" value="([^"]+)"/g)].map(m => m[1]);
@@ -119,7 +122,7 @@ for (const [p, h] of [['index.html', index], ['tutoring.html', tutoring], ['book
 
 // ---- College & Beyond page ----
 const cb = read('college-beyond.html');
-check('Homepage Services links to the College & Beyond page', /id="services"[\s\S]*href="college-beyond\.html"/.test(index));
+check('About page Services links to the College & Beyond page', /id="services"[\s\S]*href="college-beyond\.html"/.test(read('about.html')));
 check('College & Beyond page has exactly one <h1>', (cb.match(/<h1\b/g) || []).length === 1);
 check('College & Beyond page has its own canonical URL', cb.includes('<link rel="canonical" href="https://www.mathletemtb.com/college-beyond.html">'));
 const anchors = [...cb.matchAll(/href="#([^"]+)"/g)].map(m => m[1]).filter(id => id !== 'main');

@@ -60,11 +60,12 @@ off its Pages site) — until then, anyone with that link can still play it.
    warn otherwise.
 2. Move the tool itself to match:
    - **Making a tool public:** host it publicly (its own GitHub Pages repo is
-     fine), set its `url`, and remove `file`. In `index.html`, remove `hidden`
-     from its card.
+     fine), set its `url`, and remove `file`. Update the play button in
+     `content/tool-details/<tool-id>.html` and run `node scripts/build-lab.mjs`.
    - **Making a tool private:** upload it to the bucket
-     (`node scripts/admin.mjs upload ...`), set `file` and remove `url`, add
-     `hidden` to its card, and **take down its public copy** (for example,
+     (`node scripts/admin.mjs upload ...`), set `file` and remove `url`, run
+     `node scripts/build-lab.mjs` (its card then says "Student login
+     required" and launches through `tool.html`), and **take down its public copy** (for example,
      delete or make private its GitHub Pages repository). As long as a public
      copy exists, anyone with that address can still use it.
 3. Run `node scripts/check-site.mjs`.
@@ -152,10 +153,10 @@ access" message and gets nothing private.
 3. Upload: `node scripts/admin.mjs upload private-tools/tool-04/index.html tool-04/index.html`
 4. In `js/tools-config.js`, set that tool's `status: 'live'` and
    `file: 'tool-04/index.html'` (`access: 'private'`).
-5. In `index.html`, replace its "Coming Soon" card with a full card (copy an
-   existing `<details class="tool-card" ...>` block). Keep
-   `data-tool="tool-04"` and `hidden` on it, and give its play button
-   `data-tool-launch` (the script points it at `tool.html?id=tool-04`).
+5. Fill in its Learning Lab fields in `js/tools-config.js`, add its
+   description as `content/tool-details/tool-04.html` (copy an existing one;
+   give the play button `data-tool-launch` and `href="tool.html?id=tool-04"`),
+   then run `node scripts/build-lab.mjs`.
 6. Run `node scripts/check-site.mjs`, then push.
 
 Re-uploading the same path replaces the tool. Members get the new version

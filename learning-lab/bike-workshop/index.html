@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/site.css?v=12">
-<link rel="stylesheet" href="css/lab.css?v=2">
+<link rel="stylesheet" href="css/lab.css?v=3">
 </head>
 <body class="lab">
 <a class="skip-link" href="learning-lab/bike-workshop/#main">Skip to content</a>
@@ -31,9 +31,8 @@
   <div class="wrap">
     <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
     <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html" class="active">The Lab</a></li>
       <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
-      <li><a href="learning-lab/" class="active">The Lab</a></li>
       <li><a href="about.html">About</a></li>
       <li data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
       <li class="nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
@@ -51,7 +50,7 @@
     <path d="M-20,310 C 240,275 360,340 560,300 C 740,265 900,325 1120,290" fill="none" stroke-opacity="0.06" stroke-width="1"/>
   </svg>
   <div class="wrap">
-    <a class="lab-crumb" href="learning-lab/"><span aria-hidden="true">&larr;</span> The Mathlete Lab</a>
+    <a class="lab-crumb" href="index.html#labs"><span aria-hidden="true">&larr;</span> The Mathlete Lab</a>
     <p class="eyebrow">The Lab</p>
     <h1 class="page-title">Bike Workshop</h1>
     <p class="hero-lede">Bicycle mechanics and component setup: gearing, wheel sizes and the ratios that decide whether you climb or walk.</p>
@@ -67,7 +66,7 @@
       <h2 class="label" id="tools-title">Tools</h2>
     </div>
     <div class="tool-grid">
-    <article class="tool-card lab-card" id="lab-gear-ratio-lab" data-lab-tool="gear-ratio-lab" data-category="bike-workshop" data-subjects="algebra geometry statistics calculus" data-difficulty="intermediate advanced" data-duration="extended">
+    <article class="tool-card lab-card" id="tool-gearratiolab" data-lab-tool="gear-ratio-lab" data-category="bike-workshop" data-subjects="algebra geometry statistics calculus" data-difficulty="intermediate advanced" data-duration="extended">
       <span class="tool-thumb"><span class="lab-flag lab-flag--featured">Featured</span><img src="assets/gear-ratio-lab.jpg" alt="" loading="lazy" decoding="async"></span>
       <div class="tool-card-body">
         <p class="kicker">Bike Workshop</p>
@@ -82,7 +81,32 @@
         </ul>
         <div class="lab-card-actions">
           <a class="button" href="https://wcmalfeld.github.io/GearRatioLab_LearningTool/" target="_blank" rel="noopener">Launch <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> Gear Ratio Lab (opens in a new tab)</span></a>
-          <a class="read-link" href="index.html#tool-gearratiolab">Details</a>
+          <details class="lab-more">
+            <summary class="read-link">Details</summary>
+            <div class="tool-detail">
+              <figure class="tool-shot" data-gallery>
+                <a class="fig-frame" href="assets/gear-ratio-lab.jpg" data-lightbox data-caption="Gear Ratio Lab — building a setup for the Aspen Lift Loop"><img src="assets/gear-ratio-lab.jpg" alt="Gear Ratio Lab plan step: choosing a chainring, wheel size, and a rear cog for each section of the Aspen Lift Loop, with an animated drivetrain preview and a formula card" width="1400" height="948" loading="lazy" decoding="async"></a>
+                <figcaption class="meta">Building a setup: a cog for every section, with a live drivetrain preview.</figcaption>
+              </figure>
+              <div class="tool-text">
+                <ul class="tool-tags">
+                  <li class="pill">Algebra I &ndash; Calculus</li>
+                  <li class="pill">Statistics</li>
+                  <li class="pill">In person or online</li>
+                </ul>
+                <p class="service-desc">Students run the race mechanic&rsquo;s bench. They pick a course, then choose a chainring, a wheel size, and a rear cog for every section &mdash; from a flat dirt-road start to a 14% pitch. Put on a gear that&rsquo;s too big for a climb and the rider has to get off and walk; shift too often and the seconds add up.</p>
+                <ul class="service-points">
+                  <li><strong>Gears are math.</strong> On a lab sheet, students work out the gear ratio, distance per pedal stroke, speed, and time for every section, while an animated drivetrain shows how far the wheel turns for each turn of the pedals.</li>
+                  <li><strong>Math matched to the class.</strong> Pick Algebra I, Geometry, Algebra II, Precalculus, Statistics, or Calculus for a problem built from the student&rsquo;s own setup &mdash; inequalities for the right cog, circumference and gear inches, angular velocity, percent jumps across the cassette, related rates. A wrong answer gets a hint before the solution is shown.</li>
+                  <li><strong>Race the rival.</strong> Their setup races a rival&rsquo;s on the course profile, so every gear choice shows up as seconds won or lost.</li>
+                  <li><strong>Tune and predict.</strong> Students get one change, predict their new time before testing it, and answer a mechanic&rsquo;s question that makes them explain the trade-off with numbers. I score that answer with a rubric, and each round earns a medal as students rank up from Shop Rookie to Chief Mechanic.</li>
+                </ul>
+                <div class="tool-actions">
+                  <a class="button" data-tool-launch href="https://wcmalfeld.github.io/GearRatioLab_LearningTool/" target="_blank" rel="noopener">Play Gear Ratio Lab <span aria-hidden="true">&rarr;</span></a>
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
       </div>
     </article>
@@ -111,7 +135,7 @@
       <li><a href="learning-lab/engineering/">Engineering Lab</a></li>
       <li><a href="learning-lab/trail-crew/">Trail Crew</a></li>
       <li><a href="learning-lab/race-team/">Race Team</a></li>
-      <li><a href="learning-lab/#tools">All tools</a></li>
+      <li><a href="index.html#tools">All tools</a></li>
     </ul>
   </div>
 </section>
@@ -142,10 +166,10 @@
   </div>
 </footer>
 
-<script src="js/tools-config.js?v=14" defer></script>
+<script src="js/tools-config.js?v=15" defer></script>
 <script src="js/supabase-config.js?v=7" defer></script>
 <script src="js/auth.js?v=7" defer></script>
+<script src="js/site.js?v=8" defer></script>
 <script src="js/track.js?v=1" defer></script>
-<script src="js/lab.js?v=1" defer></script>
 </body>
 </html>

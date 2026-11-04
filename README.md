@@ -6,15 +6,16 @@ The website for Mathlete MTB math and physics tutoring.
 
 ```
 MathleteMTB-Site/
-├── index.html            # Homepage (tutoring + Lab offers, Lab tools, subjects, services, photos)
+├── index.html            # Home page = The Mathlete Lab (labs, tools, focus), Private Tutoring at the bottom
 ├── tutoring.html         # Private Tutoring page
 ├── book.html             # Book a Session (Calendly; see docs/BOOKING.md)
-├── about.html            # About page
+├── about.html            # About: Will, tutoring & mentoring, student stories, photos
 ├── college-beyond.html   # College & Beyond Mentorship service page + inquiry form
 ├── login.html            # Member login (invite-only)
 ├── account.html          # Set / reset a member's password
 ├── tool.html             # Opens members-only tools (tool.html?id=...)
-├── learning-lab/         # The Mathlete Lab pages (GENERATED, don't edit)
+├── learning-lab/         # Lab category pages (GENERATED, don't edit); learning-lab/ itself redirects home
+├── content/tool-details/ # Each tool's full description, shown in its "Details" pop-up
 ├── css/site.css          # All styling
 ├── css/lab.css           # Learning Lab's dark theme and components
 ├── js/
@@ -36,17 +37,21 @@ MathleteMTB-Site/
 └── docs/LEARNING-LAB-PLAN.md  # Audit + plan for the Learning Lab rebuild
 ```
 
-**The Learning Lab** (`/learning-lab/`) is built from `js/tools-config.js` and
-`js/lab-categories.js`. After changing either, run:
+**The Mathlete Lab** is the home page. Its lab tiles and tool grid (between
+the `<!-- BUILD:... -->` markers in `index.html`) and the category pages in
+`learning-lab/` are built from `js/tools-config.js`, `js/lab-categories.js`
+and `content/tool-details/`. Everything else in `index.html` is hand-edited.
+After changing any of those, run:
 
 ```bash
-node scripts/build-lab.mjs     # rewrites the pages in learning-lab/
+node scripts/build-lab.mjs     # rewrites the tool grid in index.html and the pages in learning-lab/
 node scripts/check-site.mjs    # add --online to also check the tool links work
 ```
 
 To add a tool: add its entry (with the Learning Lab fields described at the
-top of `js/tools-config.js`) and a preview image in `assets/`, then run both
-commands. It appears on the dashboard and its category page automatically.
+top of `js/tools-config.js`), a preview image in `assets/` and its description
+in `content/tool-details/<tool-id>.html` (copy an existing one), then run both
+commands. It appears on the home page and its category page automatically.
 
 There's no build step and nothing to install for the website itself.
 

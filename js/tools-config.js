@@ -12,7 +12,9 @@
 
    status: 'live' or 'coming-soon' (a placeholder card, nothing to open).
 
-   `id` must match the card's data-tool="..." attribute in index.html.
+   The cards on the home page (index.html) and the category pages are
+   generated from this list by scripts/build-lab.mjs. A tool's full
+   description lives in content/tool-details/<id>.html.
 
    To change which tools are public, change `access` here. The number of
    public tools must match MATHLETE_PUBLIC_TOOL_COUNT at the bottom (now 6);

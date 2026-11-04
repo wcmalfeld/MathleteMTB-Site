@@ -3,31 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mathlete MTB — Online Math, Physics &amp; SAT Tutoring and the Mathlete Lab</title>
-<meta name="description" content="One-on-one online math tutoring, physics tutoring and SAT math prep with Will, plus the Mathlete Lab: interactive math and physics games and tools. Book a session online.">
+<title>The Mathlete Lab — Interactive Math &amp; Physics Tools, plus Online Tutoring — Mathlete MTB</title>
+<meta name="description" content="The Mathlete Lab: interactive math and physics tools built around mountain biking. Design trails, launch jumps, gear a race bike and analyze race data. Plus one-on-one online math, physics and SAT tutoring with Will.">
 <link rel="canonical" href="https://www.mathletemtb.com/">
 <meta property="og:site_name" content="Mathlete MTB">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Mathlete MTB — Online Math, Physics &amp; SAT Tutoring">
-<meta property="og:description" content="Personalized online tutoring and interactive learning tools that make math and physics easier to understand, practice, and apply.">
+<meta property="og:title" content="The Mathlete Lab — Mathlete MTB">
+<meta property="og:description" content="Interactive math and physics tools built around mountain biking, plus one-on-one online tutoring.">
 <meta property="og:url" content="https://www.mathletemtb.com/">
-<meta property="og:image" content="https://www.mathletemtb.com/assets/photos/tutoring-1.jpg">
+<meta property="og:image" content="https://www.mathletemtb.com/assets/trailbuilder.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/site.css?v=12">
+<link rel="stylesheet" href="css/lab.css?v=3">
 </head>
-<body>
+<body class="lab">
 <a class="skip-link" href="#main">Skip to content</a>
 
 <nav class="site-nav" aria-label="Main">
   <div class="wrap">
-    <a href="#top" class="brand">Mathlete<span>.</span>MTB</a>
+    <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
     <ul class="nav-links">
-      <li><a href="index.html" class="active" aria-current="page">Home</a></li>
+      <li><a href="index.html" class="active" aria-current="page">The Lab</a></li>
       <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
-      <li><a href="learning-lab/">The Lab</a></li>
       <li><a href="about.html">About</a></li>
       <li data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
       <li class="nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
@@ -39,302 +39,344 @@
 <main id="main">
 
 <!-- ============================================================
-     HERO
+     THE MATHLETE LAB: the home page.
+     The lab tiles and the tool grid (between the BUILD markers) are
+     written by  node scripts/build-lab.mjs  from js/tools-config.js,
+     js/lab-categories.js and content/tool-details/. Don't edit inside
+     the markers; everything else on this page is hand-edited.
      ============================================================ -->
-<header class="hero" id="top">
+<header class="page-head lab-head lab-home-head" id="top">
   <svg class="contour-field" viewBox="0 0 1100 420" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M-20,60 C 180,20 320,100 500,60 C 680,20 820,90 1120,50" fill="none" stroke="#1F2B24" stroke-opacity="0.10" stroke-width="1"/>
-    <path d="M-20,120 C 200,80 300,160 520,120 C 700,85 860,150 1120,110" fill="none" stroke="#1F2B24" stroke-opacity="0.08" stroke-width="1"/>
-    <path d="M-20,190 C 220,150 340,220 540,180 C 720,145 880,210 1120,175" fill="none" stroke="#C1502E" stroke-opacity="0.12" stroke-width="1"/>
-    <path d="M-20,260 C 240,225 360,290 560,250 C 740,215 900,275 1120,240" fill="none" stroke="#1F2B24" stroke-opacity="0.08" stroke-width="1"/>
-    <path d="M-20,330 C 260,300 380,360 580,325 C 760,295 920,345 1120,310" fill="none" stroke="#1F2B24" stroke-opacity="0.06" stroke-width="1"/>
+    <path d="M-20,60 C 180,20 320,100 500,60 C 680,20 820,90 1120,50" fill="none" stroke-opacity="0.08" stroke-width="1"/>
+    <path d="M-20,190 C 220,150 340,220 540,180 C 720,145 880,210 1120,175" fill="none" stroke-opacity="0.22" stroke-width="1"/>
+    <path d="M-20,330 C 260,300 380,360 580,325 C 760,295 920,345 1120,310" fill="none" stroke-opacity="0.06" stroke-width="1"/>
   </svg>
-  <div class="wrap hero-grid">
-    <div class="hero-text">
-      <p class="eyebrow">Online Tutoring &middot; Math, Physics &amp; SAT &middot; The Mathlete Lab</p>
-      <img class="hero-logo" src="assets/logo.png" alt="Mathlete MTB" width="972" height="231">
-      <h1 class="hero-title">Become a Better <span>Mathlete.</span></h1>
-      <p class="hero-lede">Personalized tutoring and interactive learning tools that make Math and Physics easier to understand, practice, and apply.</p>
-      <div class="hero-actions">
-        <a class="button" href="book.html" data-track="book_cta_home_hero">Book a Session</a>
-        <a class="read-link hero-link" href="learning-lab/" data-track="lab_cta_home_hero">Explore the Lab <span aria-hidden="true">&rarr;</span></a>
-      </div>
-      <div class="hero-contact">
-        <a href="mailto:wcmalfeld@gmail.com">wcmalfeld@gmail.com</a>
-        <a href="tel:+17192055531">719&#8209;205&#8209;5531</a>
-      </div>
+  <div class="wrap">
+    <p class="eyebrow">The Mathlete Lab</p>
+    <h1 class="lab-home-title"><img class="hero-logo" src="assets/logo.png" alt="Mathlete MTB: The Mathlete Lab" width="972" height="231"></h1>
+    <div class="hero-actions">
+      <a class="button" href="#tools" data-track="lab_cta_home_hero">Explore the tools</a>
+      <a class="read-link hero-link" href="#private-tutoring">Private tutoring <span aria-hidden="true">&darr;</span></a>
     </div>
   </div>
 </header>
 
-<!-- ============================================================
-     THE TWO OFFERS — Private Tutoring and The Mathlete Lab
-     ============================================================ -->
-<section class="section section--offers" id="offers" aria-label="What Mathlete offers">
-  <div class="wrap offer-grid">
-    <article class="offer">
-      <p class="kicker">One-on-one &middot; Online</p>
-      <h2 class="offer-title">Private Tutoring</h2>
-      <p>Personalized one-on-one virtual help with Math, Physics, and SAT preparation.</p>
-      <div class="offer-actions">
-        <a class="button" href="book.html" data-track="book_cta_home_offer">Book a Session</a>
-        <a class="read-link" href="tutoring.html">How tutoring works <span aria-hidden="true">&rarr;</span></a>
-      </div>
-    </article>
-    <article class="offer offer--lab">
-      <p class="kicker">Games &middot; Simulators &middot; Challenges</p>
-      <h2 class="offer-title">The Mathlete Lab</h2>
-      <p>Interactive games and learning tools designed to help you practice and master mathematical concepts.</p>
-      <div class="offer-actions">
-        <a class="button" href="learning-lab/" data-track="lab_cta_home_offer">Explore the Lab</a>
-        <a class="read-link" href="#tools">See the tools <span aria-hidden="true">&darr;</span></a>
-      </div>
-    </article>
+<section class="section" id="labs" aria-labelledby="cats-title">
+  <div class="wrap">
+    <div class="lab-section-head">
+      <h2 class="label" id="cats-title">Pick a lab</h2>
+    </div>
+    <ul class="lab-cats"><!-- BUILD:lab-cats -->
+      <li><a class="lab-cat" href="learning-lab/engineering/">
+        <h3 class="lab-cat-name">Engineering Lab</h3>
+        <p class="lab-cat-focus">Physics, motion and mechanical systems: what happens when a rider leaves the lip of a jump, carves a berm or compresses the fork.</p>
+        <span class="lab-cat-count">2 tools &middot; 2 in development</span>
+      </a></li>
+      <li><a class="lab-cat" href="learning-lab/trail-crew/">
+        <h3 class="lab-cat-name">Trail Crew</h3>
+        <p class="lab-cat-focus">Trail design, mapping, navigation and terrain: plan a line, hit an elevation target and stay on budget.</p>
+        <span class="lab-cat-count">1 tool &middot; 2 in development</span>
+      </a></li>
+      <li><a class="lab-cat" href="learning-lab/race-team/">
+        <h3 class="lab-cat-name">Race Team</h3>
+        <p class="lab-cat-focus">Performance analysis, statistics and speed: read the data, find the fastest line and back your call with numbers.</p>
+        <span class="lab-cat-count">1 tool &middot; 1 in development</span>
+      </a></li>
+      <li><a class="lab-cat" href="learning-lab/bike-workshop/">
+        <h3 class="lab-cat-name">Bike Workshop</h3>
+        <p class="lab-cat-focus">Bicycle mechanics and component setup: gearing, wheel sizes and the ratios that decide whether you climb or walk.</p>
+        <span class="lab-cat-count">1 tool &middot; 2 in development</span>
+      </a></li>
+    <!-- /BUILD:lab-cats -->
+    </ul>
   </div>
 </section>
 
-<!-- Wide photograph band. Replace the src, href, and caption with your own photo. -->
-<figure class="band" data-gallery>
-  <a class="fig-frame" href="assets/photos/band.svg" data-lightbox data-caption="Add a caption">
-    <img src="assets/photos/band.svg" alt="Placeholder for a wide photograph" loading="lazy" decoding="async">
-  </a>
-  <figcaption class="wrap">Placeholder &mdash; a wide action shot or outdoor classroom photo goes here.</figcaption>
-</figure>
-
-<!-- ============================================================
-     LEARNING TOOLS — a grid of cards. Each finished tool is a
-     <details class="tool-card">: the <summary> is the card face, and
-     .tool-detail holds the full description (shown in a pop-up when
-     JavaScript is on, or opened in place when it isn't).
-     To add a tool, copy a <details> block; to fill a placeholder,
-     replace a <article class="tool-card tool-card--soon"> with one.
-     ACCESS: each card's data-tool="..." must match an id in
-     js/tools-config.js, which decides whether the tool is public or
-     members-only. Private cards start out `hidden` and are only shown
-     to signed-in members; their play button should use data-tool-launch
-     so it points at tool.html?id=... (see docs/ACCESS.md).
-     ============================================================ -->
 <section class="section section--panel" id="tools" aria-labelledby="tools-title">
   <div class="wrap">
-    <div class="head">
-      <p class="eyebrow">The Lab</p>
-      <h2 class="label head-title" id="tools-title">The Mathlete Lab</h2>
-      <p class="head-note">Learning doesn&rsquo;t have to stop when the tutoring session ends. Explore interactive tools, games, and challenges designed to make mathematics more visual, engaging, and fun.</p>
+    <div class="lab-section-head">
+      <h2 class="label" id="tools-title">All tools</h2>
     </div>
+    <!-- BUILD:lab-tools -->
+    <form class="lab-filters" data-lab-filters hidden aria-label="Filter tools">
+      <div class="lab-filter"><label for="f-category">Activity</label><select id="f-category" name="category"><option value="">All activities</option><option value="engineering">Engineering Lab</option><option value="trail-crew">Trail Crew</option><option value="race-team">Race Team</option><option value="bike-workshop">Bike Workshop</option></select></div>
+      <div class="lab-filter"><label for="f-subject">Math</label><select id="f-subject" name="subjects"><option value="">All subjects</option><option value="algebra">Algebra</option><option value="geometry">Geometry</option><option value="trigonometry">Trigonometry</option><option value="statistics">Statistics</option><option value="calculus">Calculus</option><option value="physics">Physics</option></select></div>
+      <div class="lab-filter"><label for="f-difficulty">Level</label><select id="f-difficulty" name="difficulty"><option value="">All levels</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></div>
+      <div class="lab-filter"><label for="f-duration">Time</label><select id="f-duration" name="duration"><option value="">Any length</option><option value="quick">Quick activity</option><option value="challenge">Full challenge</option><option value="extended">Extended exploration</option></select></div>
+      <button type="reset" class="lab-filter-reset">Clear</button>
+    </form>
+    <p class="meta lab-count" data-lab-count aria-live="polite" hidden></p>
+    <div class="tool-grid" data-lab-grid>
+    <article class="tool-card lab-card" id="tool-trailbuilder" data-lab-tool="trail-builder" data-category="trail-crew" data-subjects="algebra geometry trigonometry statistics calculus" data-difficulty="intermediate advanced" data-duration="extended">
+      <span class="tool-thumb"><span class="lab-flag lab-flag--featured">Featured</span><img src="assets/trailbuilder.jpg" alt="" loading="lazy" decoding="async"></span>
+      <div class="tool-card-body">
+        <p class="kicker">Trail Crew</p>
+        <h3 class="tool-card-title"><a href="https://wcmalfeld.github.io/TrailBuilder_Math/" target="_blank" rel="noopener">Trail Builder</a></h3>
+        <p class="tool-card-desc">Design a mountain bike trail for a client, solving a math problem for every segment you build.</p>
+        <dl class="lab-facts">
+          <div><dt>Level</dt><dd>Intermediate &ndash; Advanced</dd></div>
+          <div><dt>Time</dt><dd>30-45 min</dd></div>
+        </dl>
+        <ul class="pill-row" aria-label="Math">
+          <li class="pill">Algebra</li><li class="pill">Geometry</li><li class="pill">Trigonometry</li><li class="pill">Statistics</li><li class="pill">Calculus</li>
+        </ul>
+        <div class="lab-card-actions">
+          <a class="button" href="https://wcmalfeld.github.io/TrailBuilder_Math/" target="_blank" rel="noopener">Launch <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> Trail Builder (opens in a new tab)</span></a>
+          <details class="lab-more">
+            <summary class="read-link">Details</summary>
+            <div class="tool-detail">
+              <figure class="tool-shot" data-gallery>
+              <a class="fig-frame" href="assets/trailbuilder.jpg" data-lightbox data-caption="Trail Builder — designing a trail for Pine Ridge Kids' Camp"><img src="assets/trailbuilder.jpg" alt="Trail Builder in the build phase: a client work order with requirements, a live elevation profile of the trail so far, a crew logbook of segments and costs, and a geometry question about a rock garden" width="1400" height="1093" loading="lazy" decoding="async"></a>
+              <figcaption class="meta">Mid-build: each new segment comes with a problem to solve before it goes in.</figcaption>
+              </figure>
+              <div class="tool-text">
+                <ul class="tool-tags">
+                  <li class="pill">Algebra I &ndash; Calculus</li>
+                  <li class="pill">Statistics</li>
+                  <li class="pill">In person or online</li>
+                </ul>
+                <p class="service-desc">Students run a trail crew. They take a work order from a client &mdash; a youth bike camp, a city greenway, an enduro race &mdash; and design a trail that fits the budget, meets the client&rsquo;s requirements, and finishes at exactly the right elevation. Every segment they add comes with a math problem to solve first.</p>
+                <ul class="service-points">
+                <li><strong>Math matched to the class.</strong> Pick Algebra I, Geometry, Algebra II, Precalculus, Statistics, or Calculus, and each segment brings its own problem &mdash; slopes, the Pythagorean theorem, jump trajectories, banking angles, expected value, derivatives. A wrong answer gets a hint before the solution is shown.</li>
+                <li><strong>Real planning, real constraints.</strong> Students balance money, length, difficulty, and elevation while a live profile shows where the trail is headed. I can throw in change orders mid-round &mdash; a sponsor donation, a permit fee, a moved finish line &mdash; so they have to re-plan.</li>
+                <li><strong>A test ride with consequences.</strong> A rider rolls the die on every tougher segment. Crashes, flats, and washouts cost money or points, so risky designs have to be worth it.</li>
+                <li><strong>Explain the design.</strong> Each round ends with a score and a medal, then students name the trail and write a pitch to the client explaining, with numbers, why it works. Finished trails build into a network as they rank up from Trail Rookie to Master Builder.</li>
+                </ul>
+                <div class="tool-actions">
+                <a class="button" data-tool-launch href="https://wcmalfeld.github.io/TrailBuilder_Math/" target="_blank" rel="noopener">Play Trail Builder <span aria-hidden="true">&rarr;</span></a>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+    <article class="tool-card lab-card" id="tool-physicsplayground" data-lab-tool="physics-playground" data-category="engineering" data-subjects="algebra trigonometry physics" data-difficulty="beginner intermediate advanced" data-duration="challenge">
+      <span class="tool-thumb"><span class="lab-flag lab-flag--featured">Featured</span><img src="assets/physics-playground.jpg" alt="" loading="lazy" decoding="async"></span>
+      <div class="tool-card-body">
+        <p class="kicker">Engineering Lab</p>
+        <h3 class="tool-card-title"><a href="https://wcmalfeld.github.io/mtb-physics/" target="_blank" rel="noopener">MTB Physics Playground</a></h3>
+        <p class="tool-card-desc">Launch a rider off a jump, predict the landing, then see the projectile-motion math that explains it.</p>
+        <dl class="lab-facts">
+          <div><dt>Level</dt><dd>Beginner &ndash; Advanced</dd></div>
+          <div><dt>Time</dt><dd>10-20 min</dd></div>
+        </dl>
+        <ul class="pill-row" aria-label="Math">
+          <li class="pill">Algebra</li><li class="pill">Trigonometry</li><li class="pill pill--physics">Physics</li>
+        </ul>
+        <div class="lab-card-actions">
+          <a class="button" href="https://wcmalfeld.github.io/mtb-physics/" target="_blank" rel="noopener">Launch <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> MTB Physics Playground (opens in a new tab)</span></a>
+          <details class="lab-more">
+            <summary class="read-link">Details</summary>
+            <div class="tool-detail">
+              <figure class="tool-shot" data-gallery>
+                <a class="fig-frame" href="assets/physics-playground.jpg" data-lightbox data-caption="MTB Physics Playground — the MTB Jump Lab"><img src="assets/physics-playground.jpg" alt="MTB Jump Lab: a rider launching off a 4 ft ramp at 20 mph and 20 degrees, the flight path landing inside a target zone, with results showing flight time, landing distance, and velocity components" width="1400" height="743" loading="lazy" decoding="async"></a>
+                <figcaption class="meta">The MTB Jump Lab: set speed, angle, and height, then see where the rider lands and why.</figcaption>
+              </figure>
+              <div class="tool-text">
+                <ul class="tool-tags">
+                  <li class="pill pill--physics">Physics</li>
+                  <li class="pill">Quadratics &middot; Vectors &middot; Trig</li>
+                  <li class="pill">In person or online</li>
+                </ul>
+                <p class="service-desc">A set of interactive physics labs built around riding. In the MTB Jump Lab, students set the launch speed, takeoff angle, and ramp height, predict where the rider will land, then launch and watch the path, with the equations that explain it right alongside. Three more labs cover splitting a velocity into its parts, braking distance, and why tight, fast corners feel so intense.</p>
+                <ul class="service-points">
+                  <li><strong>Predict first.</strong> With predictions on, the path and landing stay hidden until launch, so students commit to an answer before the physics reveals it.</li>
+                  <li><strong>Real equations, real numbers.</strong> Flight time, landing distance, and velocity components come straight from the projectile-motion equations, in US or metric units, with hints that get more specific each time.</li>
+                  <li><strong>One variable at a time.</strong> Guided challenges lock every setting except the one being investigated, and students can save attempts side by side to compare.</li>
+                  <li><strong>Tutor Mode.</strong> I choose challenges, turn equations and hints on or off, require predictions, read students&rsquo; written explanations, and mark each concept from &ldquo;Needs practice&rdquo; to &ldquo;Demonstrated independently.&rdquo;</li>
+                </ul>
+                <div class="tool-actions">
+                  <a class="button" data-tool-launch href="https://wcmalfeld.github.io/mtb-physics/" target="_blank" rel="noopener">Open the Physics Playground <span aria-hidden="true">&rarr;</span></a>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+    <article class="tool-card lab-card" id="tool-gearratiolab" data-lab-tool="gear-ratio-lab" data-category="bike-workshop" data-subjects="algebra geometry statistics calculus" data-difficulty="intermediate advanced" data-duration="extended">
+      <span class="tool-thumb"><span class="lab-flag lab-flag--featured">Featured</span><img src="assets/gear-ratio-lab.jpg" alt="" loading="lazy" decoding="async"></span>
+      <div class="tool-card-body">
+        <p class="kicker">Bike Workshop</p>
+        <h3 class="tool-card-title"><a href="https://wcmalfeld.github.io/GearRatioLab_LearningTool/" target="_blank" rel="noopener">Gear Ratio Lab</a></h3>
+        <p class="tool-card-desc">Gear a race bike for a course, then work out ratios, speeds and times to beat a rival.</p>
+        <dl class="lab-facts">
+          <div><dt>Level</dt><dd>Intermediate &ndash; Advanced</dd></div>
+          <div><dt>Time</dt><dd>30-45 min</dd></div>
+        </dl>
+        <ul class="pill-row" aria-label="Math">
+          <li class="pill">Algebra</li><li class="pill">Geometry</li><li class="pill">Statistics</li><li class="pill">Calculus</li>
+        </ul>
+        <div class="lab-card-actions">
+          <a class="button" href="https://wcmalfeld.github.io/GearRatioLab_LearningTool/" target="_blank" rel="noopener">Launch <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> Gear Ratio Lab (opens in a new tab)</span></a>
+          <details class="lab-more">
+            <summary class="read-link">Details</summary>
+            <div class="tool-detail">
+              <figure class="tool-shot" data-gallery>
+                <a class="fig-frame" href="assets/gear-ratio-lab.jpg" data-lightbox data-caption="Gear Ratio Lab — building a setup for the Aspen Lift Loop"><img src="assets/gear-ratio-lab.jpg" alt="Gear Ratio Lab plan step: choosing a chainring, wheel size, and a rear cog for each section of the Aspen Lift Loop, with an animated drivetrain preview and a formula card" width="1400" height="948" loading="lazy" decoding="async"></a>
+                <figcaption class="meta">Building a setup: a cog for every section, with a live drivetrain preview.</figcaption>
+              </figure>
+              <div class="tool-text">
+                <ul class="tool-tags">
+                  <li class="pill">Algebra I &ndash; Calculus</li>
+                  <li class="pill">Statistics</li>
+                  <li class="pill">In person or online</li>
+                </ul>
+                <p class="service-desc">Students run the race mechanic&rsquo;s bench. They pick a course, then choose a chainring, a wheel size, and a rear cog for every section &mdash; from a flat dirt-road start to a 14% pitch. Put on a gear that&rsquo;s too big for a climb and the rider has to get off and walk; shift too often and the seconds add up.</p>
+                <ul class="service-points">
+                  <li><strong>Gears are math.</strong> On a lab sheet, students work out the gear ratio, distance per pedal stroke, speed, and time for every section, while an animated drivetrain shows how far the wheel turns for each turn of the pedals.</li>
+                  <li><strong>Math matched to the class.</strong> Pick Algebra I, Geometry, Algebra II, Precalculus, Statistics, or Calculus for a problem built from the student&rsquo;s own setup &mdash; inequalities for the right cog, circumference and gear inches, angular velocity, percent jumps across the cassette, related rates. A wrong answer gets a hint before the solution is shown.</li>
+                  <li><strong>Race the rival.</strong> Their setup races a rival&rsquo;s on the course profile, so every gear choice shows up as seconds won or lost.</li>
+                  <li><strong>Tune and predict.</strong> Students get one change, predict their new time before testing it, and answer a mechanic&rsquo;s question that makes them explain the trade-off with numbers. I score that answer with a rubric, and each round earns a medal as students rank up from Shop Rookie to Chief Mechanic.</li>
+                </ul>
+                <div class="tool-actions">
+                  <a class="button" data-tool-launch href="https://wcmalfeld.github.io/GearRatioLab_LearningTool/" target="_blank" rel="noopener">Play Gear Ratio Lab <span aria-hidden="true">&rarr;</span></a>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+    <article class="tool-card lab-card" id="tool-stravashowdown" data-lab-tool="strava-showdown" data-category="race-team" data-subjects="algebra statistics calculus" data-difficulty="intermediate advanced" data-duration="challenge">
+      <span class="tool-thumb"><span class="lab-flag lab-flag--featured">Featured</span><img src="assets/strava-showdown.jpg" alt="" loading="lazy" decoding="async"></span>
+      <div class="tool-card-body">
+        <p class="kicker">Race Team</p>
+        <h3 class="tool-card-title"><a href="https://wcmalfeld.github.io/StravaShowdown_LearningTool/" target="_blank" rel="noopener">Strava Showdown</a></h3>
+        <p class="tool-card-desc">Be the team’s race analyst: crunch ride data, graph the field and decide who gets picked to race.</p>
+        <dl class="lab-facts">
+          <div><dt>Level</dt><dd>Intermediate &ndash; Advanced</dd></div>
+          <div><dt>Time</dt><dd>20-30 min</dd></div>
+        </dl>
+        <ul class="pill-row" aria-label="Math">
+          <li class="pill">Algebra</li><li class="pill">Statistics</li><li class="pill">Calculus</li>
+        </ul>
+        <div class="lab-card-actions">
+          <a class="button" href="https://wcmalfeld.github.io/StravaShowdown_LearningTool/" target="_blank" rel="noopener">Launch <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> Strava Showdown (opens in a new tab)</span></a>
+          <details class="lab-more">
+            <summary class="read-link">Details</summary>
+            <div class="tool-detail">
+              <figure class="tool-shot" data-gallery>
+                <a class="fig-frame" href="assets/strava-showdown.jpg" data-lightbox data-caption="Strava Showdown — plotting the field on a distance–time graph"><img src="assets/strava-showdown.jpg" alt="Strava Showdown graph step: six riders plotted on a distance–time graph, with two riders' four split points traced as bent lines" width="1400" height="1093" loading="lazy" decoding="async"></a>
+                <figcaption class="meta">The graph step: every line&rsquo;s slope is a rider&rsquo;s speed.</figcaption>
+              </figure>
+              <div class="tool-text">
+                <ul class="tool-tags">
+                  <li class="pill">Algebra I &ndash; Calculus</li>
+                  <li class="pill">Statistics</li>
+                  <li class="pill">In person or online</li>
+                </ul>
+                <p class="service-desc">Students play the data analyst for a mountain bike team. They&rsquo;re dealt a field of riders, each with a Strava-style ride card &mdash; distance, moving time, elevation gain, and four split times &mdash; and a race brief saying what the team needs: the fastest rider, the best climber, the steadiest pacer, or the strongest single effort.</p>
+                <ul class="service-points">
+                  <li><strong>Call it, then prove it.</strong> Students predict the podium before doing any math, then work out each rider&rsquo;s average speed, climb rate, or split range on an analyst sheet to see whether their gut was right.</li>
+                  <li><strong>Math matched to the class.</strong> Pick Algebra I, Geometry, Algebra II, Precalculus, Statistics, or Calculus for an extra problem about the same riders &mdash; from catch-up problems with d = rt to z-scores and the Mean Value Theorem. A wrong answer gets a hint before the solution is shown.</li>
+                  <li><strong>Graph it.</strong> Students plot the whole field on a distance&ndash;time graph and see that slope is speed &mdash; including two riders with identical totals whose rides tell very different stories.</li>
+                  <li><strong>Make the case.</strong> A coach&rsquo;s question asks them to pick a rider and defend it with numbers and the graph. I score the answer with a rubric, and each round earns a score and a medal as students rank up from Junior Analyst to Head of Data.</li>
+                </ul>
+                <div class="tool-actions">
+                  <a class="button" data-tool-launch href="https://wcmalfeld.github.io/StravaShowdown_LearningTool/" target="_blank" rel="noopener">Play Strava Showdown <span aria-hidden="true">&rarr;</span></a>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+    <article class="tool-card lab-card" id="tool-jumplab" data-lab-tool="jump-lab" data-category="engineering" data-subjects="algebra trigonometry physics" data-difficulty="beginner intermediate advanced" data-duration="challenge">
+      <span class="tool-thumb"><span class="lab-flag lab-flag--featured">Featured</span><img src="assets/jump-lab.jpg" alt="" loading="lazy" decoding="async"></span>
+      <div class="tool-card-body">
+        <p class="kicker">Engineering Lab</p>
+        <h3 class="tool-card-title"><a href="https://wcmalfeld.github.io/JumpLab_MTB/JumpLab_MTB/dist/jump-lab.html" target="_blank" rel="noopener">Jump Lab</a></h3>
+        <p class="tool-card-desc">Set the speed, angle and heights of a jump, predict where the rider lands, then send it and check the projectile-motion math.</p>
+        <dl class="lab-facts">
+          <div><dt>Level</dt><dd>Beginner &ndash; Advanced</dd></div>
+          <div><dt>Time</dt><dd>15-30 min</dd></div>
+        </dl>
+        <ul class="pill-row" aria-label="Math">
+          <li class="pill">Algebra</li><li class="pill">Trigonometry</li><li class="pill pill--physics">Physics</li>
+        </ul>
+        <div class="lab-card-actions">
+          <a class="button" href="https://wcmalfeld.github.io/JumpLab_MTB/JumpLab_MTB/dist/jump-lab.html" target="_blank" rel="noopener">Launch <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> Jump Lab (opens in a new tab)</span></a>
+          <details class="lab-more">
+            <summary class="read-link">Details</summary>
+            <div class="tool-detail">
+              <figure class="tool-shot" data-gallery>
+                <a class="fig-frame" href="assets/jump-lab.jpg" data-lightbox data-caption="Jump Lab — a 20 mph, 20° launch landing in the zone"><img src="assets/jump-lab.jpg" alt="Jump Lab: a rider's flight path from a takeoff lip to a landing zone, with peak height and landing distance marked, sliders for takeoff speed, launch angle, elevations and target distance, and a math workbench showing the projectile-motion equations" width="1400" height="900" loading="lazy" decoding="async"></a>
+                <figcaption class="meta">Explore mode: every slider redraws the arc, and the workbench shows the equations behind it.</figcaption>
+              </figure>
+              <div class="tool-text">
+                <ul class="tool-tags">
+                  <li class="pill pill--physics">Physics</li>
+                  <li class="pill">Quadratics &middot; Trig</li>
+                  <li class="pill">In person or online</li>
+                </ul>
+                <p class="service-desc">Students set the takeoff speed, launch angle, takeoff and landing heights, and the size of the landing zone, then hit <em>Send it</em> to ride the jump. The flight path, airtime, distance, peak height and landing speed all come straight from the projectile-motion equations, in feet and mph or metric.</p>
+                <ul class="service-points">
+                  <li><strong>Predict, then send it.</strong> Students commit to a prediction before each jump, then scrub through the flight one moment at a time to see where they were right.</li>
+                  <li><strong>A math workbench alongside.</strong> Simple or advanced equations, the numbers plugged in live, and concept cards on why the path is a parabola and how sine and cosine split the speed.</li>
+                  <li><strong>Missions from beginner to expert.</strong> Clear a gap, find the minimum speed, hit the same distance two different ways, and finally solve the jump on paper before trying it.</li>
+                  <li><strong>Tutor mode and session summary.</strong> I can guide the session, and a summary of attempts and missions is ready to talk through at the end. No personal data is stored.</li>
+                </ul>
+                <div class="tool-actions">
+                  <a class="button" data-tool-launch href="https://wcmalfeld.github.io/JumpLab_MTB/JumpLab_MTB/dist/jump-lab.html" target="_blank" rel="noopener">Open Jump Lab <span aria-hidden="true">&rarr;</span></a>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+    <article class="tool-card lab-card" id="tool-summitexpedition" data-lab-tool="summit-expedition" data-category="" data-subjects="algebra geometry trigonometry calculus" data-difficulty="intermediate advanced" data-duration="extended">
+      <span class="tool-thumb"><span class="lab-flag">Members</span><img src="assets/summit-expedition.jpg" alt="" loading="lazy" decoding="async"></span>
+      <div class="tool-card-body">
+        <p class="kicker">The Lab</p>
+        <h3 class="tool-card-title"><a href="tool.html?id=summit-expedition">Summit Expedition</a></h3>
+        <p class="tool-card-desc">A math race up Mt. Axiom: pick how hard a problem to take on, and harder problems climb faster.</p>
+        <dl class="lab-facts">
+          <div><dt>Level</dt><dd>Intermediate &ndash; Advanced</dd></div>
+          <div><dt>Time</dt><dd>30-60 min</dd></div>
+        </dl>
+        <ul class="pill-row" aria-label="Math">
+          <li class="pill">Algebra</li><li class="pill">Geometry</li><li class="pill">Trigonometry</li><li class="pill">Calculus</li>
+        </ul>
+        <p class="lab-access">Student login required.</p>
+        <div class="lab-card-actions">
+          <a class="button" href="tool.html?id=summit-expedition">Launch <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> Summit Expedition</span></a>
+          <details class="lab-more">
+            <summary class="read-link">Details</summary>
+            <div class="tool-detail">
+              <figure class="tool-shot" data-gallery>
+              <a class="fig-frame" href="assets/summit-expedition.jpg" data-lightbox data-caption="Summit Expedition — the trail up Mt. Axiom"><img src="assets/summit-expedition.jpg" alt="Summit Expedition game board: a trail winding up Mt. Axiom from Base Camp to the summit, with camps, supply caches, weather events, and an Ice Ridge shortcut" width="1200" height="963" loading="lazy" decoding="async"></a>
+              <figcaption class="meta">The trail up Mt. Axiom, from Base Camp (2,400 m) to the summit (4,350 m).</figcaption>
+              </figure>
+              <div class="tool-text">
+                <ul class="tool-tags">
+                  <li class="pill">Algebra I &ndash; Calculus</li>
+                  <li class="pill">1&ndash;4 players</li>
+                  <li class="pill">In person or online</li>
+                </ul>
+                <p class="service-desc">Students race to climb Mt. Axiom by solving math problems. On each turn, a player rolls a die and then chooses how hard a problem to take on &mdash; <em>Safe</em>, <em>Bold</em>, or <em>Daring</em>. Harder problems move them farther up the trail when they get them right.</p>
+                <ul class="service-points">
+                <li><strong>Mistakes never send anyone backward.</strong> After a wrong answer, the student sees a worked solution and earns insight tokens they can trade for power-ups like a hint or a second try.</li>
+                <li><strong>Fresh problems every game.</strong> I choose which topics are in play, and the difficulty quietly adjusts to how each student is doing.</li>
+                <li><strong>Something to aim for.</strong> Supply caches, weather events, camps, and a risky Ice Ridge shortcut guarded by an Ice Wall keep every climb different.</li>
+                <li><strong>A clear picture of progress.</strong> A session report at the end shows accuracy by skill and every problem a student missed, so we know exactly what to work on next.</li>
+                </ul>
+                <div class="tool-actions">
+                <a class="button" data-tool-launch href="tool.html?id=summit-expedition">Play Summit Expedition <span aria-hidden="true">&rarr;</span></a>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+    </div>
+    <p class="lab-empty" data-lab-empty hidden>No tools match those filters yet. <button type="button" class="lab-filter-reset" data-lab-clear>Clear filters</button></p>
+    <!-- /BUILD:lab-tools -->
 
-    <div class="tool-grid">
-      <details class="tool-card" id="tool-trailbuilder" data-tool="trail-builder">
-        <summary>
-          <span class="tool-thumb"><img src="assets/trailbuilder.jpg" alt="Trail Builder mid-build" loading="lazy" decoding="async"></span>
-          <span class="tool-card-body">
-            <span class="kicker"><span class="service-num">Tool 01</span>Design game</span>
-            <h3 class="tool-card-title">Trail Builder</h3>
-            <span class="tool-card-desc">Students design a mountain bike trail for a client, solving a math problem for every segment they build.</span>
-            <span class="tool-card-more">See details <span aria-hidden="true">+</span></span>
-          </span>
-        </summary>
-        <div class="tool-detail">
-          <figure class="tool-shot" data-gallery>
-          <a class="fig-frame" href="assets/trailbuilder.jpg" data-lightbox data-caption="Trail Builder — designing a trail for Pine Ridge Kids' Camp"><img src="assets/trailbuilder.jpg" alt="Trail Builder in the build phase: a client work order with requirements, a live elevation profile of the trail so far, a crew logbook of segments and costs, and a geometry question about a rock garden" width="1400" height="1093" loading="lazy" decoding="async"></a>
-          <figcaption class="meta">Mid-build: each new segment comes with a problem to solve before it goes in.</figcaption>
-          </figure>
-          <div class="tool-text">
-            <ul class="tool-tags">
-              <li class="pill">Algebra I &ndash; Calculus</li>
-              <li class="pill">Statistics</li>
-              <li class="pill">In person or online</li>
-            </ul>
-            <p class="service-desc">Students run a trail crew. They take a work order from a client &mdash; a youth bike camp, a city greenway, an enduro race &mdash; and design a trail that fits the budget, meets the client&rsquo;s requirements, and finishes at exactly the right elevation. Every segment they add comes with a math problem to solve first.</p>
-            <ul class="service-points">
-            <li><strong>Math matched to the class.</strong> Pick Algebra I, Geometry, Algebra II, Precalculus, Statistics, or Calculus, and each segment brings its own problem &mdash; slopes, the Pythagorean theorem, jump trajectories, banking angles, expected value, derivatives. A wrong answer gets a hint before the solution is shown.</li>
-            <li><strong>Real planning, real constraints.</strong> Students balance money, length, difficulty, and elevation while a live profile shows where the trail is headed. I can throw in change orders mid-round &mdash; a sponsor donation, a permit fee, a moved finish line &mdash; so they have to re-plan.</li>
-            <li><strong>A test ride with consequences.</strong> A rider rolls the die on every tougher segment. Crashes, flats, and washouts cost money or points, so risky designs have to be worth it.</li>
-            <li><strong>Explain the design.</strong> Each round ends with a score and a medal, then students name the trail and write a pitch to the client explaining, with numbers, why it works. Finished trails build into a network as they rank up from Trail Rookie to Master Builder.</li>
-            </ul>
-            <div class="tool-actions">
-            <a class="button" data-tool-launch href="https://wcmalfeld.github.io/TrailBuilder_Math/" target="_blank" rel="noopener">Play Trail Builder <span aria-hidden="true">&rarr;</span></a>
-            </div>
-          </div>
-        </div>
-      </details>
-      <details class="tool-card" id="tool-physicsplayground" data-tool="physics-playground">
-        <summary>
-          <span class="tool-thumb"><img src="assets/physics-playground.jpg" alt="MTB Physics Playground jump lab" loading="lazy" decoding="async"></span>
-          <span class="tool-card-body">
-            <span class="kicker"><span class="service-num">Tool 02</span>Physics lab</span>
-            <h3 class="tool-card-title">MTB Physics Playground</h3>
-            <span class="tool-card-desc">Interactive physics labs built around riding: launch a rider off a jump, predict the landing, then see the math that explains it.</span>
-            <span class="tool-card-more">See details <span aria-hidden="true">+</span></span>
-          </span>
-        </summary>
-        <div class="tool-detail">
-          <figure class="tool-shot" data-gallery>
-            <a class="fig-frame" href="assets/physics-playground.jpg" data-lightbox data-caption="MTB Physics Playground — the MTB Jump Lab"><img src="assets/physics-playground.jpg" alt="MTB Jump Lab: a rider launching off a 4 ft ramp at 20 mph and 20 degrees, the flight path landing inside a target zone, with results showing flight time, landing distance, and velocity components" width="1400" height="743" loading="lazy" decoding="async"></a>
-            <figcaption class="meta">The MTB Jump Lab: set speed, angle, and height, then see where the rider lands and why.</figcaption>
-          </figure>
-          <div class="tool-text">
-            <ul class="tool-tags">
-              <li class="pill pill--physics">Physics</li>
-              <li class="pill">Quadratics &middot; Vectors &middot; Trig</li>
-              <li class="pill">In person or online</li>
-            </ul>
-            <p class="service-desc">A set of interactive physics labs built around riding. In the MTB Jump Lab, students set the launch speed, takeoff angle, and ramp height, predict where the rider will land, then launch and watch the path, with the equations that explain it right alongside. Three more labs cover splitting a velocity into its parts, braking distance, and why tight, fast corners feel so intense.</p>
-            <ul class="service-points">
-              <li><strong>Predict first.</strong> With predictions on, the path and landing stay hidden until launch, so students commit to an answer before the physics reveals it.</li>
-              <li><strong>Real equations, real numbers.</strong> Flight time, landing distance, and velocity components come straight from the projectile-motion equations, in US or metric units, with hints that get more specific each time.</li>
-              <li><strong>One variable at a time.</strong> Guided challenges lock every setting except the one being investigated, and students can save attempts side by side to compare.</li>
-              <li><strong>Tutor Mode.</strong> I choose challenges, turn equations and hints on or off, require predictions, read students&rsquo; written explanations, and mark each concept from &ldquo;Needs practice&rdquo; to &ldquo;Demonstrated independently.&rdquo;</li>
-            </ul>
-            <div class="tool-actions">
-              <a class="button" data-tool-launch href="https://wcmalfeld.github.io/mtb-physics/" target="_blank" rel="noopener">Open the Physics Playground <span aria-hidden="true">&rarr;</span></a>
-            </div>
-          </div>
-        </div>
-      </details>
-      <details class="tool-card" id="tool-gearratiolab" data-tool="gear-ratio-lab">
-        <summary>
-          <span class="tool-thumb"><img src="assets/gear-ratio-lab.jpg" alt="Gear Ratio Lab setup screen" loading="lazy" decoding="async"></span>
-          <span class="tool-card-body">
-            <span class="kicker"><span class="service-num">Tool 03</span>Mechanic game</span>
-            <h3 class="tool-card-title">Gear Ratio Lab</h3>
-            <span class="tool-card-desc">Students gear a race bike for a course, then work out ratios, speeds, and times to beat a rival.</span>
-            <span class="tool-card-more">See details <span aria-hidden="true">+</span></span>
-          </span>
-        </summary>
-        <div class="tool-detail">
-          <figure class="tool-shot" data-gallery>
-            <a class="fig-frame" href="assets/gear-ratio-lab.jpg" data-lightbox data-caption="Gear Ratio Lab — building a setup for the Aspen Lift Loop"><img src="assets/gear-ratio-lab.jpg" alt="Gear Ratio Lab plan step: choosing a chainring, wheel size, and a rear cog for each section of the Aspen Lift Loop, with an animated drivetrain preview and a formula card" width="1400" height="948" loading="lazy" decoding="async"></a>
-            <figcaption class="meta">Building a setup: a cog for every section, with a live drivetrain preview.</figcaption>
-          </figure>
-          <div class="tool-text">
-            <ul class="tool-tags">
-              <li class="pill">Algebra I &ndash; Calculus</li>
-              <li class="pill">Statistics</li>
-              <li class="pill">In person or online</li>
-            </ul>
-            <p class="service-desc">Students run the race mechanic&rsquo;s bench. They pick a course, then choose a chainring, a wheel size, and a rear cog for every section &mdash; from a flat dirt-road start to a 14% pitch. Put on a gear that&rsquo;s too big for a climb and the rider has to get off and walk; shift too often and the seconds add up.</p>
-            <ul class="service-points">
-              <li><strong>Gears are math.</strong> On a lab sheet, students work out the gear ratio, distance per pedal stroke, speed, and time for every section, while an animated drivetrain shows how far the wheel turns for each turn of the pedals.</li>
-              <li><strong>Math matched to the class.</strong> Pick Algebra I, Geometry, Algebra II, Precalculus, Statistics, or Calculus for a problem built from the student&rsquo;s own setup &mdash; inequalities for the right cog, circumference and gear inches, angular velocity, percent jumps across the cassette, related rates. A wrong answer gets a hint before the solution is shown.</li>
-              <li><strong>Race the rival.</strong> Their setup races a rival&rsquo;s on the course profile, so every gear choice shows up as seconds won or lost.</li>
-              <li><strong>Tune and predict.</strong> Students get one change, predict their new time before testing it, and answer a mechanic&rsquo;s question that makes them explain the trade-off with numbers. I score that answer with a rubric, and each round earns a medal as students rank up from Shop Rookie to Chief Mechanic.</li>
-            </ul>
-            <div class="tool-actions">
-              <a class="button" data-tool-launch href="https://wcmalfeld.github.io/GearRatioLab_LearningTool/" target="_blank" rel="noopener">Play Gear Ratio Lab <span aria-hidden="true">&rarr;</span></a>
-            </div>
-          </div>
-        </div>
-      </details>
-      <details class="tool-card" id="tool-stravashowdown" data-tool="strava-showdown">
-        <summary>
-          <span class="tool-thumb"><img src="assets/strava-showdown.jpg" alt="Strava Showdown ride graph" loading="lazy" decoding="async"></span>
-          <span class="tool-card-body">
-            <span class="kicker"><span class="service-num">Tool 04</span>Data game</span>
-            <h3 class="tool-card-title">Strava Showdown</h3>
-            <span class="tool-card-desc">Students become a mountain bike team&rsquo;s race analyst, crunching ride data to decide who gets picked to race.</span>
-            <span class="tool-card-more">See details <span aria-hidden="true">+</span></span>
-          </span>
-        </summary>
-        <div class="tool-detail">
-          <figure class="tool-shot" data-gallery>
-            <a class="fig-frame" href="assets/strava-showdown.jpg" data-lightbox data-caption="Strava Showdown — plotting the field on a distance–time graph"><img src="assets/strava-showdown.jpg" alt="Strava Showdown graph step: six riders plotted on a distance–time graph, with two riders' four split points traced as bent lines" width="1400" height="1093" loading="lazy" decoding="async"></a>
-            <figcaption class="meta">The graph step: every line&rsquo;s slope is a rider&rsquo;s speed.</figcaption>
-          </figure>
-          <div class="tool-text">
-            <ul class="tool-tags">
-              <li class="pill">Algebra I &ndash; Calculus</li>
-              <li class="pill">Statistics</li>
-              <li class="pill">In person or online</li>
-            </ul>
-            <p class="service-desc">Students play the data analyst for a mountain bike team. They&rsquo;re dealt a field of riders, each with a Strava-style ride card &mdash; distance, moving time, elevation gain, and four split times &mdash; and a race brief saying what the team needs: the fastest rider, the best climber, the steadiest pacer, or the strongest single effort.</p>
-            <ul class="service-points">
-              <li><strong>Call it, then prove it.</strong> Students predict the podium before doing any math, then work out each rider&rsquo;s average speed, climb rate, or split range on an analyst sheet to see whether their gut was right.</li>
-              <li><strong>Math matched to the class.</strong> Pick Algebra I, Geometry, Algebra II, Precalculus, Statistics, or Calculus for an extra problem about the same riders &mdash; from catch-up problems with d = rt to z-scores and the Mean Value Theorem. A wrong answer gets a hint before the solution is shown.</li>
-              <li><strong>Graph it.</strong> Students plot the whole field on a distance&ndash;time graph and see that slope is speed &mdash; including two riders with identical totals whose rides tell very different stories.</li>
-              <li><strong>Make the case.</strong> A coach&rsquo;s question asks them to pick a rider and defend it with numbers and the graph. I score the answer with a rubric, and each round earns a score and a medal as students rank up from Junior Analyst to Head of Data.</li>
-            </ul>
-            <div class="tool-actions">
-              <a class="button" data-tool-launch href="https://wcmalfeld.github.io/StravaShowdown_LearningTool/" target="_blank" rel="noopener">Play Strava Showdown <span aria-hidden="true">&rarr;</span></a>
-            </div>
-          </div>
-        </div>
-      </details>
-      <details class="tool-card" id="tool-jumplab" data-tool="jump-lab">
-        <summary>
-          <span class="tool-thumb"><img src="assets/jump-lab.jpg" alt="Jump Lab simulator" loading="lazy" decoding="async"></span>
-          <span class="tool-card-body">
-            <span class="kicker"><span class="service-num">Tool 05</span>Physics simulator</span>
-            <h3 class="tool-card-title">Jump Lab</h3>
-            <span class="tool-card-desc">Students engineer a mountain bike jump, predict where the rider will land, then send it and see the projectile-motion math behind the flight.</span>
-            <span class="tool-card-more">See details <span aria-hidden="true">+</span></span>
-          </span>
-        </summary>
-        <div class="tool-detail">
-          <figure class="tool-shot" data-gallery>
-            <a class="fig-frame" href="assets/jump-lab.jpg" data-lightbox data-caption="Jump Lab — a 20 mph, 20° launch landing in the zone"><img src="assets/jump-lab.jpg" alt="Jump Lab: a rider's flight path from a takeoff lip to a landing zone, with peak height and landing distance marked, sliders for takeoff speed, launch angle, elevations and target distance, and a math workbench showing the projectile-motion equations" width="1400" height="900" loading="lazy" decoding="async"></a>
-            <figcaption class="meta">Explore mode: every slider redraws the arc, and the workbench shows the equations behind it.</figcaption>
-          </figure>
-          <div class="tool-text">
-            <ul class="tool-tags">
-              <li class="pill pill--physics">Physics</li>
-              <li class="pill">Quadratics &middot; Trig</li>
-              <li class="pill">In person or online</li>
-            </ul>
-            <p class="service-desc">Students set the takeoff speed, launch angle, takeoff and landing heights, and the size of the landing zone, then hit <em>Send it</em> to ride the jump. The flight path, airtime, distance, peak height and landing speed all come straight from the projectile-motion equations, in feet and mph or metric.</p>
-            <ul class="service-points">
-              <li><strong>Predict, then send it.</strong> Students commit to a prediction before each jump, then scrub through the flight one moment at a time to see where they were right.</li>
-              <li><strong>A math workbench alongside.</strong> Simple or advanced equations, the numbers plugged in live, and concept cards on why the path is a parabola and how sine and cosine split the speed.</li>
-              <li><strong>Missions from beginner to expert.</strong> Clear a gap, find the minimum speed, hit the same distance two different ways, and finally solve the jump on paper before trying it.</li>
-              <li><strong>Tutor mode and session summary.</strong> I can guide the session, and a summary of attempts and missions is ready to talk through at the end. No personal data is stored.</li>
-            </ul>
-            <div class="tool-actions">
-              <a class="button" data-tool-launch href="https://wcmalfeld.github.io/JumpLab_MTB/JumpLab_MTB/dist/jump-lab.html" target="_blank" rel="noopener">Open Jump Lab <span aria-hidden="true">&rarr;</span></a>
-            </div>
-          </div>
-        </div>
-      </details>
-      <article class="tool-card tool-card--soon" data-tool="tool-05">
-        <span class="tool-thumb"><img src="assets/photos/tool-05.svg" alt="" loading="lazy" decoding="async"></span>
-        <div class="tool-card-body">
-          <p class="kicker"><span class="service-num">Tool 06</span><span class="kicker-flag">In development</span></p>
-          <h3 class="tool-card-title">Coming Soon</h3>
-          <p class="tool-card-desc">A new learning tool is in the works. Check back soon.</p>
-        </div>
-      </article>
-      <details class="tool-card" id="tool-summit" data-tool="summit-expedition" hidden>
-        <summary>
-          <span class="tool-thumb"><img src="assets/summit-expedition.jpg" alt="Summit Expedition game board" loading="lazy" decoding="async"></span>
-          <span class="tool-card-body">
-            <span class="kicker"><span class="service-num">Tool 07</span>Board game<span class="kicker-flag">Members</span></span>
-            <h3 class="tool-card-title">Summit Expedition</h3>
-            <span class="tool-card-desc">A math race up Mt. Axiom. Students pick how hard a problem to take on, and harder problems climb faster.</span>
-            <span class="tool-card-more">See details <span aria-hidden="true">+</span></span>
-          </span>
-        </summary>
-        <div class="tool-detail">
-          <figure class="tool-shot" data-gallery>
-          <a class="fig-frame" href="assets/summit-expedition.jpg" data-lightbox data-caption="Summit Expedition — the trail up Mt. Axiom"><img src="assets/summit-expedition.jpg" alt="Summit Expedition game board: a trail winding up Mt. Axiom from Base Camp to the summit, with camps, supply caches, weather events, and an Ice Ridge shortcut" width="1200" height="963" loading="lazy" decoding="async"></a>
-          <figcaption class="meta">The trail up Mt. Axiom, from Base Camp (2,400 m) to the summit (4,350 m).</figcaption>
-          </figure>
-          <div class="tool-text">
-            <ul class="tool-tags">
-              <li class="pill">Algebra I &ndash; Calculus</li>
-              <li class="pill">1&ndash;4 players</li>
-              <li class="pill">In person or online</li>
-            </ul>
-            <p class="service-desc">Students race to climb Mt. Axiom by solving math problems. On each turn, a player rolls a die and then chooses how hard a problem to take on &mdash; <em>Safe</em>, <em>Bold</em>, or <em>Daring</em>. Harder problems move them farther up the trail when they get them right.</p>
-            <ul class="service-points">
-            <li><strong>Mistakes never send anyone backward.</strong> After a wrong answer, the student sees a worked solution and earns insight tokens they can trade for power-ups like a hint or a second try.</li>
-            <li><strong>Fresh problems every game.</strong> I choose which topics are in play, and the difficulty quietly adjusts to how each student is doing.</li>
-            <li><strong>Something to aim for.</strong> Supply caches, weather events, camps, and a risky Ice Ridge shortcut guarded by an Ice Wall keep every climb different.</li>
-            <li><strong>A clear picture of progress.</strong> A session report at the end shows accuracy by skill and every problem a student missed, so we know exactly what to work on next.</li>
-            </ul>
-            <div class="tool-actions">
-            <a class="button" data-tool-launch href="tool.html?id=summit-expedition">Play Summit Expedition <span aria-hidden="true">&rarr;</span></a>
-            </div>
-          </div>
-        </div>
-      </details>
+    <div class="tool-grid lab-extras">
       <a class="tool-card tool-card--members" href="login.html" data-auth-show="guest">
         <div class="tool-card-body">
           <p class="kicker">Members</p>
@@ -351,11 +393,6 @@
           <span class="tool-card-more">Let me know <span aria-hidden="true">&rarr;</span></span>
         </div>
       </a>
-    </div>
-
-    <div class="lab-callout">
-      <p><strong>Explore the whole Lab</strong>Browse every tool by activity, math subject, level and time, from the Engineering Lab to the Bike Workshop.</p>
-      <a class="button" href="learning-lab/" data-track="lab_cta_home_tools">Explore the Lab</a>
     </div>
   </div>
 </section>
@@ -406,41 +443,29 @@
 </section>
 
 <!-- ============================================================
-     MEET WILL (short) — the full story lives on about.html
-     ============================================================ -->
-<section class="section" id="about" aria-labelledby="about-title">
-  <div class="wrap feature feature--portrait">
-    <figure class="feature-photo" data-gallery>
-      <a class="fig-frame" href="assets/selfie.jpg" data-lightbox data-caption="Will, the tutor behind Mathlete MTB"><img src="assets/selfie.jpg" alt="Will, smiling, in a cap and black jacket" width="611" height="1285" loading="lazy" decoding="async"></a>
-    </figure>
-    <div class="prose">
-      <h2 class="label" id="about-title">Meet Will</h2>
-      <p>Hi, I&rsquo;m Will &mdash; the tutor behind Mathlete MTB. I&rsquo;ve taught high school math and physics to student-athletes around the world, and I help students build both mathematical ability and confidence in themselves as learners, using problem-solving, real-world applications, and the things they already care about &mdash; particularly mountain biking.</p>
-      <a class="read-link" href="about.html">More about me <span aria-hidden="true">&rarr;</span></a>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
      PRIVATE TUTORING — the session photo and subject highlights.
      PHOTO: replace assets/photos/virtual-session.svg with a real photo
      of Will tutoring on Zoom (same photo as tutoring.html).
      ============================================================ -->
-<section class="section section--panel" id="private-tutoring" aria-labelledby="private-tutoring-title">
+<section class="section lab-tutoring" id="private-tutoring" aria-labelledby="private-tutoring-title">
   <div class="wrap feature">
     <figure class="feature-photo" data-gallery>
       <a class="fig-frame" href="assets/photos/virtual-session.svg" data-lightbox data-caption="A virtual tutoring session"><img src="assets/photos/virtual-session.svg" alt="Placeholder for a photograph of Will teaching a virtual session on a digital whiteboard" width="1200" height="900" loading="lazy" decoding="async"></a>
       <figcaption class="meta">Sessions run on Zoom with a shared digital whiteboard.</figcaption>
     </figure>
     <div class="prose">
-      <h2 class="label" id="private-tutoring-title">Private Tutoring</h2>
-      <p>Every student learns differently. In one-on-one virtual sessions we work through problems together on a shared whiteboard, visualize the hard ideas, and build the problem-solving skills that carry over to the next test and beyond.</p>
-      <a class="read-link" href="tutoring.html">How tutoring works <span aria-hidden="true">&rarr;</span></a>
+      <p class="eyebrow">Private Tutoring</p>
+      <h2 class="label" id="private-tutoring-title">Work with Will one-on-one</h2>
+      <p>Every tool in the Lab was built for real tutoring sessions. Every student learns differently, so in one-on-one virtual sessions we work through problems together on a shared whiteboard, visualize the hard ideas, and build the problem-solving skills that carry over to the next test and beyond.</p>
+      <div class="hero-actions step-actions">
+        <a class="button" href="book.html" data-track="book_cta_home_tutoring">Book a Session</a>
+        <a class="read-link" href="tutoring.html">How tutoring works <span aria-hidden="true">&rarr;</span></a>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="section section--panel" id="subjects" aria-labelledby="subjects-title">
+<section class="section lab-tutoring lab-tutoring--subjects" id="subjects" aria-labelledby="subjects-title">
   <div class="wrap">
     <div class="head">
       <p class="eyebrow">Subjects</p>
@@ -489,144 +514,6 @@
 </section>
 
 <!-- ============================================================
-     SERVICES — one <article class="service"> per offering.
-     Photos: assets/photos/. The first image is the large one;
-     the other two make a small collage. Delete any you don't need.
-     ============================================================ -->
-<section class="section" id="services" aria-labelledby="services-title">
-  <div class="wrap">
-    <div class="head">
-      <p class="eyebrow">What I Offer</p>
-      <h2 class="label head-title" id="services-title">Tutoring &amp; Mentoring</h2>
-      <p class="head-note">One philosophy across all of it: take on something difficult, get comfortable being wrong, and keep trying.</p>
-    </div>
-
-    <article class="service">
-      <div class="service-media service-media--n3" data-gallery>
-        <a class="fig-frame" href="assets/photos/tutoring-1.jpg" data-lightbox data-caption="Students working on math outdoors"><img src="assets/photos/tutoring-1.jpg" alt="Students working on math at an outdoor table with mountains behind them" loading="lazy" decoding="async"></a>
-        <a class="fig-frame" href="assets/photos/tutoring-2.svg" data-lightbox data-caption="Tutoring"><img src="assets/photos/tutoring-2.svg" alt="Placeholder for a tutoring photograph" loading="lazy" decoding="async"></a>
-        <a class="fig-frame" href="assets/photos/tutoring-3.svg" data-lightbox data-caption="Tutoring"><img src="assets/photos/tutoring-3.svg" alt="Placeholder for a tutoring photograph" loading="lazy" decoding="async"></a>
-      </div>
-      <div class="service-text">
-        <p class="kicker"><span class="service-num">01</span>Now booking</p>
-        <h3 class="service-title">Math &amp; Physics Tutoring</h3>
-        <p class="service-desc">Individualized tutoring for middle and high school students. Strong fundamentals, the &ldquo;why&rdquo; behind the math, and sessions that move at the pace that actually works for your student.</p>
-        <ul class="service-points">
-          <li><strong>Pre-Algebra through Calculus,</strong> plus Physics</li>
-          <li><strong>Test prep</strong> for the SAT, ACT, and more</li>
-          <li><strong>Custom learning tools</strong> like Trail Builder, Jump Lab, the MTB Physics Playground, Gear Ratio Lab, and Strava Showdown</li>
-        </ul>
-        <a class="read-link" href="tutoring.html">Private tutoring details <span aria-hidden="true">&rarr;</span></a>
-      </div>
-    </article>
-
-
-    <article class="service">
-      <div class="service-media service-media--n3" data-gallery>
-        <a class="fig-frame" href="assets/photos/mentoring-1.svg" data-lightbox data-caption="Student mentoring"><img src="assets/photos/mentoring-1.svg" alt="Placeholder for a mentoring photograph" loading="lazy" decoding="async"></a>
-        <a class="fig-frame" href="assets/photos/mentoring-2.svg" data-lightbox data-caption="Student mentoring"><img src="assets/photos/mentoring-2.svg" alt="Placeholder for a mentoring photograph" loading="lazy" decoding="async"></a>
-        <a class="fig-frame" href="assets/photos/mentoring-3.svg" data-lightbox data-caption="Student mentoring"><img src="assets/photos/mentoring-3.svg" alt="Placeholder for a mentoring photograph" loading="lazy" decoding="async"></a>
-      </div>
-      <div class="service-text">
-        <p class="kicker"><span class="service-num">02</span><span class="kicker-flag">Coming soon</span></p>
-        <h3 class="service-title">Student Mentoring</h3>
-        <p class="service-desc">Beyond math and biking, I also work with students on the stuff that doesn&rsquo;t show up on a test &mdash; the mental side of competing, pushing through setbacks, and figuring out who you want to be.</p>
-        <ul class="service-points">
-          <li><strong>Bouncing back after injury.</strong> I&rsquo;ve been through the injury-recovery cycle more times than I&rsquo;d like to admit &mdash; the frustration, the fear of losing progress, the slow climb back. I know what that actually feels like, and I help students navigate it with patience instead of panic.</li>
-          <li><strong>Mental game for athletes.</strong> Confidence, focus, and dealing with pressure are skills, not personality traits. I help young athletes build the mental habits that let them perform when it counts, instead of getting in their own way.</li>
-          <li><strong>General life guidance.</strong> After years working closely with high school students, I&rsquo;ve learned that a lot of what they need isn&rsquo;t more instruction &mdash; it&rsquo;s someone steady in their corner. I&rsquo;m glad to be that person, whether the conversation is about school, sports, or just figuring things out.</li>
-        </ul>
-        <a class="read-link" href="#contact">Ask about mentoring <span aria-hidden="true">&rarr;</span></a>
-      </div>
-    </article>
-
-    <!-- College & Beyond: the full description lives on college-beyond.html -->
-    <article class="service" id="college-beyond">
-      <div class="service-media service-media--one">
-        <a class="fig-frame fig-frame--link" href="college-beyond.html" tabindex="-1" aria-hidden="true"><img src="assets/photos/college-beyond.svg" alt="" loading="lazy" decoding="async"></a>
-      </div>
-      <div class="service-text">
-        <p class="kicker"><span class="service-num">03</span><span class="kicker-flag">New</span></p>
-        <h3 class="service-title">College &amp; Beyond Mentorship</h3>
-        <p class="service-desc">Personalized college, career, and life-planning support for high school students. Explore options, organize applications, compare costs, and build the habits that make the move to independence easier &mdash; with a mentor in your corner.</p>
-        <ul class="service-points">
-          <li><strong>Explore direction</strong> &mdash; college, trades, gap years, and careers</li>
-          <li><strong>Plan applications</strong> &mdash; timelines, r&eacute;sum&eacute;s, and feedback on student-written essays</li>
-          <li><strong>Understand affordability</strong> &mdash; compare published costs and aid offers</li>
-          <li><strong>Build independence</strong> &mdash; routines, self-advocacy, and a first-semester plan</li>
-        </ul>
-        <a class="read-link" href="college-beyond.html">Explore College &amp; Beyond <span aria-hidden="true">&rarr;</span></a>
-      </div>
-    </article>
-  </div>
-</section>
-
-<!-- ============================================================
-     STUDENT STORIES — copy the <div class="story"> block to add more.
-     ============================================================ -->
-<section class="section" id="stories" aria-labelledby="stories-title">
-  <div class="wrap split">
-    <h2 class="label split-label" id="stories-title">Student Stories</h2>
-    <div class="story prose">
-      <aside class="pullquote">
-        <blockquote><p>He also makes you interested in the subject, making you actually want to learn.</p></blockquote>
-        <p class="pullquote-cite">Cesareo, High School Sophomore</p>
-      </aside>
-      <details class="story-full">
-        <summary><span class="more">Read the full story</span><span class="less">Show less</span> <span aria-hidden="true">&darr;</span></summary>
-        <p>&ldquo;I will talk a little about the student experience here. Will was my teacher for both physics and algebra. It was nice having him as a teacher, as he was able to teach us everything we had scheduled while keeping the class interactive and entertaining. We often did activities involving more than the boring math calculations and had a lot more open activities, which, other than being more fun, helped develop more critical outside-the-box thinking, which I would say helps a lot even outside of class. A great example of these qualities is when we had rockets as our subject and instead of doing boring paper calculations, we actually built them and modified them to fill out the paperwork, which for me made a simple worksheet fun by doing something I was interested in and having fun doing. In this school, he was also my &lsquo;Mentor,&rsquo; which was basically someone that checked in on me regularly, which shows he has interest in you doing well and learning even outside of his classes. I&rsquo;d recommend him to other people as he would be a friendly teacher who would look for ways for you to improve and keep learning. He also makes you interested in the subject, making you actually want to learn, which I&rsquo;d say is really important academically.&rdquo;</p>
-      </details>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     PHOTO ALBUM — photos: assets/photos/album-*. Each <figure> is
-     one tile; the first is large, the seventh spans the full width.
-     Add, remove, or reorder tiles freely; captions are optional.
-     ============================================================ -->
-<section class="section" id="photos" aria-labelledby="photos-title">
-  <div class="wrap">
-    <div class="head">
-      <p class="eyebrow">Photographs</p>
-      <h2 class="label head-title" id="photos-title">Classroom &amp; Trail</h2>
-      <p class="head-note">Sessions, rides, and the places in between.</p>
-    </div>
-
-    <div class="album" data-gallery>
-      <figure class="album-tile">
-        <a class="fig-frame" href="assets/photos/tutoring-1.jpg" data-lightbox data-caption="An outdoor classroom"><img src="assets/photos/tutoring-1.jpg" alt="Students working on math at an outdoor table with mountains behind them" loading="lazy" decoding="async"></a>
-        <figcaption><span class="kicker">Tutoring</span> An outdoor classroom</figcaption>
-      </figure>
-      <figure class="album-tile">
-        <a class="fig-frame" href="assets/photos/album-02.svg" data-lightbox data-caption="Add a caption"><img src="assets/photos/album-02.svg" alt="Placeholder photograph" loading="lazy" decoding="async"></a>
-        <figcaption><span class="kicker">Physics</span> Add a caption</figcaption>
-      </figure>
-      <figure class="album-tile">
-        <a class="fig-frame" href="assets/photos/album-03.svg" data-lightbox data-caption="Add a caption"><img src="assets/photos/album-03.svg" alt="Placeholder photograph" loading="lazy" decoding="async"></a>
-        <figcaption><span class="kicker">On the bike</span> Add a caption</figcaption>
-      </figure>
-      <figure class="album-tile">
-        <a class="fig-frame" href="assets/photos/album-04.svg" data-lightbox data-caption="Add a caption"><img src="assets/photos/album-04.svg" alt="Placeholder photograph" loading="lazy" decoding="async"></a>
-        <figcaption><span class="kicker">Sessions</span> Add a caption</figcaption>
-      </figure>
-      <figure class="album-tile">
-        <a class="fig-frame" href="assets/photos/album-05.svg" data-lightbox data-caption="Add a caption"><img src="assets/photos/album-05.svg" alt="Placeholder photograph" loading="lazy" decoding="async"></a>
-        <figcaption><span class="kicker">Projects</span> Add a caption</figcaption>
-      </figure>
-      <figure class="album-tile">
-        <a class="fig-frame" href="assets/photos/album-06.svg" data-lightbox data-caption="Add a caption"><img src="assets/photos/album-06.svg" alt="Placeholder photograph" loading="lazy" decoding="async"></a>
-        <figcaption><span class="kicker">Mentoring</span> Add a caption</figcaption>
-      </figure>
-      <figure class="album-tile">
-        <a class="fig-frame" href="assets/photos/album-07.svg" data-lightbox data-caption="Add a caption"><img src="assets/photos/album-07.svg" alt="Placeholder for a wide photograph" loading="lazy" decoding="async"></a>
-        <figcaption><span class="kicker">Places</span> Add a caption</figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
      LET'S TALK
      ============================================================ -->
 <section class="section contact" id="contact" aria-labelledby="contact-title">
@@ -660,10 +547,11 @@
   </div>
 </footer>
 
-<script src="js/tools-config.js?v=14" defer></script>
+<script src="js/tools-config.js?v=15" defer></script>
 <script src="js/supabase-config.js?v=7" defer></script>
 <script src="js/auth.js?v=7" defer></script>
-<script src="js/site.js?v=7" defer></script>
+<script src="js/site.js?v=8" defer></script>
 <script src="js/track.js?v=1" defer></script>
+<script src="js/lab.js?v=1" defer></script>
 </body>
 </html>
