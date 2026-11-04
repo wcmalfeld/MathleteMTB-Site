@@ -3,11 +3,12 @@
 //   node scripts/build-lab.mjs
 // Reads js/tools-config.js, js/lab-categories.js and the tool descriptions
 // in content/tool-details/<tool-id>.html, and writes
-//   index.html                           (only the parts between the
+//   index.html, ski/index.html           (only the parts between the
 //                                         <!-- BUILD:name --> markers: the
 //                                         lab tiles and the tool grid; the
-//                                         rest of the home page is hand-edited)
-//   learning-lab/<category>/index.html   (one per category)
+//                                         rest of each page is hand-edited)
+//   learning-lab/<category>/index.html   (one per MTB category)
+//   ski/<category>/index.html            (one per ski category)
 //   learning-lab/index.html              (redirect to the home page, which
 //                                         is now the Lab)
 // The output is plain HTML committed to the repo, so the site still has no
@@ -28,6 +29,14 @@ export const SUBJECTS = {
 };
 export const LEVELS = { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' };
 export const DURATIONS = { quick: 'Quick activity', challenge: 'Full challenge', extended: 'Extended exploration' };
+
+// Each sport has its own Lab home page and category pages.
+export const SPORTS = {
+  mtb: { home: 'index.html', href: 'index.html', catBase: 'learning-lab/', name: 'The Mathlete Lab', bodyClass: 'lab' },
+  ski: { home: 'ski/index.html', href: 'ski/', catBase: 'ski/', name: 'Mathlete Ski', bodyClass: 'lab lab--ski' }
+};
+const sportOf = c => (c && c.sport) || 'mtb';
+export const catHref = c => SPORTS[sportOf(c)].catBase + c.id + '/';
 
 export function loadRegistry() {
   const sandbox = { window: {} };
@@ -96,17 +105,17 @@ function toolCard(t, cats) {
     </article>`;
 }
 
-function soonCard(name) {
+function soonCard(name, cat) {
   return `
     <article class="tool-card tool-card--soon lab-soon">
       <div class="tool-card-body">
-        <p class="kicker"><span class="kicker-flag">In development</span></p>
+        <p class="kicker">${cat ? esc(cat.name) + ' ' : ''}<span class="kicker-flag">In development</span></p>
         <h3 class="tool-card-title">${esc(name)}</h3>
       </div>
     </article>`;
 }
 
-function page({ path, depth, title, description, body }) {
+function page({ path, depth, title, description, body, sport = 'mtb' }) {
   const base = '../'.repeat(depth);
   const canonical = SITE + path;
   return `<!DOCTYPE html>
@@ -133,16 +142,17 @@ function page({ path, depth, title, description, body }) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/site.css?v=12">
-<link rel="stylesheet" href="css/lab.css?v=3">
+<link rel="stylesheet" href="css/lab.css?v=5">
 </head>
-<body class="lab">
+<body class="${SPORTS[sport].bodyClass}">
 <a class="skip-link" href="${path}#main">Skip to content</a>
 
 <nav class="site-nav" aria-label="Main">
   <div class="wrap">
     <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
     <ul class="nav-links">
-      <li><a href="index.html" class="active">The Lab</a></li>
+      <li><a href="index.html"${sport === 'mtb' ? ' class="active"' : ''}>The Lab</a></li>
+      <li><a href="ski/"${sport === 'ski' ? ' class="active"' : ''}>Ski</a></li>
       <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
       <li><a href="about.html">About</a></li>
       <li data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
@@ -235,25 +245,33 @@ export function render() {
   // Featured tools first, then registry order.
   const live = tools.filter(t => t.status === 'live')
     .map((t, i) => [t, i]).sort((a, b) => (b[0].featured === true) - (a[0].featured === true) || a[1] - b[1]).map(x => x[0]);
+  const catOf = t => categories.find(c => c.id === t.category);
   const pages = {};
 
-  const catTiles = categories.map(c => {
-    const n = live.filter(t => t.category === c.id).length;
-    const soon = (c.upcoming || []).length;
-    const count = [n ? `${n} tool${n === 1 ? '' : 's'}` : '', soon ? `${soon} in development` : ''].filter(Boolean).join(' &middot; ');
-    return `
-      <li><a class="lab-cat" href="learning-lab/${c.id}/">
+  for (const [sport, info] of Object.entries(SPORTS)) {
+    const cats = categories.filter(c => sportOf(c) === sport);
+    // Tools with no category (category: null) are listed with MTB.
+    const mine = live.filter(t => sportOf(catOf(t)) === sport);
+
+    const catTiles = cats.map(c => {
+      const n = live.filter(t => t.category === c.id).length;
+      const soon = (c.upcoming || []).length;
+      const count = [n ? `${n} tool${n === 1 ? '' : 's'}` : '', soon ? `${soon} in development` : ''].filter(Boolean).join(' &middot; ');
+      return `
+      <li><a class="lab-cat" href="${catHref(c)}">
         <h3 class="lab-cat-name">${esc(c.name)}</h3>
         <p class="lab-cat-focus">${esc(c.focus)}</p>
         <span class="lab-cat-count">${count}</span>
       </a></li>`;
-  }).join('');
+    }).join('');
 
-  const catOptions = '<option value="">All activities</option>' + categories.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+    const catOptions = '<option value="">All activities</option>' + cats.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
 
-  pages['index.html'] = fill(read('index.html'), {
-    'lab-cats': catTiles,
-    'lab-tools': `
+    // With no finished tools yet, the grid shows what's in development
+    // (and there's nothing to filter).
+    const seen = new Set();
+    const upcoming = cats.flatMap(c => (c.upcoming || []).filter(n => !seen.has(n) && seen.add(n)).map(n => soonCard(n, c)));
+    const toolsPart = mine.length ? `
     <form class="lab-filters" data-lab-filters hidden aria-label="Filter tools">
       <div class="lab-filter"><label for="f-category">Activity</label><select id="f-category" name="category">${catOptions}</select></div>
       <div class="lab-filter"><label for="f-subject">Math</label><select id="f-subject" name="subjects">${options(SUBJECTS, 'All subjects')}</select></div>
@@ -262,27 +280,29 @@ export function render() {
       <button type="reset" class="lab-filter-reset">Clear</button>
     </form>
     <p class="meta lab-count" data-lab-count aria-live="polite" hidden></p>
-    <div class="tool-grid" data-lab-grid>${live.map(t => toolCard(t, categories)).join('')}
+    <div class="tool-grid" data-lab-grid>${mine.map(t => toolCard(t, categories)).join('')}
     </div>
-    <p class="lab-empty" data-lab-empty hidden>No tools match those filters yet. <button type="button" class="lab-filter-reset" data-lab-clear>Clear filters</button></p>`
-  });
+    <p class="lab-empty" data-lab-empty hidden>No tools match those filters yet. <button type="button" class="lab-filter-reset" data-lab-clear>Clear filters</button></p>` : `
+    <div class="tool-grid">${upcoming.join('')}
+    </div>`;
 
-  pages['learning-lab/index.html'] = redirect;
+    pages[info.home] = fill(read(info.home), { 'lab-cats': catTiles, 'lab-tools': toolsPart });
 
-  for (const c of categories) {
-    const mine = live.filter(t => t.category === c.id);
-    const others = categories.filter(o => o.id !== c.id);
-    const soon = c.upcoming || [];
-    pages[`learning-lab/${c.id}/index.html`] = page({
-      path: `learning-lab/${c.id}/`,
-      depth: 2,
-      title: `${c.name} — The Mathlete Lab — Mathlete MTB`,
-      description: `${c.name}: ${c.focus}`,
-      body: `
+    for (const c of cats) {
+      const inCat = live.filter(t => t.category === c.id);
+      const others = cats.filter(o => o.id !== c.id);
+      const soon = c.upcoming || [];
+      pages[catHref(c) + 'index.html'] = page({
+        path: catHref(c),
+        depth: 2,
+        sport,
+        title: `${c.name} — ${info.name} — Mathlete MTB`,
+        description: `${c.name}: ${c.focus}`,
+        body: `
 <header class="page-head lab-head">${contour}
   <div class="wrap">
-    <a class="lab-crumb" href="index.html#labs"><span aria-hidden="true">&larr;</span> The Mathlete Lab</a>
-    <p class="eyebrow">The Lab</p>
+    <a class="lab-crumb" href="${info.href}#labs"><span aria-hidden="true">&larr;</span> ${esc(info.name)}</a>
+    <p class="eyebrow">${sport === 'ski' ? 'Mathlete Ski' : 'The Lab'}</p>
     <h1 class="page-title">${esc(c.name)}</h1>
     <p class="hero-lede">${esc(c.focus)}</p>
     <ul class="pill-row" aria-label="Math concepts">
@@ -296,7 +316,7 @@ export function render() {
     <div class="lab-section-head">
       <h2 class="label" id="tools-title">Tools</h2>
     </div>
-    <div class="tool-grid">${mine.map(t => toolCard(t, categories)).join('')}${soon.map(soonCard).join('')}
+    <div class="tool-grid">${inCat.map(t => toolCard(t, categories)).join('')}${soon.map(n => soonCard(n)).join('')}
     </div>
   </div>
 </section>
@@ -307,14 +327,17 @@ export function render() {
       <h2 class="label" id="also-title">More labs</h2>
     </div>
     <ul class="lab-also">
-      ${others.map(o => `<li><a href="learning-lab/${o.id}/">${esc(o.name)}</a></li>`).join('\n      ')}
-      <li><a href="index.html#tools">All tools</a></li>
+      ${others.map(o => `<li><a href="${catHref(o)}">${esc(o.name)}</a></li>`).join('\n      ')}
+      <li><a href="${info.href}#tools">All tools</a></li>
     </ul>
   </div>
 </section>
 `
-    });
+      });
+    }
   }
+
+  pages['learning-lab/index.html'] = redirect;
   return pages;
 }
 

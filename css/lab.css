@@ -249,6 +249,7 @@ body.lab {
   margin: 0 0 18px;
 }
 .lab-cta p { margin: 0; font-family: var(--f-serif); font-size: 20px; line-height: 1.5; color: var(--text); }
+.lab-cta p.eyebrow { margin-bottom: 14px; font-family: var(--f-mono); font-size: 12.5px; line-height: 1.4; color: var(--blaze); }
 .lab-cta-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 26px; }
 .lab-cta-actions .read-link { margin-top: 0; }
 @media (max-width: 760px) { .lab-cta .wrap { grid-template-columns: 1fr; } }
@@ -283,3 +284,11 @@ body.lab {
 .lab-tutoring .label { font-size: clamp(30px, 4vw, 44px); }
 .lab .prose a.button { color: var(--lab-deep); text-decoration: none; }
 .lab .subject-card { background: var(--cream); }
+
+/* ---------- Mathlete Ski (ski/): the same Lab with an icy-blue accent
+   in place of trail green ---------- */
+body.lab--ski { --moss: #8EC5E0; }
+.lab--ski .lab-head { background: radial-gradient(120% 140% at 85% 0%, rgba(142, 197, 224, 0.13), transparent 60%); }
+.lab--ski .pill--moss { border-color: rgba(142, 197, 224, 0.45); }
+.lab-head .lab-ski-title { font-size: clamp(64px, 12vw, 156px); line-height: 0.88; margin: 4px 0 30px; }
+.lab-ski-title span { color: var(--moss); }

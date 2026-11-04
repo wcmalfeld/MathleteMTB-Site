@@ -18,7 +18,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import vm from 'node:vm';
 import https from 'node:https';
-import { render as renderLab, loadRegistry, detailsPath, SUBJECTS, LEVELS, DURATIONS } from './build-lab.mjs';
+import { render as renderLab, loadRegistry, detailsPath, catHref, SPORTS, SUBJECTS, LEVELS, DURATIONS } from './build-lab.mjs';
 
 const root = new URL('..', import.meta.url).pathname;
 const read = p => readFileSync(root + p, 'utf8');
@@ -54,8 +54,9 @@ check('No private tool file is linked from the home page', priv.every(t => !inde
 // ---- script order on pages ----
 const labPages = renderLab();
 const REDIRECT = 'learning-lab/index.html';
-const labContent = Object.keys(labPages).filter(p => p !== REDIRECT && p !== 'index.html');
-for (const page of ['index.html', 'about.html', 'login.html', 'account.html', 'tool.html', 'college-beyond.html', 'tutoring.html', 'book.html', ...labContent]) {
+const homes = Object.values(SPORTS).map(x => x.home);
+const labContent = Object.keys(labPages).filter(p => p !== REDIRECT && !homes.includes(p));
+for (const page of ['index.html', 'ski/index.html', 'about.html', 'login.html', 'account.html', 'tool.html', 'college-beyond.html', 'tutoring.html', 'book.html', ...labContent]) {
   const html = read(page);
   const order = ['js/tools-config.js', 'js/supabase-config.js', 'js/auth.js'].map(s => html.indexOf(s));
   check(`${page} loads config, then Supabase config, then auth`, order.every(i => i > 0) && order[0] < order[1] && order[1] < order[2]);
@@ -73,7 +74,20 @@ check('Every live tool has valid Learning Lab fields', badListing.length === 0, 
 check('Category ids are unique', new Set(catIds).size === catIds.length);
 const stale = Object.entries(labPages).filter(([p, html]) => !existsSync(root + p) || read(p) !== html).map(([p]) => p);
 check('Learning Lab pages are up to date (node scripts/build-lab.mjs)', stale.length === 0, stale.join(', '));
-check('Home page links to every lab', categories.every(c => index.includes(`href="learning-lab/${c.id}/"`)));
+check('Every lab has a sport (mtb or ski)', categories.every(c => c.sport in SPORTS), categories.filter(c => !(c.sport in SPORTS)).map(c => c.id).join(', '));
+for (const [sport, info] of Object.entries(SPORTS)) {
+  const home = read(info.home);
+  const mine = categories.filter(c => c.sport === sport);
+  check(`${info.home} links to every ${sport} lab, and only those`, mine.every(c => home.includes(`href="${catHref(c)}"`)) &&
+    categories.filter(c => c.sport !== sport).every(c => !home.includes(`href="${catHref(c)}"`)));
+}
+const ski = read('ski/index.html').replace(/<!--[\s\S]*?-->/g, '');
+check('ski/index.html has <base href="../"> and one <h1>', ski.includes('<base href="../">') && (ski.match(/<h1\b/g) || []).length === 1);
+// With <base>, a bare href="#x" would jump to the MTB home page.
+const skiAnchors = [...ski.matchAll(/href="(?:ski\/)?#([^"]*)"/g)];
+check('ski/index.html in-page links say ski/#..., and every one has a target',
+  skiAnchors.every(m => m[1] === '' || m[0].startsWith('href="ski/#')) && skiAnchors.filter(m => m[1]).every(m => ski.includes(`id="${m[1]}"`)),
+  skiAnchors.filter(m => m[1] && (!m[0].startsWith('href="ski/#') || !ski.includes(`id="${m[1]}"`))).map(m => m[0]).join(', '));
 check('learning-lab/ redirects to the home page', /http-equiv="refresh" content="0; url=\.\.\/"/.test(labPages[REDIRECT]));
 
 if (process.argv.includes('--online')) {
@@ -99,7 +113,7 @@ const booking = bookingBox.window.MATHLETE_BOOKING || {};
 const subjectIds = (booking.subjects || []).map(x => x.id);
 const tutoring = read('tutoring.html');
 const book = read('book.html');
-const navPages = ['index.html', 'about.html', 'login.html', 'account.html', 'college-beyond.html', 'tutoring.html', 'book.html'];
+const navPages = ['index.html', 'ski/index.html', 'about.html', 'login.html', 'account.html', 'college-beyond.html', 'tutoring.html', 'book.html'];
 const noBook = navPages.filter(p => !/<a class="nav-book[^"]*" href="book\.html"/.test(read(p)))
   .concat(labContent.filter(p => !labPages[p].includes('<a class="nav-book" href="book.html"')));
 check('Every page has "Book a Session" in the nav', noBook.length === 0, noBook.join(', '));

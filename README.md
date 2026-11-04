@@ -7,6 +7,7 @@ The website for Mathlete MTB math and physics tutoring.
 ```
 MathleteMTB-Site/
 ├── index.html            # Home page = The Mathlete Lab (labs, tools, focus), Private Tutoring at the bottom
+├── ski/index.html        # Mathlete Ski: the same layout for ski tools; ski/<lab>/ pages are GENERATED
 ├── tutoring.html         # Private Tutoring page
 ├── book.html             # Book a Session (Calendly; see docs/BOOKING.md)
 ├── about.html            # About: Will, tutoring & mentoring, student stories, photos
@@ -20,7 +21,7 @@ MathleteMTB-Site/
 ├── css/lab.css           # Learning Lab's dark theme and components
 ├── js/
 │   ├── tools-config.js   # THE TOOL REGISTRY: access + Learning Lab listing (edit here)
-│   ├── lab-categories.js # Learning Lab categories (edit here)
+│   ├── lab-categories.js # Lab categories, each MTB or ski (edit here)
 │   ├── lab.js            # Learning Lab filters
 │   ├── auth.js           # Member sign-in (Supabase)
 │   ├── site.js           # Photo viewer, tool pop-ups, nav
@@ -37,9 +38,10 @@ MathleteMTB-Site/
 └── docs/LEARNING-LAB-PLAN.md  # Audit + plan for the Learning Lab rebuild
 ```
 
-**The Mathlete Lab** is the home page. Its lab tiles and tool grid (between
-the `<!-- BUILD:... -->` markers in `index.html`) and the category pages in
-`learning-lab/` are built from `js/tools-config.js`, `js/lab-categories.js`
+**The Mathlete Lab** is the home page, and **Mathlete Ski** (`ski/`) is its
+twin for skiing. Their lab tiles and tool grids (between the
+`<!-- BUILD:... -->` markers in `index.html` and `ski/index.html`) and the
+category pages in `learning-lab/` and `ski/<lab>/` are built from `js/tools-config.js`, `js/lab-categories.js`
 and `content/tool-details/`. Everything else in `index.html` is hand-edited.
 After changing any of those, run:
 
@@ -51,7 +53,12 @@ node scripts/check-site.mjs    # add --online to also check the tool links work
 To add a tool: add its entry (with the Learning Lab fields described at the
 top of `js/tools-config.js`), a preview image in `assets/` and its description
 in `content/tool-details/<tool-id>.html` (copy an existing one), then run both
-commands. It appears on the home page and its category page automatically.
+commands. It appears on its sport's home page and its category page
+automatically. A ski tool goes in one of the `sport: 'ski'` labs (Slope
+Physics, Mountain Ops, Race Room, Tuning Bench); until the first one is live,
+Mathlete Ski lists the tools in development from each lab's `upcoming` list.
+`ski/index.html` uses `<base href="../">`, so links on it are written from
+the site root, and in-page links as `ski/#tools`.
 
 There's no build step and nothing to install for the website itself.
 
