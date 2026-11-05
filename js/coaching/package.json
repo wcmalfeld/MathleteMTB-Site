@@ -1,0 +1,4 @@
+{
+  "type": "module",
+  "description": "Lets Node load these browser modules in the tests. Not used by the website."
+}

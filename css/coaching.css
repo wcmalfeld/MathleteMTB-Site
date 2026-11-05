@@ -1,0 +1,398 @@
+/* ============================================================
+   COACHING LAB
+   Loaded after site.css on /coaching/ pages. Uses the site's light
+   "warm paper" theme on purpose: riders read these pages on a phone
+   outdoors, where high-contrast dark text on a light ground holds up
+   best in sunlight. Larger text and touch targets than the rest of
+   the site for the same reason.
+   Safety classes never rely on colour alone: every badge also shows
+   its number and name.
+   ============================================================ */
+
+body.coach {
+  --moss: #46703A;
+  --amber: #8A5A12;
+  --c1: var(--moss);
+  --c2: var(--amber);
+  --c3: var(--blaze-dim);
+  --card: #FBFAF6;
+  font-size: 17px;
+}
+
+/* ---------- section nav ---------- */
+.coach-subnav {
+  position: sticky;
+  top: 64px;
+  z-index: 40;
+  background: var(--ink);
+  color: var(--cream);
+}
+.coach-subnav ul {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.coach-subnav ul::-webkit-scrollbar { display: none; }
+.coach-subnav a,
+.coach-subnav .soon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 14px;
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(247, 245, 238, 0.82);
+  text-decoration: none;
+}
+.coach-subnav a:hover { color: #fff; }
+.coach-subnav a[aria-current="page"] { color: #fff; box-shadow: inset 0 -3px 0 var(--blaze); }
+.coach-subnav .soon { color: rgba(247, 245, 238, 0.45); }
+.coach-subnav .soon small { font-size: 10px; border: 1px solid currentColor; padding: 1px 5px; letter-spacing: 0.1em; }
+@media (max-width: 860px) { .coach-subnav { top: 0; position: relative; } }
+
+/* ---------- banners and notes ---------- */
+.coach-banner { padding: 12px 0; font-size: 15px; }
+.coach-banner--draft { background: #FFF3C9; color: #4A3A06; border-bottom: 1px solid rgba(74, 58, 6, 0.25); }
+.coach-banner a { color: inherit; }
+.coach-banner code { font-family: var(--f-mono); font-size: 13px; }
+.coach-loading { padding: 80px 0; color: var(--ink-soft); font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+.coach-note { margin-top: 28px; color: var(--ink-soft); font-size: 15px; max-width: var(--measure); }
+.coach-empty { color: var(--ink-soft); }
+.coach-intro { max-width: var(--measure); margin: -8px 0 28px; color: var(--text); }
+
+.coach-callout {
+  border-left: 4px solid var(--c1);
+  background: var(--card);
+  padding: 14px 18px;
+  margin: 0 0 24px;
+}
+.coach-callout p { margin: 0; }
+.coach-callout--c2 { border-left-color: var(--c2); }
+.coach-callout--c3 { border-left-color: var(--c3); background: #FBEDE6; }
+.coach-safety-strip { margin: 0; border-left: 0; border-bottom: 1px solid var(--rule); padding: 14px 0; }
+.coach-safety-strip.coach-callout--c1 { background: #EEF3E8; }
+.coach-safety-strip.coach-callout--c2 { background: #FBF1DE; }
+
+/* ---------- headers ---------- */
+.coach-head { padding: 56px 0 40px; }
+.coach-head .page-title { font-size: clamp(44px, 7vw, 88px); }
+.coach-head--skill .page-title .flag { font-size: 13px; vertical-align: middle; }
+.coach-hero { padding: 72px 0 56px; }
+.coach-hero .page-title { font-size: clamp(48px, 8vw, 104px); line-height: 0.92; }
+.coach-crumbs ol { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; padding: 0; list-style: none; font-family: var(--f-mono); font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+.coach-crumbs li + li::before { content: '/'; margin-right: 6px; opacity: 0.5; }
+.coach-crumbs a { text-decoration: none; }
+.coach-crumbs a:hover { color: var(--blaze); }
+
+/* ---------- search ---------- */
+.coach-search { max-width: 640px; margin: 8px 0 18px; }
+.coach-search-label { display: block; font-family: var(--f-display); font-weight: 800; font-size: 26px; text-transform: uppercase; margin-bottom: 10px; }
+.coach-search-row { display: flex; gap: 0; }
+.coach-search input {
+  flex: 1;
+  min-width: 0;
+  min-height: 56px;
+  padding: 0 16px;
+  font: inherit;
+  font-size: 18px;
+  color: var(--ink);
+  background: var(--card);
+  border: 2px solid var(--ink);
+  border-right: 0;
+  border-radius: 0;
+}
+.coach-search input:focus { outline: 2px solid var(--blaze); outline-offset: 2px; }
+.coach-search .button { min-height: 56px; border: 2px solid var(--ink); }
+.coach-head .coach-search { margin-top: 28px; }
+
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--rule);
+  background: var(--card);
+  font-size: 15px;
+  text-decoration: none;
+}
+.chip:hover { border-color: var(--ink); }
+.coach-toc { margin-top: 24px; }
+@media (max-width: 640px) {
+  .coach-toc { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -20px; padding-right: 20px; }
+  .coach-toc::-webkit-scrollbar { display: none; }
+  .coach-toc .chip { flex: none; }
+}
+.coach-toc .chip { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; min-height: 36px; }
+
+/* ---------- section heads ---------- */
+.coach-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+.coach-section-head .read-link { margin-top: 0; }
+.coach-sub { margin: 40px 0 20px; }
+.coach .section { padding: 72px 0; }
+@media (max-width: 640px) { .coach .section { padding: 48px 0; } }
+
+/* ---------- discipline tiles ---------- */
+.disc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; }
+@media (max-width: 960px) { .disc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .disc-grid { grid-template-columns: 1fr; } }
+.disc-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  padding: 20px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--chalk);
+  text-decoration: none;
+  transition: border-color .15s ease, transform .2s ease;
+}
+.disc-tile:hover { border-color: var(--ink); border-top-color: var(--blaze); transform: translateY(-2px); }
+.disc-name { font-family: var(--f-display); font-weight: 800; font-size: 24px; line-height: 1; text-transform: uppercase; }
+.disc-sum { color: var(--text); font-size: 15px; flex: 1; }
+
+/* ---------- skill and pathway cards ---------- */
+.skill-grid, .path-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 960px) { .skill-grid, .path-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .skill-grid, .path-grid { grid-template-columns: 1fr; } }
+.skill-card, .path-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+}
+.skill-card:hover, .path-card:hover { border-color: var(--ink); }
+.skill-card-title { font-family: var(--f-display); font-weight: 800; font-size: 26px; line-height: 1; text-transform: uppercase; margin: 0; }
+.skill-card-title a { text-decoration: none; }
+.skill-card-title a::after { content: ''; position: absolute; inset: 0; }
+.skill-card-title a:hover { color: var(--blaze); }
+.skill-card-desc { margin: 0; color: var(--text); font-size: 15.5px; flex: 1; }
+.skill-card-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pill--quiet { color: var(--ink-soft); border-style: dashed; }
+
+/* ---------- safety badges and flags ---------- */
+.safety {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px 3px 3px;
+  border: 1px solid var(--c1);
+  color: var(--c1);
+  font-family: var(--f-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: var(--card);
+}
+.safety-num { display: inline-grid; place-items: center; width: 20px; height: 20px; background: var(--c1); color: #fff; font-weight: 600; }
+.safety--c2 { border-color: var(--c2); color: var(--c2); }
+.safety--c2 .safety-num { background: var(--c2); }
+.safety--c3 { border-color: var(--c3); color: var(--c3); }
+.safety--c3 .safety-num { background: var(--c3); }
+
+.flag { display: inline-block; padding: 2px 7px; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; vertical-align: middle; }
+.flag--draft { background: #FFE58A; color: #3D2F00; }
+.flag--ok { background: var(--moss); color: #fff; }
+.flag--coach { background: var(--c3); color: #fff; }
+.flag--here { background: var(--chalk); color: #fff; }
+
+/* ---------- competencies ---------- */
+.comp-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; counter-reset: comp; }
+@media (max-width: 860px) { .comp-list { grid-template-columns: 1fr; } }
+.comp-list li { counter-increment: comp; display: grid; gap: 4px; padding: 16px 18px; background: var(--card); border: 1px solid var(--rule); }
+.comp-list li::before { content: counter(comp, decimal-leading-zero); font-family: var(--f-mono); font-size: 12px; color: var(--blaze); }
+.comp-list span { color: var(--text); font-size: 15px; }
+
+/* ---------- coming soon ---------- */
+.soon-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 860px) { .soon-grid { grid-template-columns: 1fr; } }
+.soon-card { padding: 20px; border: 1px dashed var(--rule); }
+.soon-card h3 { font-family: var(--f-display); font-weight: 800; font-size: 24px; text-transform: uppercase; margin: 8px 0; }
+.soon-card p { margin: 0; color: var(--text); font-size: 15.5px; }
+
+.people-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
+.person { padding: 18px; background: var(--card); border: 1px solid var(--rule); }
+.person-name { font-weight: 700; margin: 0 0 4px; }
+
+/* ---------- filters ---------- */
+.coach-filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 20px; }
+.coach-filters label { display: grid; gap: 4px; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+.coach-filters select { min-height: 44px; min-width: 150px; padding: 0 10px; font: inherit; font-size: 15px; font-family: var(--f-body); text-transform: none; letter-spacing: 0; color: var(--ink); background: var(--card); border: 1px solid var(--rule); }
+.button--small { padding: 13px 18px; }
+.coach-count { margin-bottom: 16px; }
+
+/* ---------- search results ---------- */
+.search-best { padding: 24px; background: var(--card); border: 1px solid var(--ink); border-left: 6px solid var(--blaze); max-width: 760px; }
+.search-best-title { font-family: var(--f-display); font-weight: 800; font-size: clamp(32px, 5vw, 48px); line-height: 1; text-transform: uppercase; margin: 6px 0 10px; }
+.search-best-title a { text-decoration: none; }
+.search-why { margin: 14px 0 0; }
+.search-best .button { margin-top: 18px; }
+.search-planned { max-width: 760px; }
+.planned-list { columns: 2; padding-left: 20px; }
+@media (max-width: 560px) { .planned-list { columns: 1; } }
+
+/* ---------- skill page ---------- */
+.skill-facts { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 24px 0 0; }
+.skill-facts div { display: grid; gap: 2px; }
+.skill-facts dt { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+.skill-facts dd { margin: 0; font-weight: 600; }
+
+.coach-skill { padding-bottom: 72px; }
+.coach-block { padding: 48px 0 8px; scroll-margin-top: 120px; }
+.coach-block + .coach-block { border-top: 1px solid var(--rule); }
+.coach-block > .label { margin-bottom: 20px; font-size: 30px; }
+.coach-prose { max-width: var(--measure); }
+.coach-prose p { margin: 0 0 14px; color: var(--text); }
+.objectives { margin-top: 20px; padding: 16px 20px; background: var(--card); border: 1px solid var(--rule); max-width: var(--measure); }
+.objectives .meta { margin-bottom: 8px; }
+
+ul.checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+ul.checks li { position: relative; padding-left: 26px; }
+ul.checks li::before { content: ''; position: absolute; left: 2px; top: 0.45em; width: 12px; height: 12px; border: 2px solid var(--moss); }
+
+/* physics */
+.physics-summary { font-family: var(--f-serif); font-size: 21px; line-height: 1.45; max-width: var(--measure); margin: 0 0 16px; }
+.coach-physics .pill-row { margin-bottom: 24px; }
+.physics-block { margin: 28px 0 0; }
+.physics-block h3 { font-size: 20px; margin: 0 0 8px; }
+
+.demo { margin: 20px 0 0; padding: 18px; background: var(--card); border: 1px solid var(--rule); max-width: 720px; }
+.demo-title { font-weight: 700; margin-bottom: 12px; display: flex; gap: 10px; align-items: baseline; }
+.demo-stage svg { display: block; width: 100%; height: auto; background: #F6F3EA; border: 1px solid var(--rule-soft); }
+.demo-ground { stroke: var(--ink); stroke-width: 2; }
+.demo-wheel { fill: none; stroke: var(--ink); stroke-width: 3; }
+.demo-frame { fill: none; stroke: var(--chalk); stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+.demo-com { fill: var(--blaze); }
+.demo-vline { stroke: var(--blaze); stroke-width: 2; stroke-dasharray: 5 4; }
+.demo-label { font-family: var(--f-mono); font-size: 12px; fill: var(--ink); }
+.demo-label--big { font-size: 14px; font-weight: 600; }
+.demo-bar-bg { fill: var(--rule-soft); }
+.demo-bar { fill: var(--chalk); }
+.demo-bar--front, .demo-bar--need { fill: var(--blaze); }
+.demo-bar--have { fill: var(--moss); }
+.demo-jump { fill: #D8CBAF; stroke: var(--ink); stroke-width: 1.5; }
+.demo-arc { fill: none; stroke: var(--blaze); stroke-width: 2.5; stroke-dasharray: 6 4; }
+.demo-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px 20px; margin-top: 14px; }
+.demo-control { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; font-size: 14px; }
+.demo-control input[type=range] { grid-column: 1 / -1; width: 100%; min-height: 32px; accent-color: var(--blaze); }
+.demo-control select { grid-column: 1 / -1; min-height: 40px; font: inherit; background: var(--card); border: 1px solid var(--rule); padding: 0 8px; }
+.demo-control output { font-family: var(--f-mono); font-size: 13px; }
+.demo-readout { margin: 14px 0 0; font-weight: 600; min-height: 3em; }
+.demo-caveat { margin: 10px 0 0; font-size: 13.5px; color: var(--ink-soft); }
+
+/* video */
+.video-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 700px) { .video-grid { grid-template-columns: 1fr; } }
+.video { margin: 0; }
+.video-frame { position: relative; aspect-ratio: 16 / 9; background: #1F2B24; }
+.video-frame iframe, .video-frame video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-poster { position: absolute; inset: 0; width: 100%; border: 0; background: #1F2B24 center / cover no-repeat; color: #fff; cursor: pointer; display: grid; place-items: center; font: inherit; }
+.video-play { display: grid; place-items: center; width: 72px; height: 72px; border-radius: 50%; background: rgba(193, 80, 46, 0.92); font-size: 26px; padding-left: 5px; }
+.video-poster-title { position: absolute; left: 14px; bottom: 12px; right: 70px; text-align: left; font-weight: 600; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+.video-duration { position: absolute; right: 12px; bottom: 12px; font-family: var(--f-mono); font-size: 12px; background: rgba(0, 0, 0, 0.6); padding: 2px 6px; }
+.video-error { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; padding: 20px; text-align: center; margin: 0; }
+.video figcaption { padding-top: 10px; }
+.video-title { font-weight: 700; margin: 4px 0; }
+.video-desc { margin: 0 0 8px; color: var(--text); font-size: 15px; }
+.video-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 0; font-size: 14px; }
+.video-tools select, .video-tools button { min-height: 40px; padding: 0 12px; font: inherit; font-size: 14px; background: var(--card); color: var(--ink); border: 1px solid var(--rule); cursor: pointer; }
+.video-chapters { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 4px; }
+.video-chapters button { min-height: 40px; width: 100%; text-align: left; padding: 0 10px; font: inherit; font-size: 15px; background: transparent; border: 1px solid var(--rule-soft); cursor: pointer; color: var(--ink); }
+.video-chapters button:hover { border-color: var(--ink); }
+.video--compact { max-width: 480px; margin-top: 12px; }
+.video-placeholder { padding: 24px; border: 1px dashed var(--rule); max-width: var(--measure); }
+.video-placeholder p { margin: 0; }
+
+/* technique and pathway stages */
+.tech-stages, .stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; max-width: 820px; }
+.tech-stage, .stage { display: grid; grid-template-columns: 44px 1fr; gap: 16px; padding: 20px 0; border-top: 1px solid var(--rule-soft); }
+.tech-stage:first-child, .stage:first-child { border-top: 0; }
+.stage-num { display: grid; place-items: center; width: 40px; height: 40px; background: var(--ink); color: var(--cream); font-family: var(--f-mono); font-weight: 600; }
+.stage--optional .stage-num { background: transparent; color: var(--ink); border: 1px dashed var(--ink); }
+.stage--here .stage-num { background: var(--chalk); }
+.stage--here { background: linear-gradient(90deg, rgba(62, 110, 142, 0.08), transparent); }
+.stage-title { font-size: 21px; margin: 4px 0 8px; }
+.stage-title a { text-decoration: none; }
+.stage-title a:hover { color: var(--blaze); }
+.stage-body p { margin: 0 0 10px; color: var(--text); }
+.stage-body .meta { display: block; margin-bottom: 2px; }
+.tech-result { font-weight: 600; color: var(--ink) !important; }
+.cues { margin: 12px 0; padding: 12px 16px; background: #EEF3F7; border-left: 3px solid var(--chalk); }
+.cues ul { margin: 4px 0 0; padding-left: 0; list-style: none; font-family: var(--f-serif); font-size: 19px; }
+.stage-lessons { margin: 6px 0 10px; padding: 0; list-style: none; display: grid; gap: 6px; }
+.stage-lessons li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.stage-ready { margin-top: 10px; padding: 12px 16px; background: var(--card); border: 1px solid var(--rule-soft); }
+.path-inline { margin-bottom: 28px; }
+
+/* prerequisites */
+.prereq-group { margin-bottom: 18px; }
+.prereq-list { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.prereq-list li { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 18px; }
+.prereq-list a { font-weight: 600; }
+.prereq-group--required .kicker { color: var(--ink); }
+.chain { padding-left: 22px; display: grid; gap: 6px; margin: 12px 0; }
+.coach-more { margin: 18px 0; }
+.coach-more summary { cursor: pointer; margin-top: 0; }
+.comp-tags { margin-top: 22px; }
+.leads-to { margin-top: 24px; }
+
+/* mistakes */
+.mistake-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .mistake-grid { grid-template-columns: 1fr; } }
+.mistake { padding: 18px 20px; background: var(--card); border: 1px solid var(--rule); border-top: 3px solid var(--contour); }
+.mistake p { margin: 0 0 8px; color: var(--text); font-size: 15.5px; }
+.mistake .meta { display: block; }
+.mistake-name { margin: 0 0 8px; font-size: 19px; }
+.mistake-fix { padding: 8px 10px; background: #EEF3E8; color: var(--ink) !important; }
+
+/* drills */
+.drill-list { display: grid; gap: 12px; }
+.drill { background: var(--card); border: 1px solid var(--rule); }
+.drill[open] { border-color: var(--ink); }
+.drill > summary { list-style: none; cursor: pointer; padding: 16px 20px; display: grid; gap: 10px; min-height: 56px; }
+.drill > summary::-webkit-details-marker { display: none; }
+.drill > summary::after { content: 'Show drill +'; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--blaze-dim); }
+.drill[open] > summary::after { content: 'Hide drill –'; }
+.drill-head { display: grid; gap: 2px; }
+.drill-name { font-weight: 700; font-size: 19px; }
+.drill-obj { color: var(--text); font-size: 15.5px; }
+.drill-facts { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; font-size: 14px; }
+.drill-facts div { display: flex; gap: 6px; }
+.drill-facts dt { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); padding-top: 2px; }
+.drill-facts dd { margin: 0; }
+.drill-body { padding: 0 20px 18px; border-top: 1px solid var(--rule-soft); }
+.drill-body h4, .coach-drill h4 { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 18px 0 8px; }
+.drill-steps { padding-left: 22px; display: grid; gap: 8px; margin: 0; font-size: 17.5px; }
+.drill-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
+@media (max-width: 640px) { .drill-cols { grid-template-columns: 1fr; } }
+.drill-cols ul { margin: 0; padding-left: 20px; }
+.drill-next { margin-top: 18px; }
+.coach-drill { max-width: 820px; }
+.coach-head .drill-facts { margin-top: 18px; font-size: 15px; }
+
+/* safety */
+.coach-safety { scroll-margin-top: 120px; }
+.safety-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.safety-grid > div { padding: 14px 16px; background: var(--card); border: 1px solid var(--rule); }
+.safety-grid h3 { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 8px; }
+.safety-grid ul { margin: 0; padding-left: 18px; }
+.safety-warnings { margin-top: 16px; display: grid; gap: 8px; }
+.safety-warnings p { margin: 0; padding: 10px 14px; background: #FBEDE6; border-left: 4px solid var(--c3); }
+.coach-safety--c2 .safety-grid > div:first-child { border-color: var(--c2); }
+
+.coach-done { margin-top: 24px; }
+.coach-done p { max-width: var(--measure); }
+.credits { margin-top: 18px; font-size: 15px; color: var(--ink-soft); }
