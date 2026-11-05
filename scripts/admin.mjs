@@ -14,6 +14,10 @@
 //                                                      put a private tool in the private bucket
 //   node scripts/admin.mjs inquiries [all]             College & Beyond inquiries not yet handled (or all)
 //   node scripts/admin.mjs handled <inquiry-id>        mark an inquiry as handled
+//   node scripts/admin.mjs coach-editor you@example.com admin [specialist]
+//                                                      Coaching Lab CMS access: contributor, reviewer or admin
+//   node scripts/admin.mjs coach-editors               everyone with CMS access
+//   node scripts/admin.mjs coach-remove you@example.com  take CMS access away (their login stays)
 
 import { readFileSync, existsSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
@@ -166,6 +170,35 @@ const commands = {
     console.log(`\n  Marked ${rows[0].name}'s inquiry as handled.\n`);
   },
 
+  // Coaching Lab CMS. Editors sign in on login.html like members, so this
+  // also makes sure they have member access.
+  async 'coach-editor'(email, role, flag) {
+    const roles = ['contributor', 'reviewer', 'admin'];
+    if (!roles.includes(role)) die('Usage: coach-editor <email> <contributor|reviewer|admin> [specialist]');
+    if (flag && flag !== 'specialist') die('The last word can only be "specialist".');
+    const user = await requireUser(email);
+    await grant(user);
+    await api('POST', '/rest/v1/coach_editors?on_conflict=user_id',
+      { user_id: user.id, email: user.email, role, specialist: flag === 'specialist', active: true },
+      { Prefer: 'resolution=merge-duplicates,return=minimal' });
+    console.log(`\n  ${email} is a Coaching Lab ${role}${flag ? ' (specialist reviewer: can approve advanced and Class 3 content)' : ''}.`);
+    console.log(`  They manage content at ${SITE}/coaching/admin/\n`);
+  },
+
+  async 'coach-editors'() {
+    const rows = await api('GET', '/rest/v1/coach_editors?select=email,role,specialist,active,created_at&order=created_at.asc');
+    if (!rows.length) return console.log('\n  No CMS editors yet. Add one with: coach-editor <email> admin specialist\n');
+    console.log('');
+    for (const r of rows) console.log(`  ${r.active ? 'active ' : 'REMOVED'}  ${r.email}  ${r.role}${r.specialist ? ', specialist' : ''}`);
+    console.log('');
+  },
+
+  async 'coach-remove'(email) {
+    const user = await requireUser(email);
+    await api('PATCH', `/rest/v1/coach_editors?user_id=eq.${user.id}`, { active: false }, { Prefer: 'return=minimal' });
+    console.log(`\n  ${email} no longer has CMS access. Their content and history are kept.\n`);
+  },
+
   async upload(localFile, objectPath) {
     if (!localFile || !objectPath) die('Usage: upload <local-file.html> <path-in-bucket, e.g. tool-04/index.html>');
     if (!existsSync(localFile)) die(`File not found: ${localFile}`);
@@ -182,12 +215,12 @@ async function main() {
   const [cmd, ...args] = process.argv.slice(2);
   if (typeof fetch !== 'function') die('This script needs Node 18 or newer (try: nvm use 20).');
   if (!cmd || !commands[cmd]) {
-    const header = readFileSync(new URL(import.meta.url), 'utf8').split('\n').filter(l => l.startsWith('//')).slice(0, 15);
+    const header = readFileSync(new URL(import.meta.url), 'utf8').split('\n').filter(l => l.startsWith('//')).slice(0, 19);
     console.log(header.map(l => l.replace(/^\/\/ ?/, '')).join('\n'));
     process.exit(cmd ? 1 : 0);
   }
   if (!BASE || !KEY) die('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env (see .env.example).');
-  if (['invite', 'create', 'grant', 'restore', 'revoke', 'reset', 'reset-link'].includes(cmd)) {
+  if (['invite', 'create', 'grant', 'restore', 'revoke', 'reset', 'reset-link', 'coach-editor', 'coach-remove'].includes(cmd)) {
     if (!args[0] || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(args[0])) die(`Usage: ${cmd} <email>`);
     args[0] = args[0].trim().toLowerCase();
   }

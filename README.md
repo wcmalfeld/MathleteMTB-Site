@@ -16,6 +16,9 @@ MathleteMTB-Site/
 ├── account.html          # Set / reset a member's password
 ├── tool.html             # Opens members-only tools (tool.html?id=...)
 ├── learning-lab/         # Lab category pages (GENERATED, don't edit); learning-lab/ itself redirects home
+├── coaching/             # Coaching & Progression Lab pages + CMS at coaching/admin/ (GENERATED shells; see docs/COACHING.md)
+├── 404.html              # Not-found page; also forwards /coaching/<skill> to the skill page (GENERATED)
+├── content/coaching/     # seed.json: the Coaching Lab's starter draft content
 ├── content/tool-details/ # Each tool's full description, shown in its "Details" pop-up
 ├── css/site.css          # All styling
 ├── css/lab.css           # Learning Lab's dark theme and components
@@ -32,11 +35,19 @@ MathleteMTB-Site/
 │   └── ...               # login.js, account.js, tool-player.js
 ├── assets/               # Logo, photos, screenshots
 ├── supabase/setup.sql    # Database + storage rules (member access, inquiries)
+├── supabase/coaching.sql # Coaching Lab: content tables, review workflow, permissions
 ├── scripts/              # build-lab.mjs, admin.mjs (members, inquiries), check-site.mjs, test-access.mjs
 ├── docs/ACCESS.md        # How member access works and how to manage it
 ├── docs/BOOKING.md       # Setting up Calendly, Stripe and Zoom for bookings
-└── docs/LEARNING-LAB-PLAN.md  # Audit + plan for the Learning Lab rebuild
+├── docs/LEARNING-LAB-PLAN.md  # Audit + plan for the Learning Lab rebuild
+└── docs/COACHING.md      # Coaching Lab: setup, CMS roles, publishing, safety classes, videos
 ```
+
+**The Coaching Lab** (`coaching/`) teaches riding skills: lessons, physics,
+drills, mistakes and progression pathways, managed in a CMS at
+`coaching/admin/` with a review step before anything goes live. Its content
+lives in Supabase, so adding a lesson never needs a code change. Setup and
+how publishing works: [docs/COACHING.md](docs/COACHING.md).
 
 **The Mathlete Lab** is the home page, and **Mathlete Ski** (`ski/`) is its
 twin for skiing. Their lab tiles and tool grids (between the

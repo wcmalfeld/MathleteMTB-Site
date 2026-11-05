@@ -10,6 +10,10 @@
    ============================================================ */
 
 body.coach {
+  /* A slightly deeper rust than the rest of the site so small accent text
+     passes WCAG AA (4.5:1) on the paper background. */
+  --blaze: #A8431F;
+  --blaze-dim: #8F3818;
   --moss: #46703A;
   --amber: #8A5A12;
   --c1: var(--moss);
@@ -367,7 +371,8 @@ ul.checks li::before { content: ''; position: absolute; left: 2px; top: 0.45em; 
 .drill > summary::after { content: 'Show drill +'; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--blaze-dim); }
 .drill[open] > summary::after { content: 'Hide drill –'; }
 .drill-head { display: grid; gap: 2px; }
-.drill-name { font-weight: 700; font-size: 19px; }
+.drill-name { font-weight: 700; font-size: 19px; margin: 0; }
+.coach-drill h2:not(.label) { font-family: var(--f-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin: 18px 0 8px; }
 .drill-obj { color: var(--text); font-size: 15.5px; }
 .drill-facts { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; font-size: 14px; }
 .drill-facts div { display: flex; gap: 6px; }

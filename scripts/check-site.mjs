@@ -149,6 +149,33 @@ const helpValues = [...cb.matchAll(/name="help_with" value="([^"]+)"/g)].map(m =
 check('Every "help with" option is allowed by the database', helpValues.length === 8 && helpValues.every(v => sql.includes(`'${v}'`)));
 check('Inquiries are insert-only for visitors', /revoke all on public\.inquiries from anon, authenticated;/.test(sql) && !/grant select[^;]*public\.inquiries/i.test(sql));
 
+// ---- Coaching Lab ----
+{
+  const { render: renderCoaching, PAGES: COACH_PAGES } = await import('./build-coaching.mjs');
+  const core = await import('../js/coaching/core.js');
+  const { DEMO_IDS } = await import('../js/coaching/demos.js');
+  const built = renderCoaching();
+  const staleCoach = Object.entries(built).filter(([p, html]) => !existsSync(root + p) || read(p) !== html).map(([p]) => p);
+  check('Coaching Lab pages and seed SQL are up to date (node scripts/build-coaching.mjs)', staleCoach.length === 0, staleCoach.join(', '));
+  for (const p of [...COACH_PAGES.map(x => x.path), 'coaching/admin/index.html']) {
+    const html = built[p];
+    const order = ['js/tools-config.js', 'js/supabase-config.js', 'js/auth.js', 'js/coaching/'].map(x => html.indexOf(x));
+    check(`${p} loads config, Supabase config, auth, then the Coaching Lab`, order.every(i => i > 0) && order.every((v, i) => !i || order[i - 1] < v));
+  }
+  const noCoach = navPages.filter(p => !read(p).includes('<li><a href="coaching/"')).concat(labContent.filter(p => !labPages[p].includes('<li><a href="coaching/"')));
+  check('Every page with the main nav links to the Coaching Lab', noCoach.length === 0, noCoach.join(', '));
+  const seed = JSON.parse(read('content/coaching/seed.json'));
+  const problems = core.checkIntegrity(seed);
+  check('Coaching seed content has no broken links or circular prerequisites', problems.length === 0, problems.slice(0, 5).join('; '));
+  const badDemo = seed.lessons.flatMap(l => ((l.physics || {}).blocks || []).filter(b => b.demo && !DEMO_IDS.includes(b.demo)).map(b => l.id + ':' + b.demo));
+  check('Every physics demo named in the seed exists', badDemo.length === 0, badDemo.join(', '));
+  check('Every seeded lesson credits an author', seed.lessons.every(l => (l.contributors || []).some(c => c.role === 'author')));
+  const coachSql = read('supabase/coaching.sql');
+  check('Coaching tables have no grants for anon or authenticated (functions only)', !/grant\s+(select|insert|update|delete|all)[^;]*on\s+(table\s+)?public\.coach_/i.test(coachSql));
+  const anonFns = [...coachSql.matchAll(/grant execute on function public\.(\w+)\([^)]*\) to anon/g)].map(m => m[1]);
+  check('The only Coaching function visitors can call is coach_catalog', anonFns.join() === 'coach_catalog', anonFns.join());
+}
+
 // ---- secrets / private files in the repo ----
 let files = [];
 try {

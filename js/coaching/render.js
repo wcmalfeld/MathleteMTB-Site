@@ -218,7 +218,7 @@ export function renderSkills(idx, params) {
 
   const results = filterSkills(idx, f);
   return head({ eyebrow: 'Coaching Lab', title: 'Explore skills', lede: 'Every skill in the library, from foundations up.', crumbs: crumbs([['Coaching Lab', href.home], ['Explore skills']]), extra: searchForm('') }) +
-    `<section class="section"><div class="wrap">${filters}
+    `<section class="section" aria-labelledby="results-t"><div class="wrap"><h2 class="visually-hidden" id="results-t">Skills</h2>${filters}
       <p class="meta coach-count" aria-live="polite">${plural(results.length, 'skill', 'skills')}</p>
       ${results.length ? `<div class="skill-grid">${results.map(s => skillCard(idx, s)).join('')}</div>` : '<p class="coach-empty">No skills match those filters yet.</p>'}
     </div></section>`;
@@ -266,6 +266,7 @@ export function renderProgressions(idx, params) {
       extra: `<div class="skill-card-meta">${pathwayShape(p).map(t => `<span class="pill">${esc(t)}</span>`).join('')}${target ? safetyBadge(cls) : ''} ${draftFlag(p)}</div>` }) +
     `<section class="section"><div class="wrap">
       ${cls === 3 ? `<div class="coach-callout coach-callout--c3"><p><strong>${esc(SAFETY[3].label)}.</strong> ${esc(SAFETY[3].text)}</p></div>` : ''}
+      <h2 class="visually-hidden">Stages</h2>
       ${pathwayStages(idx, p)}
       <p class="coach-note">Readiness criteria are an honest check for you or your coach. Reading a lesson or ticking a box here never means you're ready for the next stage on the bike.</p>
     </div></section>`;
@@ -477,17 +478,17 @@ function drillFacts(d) {
   </dl>`;
 }
 
-function drillBody(idx, d) {
+function drillBody(idx, d, h = 'h4') {
   const next = d.next_drill_id && idx.drills.get(d.next_drill_id);
   const m = d.media_id && idx.media.get(d.media_id);
   return `${d.description ? paras(d.description) : ''}
     ${m ? mediaCard(m, { compact: true }) : ''}
-    ${(d.steps || []).length ? `<h4>Steps</h4><ol class="drill-steps">${d.steps.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` : ''}
+    ${(d.steps || []).length ? `<${h}>Steps</${h}><ol class="drill-steps">${d.steps.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` : ''}
     <div class="drill-cols">
-      ${(d.success || []).length ? `<div><h4>You've got it when</h4>${list(d.success, 'checks')}</div>` : ''}
-      ${(d.safety || []).length ? `<div><h4>Safety</h4>${list(d.safety)}</div>` : ''}
-      ${(d.equipment || []).length ? `<div><h4>Equipment</h4>${list(d.equipment)}</div>` : ''}
-      ${(d.common_errors || []).length ? `<div><h4>Common errors</h4>${list(d.common_errors)}</div>` : ''}
+      ${(d.success || []).length ? `<div><${h}>You've got it when</${h}>${list(d.success, 'checks')}</div>` : ''}
+      ${(d.safety || []).length ? `<div><${h}>Safety</${h}>${list(d.safety)}</div>` : ''}
+      ${(d.equipment || []).length ? `<div><${h}>Equipment</${h}>${list(d.equipment)}</div>` : ''}
+      ${(d.common_errors || []).length ? `<div><${h}>Common errors</${h}>${list(d.common_errors)}</div>` : ''}
     </div>
     ${next ? `<p class="drill-next"><span class="meta">Next progression</span> <a href="${href.drill(next.id)}">${esc(next.name)}</a></p>` : ''}`;
 }
@@ -495,7 +496,7 @@ function drillBody(idx, d) {
 function drillCard(idx, d, rules) {
   return `<details class="drill"${rules && !rules.selfGuidedPractice ? ' data-coach-led' : ''}>
     <summary>
-      <span class="drill-head"><span class="drill-name">${esc(d.name)} ${draftFlag(d)}</span><span class="drill-obj">${esc(d.objective)}</span></span>
+      <span class="drill-head"><h3 class="drill-name">${esc(d.name)} ${draftFlag(d)}</h3><span class="drill-obj">${esc(d.objective)}</span></span>
       ${drillFacts(d)}
     </summary>
     <div class="drill-body">${drillBody(idx, d)}<p><a class="read-link" href="${href.drill(d.id)}">Open this drill on its own page <span aria-hidden="true">&rarr;</span></a></p></div>
@@ -513,7 +514,7 @@ export function renderDrill(idx, id) {
       extra: `${drillFacts(d)} ${draftFlag(d)}` }) +
     `<section class="section"><div class="wrap coach-drill">
       ${hardest === 3 ? `<div class="coach-callout coach-callout--c3"><p><strong>Coach-led.</strong> This drill is used in high-consequence lessons. Do it only with a qualified specialist coach.</p></div>` : ''}
-      ${drillBody(idx, d)}
+      ${drillBody(idx, d, 'h2')}
       ${users.length ? `<h2 class="label coach-sub">Used in</h2><ul class="prereq-list">${users.map(l => { const s = idx.skills.get(l.skill_id); return `<li><a href="${href.skill(l.skill_id)}">${esc(l.title)}</a>${s ? ' ' + safetyBadge(s.safety_class) : ''}</li>`; }).join('')}</ul>` : ''}
     </div></section>`;
 }

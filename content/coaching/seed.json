@@ -1,5 +1,5 @@
 {
- "_readme": "Starter content for the Coaching Lab. Everything here is an unreviewed DRAFT by \"Mathlete draft\" and stays off the live site until a coach reviews and publishes it in the CMS. Loaded into Supabase by supabase/coaching-seed.sql (node scripts/coaching.mjs seed-sql regenerates that file). Re-running the seed only adds ids that are not in the database yet.",
+ "_readme": "Starter content for the Coaching Lab. Everything here is an unreviewed DRAFT by \"Mathlete draft\" and stays off the live site until a coach reviews and publishes it in the CMS. Loaded into Supabase by supabase/coaching-seed.sql (node scripts/build-coaching.mjs regenerates that file after you change this one). Re-running the seed only adds ids that are not in the database yet.",
  "people": [
   {
    "id": "mathlete-draft",
