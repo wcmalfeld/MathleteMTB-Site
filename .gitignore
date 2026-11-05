@@ -11,3 +11,6 @@ js/supabase-config.js
 private-tools/
 
 .DS_Store
+
+# Test dependencies (npm install)
+node_modules/

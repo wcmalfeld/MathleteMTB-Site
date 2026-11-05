@@ -1,0 +1,12 @@
+{
+  "name": "mathletemtb-site",
+  "private": true,
+  "description": "The website needs nothing installed. These are only for running the tests.",
+  "scripts": {
+    "test": "node --test \"tests/**/*.test.mjs\"",
+    "test:sql": "node --test \"tests/sql/*.test.mjs\""
+  },
+  "devDependencies": {
+    "pg": "^8.13.1"
+  }
+}
