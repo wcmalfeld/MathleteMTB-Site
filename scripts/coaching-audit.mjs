@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Regenerates docs/COACHING-CONTENT-AUDIT.md from content/coaching/seed.json.
 //   node scripts/coaching-audit.mjs
+import { readFileSync, writeFileSync } from 'node:fs';
 const root = new URL('..', import.meta.url).pathname;
 const [inp, out] = [root + 'content/coaching/seed.json', root + 'docs/COACHING-CONTENT-AUDIT.md'];
 const seed = JSON.parse(readFileSync(inp, 'utf8'));
