@@ -66,7 +66,7 @@ function statusPill(s) {
 
 function frame(active, body) {
   const nav = [['dashboard', 'Dashboard', '#/'], ...['skill', 'lesson', 'drill', 'mistake', 'media', 'pathway'].map(t => [t, TYPES[t].plural, '#/list/' + t]),
-    ['map', 'Progression map', '#/map'], ...['discipline', 'competency', 'person'].map(t => [t, TYPES[t].plural, '#/list/' + t])];
+    ['map', 'Progression map', '#/map'], ...['discipline', 'competency', 'person', 'source'].map(t => [t, TYPES[t].plural, '#/list/' + t])];
   return `<div class="cms">
     <header class="cms-bar"><div class="wrap cms-bar-inner">
       <p class="cms-brand">Coaching CMS</p>
@@ -233,7 +233,8 @@ function sidePanel(ed) {
       ${prev ? `<a class="read-link" href="${prev}" target="_blank" rel="noopener">Preview</a>` : ''}
       ${isAdmin() && !(data.dependents || []).length ? `<p><button type="button" class="cms-danger" data-act="delete">Delete</button></p>` : ''}</div></aside>`;
   }
-  const v = data.validation || { content: [], links: [] };
+  const v = data.validation || { content: [], links: [], publish: [] };
+  v.publish = v.publish || [];
   const s = meta.status;
   const btn = (to, label, cls = 'button', enabled = true) => `<button type="button" class="${cls}" data-act="move-status" data-to="${to}"${enabled ? '' : ' disabled'}>${label}</button>`;
   const actions = [];
@@ -243,7 +244,7 @@ function sidePanel(ed) {
     actions.push(btn('approved', 'Approve', 'button', !blocked && !ed.dirty));
     actions.push(btn('draft', 'Request changes', 'button button--ghost'));
   } else if (s === 'submitted' && meta.mine) actions.push(btn('draft', 'Withdraw', 'button button--ghost'));
-  if (s === 'approved' && isAdmin()) actions.push(btn('published', meta.published_version != null ? 'Publish new version' : 'Publish', 'button', !v.links.length && !v.content.length && !ed.dirty));
+  if (s === 'approved' && isAdmin()) actions.push(btn('published', meta.published_version != null ? 'Publish new version' : 'Publish', 'button', !v.links.length && !v.content.length && !v.publish.length && !ed.dirty));
   if (s === 'approved' && canReview()) actions.push(btn('draft', 'Send back to draft', 'button button--ghost'));
   if (s !== 'archived' && isAdmin() && (meta.published_version != null || s === 'published')) actions.push(btn('archived', 'Archive (take off the site)', 'cms-danger', !(data.dependents || []).length));
   if (s === 'archived' && isAdmin()) actions.push(btn('draft', 'Restore as draft', 'button button--ghost'));
@@ -264,8 +265,9 @@ function sidePanel(ed) {
     </div>
     <div class="cms-card">
       <h2>Ready to publish?</h2>
-      ${v.content.length || v.links.length ? `<ul class="cms-checks">${v.content.map(x => `<li class="bad">${esc(x)}</li>`).join('')}${v.links.map(x => `<li class="wait">${esc(x)}</li>`).join('')}</ul>`
+      ${v.content.length || v.links.length || v.publish.length ? `<ul class="cms-checks">${v.content.map(x => `<li class="bad">${esc(x)}</li>`).join('')}${v.links.map(x => `<li class="wait">${esc(x)}</li>`).join('')}${v.publish.map(x => `<li class="spec">${esc(x)}</li>`).join('')}</ul>`
         : '<p class="ok-line">Everything needed is here.</p>'}
+      ${v.publish.length && !v.content.length ? '<p class="cms-help">This can go to review now. The specialist items must be resolved before it can be published.</p>' : ''}
       ${v.links.length ? '<p class="cms-help">Linked items must be published first, so the live site never has a broken link.</p>' : ''}
     </div>
     ${(data.dependents || []).length ? `<div class="cms-card"><h2>Live pages link here</h2><ul class="cms-list">${data.dependents.map(d => { const [t, id] = d.split(':'); return `<li><a href="#/edit/${t}/${encodeURIComponent(id)}">${esc(refTitle(t, id))}</a> <span class="meta">${esc(TYPES[t].label)}</span></li>`; }).join('')}</ul></div>` : ''}

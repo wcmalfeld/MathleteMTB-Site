@@ -25,7 +25,7 @@ const root = new URL('..', import.meta.url).pathname;
 const SITE = 'https://www.mathletemtb.com/';
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-export const V = { site: 12, coaching: 2, cms: 2, app: 2 };
+export const V = { site: 12, coaching: 3, cms: 3, app: 3 };
 export const SCRIPTS = `<script src="js/tools-config.js?v=15" defer></script>
 <script src="js/supabase-config.js?v=7" defer></script>
 <script src="js/auth.js?v=7" defer></script>

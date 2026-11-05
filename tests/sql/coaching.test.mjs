@@ -84,6 +84,12 @@ test('reference data: only admins can create disciplines and competencies', { sk
   await save('admin', 'competency', { id: 'balance', name: 'Stability & Balance' });
   await save('admin', 'competency', { id: 'timing', name: 'Timing & Coordination' });
   await save('admin', 'person', { id: 'coach-a', name: 'Coach A', verified: true });
+  await save('admin', 'person', { id: 'writer-b', name: 'Writer B', verified: false });
+  await assert.rejects(save('reviewer', 'source', { id: 'src-one', title: 'S' }), /permission/);
+  await assert.rejects(save('admin', 'source', { id: 'src-bad', url: 'http://insecure.example' }), /check constraint/);
+  await save('admin', 'source', { id: 'src-one', title: 'Source One', url: 'https://example.com/one', access: 'public_free_instruction', verification: 'text_reviewed' });
+  const c = await catalog(null);
+  assert.equal(c.sources[0].id, 'src-one');
 });
 
 test('anon and outsiders cannot reach tables or editor functions', { skip }, async () => {
@@ -177,7 +183,37 @@ const lesson = (id, skill, extra = {}) => ({
   physics: { summary: 's', blocks: [{ heading: 'COM', body: 'b' }] },
   technique: [{ title: 'Stage 1', cues: ['Look ahead'] }],
   safety: { protective: ['Helmet'], stop_conditions: ['Tired'], environments: ['Grass'] },
-  drills: ['d-one'], mistakes: ['m-one'], contributors: [{ id: 'coach-a', role: 'author' }], ...extra
+  drills: ['d-one'], mistakes: ['m-one'], contributors: [{ id: 'coach-a', role: 'author' }],
+  performance_outcome: 'Outcome', audience: 'Advanced riders', rubric: ['Repeatable takeoff'],
+  sources: [{ id: 'src-one', role: 'primary', note: 'Main reference' }], ...extra
+});
+
+test('performance lessons need an outcome, audience, rubric and a source', { skip }, async () => {
+  await save('admin', 'drill', drill('d-perf'));
+  await save('admin', 'lesson', lesson('l-perf', 'balance-basics', { performance_outcome: '', audience: '', rubric: [], sources: [], drills: ['d-perf'], mistakes: [] }));
+  await assert.rejects(move('admin', 'lesson', 'l-perf', 'submitted'),
+    err => ['performance outcome', 'who this lesson is for', 'video-analysis', 'at least one source'].every(t => err.message.includes(t)));
+  await assert.rejects(save('admin', 'lesson', { id: 'l-perf', sources: [{ id: 'no-such-source' }] }), /foreign key/);
+  const got = await as('admin', "select public.coach_admin_get('lesson', 'l-perf')");
+  assert.deepEqual(got.item.sources, []);
+  await save('admin', 'lesson', { id: 'l-perf', sources: [{ id: 'src-one', role: 'further' }] });
+  assert.deepEqual((await as('admin', "select public.coach_admin_get('lesson', 'l-perf')")).item.sources, [{ id: 'src-one', role: 'further', note: '' }]);
+});
+
+test('specialist-authoring gaps can go to review but never to the live site', { skip }, async () => {
+  // Technique left for a specialist: allowed in review, listed as what they must supply.
+  await save('admin', 'mistake', { id: 'm-pending', name: 'Fish whip', description: 'd', correction: 'SPECIALIST AUTHORING REQUIRED: coach-approved correction' });
+  await save('admin', 'lesson', lesson('l-pending', 'balance-basics', { technique: [{ title: 'Rotation initiation', cues: [] }], mistakes: ['m-pending'], drills: ['d-perf'],
+    specialist_required: [{ section: 'technique', needs: 'Coach-authored movement phases and cues' }] }));
+  await move('admin', 'lesson', 'l-pending', 'submitted');
+  await move('reviewer', 'lesson', 'l-pending', 'approved');
+  const v = await as('admin', "select public.coach_validate('lesson', 'l-pending')");
+  assert.ok(v.publish.some(x => /Specialist must supply \(technique\)/.test(x)), v.publish.join('; '));
+  await assert.rejects(move('admin', 'lesson', 'l-pending', 'published'), /Specialist must supply/);
+  // The marker text alone also blocks publishing, on any content type.
+  await move('admin', 'mistake', 'm-pending', 'submitted');
+  await move('reviewer', 'mistake', 'm-pending', 'approved');
+  await assert.rejects(move('admin', 'mistake', 'm-pending', 'published'), /SPECIALIST AUTHORING REQUIRED/);
 });
 
 test('lessons: completeness, links and the Class 3 supervision rule', { skip }, async () => {
@@ -199,6 +235,21 @@ test('lessons: completeness, links and the Class 3 supervision rule', { skip }, 
   await move('admin', 'lesson', 'l-flip', 'submitted');
   await assert.rejects(move('reviewer', 'lesson', 'l-flip', 'approved'), /specialist/);
   await move('spec', 'lesson', 'l-flip', 'approved');
+  // Class 3: publishing needs a verified specialist credited as reviewer.
+  await publish('drill', 'd-one', 'admin', 'reviewer').catch(() => {});
+  await assert.rejects(move('admin', 'lesson', 'l-flip', 'published'), /verified specialist coach as reviewer/);
+  await save('admin', 'lesson', { id: 'l-flip', contributors: [{ id: 'writer-b', role: 'author' }, { id: 'writer-b', role: 'reviewer' }] });
+  await move('admin', 'lesson', 'l-flip', 'submitted');
+  await move('spec', 'lesson', 'l-flip', 'approved');
+  await assert.rejects(move('admin', 'lesson', 'l-flip', 'published'), /verified specialist coach as reviewer/, 'an unverified reviewer does not count');
+  await save('admin', 'lesson', { id: 'l-flip', contributors: [{ id: 'writer-b', role: 'author' }, { id: 'coach-a', role: 'reviewer' }] });
+  await move('admin', 'lesson', 'l-flip', 'submitted');
+  await move('spec', 'lesson', 'l-flip', 'approved');
+  await move('admin', 'lesson', 'l-flip', 'published');
+  const live = (await catalog(null)).lessons.find(l => l.id === 'l-flip');
+  assert.ok(live && live._published_at && live._version, 'live lessons carry their published date and version');
+  const ver = (await db.query("select approved_by from coach_versions where type = 'lesson' and id = 'l-flip' order by version desc limit 1")).rows[0];
+  assert.equal(ver.approved_by, users.spec, 'the published version records who approved it');
   // A drill used by a Class 3 lesson needs a specialist too.
   await save('admin', 'drill', { id: 'd-one', name: 'Drill one v2' });
   await move('admin', 'drill', 'd-one', 'submitted');
@@ -278,7 +329,7 @@ test('the seed file loads, and re-running it never overwrites edits', { skip }, 
     const v = await as('admin', 'select public.coach_validate($1, $2)', ['lesson', l.id]);
     assert.deepEqual(v.content, [], `lesson ${l.id}: ${v.content.join('; ')}`);
   }
-  for (const t of ['skill', 'drill', 'mistake', 'pathway']) {
+  for (const t of ['skill', 'drill', 'pathway']) {
     for (const item of seed[{ skill: 'skills', drill: 'drills', mistake: 'mistakes', pathway: 'pathways' }[t]]) {
       if (t === 'skill' && item.id === first) continue;
       const v = await as('admin', 'select public.coach_validate($1, $2)', [t, item.id]);

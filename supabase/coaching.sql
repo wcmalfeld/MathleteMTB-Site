@@ -16,6 +16,11 @@
 --     copy back to draft, so an approval always covers the exact content.
 --   * Advanced and Class 3 (high-consequence) content can only be approved
 --     by a specialist reviewer who didn't make the last edit.
+--   * Nothing containing "SPECIALIST AUTHORING REQUIRED", or with open
+--     specialist-authoring items, can be published. Class 3 lessons also need
+--     a verified coach credited as reviewer.
+--   * Lessons cite the sources they draw on (coach_sources, with the access
+--     labels from the Advanced Performance Lesson Pack) as further learning.
 --   * Nobody touches the tables directly: there are no table grants for
 --     anon or authenticated. Everything goes through the coach_* functions
 --     below, which check the caller's role in coach_editors.
@@ -75,6 +80,30 @@ create table if not exists public.coach_competencies (
   description   text not null default '',
   display_order int not null default 100,
   updated_at    timestamptz not null default now()
+);
+
+-- Public sources lessons draw on and link to as "further learning".
+-- access uses the content labels from the Advanced Performance Lesson Pack.
+-- verification records what Mathlete could actually check on the page.
+create table if not exists public.coach_sources (
+  id           text primary key,
+  title        text not null default '',
+  creator      text not null default '',
+  publisher    text not null default '',
+  url          text not null default '' check (url = '' or url ~ '^https://'),
+  access       text not null default 'public_reference_index' check (access in
+                 ('public_free_instruction', 'public_outline_paid_lesson', 'public_coaching_framework',
+                  'public_reference_index', 'expert_demonstration', 'mathlete_original')),
+  kind         text not null default '',   -- instruction, athlete demonstration, editorial, course outline, index, standard
+  published_on text not null default '',
+  accessed_on  text not null default '',
+  verification text not null default 'not_checked' check (verification in
+                 ('text_reviewed', 'video_only', 'not_reachable', 'not_checked')),
+  summary      text not null default '',   -- Mathlete's own notes of what the page verifiably covers
+  limitations  text not null default '',
+  topics       text[] not null default '{}',
+  published    boolean not null default true,
+  updated_at   timestamptz not null default now()
 );
 
 -- 3. Reviewed content (working copies) -----------------------------
@@ -253,6 +282,27 @@ create table if not exists public.coach_lesson_contributors (
   primary key (lesson_id, person_id, role)
 );
 
+-- Performance lesson sections (Advanced Performance Lesson Pack, section 5).
+alter table public.coach_lessons add column if not exists lesson_type text not null default 'foundation';
+alter table public.coach_lessons add column if not exists audience text not null default '';
+alter table public.coach_lessons add column if not exists performance_outcome text not null default '';
+-- { "setting": "", "focus": "", "feedback": "", "stop": [], "notes": "" }
+alter table public.coach_lessons add column if not exists practice jsonb not null default '{}';
+alter table public.coach_lessons add column if not exists rubric text[] not null default '{}';      -- video-analysis observations
+alter table public.coach_lessons add column if not exists readiness text[] not null default '{}';   -- progression gates (not certification)
+alter table public.coach_lessons add column if not exists review_level text not null default '';   -- expertise the reviewer needs
+-- [{ "section": "technique", "needs": "What the specialist must supply" }]
+alter table public.coach_lessons add column if not exists specialist_required jsonb not null default '[]';
+
+create table if not exists public.coach_lesson_sources (
+  lesson_id text not null references public.coach_lessons (id) on delete cascade,
+  source_id text not null references public.coach_sources (id) on delete restrict,
+  role      text not null default 'primary' check (role in ('primary', 'comparison', 'further')),
+  note      text not null default '',
+  sort      int not null default 0,
+  primary key (lesson_id, source_id)
+);
+
 create table if not exists public.coach_pathways (
   id                text primary key,
   name              text not null default '',
@@ -305,6 +355,8 @@ create table if not exists public.coach_versions (
   primary key (type, id, version)
 );
 
+alter table public.coach_versions add column if not exists approved_by uuid;
+
 create table if not exists public.coach_log (
   id          bigint generated always as identity primary key,
   at          timestamptz not null default now(),
@@ -325,7 +377,7 @@ create index if not exists coach_log_actor_at on public.coach_log (actor, at des
 do $$
 declare t text;
 begin
-  foreach t in array array['coach_editors', 'coach_people', 'coach_disciplines', 'coach_competencies',
+  foreach t in array array['coach_editors', 'coach_people', 'coach_disciplines', 'coach_competencies', 'coach_sources', 'coach_lesson_sources',
     'coach_media', 'coach_drills', 'coach_mistakes', 'coach_skills', 'coach_skill_disciplines',
     'coach_skill_competencies', 'coach_prerequisites', 'coach_related_skills', 'coach_lessons',
     'coach_lesson_drills', 'coach_lesson_mistakes', 'coach_lesson_media', 'coach_lesson_contributors',
@@ -371,7 +423,7 @@ returns text language sql immutable set search_path = '' as $$
     when 'drill' then 'coach_drills'       when 'mistake' then 'coach_mistakes'
     when 'media' then 'coach_media'        when 'pathway' then 'coach_pathways'
     when 'discipline' then 'coach_disciplines' when 'competency' then 'coach_competencies'
-    when 'person' then 'coach_people'
+    when 'person' then 'coach_people'      when 'source' then 'coach_sources'
   end;
 $$;
 
@@ -408,7 +460,7 @@ begin
   execute format('select to_jsonb(t) - $2::text[] from public.%I t where t.id = $1', public.coach__check_type(p_type))
     into base using p_id, public.coach__meta_cols() || array['published'];
   if base is null then return null; end if;
-  if p_type in ('discipline', 'person') then
+  if p_type in ('discipline', 'person', 'source') then
     execute format('select to_jsonb(t) - ''updated_at'' from public.%I t where t.id = $1', public.coach__tbl(p_type))
       into base using p_id;
   elsif p_type = 'competency' then
@@ -436,7 +488,10 @@ begin
                          from public.coach_lesson_media x where x.lesson_id = p_id), '[]'::jsonb),
       'contributors', coalesce((select jsonb_agg(jsonb_build_object('id', x.person_id, 'role', x.role)
                                   order by x.sort, x.person_id, x.role)
-                                from public.coach_lesson_contributors x where x.lesson_id = p_id), '[]'::jsonb));
+                                from public.coach_lesson_contributors x where x.lesson_id = p_id), '[]'::jsonb),
+      'sources', coalesce((select jsonb_agg(jsonb_build_object('id', x.source_id, 'role', x.role, 'note', x.note)
+                             order by x.sort, x.source_id)
+                           from public.coach_lesson_sources x where x.lesson_id = p_id), '[]'::jsonb));
   elsif p_type = 'pathway' then
     base := base || jsonb_build_object(
       'stages', coalesce((select jsonb_agg(jsonb_build_object(
@@ -468,6 +523,7 @@ as $$
     union all select 'media', x #>> '{}' from jsonb_path_query(s, '$.media[*]') x where p_type = 'lesson'
     union all select 'media', x #>> '{}' from jsonb_path_query(s, '$.technique[*].media_id') x where p_type = 'lesson'
     union all select 'person', x #>> '{}' from jsonb_path_query(s, '$.contributors[*].id') x where p_type = 'lesson'
+    union all select 'source', x #>> '{}' from jsonb_path_query(s, '$.sources[*].id') x where p_type = 'lesson'
     union all select 'drill', s ->> 'next_drill_id' where p_type = 'drill'
     union all select 'media', s ->> 'media_id' where p_type in ('drill', 'mistake')
     union all select 'drill', s ->> 'drill_id' where p_type = 'mistake'
@@ -483,7 +539,7 @@ declare ok boolean;
 begin
   if p_type = 'competency' then
     return exists (select 1 from public.coach_competencies where id = p_id);
-  elsif p_type in ('discipline', 'person') then
+  elsif p_type in ('discipline', 'person', 'source') then
     execute format('select published from public.%I where id = $1', public.coach__tbl(p_type)) into ok using p_id;
   else
     execute format('select published_version is not null and status <> ''archived'' from public.%I where id = $1',
@@ -495,7 +551,7 @@ $$;
 
 -- Live (published) snapshot of every reviewed item.
 create or replace view public.coach_live as
-  select v.type, v.id, v.version, v.snapshot from public.coach_versions v
+  select v.type, v.id, v.version, v.snapshot, v.published_at, v.approved_by from public.coach_versions v
   join (
     select 'skill' type, id, published_version, status from public.coach_skills
     union all select 'lesson', id, published_version, status from public.coach_lessons
@@ -558,6 +614,8 @@ declare
   st jsonb;
   n int := 0;
   r record;
+  pub text[] := '{}';
+  tech_pending boolean := false;
 begin
   if s is null then raise exception 'No % "%"', p_type, p_id using errcode = 'P0002'; end if;
 
@@ -576,12 +634,19 @@ begin
     if public.coach__blank(s->>'introduction') then c := array_append(c, 'Introduction is required'); end if;
     if public.coach__arr_len(s->'objectives') = 0 then c := array_append(c, 'Add at least one learning objective'); end if;
     if public.coach__arr_len(s->'physics'->'blocks') = 0 then c := array_append(c, 'Add a physics or biomechanics explanation'); end if;
-    if public.coach__arr_len(s->'technique') = 0 then c := array_append(c, 'Add at least one technique stage'); end if;
+    -- Technique a specialist still has to write is listed in specialist_required
+    -- instead; publishing stays blocked until it's supplied.
+    tech_pending := exists (select 1 from jsonb_path_query(s, '$.specialist_required[*] ? (@.section == "technique")'));
+    if public.coach__arr_len(s->'technique') = 0 and not tech_pending then c := array_append(c, 'Add at least one technique stage'); end if;
     for st in select * from jsonb_array_elements(case when jsonb_typeof(s->'technique') = 'array' then s->'technique' else '[]' end) loop
       n := n + 1;
       if public.coach__blank(st->>'title') then c := array_append(c, ('Technique stage ' || n || ' needs a title')); end if;
-      if public.coach__arr_len(st->'cues') = 0 then c := array_append(c, ('Technique stage ' || n || ' needs at least one coaching cue')); end if;
+      if public.coach__arr_len(st->'cues') = 0 and not tech_pending then c := array_append(c, ('Technique stage ' || n || ' needs at least one coaching cue')); end if;
     end loop;
+    if public.coach__blank(s->>'performance_outcome') then c := array_append(c, 'Describe the performance outcome'); end if;
+    if public.coach__blank(s->>'audience') then c := array_append(c, 'Say who this lesson is for'); end if;
+    if public.coach__arr_len(s->'rubric') = 0 then c := array_append(c, 'Add at least one video-analysis observation'); end if;
+    if public.coach__arr_len(s->'sources') = 0 then c := array_append(c, 'Cite at least one source'); end if;
     if public.coach__arr_len(s->'mistakes') = 0 then c := array_append(c, 'Add at least one common mistake'); end if;
     if public.coach__arr_len(s->'drills') = 0 then c := array_append(c, 'Add at least one practice drill'); end if;
     if public.coach__arr_len(s->'safety'->'protective') = 0 then c := array_append(c, 'Safety: list protective equipment'); end if;
@@ -648,7 +713,22 @@ begin
     end if;
   end loop;
 
-  return jsonb_build_object('content', to_jsonb(c), 'links', to_jsonb(links));
+  -- Only checked when publishing: what a specialist still has to supply.
+  if s::text ilike '%SPECIALIST AUTHORING REQUIRED%' then
+    pub := array_append(pub, 'Parts are still marked SPECIALIST AUTHORING REQUIRED');
+  end if;
+  if p_type = 'lesson' then
+    for st in select * from jsonb_array_elements(case when jsonb_typeof(s->'specialist_required') = 'array' then s->'specialist_required' else '[]' end) loop
+      pub := array_append(pub, format('Specialist must supply (%s): %s', coalesce(st->>'section', 'lesson'), coalesce(st->>'needs', '')));
+    end loop;
+    if cls = 3 and not exists (
+      select 1 from public.coach_lesson_contributors x join public.coach_people p on p.id = x.person_id
+      where x.lesson_id = p_id and x.role = 'reviewer' and p.verified and p.published) then
+      pub := array_append(pub, 'Class 3: credit a verified specialist coach as reviewer');
+    end if;
+  end if;
+
+  return jsonb_build_object('content', to_jsonb(c), 'links', to_jsonb(links), 'publish', to_jsonb(pub));
 end;
 $$;
 
@@ -751,7 +831,14 @@ begin
         from jsonb_array_elements(p_payload->'contributors') with ordinality as a(x, o);
     end if;
 
-  elsif p_type = 'pathway' and p_payload ? 'stages' then
+  end if;
+  if p_type = 'lesson' and p_payload ? 'sources' then
+    delete from public.coach_lesson_sources where lesson_id = v_id;
+    insert into public.coach_lesson_sources (lesson_id, source_id, role, note, sort)
+      select v_id, x->>'id', coalesce(x->>'role', 'primary'), coalesce(x->>'note', ''), (o - 1)::int
+      from jsonb_array_elements(p_payload->'sources') with ordinality as a(x, o);
+  end if;
+  if p_type = 'pathway' and p_payload ? 'stages' then
     delete from public.coach_pathway_stages where pathway_id = v_id;
     i := 0;
     for st in select * from jsonb_array_elements(p_payload->'stages') loop
@@ -794,8 +881,8 @@ returns jsonb
 language plpgsql volatile security definer set search_path = ''
 as $$
 declare
-  order_ text[] := array['person', 'discipline', 'competency', 'media', 'drill', 'mistake', 'skill', 'lesson', 'pathway'];
-  keys_ text[]  := array['people', 'disciplines', 'competencies', 'media', 'drills', 'mistakes', 'skills', 'lessons', 'pathways'];
+  order_ text[] := array['person', 'source', 'discipline', 'competency', 'media', 'drill', 'mistake', 'skill', 'lesson', 'pathway'];
+  keys_ text[]  := array['people', 'sources', 'disciplines', 'competencies', 'media', 'drills', 'mistakes', 'skills', 'lessons', 'pathways'];
   t text;
   x jsonb;
   added int := 0;
@@ -873,7 +960,8 @@ begin
         'select coalesce(jsonb_agg(public.coach__snapshot(%L, t.id) || jsonb_build_object(''_status'', t.status, ''_version'', t.version) order by t.id), ''[]'')
          from public.%I t where t.status <> ''archived''', types[i], public.coach__tbl(types[i])) into items;
     else
-      select coalesce(jsonb_agg(l.snapshot order by l.id), '[]') into items from public.coach_live l where l.type = types[i];
+      select coalesce(jsonb_agg(l.snapshot || jsonb_build_object('_published_at', l.published_at, '_version', l.version) order by l.id), '[]')
+        into items from public.coach_live l where l.type = types[i];
     end if;
     out_ := out_ || jsonb_build_object(keys_[i], items);
   end loop;
@@ -883,7 +971,9 @@ begin
     'competencies', (select coalesce(jsonb_agg(public.coach__snapshot('competency', c.id) order by c.display_order, c.id), '[]')
                      from public.coach_competencies c),
     'people', (select coalesce(jsonb_agg(public.coach__snapshot('person', p.id) order by p.name), '[]')
-               from public.coach_people p where p.published));
+               from public.coach_people p where p.published),
+    'sources', (select coalesce(jsonb_agg(public.coach__snapshot('source', x.id) order by x.id), '[]')
+                from public.coach_sources x where x.published));
 end;
 $$;
 
@@ -935,7 +1025,7 @@ returns jsonb language plpgsql stable security definer set search_path = '' as $
 begin
   perform public.coach__require(array['contributor', 'reviewer', 'admin']);
   if not public.coach__reviewed(p_type) then
-    return jsonb_build_object('content', '[]'::jsonb, 'links', '[]'::jsonb);
+    return jsonb_build_object('content', '[]'::jsonb, 'links', '[]'::jsonb, 'publish', '[]'::jsonb);
   end if;
   return public.coach__validate(p_type, p_id);
 end;
@@ -954,6 +1044,7 @@ declare
   n_rows int;
   v jsonb;
   deps text[];
+  approver uuid;
   specialist boolean := coalesce((select e.specialist from public.coach_editors e where e.user_id = me), false);
   problems text;
 begin
@@ -1001,12 +1092,13 @@ begin
 
   elsif cur.status = 'approved' and p_to = 'published' then
     perform public.coach__require(array['admin']);
-    if jsonb_array_length(v->'content') + jsonb_array_length(v->'links') > 0 then
-      select string_agg(x, '; ') into problems from jsonb_array_elements_text((v->'content') || (v->'links')) x;
+    if jsonb_array_length(v->'content') + jsonb_array_length(v->'links') + jsonb_array_length(v->'publish') > 0 then
+      select string_agg(x, '; ') into problems from jsonb_array_elements_text((v->'content') || (v->'links') || (v->'publish')) x;
       raise exception 'Can''t publish yet: %', problems using errcode = '23514';
     end if;
-    insert into public.coach_versions (type, id, version, snapshot, published_by, note)
-    values (p_type, p_id, cur.version, public.coach__snapshot(p_type, p_id), me, coalesce(p_note, ''))
+    execute format('select approved_by from public.%I where id = $1', tbl) into approver using p_id;
+    insert into public.coach_versions (type, id, version, snapshot, published_by, approved_by, note)
+    values (p_type, p_id, cur.version, public.coach__snapshot(p_type, p_id), me, approver, coalesce(p_note, ''))
     on conflict (type, id, version) do nothing;
     execute format('update public.%I set status = ''published'', published_version = version where id = $1', tbl) using p_id;
 
@@ -1052,8 +1144,8 @@ begin
   if snap is null then raise exception 'No published version % of % "%"', p_version, p_type, p_id using errcode = 'P0002'; end if;
   perform public.coach__write(p_type, snap, me);
   v := public.coach__validate(p_type, p_id);
-  if jsonb_array_length(v->'links') > 0 then
-    select string_agg(x, '; ') into problems from jsonb_array_elements_text(v->'links') x;
+  if jsonb_array_length(v->'links') + jsonb_array_length(v->'publish') > 0 then
+    select string_agg(x, '; ') into problems from jsonb_array_elements_text((v->'links') || (v->'publish')) x;
     raise exception 'Can''t roll back: %', problems using errcode = '23514';
   end if;
   execute format('select version from public.%I where id = $1', tbl) into new_v using p_id;
@@ -1094,7 +1186,7 @@ language plpgsql stable security definer set search_path = ''
 as $$
 declare
   items jsonb := '[]';
-  types text[] := array['skill', 'lesson', 'drill', 'mistake', 'media', 'pathway', 'discipline', 'competency', 'person'];
+  types text[] := array['skill', 'lesson', 'drill', 'mistake', 'media', 'pathway', 'discipline', 'competency', 'person', 'source'];
   t text;
   part jsonb;
 begin
@@ -1112,7 +1204,7 @@ begin
     else
       execute format($q$
         select coalesce(jsonb_agg(jsonb_build_object(
-          'type', %L, 'id', x.id, 'title', coalesce(nullif(x.name, ''), x.id), 'status', 'reference',
+          'type', %L, 'id', x.id, 'title', coalesce(nullif(to_jsonb(x)->>'name', ''), nullif(to_jsonb(x)->>'title', ''), x.id), 'status', 'reference',
           'updated_at', x.updated_at) order by x.updated_at desc), '[]')
         from public.%I x$q$, t, public.coach__tbl(t)) into part;
     end if;

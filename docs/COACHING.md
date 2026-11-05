@@ -1,7 +1,8 @@
 # Coaching & Progression Lab
 
-Phase 1 of the *Coaching & Progression Lab* PRD: the coaching library and
-its CMS. Riders browse and search skills, read full lessons (physics,
+Phase 1 of the *Coaching & Progression Lab* PRD, positioned for
+performance riders by the *Advanced Performance Lesson Pack (v2)*: the
+coaching library and its CMS. Riders browse and search skills, read full lessons (physics,
 technique, prerequisites, mistakes, drills, progression, safety) and follow
 pathways. Editors write, review and publish everything in the CMS at
 `/coaching/admin/` without touching code.
@@ -15,10 +16,18 @@ sign-in. There's still no build step for the website.
 1. **Create the tables.** Supabase → SQL Editor → paste and run
    `supabase/coaching.sql`. Safe to re-run.
 2. **Load the starter content.** Run `supabase/coaching-seed.sql` the same
-   way. This adds 15 skills with full draft lessons, 21 drills, 18 common
-   mistakes, 3 pathways, the 8 disciplines and the 6 foundational
-   competencies. Re-running it only adds what's missing, so it never
-   overwrites edits.
+   way. This adds 46 skills with draft lessons (15 performance foundations
+   and the pack's 31 advanced lessons), 39 drills, 55 common mistakes,
+   7 pathways, 9 disciplines, the 6 foundational competencies and a
+   registry of 50 sources. Re-running it only adds what's missing, so it
+   never overwrites edits.
+
+   **Upgrading?** If you ran an earlier version, run `coaching.sql` again
+   first (it adds the new tables and columns safely). Re-running the seed
+   then adds the new lessons, but won't change items already in your
+   database, such as the first versions of the 15 foundation lessons. If
+   you haven't edited those, delete them in the CMS before re-running the
+   seed to get the tightened versions.
 3. **Give yourself CMS access** (from your computer, with `.env` set up as in
    `docs/ACCESS.md`):
 
@@ -36,11 +45,38 @@ disciplines and an empty library.
 ## The starter content is a draft
 
 Every seeded lesson is credited to **"Mathlete draft"** and must be rewritten
-or reviewed by a qualified coach before it's published. It follows the
-lesson structure from the PRD and is written to be sensible and cautious,
-but it is not expert-reviewed instruction. Replace it with your own content
-in the CMS, or edit `content/coaching/seed.json` and rebuild the seed SQL
-before you first load it.
+or reviewed by a qualified coach before it's published. It's original
+writing informed by the public sources in the lesson pack, but it is not
+expert-reviewed instruction.
+
+**[COACHING-CONTENT-AUDIT.md](COACHING-CONTENT-AUDIT.md)** lists, for each
+lesson, its sources, how well they could be verified, the reviewer it needs
+and exactly what a specialist still has to write. In short: 15 advanced
+lessons are ready for editorial review, and 16 (all the tricks, plus
+scrubbing and the steeps progression) need specialist authoring first.
+
+## Lesson sections
+
+Beyond the PRD's lesson structure, each lesson has the pack's performance
+sections: **performance outcome**, **who it's for**, **practice design**
+(setting, focus, feedback, stop criteria), a **video-analysis rubric**,
+**readiness gates** (shown as prompts, never as a safety certificate), a
+**review standard**, and **sources** shown as "Further learning".
+
+**Sources** (CMS → Sources) record each public resource with the pack's
+access labels (free, paid course outline, coach education, reference index,
+athlete demonstration, Mathlete original) and what could actually be
+checked (page text reviewed, video only, couldn't open). Lessons link to
+them; the site lists them as other creators' work, with no implied
+endorsement.
+
+**Specialist authoring.** A lesson's "Specialist authoring still needed"
+list records what a qualified specialist must supply (technique,
+progression, corrections, readiness). Any text containing
+`SPECIALIST AUTHORING REQUIRED` marks a gap too. Such lessons can go to
+review, so the specialist can work on them, but **can't be published**
+until every gap is filled and the list is empty. Riders never see them;
+in preview, the page shows a banner listing the gaps.
 
 ## Roles
 
@@ -102,7 +138,7 @@ see only published content.
 |---|---|---|
 | 1 Foundational | balance, braking, basic cornering | self-guided practice with safety guidance |
 | 2 Progressive | manuals, bunny hops, drops, jumping | prerequisites, protective equipment and suitable environments shown first |
-| 3 High consequence | flips, corks, big gaps | theory only; drills shown as coach-led; practical pathway stages must be coach supervised |
+| 3 High consequence | 180s and up, flips, technical steeps | theory only; drills shown as coach-led; practical pathway stages must be coach supervised; a **verified specialist coach must be credited as reviewer** before publishing |
 
 Badges always show the class number and name, never colour alone. Nothing on
 the site marks a rider as ready for anything: reading a lesson is never
@@ -146,10 +182,11 @@ They reach an analytics service once one is added to the site.
 | Where | What |
 |---|---|
 | `supabase/coaching.sql` | tables, review workflow, validation, permissions |
-| `content/coaching/seed.json` | starter content |
+| `content/coaching/seed.json` | starter content, including the source registry |
+| `docs/COACHING-CONTENT-AUDIT.md` | source audit, coverage matrix and review list (`node scripts/coaching-audit.mjs` regenerates it from the seed) |
 | `js/coaching/core.js` | search, prerequisites, pathways, safety rules (no DOM) |
 | `js/coaching/render.js`, `app.js` | the learner pages |
-| `js/coaching/demos.js` | the four physics demos (simplified models) |
+| `js/coaching/demos.js` | the five physics demos (simplified models): balance, braking, cornering grip, jump flight, rotation |
 | `js/coaching/player.js` | video player |
 | `js/coaching/cms.js`, `cms-schema.js` | the CMS and its forms |
 | `css/coaching.css`, `css/coaching-cms.css` | styles |
@@ -168,7 +205,7 @@ seed content with a "Local preview" banner.
 ```bash
 npm test                                   # unit tests: search, prerequisites, safety, physics
 TEST_DATABASE_URL=postgres://user:pass@localhost:5432/postgres npm test
-                                           # + 16 database tests against a real Postgres
+                                           # + 18 database tests against a real Postgres
 ```
 
 The database tests create and drop a throwaway database and use a small

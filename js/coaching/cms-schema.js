@@ -20,8 +20,30 @@ export const TYPES = {
   pathway: { label: 'Pathway', plural: 'Pathways', reviewed: true, titleKey: 'name' },
   discipline: { label: 'Discipline', plural: 'Disciplines', reviewed: false, titleKey: 'name', admin: true },
   competency: { label: 'Competency', plural: 'Competencies', reviewed: false, titleKey: 'name', admin: true },
-  person: { label: 'Person', plural: 'People', reviewed: false, titleKey: 'name', admin: true }
+  person: { label: 'Person', plural: 'People', reviewed: false, titleKey: 'name', admin: true },
+  source: { label: 'Source', plural: 'Sources', reviewed: false, titleKey: 'title', admin: true }
 };
+
+// Content labels from the Advanced Performance Lesson Pack.
+export const ACCESS = {
+  public_free_instruction: 'Free article or video',
+  public_outline_paid_lesson: 'Public outline, paid course',
+  public_coaching_framework: 'Coach education framework',
+  public_reference_index: 'Reference index',
+  expert_demonstration: 'Athlete demonstration',
+  mathlete_original: 'Mathlete original'
+};
+export const VERIFICATION = {
+  text_reviewed: 'Page text reviewed',
+  video_only: 'Technique is in the video only',
+  not_reachable: 'Page could not be checked',
+  not_checked: 'Not checked yet'
+};
+export const LESSON_TYPES = {
+  foundation: 'Performance foundation', performance_technique: 'Performance technique', trick_technique: 'Trick',
+  race_craft: 'Race craft', equipment_process: 'Equipment process', analysis: 'Analysis'
+};
+export const SPECIALIST_MARKER = 'SPECIALIST AUTHORING REQUIRED';
 
 const ID = { key: 'id', kind: 'text', label: 'ID', help: 'Used in the address, e.g. coaching/manual. Lowercase letters, numbers and hyphens. Can\'t be changed later.', idField: true };
 
@@ -55,6 +77,9 @@ export const FIELDS = {
     { key: 'skill_id', kind: 'ref', ref: 'skill', label: 'Skill this lesson teaches', required: true },
     { key: 'title', kind: 'text', label: 'Lesson title', required: true },
     { key: 'is_primary', kind: 'checkbox', label: 'Main lesson for the skill' },
+    { key: 'lesson_type', kind: 'select', label: 'Lesson type', options: opts(LESSON_TYPES) },
+    { key: 'performance_outcome', kind: 'textarea', label: 'Performance outcome', rows: 3, required: true, help: 'What high-quality execution achieves, not just a definition.' },
+    { key: 'audience', kind: 'textarea', label: 'Who this is for', rows: 2, required: true },
     { key: 'introduction', kind: 'textarea', label: 'Introduction', rows: 4, required: true },
     { key: 'objectives', kind: 'list', label: 'Learning objectives', rows: 3, required: true },
     { key: 'physics', kind: 'group', label: 'Physics and biomechanics', fields: [
@@ -72,7 +97,15 @@ export const FIELDS = {
       { key: 'cues', kind: 'list', label: 'Coaching cues', rows: 2 },
       { key: 'errors', kind: 'list', label: 'Common errors at this stage', rows: 2 },
       { key: 'media_id', kind: 'ref', ref: 'media', label: 'Reference video' }] },
+    { key: 'practice', kind: 'group', label: 'Practice design', fields: [
+      { key: 'setting', kind: 'textarea', label: 'Setting and environment', rows: 2 },
+      { key: 'focus', kind: 'textarea', label: 'Session focus', rows: 2 },
+      { key: 'feedback', kind: 'textarea', label: 'Feedback (video, timing, coach)', rows: 2 },
+      { key: 'stop', kind: 'list', label: 'Stop criteria', rows: 2 },
+      { key: 'notes', kind: 'textarea', label: 'Notes', rows: 2 }] },
     { key: 'drills', kind: 'refs', ref: 'drill', label: 'Practice drills' },
+    { key: 'rubric', kind: 'list', label: 'Video-analysis rubric (what to look for)', rows: 4, required: true },
+    { key: 'readiness', kind: 'list', label: 'Readiness / progression gates', rows: 3, help: 'Qualitative evidence for the rider and coach. Never presented as a safety certificate.' },
     { key: 'mistakes', kind: 'refs', ref: 'mistake', label: 'Common mistakes' },
     { key: 'media', kind: 'refs', ref: 'media', label: 'Videos' },
     { key: 'safety', kind: 'group', label: 'Safety', fields: [
@@ -83,6 +116,15 @@ export const FIELDS = {
       { key: 'supervision', kind: 'checkbox', label: 'Requires coach supervision' },
       { key: 'stop_conditions', kind: 'list', label: 'Stop conditions', rows: 3 },
       { key: 'warnings', kind: 'list', label: 'Warnings', rows: 2 }] },
+    { key: 'sources', kind: 'items', label: 'Sources and further learning', add: 'Add source', required: true, fields: [
+      { key: 'id', kind: 'ref', ref: 'source', label: 'Source' },
+      { key: 'role', kind: 'select', label: 'Role', options: [{ value: 'primary', label: 'Primary source' }, { value: 'comparison', label: 'Comparison source' }, { value: 'further', label: 'Further learning' }] },
+      { key: 'note', kind: 'text', label: 'What it adds' }] },
+    { key: 'review_level', kind: 'text', label: 'Review standard', help: 'The expertise the approving reviewer needs, e.g. "Freestyle coach".' },
+    { key: 'specialist_required', kind: 'items', label: 'Specialist authoring still needed', add: 'Add an item', fields: [
+      { key: 'section', kind: 'select', label: 'Section', options: ['technique', 'progression', 'drills', 'mistakes', 'readiness', 'equipment', 'physics'].map(v => ({ value: v, label: v })) },
+      { key: 'needs', kind: 'textarea', label: 'What the specialist must supply', rows: 2 }],
+      help: 'Anything listed here, or any text saying SPECIALIST AUTHORING REQUIRED, blocks publishing.' },
     { key: 'contributors', kind: 'items', label: 'Contributors', add: 'Add contributor', fields: [
       { key: 'id', kind: 'ref', ref: 'person', label: 'Person' },
       { key: 'role', kind: 'select', label: 'Role', options: [{ value: 'author', label: 'Author' }, { value: 'reviewer', label: 'Reviewer' }, { value: 'demo-rider', label: 'Demo rider' }, { value: 'coach', label: 'Coach' }] }] }
@@ -166,6 +208,22 @@ export const FIELDS = {
     { key: 'description', kind: 'textarea', label: 'Description', rows: 3 },
     { key: 'display_order', kind: 'number', label: 'Display order' }
   ],
+  source: [
+    ID,
+    { key: 'title', kind: 'text', label: 'Title', required: true },
+    { key: 'creator', kind: 'text', label: 'Creator / presenter' },
+    { key: 'publisher', kind: 'text', label: 'Publisher' },
+    { key: 'url', kind: 'text', label: 'Address (https://)' },
+    { key: 'access', kind: 'select', label: 'Access label', options: opts(ACCESS) },
+    { key: 'kind', kind: 'text', label: 'Kind', help: 'Instruction, athlete demonstration, editorial, course outline, index or standard.' },
+    { key: 'published_on', kind: 'text', label: 'Published' },
+    { key: 'accessed_on', kind: 'text', label: 'Accessed' },
+    { key: 'verification', kind: 'select', label: 'What we could check', options: opts(VERIFICATION) },
+    { key: 'summary', kind: 'textarea', label: 'What it covers (our own words)', rows: 4 },
+    { key: 'limitations', kind: 'textarea', label: 'Limitations', rows: 2 },
+    { key: 'topics', kind: 'list', label: 'Topics', rows: 2 },
+    { key: 'published', kind: 'checkbox', label: 'Show on the site' }
+  ],
   person: [
     ID,
     { key: 'name', kind: 'text', label: 'Name', required: true },
@@ -192,7 +250,9 @@ export function blank(type) {
   fill(FIELDS[type], out);
   if (type === 'skill') { out.difficulty = 'beginner'; out.safety_class = 1; }
   if (type === 'lesson') out.is_primary = true;
-  if (type === 'discipline' || type === 'person') out.published = true;
+  if (type === 'discipline' || type === 'person' || type === 'source') out.published = true;
+  if (type === 'source') { out.access = 'public_free_instruction'; out.verification = 'not_checked'; }
+  if (type === 'lesson') out.lesson_type = 'performance_technique';
   if (type === 'discipline' || type === 'competency') out.display_order = 100;
   if (type === 'media') { out.license_status = 'unknown'; out.provider = 'youtube'; }
   return out;
@@ -215,7 +275,11 @@ export function toPayload(type, state) {
     for (const f of fields) {
       const v = src == null ? undefined : src[f.key];
       if (f.kind === 'group') o[f.key] = clean(f.fields, v || {});
-      else if (f.kind === 'items') o[f.key] = (v || []).map(x => clean(f.fields, x)).filter(x => Object.values(x).some(y => y !== '' && y !== null && !(Array.isArray(y) && !y.length) && y !== false));
+      else if (f.kind === 'items') {
+        const linksById = f.fields.some(g => g.key === 'id' && g.kind === 'ref');
+        o[f.key] = (v || []).map(x => clean(f.fields, x))
+          .filter(x => linksById ? !!x.id : Object.values(x).some(y => y !== '' && y !== null && !(Array.isArray(y) && !y.length) && y !== false));
+      }
       else if (f.kind === 'list') o[f.key] = (v || []).map(s => String(s).trim()).filter(Boolean);
       else if (f.kind === 'refs') o[f.key] = [...new Set((v || []).filter(Boolean))];
       else if (f.kind === 'number') o[f.key] = v === '' || v == null || isNaN(Number(v)) ? null : Number(v);

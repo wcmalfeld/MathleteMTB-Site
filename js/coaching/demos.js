@@ -65,6 +65,16 @@ export function jumpFlight({ speedKmh, lipDeg, deck = 3, landingDeg = 28, landin
   return { peak, x, y: y(x), where, pathDeg, groundDeg, mismatchDeg: Math.abs(pathDeg - groundDeg), vx, vy, y_at: y };
 }
 
+// Rotation: with nothing to push against in the air, angular momentum stays
+// the same. Pulling in (smaller moment of inertia) spins faster; extending
+// spins slower. spin = rotation rate when fully extended (turns per second),
+// tuck 0..1, airtime in seconds. Returns how many turns are completed.
+export function spinTurns({ spin, tuck = 0, airtime }) {
+  const inertia = 1 - 0.45 * clamp(tuck, 0, 1);   // tucked body: roughly half the inertia
+  const rate = spin / inertia;
+  return { rate, turns: rate * airtime };
+}
+
 // ---------- UI helpers ----------
 
 function slider(id, label, min, max, step, value, unit) {
@@ -227,6 +237,35 @@ const DEMOS = {
       }[f.where];
       svg.querySelector('.demo-label--big').textContent = msg[0];
       el.querySelector('.demo-readout').textContent = `${msg[1]} Peak height about ${r1(f.peak.y)} m above the lip.`;
+    });
+  }
+  ,
+  'rotation'(el) {
+    const id = uid();
+    el.innerHTML = frame('Tucking and extending change how fast you spin',
+      `<svg viewBox="0 0 360 200" role="img" aria-labelledby="${id}-t"><title id="${id}-t">How far a rider rotates during a jump</title>
+        <circle class="demo-track" cx="180" cy="104" r="70"/>
+        <path class="demo-sweep"/>
+        <g class="demo-body"><line class="demo-frame" x1="180" y1="104" x2="180" y2="50"/><circle class="demo-com" cx="180" cy="104" r="7"/></g>
+        <text class="demo-label demo-label--big" x="12" y="24"></text>
+      </svg>`,
+      slider(id + '-spin', 'Spin started at takeoff (relative)', 1, 10, 1, 4, '') +
+      slider(id + '-tuck', 'Body shape: extended → tucked', 0, 100, 5, 0, '%') +
+      slider(id + '-air', 'Time in the air', 4, 16, 1, 9, ' tenths of a second'),
+      'Treats the rider and bike as one body that only changes shape. It shows a principle, conservation of angular momentum, and is not a guide to the speed, airtime or input for any trick.');
+    wire(el, ({ spin, tuck, air }) => {
+      const { turns } = spinTurns({ spin: spin * 0.1, tuck: tuck / 100, airtime: air / 10 });
+      const frac = Math.min(turns, 1.5);
+      const svg = el.querySelector('svg');
+      const a = frac * 2 * Math.PI, r = 70, cx = 180, cy = 104;
+      const end = [cx + r * Math.sin(Math.min(a, 2 * Math.PI - 1e-3)), cy - r * Math.cos(Math.min(a, 2 * Math.PI - 1e-3))];
+      svg.querySelector('.demo-sweep').setAttribute('d', `M${cx} ${cy - r} A${r} ${r} 0 ${a > Math.PI ? 1 : 0} 1 ${end[0].toFixed(1)} ${end[1].toFixed(1)}`);
+      svg.querySelector('.demo-body').setAttribute('transform', `rotate(${(frac * 360) % 360} ${cx} ${cy})`);
+      const t = Math.round(turns * 100) / 100;
+      svg.querySelector('.demo-label--big').textContent = `${t} of a full turn`;
+      el.querySelector('.demo-readout').textContent = `With this spin, shape and airtime the body completes about ${t} of a turn. ` +
+        (tuck > 0 ? 'Tucking in makes the same spin turn faster; ' : 'Try tucking in: the same spin turns faster; ') +
+        'extending slows it down. That is why riders can adjust rotation in the air, and why under- and over-rotation are both possible.';
     });
   }
 };

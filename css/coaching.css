@@ -401,3 +401,36 @@ ul.checks li::before { content: ''; position: absolute; left: 2px; top: 0.45em; 
 .coach-done { margin-top: 24px; }
 .coach-done p { max-width: var(--measure); }
 .credits { margin-top: 18px; font-size: 15px; color: var(--ink-soft); }
+
+/* ---------- performance lesson sections ---------- */
+.outcome { margin: 0 0 20px; padding: 16px 20px; background: var(--ink); color: var(--cream); max-width: var(--measure); }
+.outcome .meta { color: rgba(247, 245, 238, 0.7); margin-bottom: 6px; }
+.outcome p:last-child { margin: 0; font-family: var(--f-serif); font-size: 20px; line-height: 1.45; }
+.audience { margin-top: 18px; max-width: var(--measure); padding-left: 16px; border-left: 3px solid var(--chalk); }
+.audience p { margin: 4px 0 0; color: var(--text); }
+.pending-list { margin: 8px 0 0; padding-left: 20px; }
+.practice-design { margin: 0 0 24px; padding: 18px 20px; background: var(--card); border: 1px solid var(--rule); }
+.practice-title { margin: 0 0 12px; font-size: 19px; }
+.practice-grid { display: grid; gap: 12px; margin: 0; }
+.practice-grid dt { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+.practice-grid dd { margin: 2px 0 0; }
+.practice-grid ul { margin: 0; padding-left: 18px; }
+ul.rubric { max-width: var(--measure); padding: 0; list-style: none; display: grid; gap: 8px; counter-reset: rub; }
+ul.rubric li { counter-increment: rub; display: grid; grid-template-columns: 34px 1fr; gap: 8px; padding: 10px 12px; background: var(--card); border: 1px solid var(--rule-soft); }
+ul.rubric li::before { content: counter(rub, decimal-leading-zero); font-family: var(--f-mono); font-size: 12px; color: var(--chalk); padding-top: 3px; }
+.readiness { margin-bottom: 24px; max-width: var(--measure); }
+.src-group { margin-bottom: 18px; }
+.src-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; max-width: 820px; }
+.src-list li { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; padding-bottom: 10px; border-bottom: 1px solid var(--rule-soft); }
+.src-list a { font-weight: 600; }
+.src-note { flex-basis: 100%; color: var(--text); font-size: 15px; }
+.mistake-fix--pending { background: #FFF3C9 !important; }
+.demo-track { fill: none; stroke: var(--rule); stroke-width: 10; }
+.demo-sweep { fill: none; stroke: var(--blaze); stroke-width: 10; stroke-linecap: round; }
+.track-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; }
+@media (max-width: 960px) { .track-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .track-grid { grid-template-columns: 1fr; } }
+.track-tile { display: flex; flex-direction: column; gap: 8px; height: 100%; padding: 20px; background: var(--ink); color: var(--cream); text-decoration: none; border-top: 3px solid var(--blaze); transition: transform .2s ease; }
+.track-tile:hover { transform: translateY(-2px); }
+.track-tile .disc-sum { color: rgba(247, 245, 238, 0.85); }
+.track-tile .meta { color: rgba(247, 245, 238, 0.65); }

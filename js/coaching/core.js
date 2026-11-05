@@ -32,7 +32,7 @@ export function indexCatalog(cat) {
     preview: !!c.preview,
     skills: byId(c.skills), lessons: byId(c.lessons), drills: byId(c.drills), mistakes: byId(c.mistakes),
     media: byId(c.media), pathways: byId(c.pathways), disciplines: byId(c.disciplines),
-    competencies: byId(c.competencies), people: byId(c.people),
+    competencies: byId(c.competencies), people: byId(c.people), sources: byId(c.sources),
     lessonsBySkill: new Map(), dependents: new Map(), skillsByDiscipline: new Map()
   };
   for (const l of c.lessons || []) {
@@ -173,7 +173,10 @@ const STOP = new Set(('a an and are as at be become better can could do does doi
 // Riders' words -> words in the library. Keys and values are stemmed terms.
 const SYNONYMS = {
   jump: ['jump', 'air', 'takeoff', 'lip', 'tabletop', 'pump'],
-  higher: ['jump', 'pump', 'pressure'], high: ['jump', 'pump'], air: ['jump', 'air'], airtime: ['jump', 'air'],
+  high: ['jump', 'pump', 'pressure'], air: ['jump', 'air'], airtime: ['jump', 'air'],
+  casing: ['casing', 'consistency', 'overshoot'], case: ['casing', 'consistency'], overshoot: ['overshoot', 'consistency'],
+  smooth: ['smooth', 'absorb', 'landing'], whip: ['whip', 'style'], style: ['style', 'whip', 'tabletop'],
+  track: ['track', 'race'], race: ['race', 'track'], practice: ['practice', 'lap'], lap: ['lap', 'practice'], nerves: ['race', 'pressure'],
   wheelie: ['manual', 'wheel'], manny: ['manual'],
   hop: ['bunny', 'hop'], bunny: ['bunny', 'hop'], log: ['hop', 'bunny'],
   corner: ['corner', 'turn', 'berm'], turn: ['corner', 'turn', 'steer'], berm: ['corner', 'berm'],
@@ -186,21 +189,27 @@ const SYNONYMS = {
   root: ['terrain', 'root', 'pressure'], rock: ['terrain', 'rock', 'line'], rough: ['pressure', 'absorb', 'terrain'],
   line: ['line', 'terrain', 'steer'], look: ['terrain', 'vision'], vision: ['terrain', 'vision'],
   drop: ['drop', 'land', 'ledge'], ledge: ['drop', 'ledge'], land: ['land'],
-  pump: ['pump', 'pressure'], speed: ['pump', 'corner', 'speed'], fast: ['corner', 'speed', 'pump'], faster: ['corner', 'speed', 'pump'],
+  pump: ['pump', 'pressure'], speed: ['pump', 'corner', 'speed'], fast: ['corner', 'speed', 'pump', 'line'],
   suspension: ['setup', 'suspension', 'sag'], tire: ['setup', 'tyre', 'pressure'], tyre: ['setup', 'tyre', 'pressure'],
   setup: ['setup'], sag: ['sag', 'setup'], rebound: ['rebound', 'setup'],
   flip: ['flip', 'aerial'], backflip: ['flip', 'aerial'], spin: ['spin', 'rotation', '360'], '360': ['360', 'spin'],
   '180': ['180', 'spin'], whip: ['whip'], barspin: ['barspin'], tailwhip: ['tailwhip']
 };
 
+// Comparatives riders use ("faster", "smoother") mapped to their base word.
+const COMPARATIVE = { faster: 'fast', fastest: 'fast', smoother: 'smooth', smoothest: 'smooth', higher: 'high', highest: 'high',
+  bigger: 'big', biggest: 'big', harder: 'hard', later: 'late', earlier: 'early', quicker: 'quick', better: 'better' };
+
 export function stem(word) {
   let w = word.toLowerCase().replace(/[’']/g, '');
   if (/^\d+s?$/.test(w)) return w.replace(/s$/, '');
-  if (w.length > 5 && w.endsWith('ing')) w = w.slice(0, -3);
-  else if (w.length > 4 && w.endsWith('ed')) w = w.slice(0, -2);
-  else if (w.length > 3 && w.endsWith('ies')) w = w.slice(0, -3) + 'y';
+  if (COMPARATIVE[w]) return COMPARATIVE[w];
+  // Plurals first, so "landings" and "landing" end up the same.
+  if (w.length > 3 && w.endsWith('ies')) w = w.slice(0, -3) + 'y';
   else if (w.length > 3 && w.endsWith('es') && /(ss|sh|ch|x)es$/.test(w)) w = w.slice(0, -2);
   else if (w.length > 3 && w.endsWith('s') && !w.endsWith('ss')) w = w.slice(0, -1);
+  if (w.length > 5 && w.endsWith('ing')) w = w.slice(0, -3);
+  else if (w.length > 4 && w.endsWith('ed')) w = w.slice(0, -2);
   if (w.length > 3 && /([b-df-hj-np-tv-z])\1$/.test(w) && !/(ll|ss|ff|zz)$/.test(w)) w = w.slice(0, -1);
   if (w.length > 3 && w.endsWith('e') && !w.endsWith('ee')) w = w.slice(0, -1);
   return w;
@@ -213,14 +222,18 @@ export function tokens(text) {
   return String(text || '').toLowerCase().split(/[^a-z0-9’']+/).filter(Boolean).map(stem).filter(t => t && !STOP.has(t));
 }
 
+// Each word in the query, with its synonyms. A word scores once, by its
+// best match, so a word with many synonyms doesn't outweigh the rest.
 function queryTerms(q) {
-  const base = tokens(q);
-  const expanded = new Map();
-  for (const t of base) {
-    expanded.set(t, Math.max(expanded.get(t) || 0, 1));
-    for (const s of SYN[t] || []) if (!expanded.has(s)) expanded.set(s, 0.6);
-  }
-  return { base, terms: expanded };
+  const base = [...new Set(tokens(q))];
+  const groups = base.map(t => {
+    const alts = new Map([[t, 1]]);
+    for (const s of SYN[t] || []) if (!alts.has(s)) alts.set(s, 0.6);
+    return { word: t, alts };
+  });
+  const terms = new Map();
+  for (const g of groups) for (const [t, w] of g.alts) terms.set(t, Math.max(terms.get(t) || 0, w));
+  return { base, groups, terms };
 }
 
 function skillDoc(idx, s) {
@@ -240,7 +253,7 @@ function skillDoc(idx, s) {
 // plus the foundations to start with and any pathway that leads there.
 // Deterministic and explainable: every result says why it matched.
 export function search(idx, query, { limit = 8 } = {}) {
-  const { base, terms } = queryTerms(query);
+  const { base, groups, terms } = queryTerms(query);
   const empty = { query, terms: base, skills: [], planned: [], foundations: [], pathways: [], best: null };
   if (!terms.size) return empty;
   const qnorm = String(query).toLowerCase();
@@ -250,9 +263,13 @@ export function search(idx, query, { limit = 8 } = {}) {
     const doc = skillDoc(idx, s);
     let score = 0;
     const matched = [];
-    for (const [t, qw] of terms) {
-      const w = doc.get(t);
-      if (w) { score += w * qw; matched.push(t); }
+    for (const g of groups) {
+      let best = 0, bestTerm = null;
+      for (const [t, qw] of g.alts) {
+        const w = (doc.get(t) || 0) * qw;
+        if (w > best) { best = w; bestTerm = t; }
+      }
+      if (best) { score += best; matched.push(bestTerm); }
     }
     if (qnorm.includes(String(s.name).toLowerCase())) score += 8;
     if (score > 0) scored.push({ skill: s, score, matched });
@@ -319,7 +336,7 @@ export function checkIntegrity(cat) {
   const problems = [];
   const need = (map, id, what) => { if (id && !map.has(id)) problems.push(`${what} points at missing "${id}"`); };
   const ids = new Set();
-  for (const key of ['skills', 'lessons', 'drills', 'mistakes', 'media', 'pathways', 'disciplines', 'competencies', 'people']) {
+  for (const key of ['skills', 'lessons', 'drills', 'mistakes', 'media', 'pathways', 'disciplines', 'competencies', 'people', 'sources']) {
     const seen = new Set();
     for (const x of cat[key] || []) {
       if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(x.id || '')) problems.push(`${key}: invalid id "${x.id}"`);
@@ -340,6 +357,7 @@ export function checkIntegrity(cat) {
     for (const m of l.mistakes || []) need(idx.mistakes, m, `lesson ${l.id}`);
     for (const m of l.media || []) need(idx.media, m, `lesson ${l.id}`);
     for (const p of l.contributors || []) need(idx.people, p.id, `lesson ${l.id}`);
+    for (const x of l.sources || []) need(idx.sources, x.id, `lesson ${l.id} source`);
   }
   for (const d of cat.drills || []) { need(idx.drills, d.next_drill_id, `drill ${d.id}`); need(idx.media, d.media_id, `drill ${d.id}`); }
   for (const m of cat.mistakes || []) { need(idx.drills, m.drill_id, `mistake ${m.id}`); need(idx.media, m.media_id, `mistake ${m.id}`); }

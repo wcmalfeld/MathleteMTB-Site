@@ -7,6 +7,16 @@ import {
 } from './core.js';
 import { mediaCard } from './player.js';
 
+const MARKER = 'SPECIALIST AUTHORING REQUIRED';
+const isPending = t => String(t || '').toUpperCase().includes(MARKER);
+const ACCESS = {
+  public_free_instruction: 'Free article or video', public_outline_paid_lesson: 'Paid course (public outline)',
+  public_coaching_framework: 'Coach education course', public_reference_index: 'Reference index',
+  expert_demonstration: 'Athlete demonstration', mathlete_original: 'Mathlete original'
+};
+const SOURCE_ROLE = { primary: 'Main sources', comparison: 'Compare with', further: 'Further learning' };
+const fmtDate = d => { try { return new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }); } catch (e) { return ''; } };
+
 export const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 const q = encodeURIComponent;
 
@@ -95,24 +105,44 @@ function searchForm(value = '', big = false) {
 
 // ---------------------------------------------------------------- home
 export function renderHome(idx) {
-  const examples = ['How do I manual?', 'I want to jump higher', 'Improve my cornering', 'Get comfortable on steep trails', 'Learn a 360'];
+  const examples = ['Stop casing jumps', 'How do I whip?', 'Brake later, go faster', 'Pick faster lines', 'Plan a track walk', 'Learn a 360'];
   const featured = [...idx.skills.values()].filter(s => s.featured);
   const popular = (featured.length ? featured : [...idx.skills.values()]).slice(0, 6);
   const disciplines = [...idx.disciplines.values()];
   const pathways = [...idx.pathways.values()];
   const coaches = [...idx.people.values()].filter(p => p.verified);
+  const lessons = [...idx.lessons.values()];
+  const countType = types => lessons.filter(l => types.includes(l.lesson_type)).length;
+  const TRACKS = [
+    { name: 'Downhill & race speed', text: 'Cornering, braking, lines, vision, rough ground, track walks and race runs.', path: 'downhill-speed', alt: 'race-craft-path', n: countType(['performance_technique', 'race_craft', 'analysis', 'equipment_process']) - lessons.filter(l => l.lesson_type === 'performance_technique' && /jump|landing/.test(l.id)).length },
+    { name: 'Jump craft', text: 'Consistency, jump responses, landings and whole jump lines.', path: 'jump-craft', n: lessons.filter(l => l.lesson_type === 'performance_technique' && /jump|landing/.test(l.id)).length },
+    { name: 'Trick library', text: 'Whips to flips, explained by experts. Practice only with a specialist coach.', path: 'trick-library', n: countType(['trick_technique']) },
+    { name: 'Performance foundations', text: 'Position, pressure, braking, vision and cornering, refined.', path: null, href: href.discipline('foundations'), n: countType(['foundation']) }
+  ].filter(t => t.n > 0);
   return `
   <header class="page-head coach-hero">
     <div class="wrap">
       <p class="eyebrow">Coaching &amp; Progression Lab</p>
-      <h1 class="page-title">Learn. Understand.<br>Practice. Progress.</h1>
-      <p class="hero-lede">Mountain bike skills broken down into what to do, why it works, and exactly what to practise next.</p>
+      <h1 class="page-title">Learn. Analyze.<br>Practice. Perform.</h1>
+      <p class="hero-lede">Go deep on one performance problem at a time: what elite execution looks like, why it works, how to review your riding, and what to work on next.</p>
       ${searchForm('', true)}
       <ul class="chip-row" aria-label="Example questions">${examples.map(e => `<li><a class="chip" href="${href.search(e)}" data-track="coaching_example_search">${esc(e)}</a></li>`).join('')}</ul>
     </div>
   </header>
 
-  <section class="section" aria-labelledby="disc-title">
+  ${TRACKS.length ? `<section class="section" aria-labelledby="tracks-title">
+    <div class="wrap">
+      <div class="coach-section-head"><h2 class="label" id="tracks-title">Choose a track</h2></div>
+      <ul class="track-grid">${TRACKS.map(t => {
+        const p = t.path && idx.pathways.get(t.path);
+        const link = p ? href.pathway(p.id) : (t.href || href.skills);
+        return `<li><a class="track-tile" href="${link}" data-track="track_selected"><span class="disc-name">${esc(t.name)}</span><span class="disc-sum">${esc(t.text)}</span><span class="meta">${plural(t.n, 'lesson', 'lessons')}</span></a></li>`;
+      }).join('')}</ul>
+      <p class="coach-note">Built for riders who already jump, race or ride advanced terrain. Trick lessons explain the trick; they never prepare you to attempt it. High-consequence skills are practised only with a qualified specialist coach in a suitable facility.</p>
+    </div>
+  </section>` : ''}
+
+  <section class="section${TRACKS.length ? ' section--panel' : ''}" aria-labelledby="disc-title">
     <div class="wrap">
       <div class="coach-section-head"><h2 class="label" id="disc-title">Browse by discipline</h2><a class="read-link" href="${href.disciplines}">All disciplines <span aria-hidden="true">&rarr;</span></a></div>
       <ul class="disc-grid">${disciplines.map(d => {
@@ -124,7 +154,7 @@ export function renderHome(idx) {
     </div>
   </section>
 
-  ${popular.length ? `<section class="section section--panel" aria-labelledby="pop-title">
+  ${popular.length ? `<section class="section${TRACKS.length ? '' : ' section--panel'}" aria-labelledby="pop-title">
     <div class="wrap">
       <div class="coach-section-head"><h2 class="label" id="pop-title">Popular skills</h2><a class="read-link" href="${href.skills}">Explore all skills <span aria-hidden="true">&rarr;</span></a></div>
       <div class="skill-grid">${popular.map(s => skillCard(idx, s)).join('')}</div>
@@ -153,8 +183,8 @@ export function renderHome(idx) {
   <section class="section" aria-labelledby="soon-title">
     <div class="wrap soon-grid">
       <div><h2 class="label" id="soon-title">Coming next</h2></div>
-      <div class="soon-card"><p class="kicker"><span class="kicker-flag">Soon</span></p><h3>Practice Studio</h3><p>Build a 10&ndash;60 minute practice session for any skill and work through it on your phone at the trail.</p></div>
-      <div class="soon-card"><p class="kicker"><span class="kicker-flag">Soon</span></p><h3>My Development</h3><p>Save skills, mark lessons complete, log practice and see your progress across the six foundations.</p></div>
+      <div class="soon-card"><p class="kicker"><span class="kicker-flag">Soon</span></p><h3>Practice Studio</h3><p>Plan sessions around one focus, with video and timing review built in. Coach session briefs for high-consequence skills.</p></div>
+      <div class="soon-card"><p class="kicker"><span class="kicker-flag">Soon</span></p><h3>Athlete tools</h3><p>Lap log and section splits, run-to-run video comparison, setup change log and coach comments on your footage.</p></div>
     </div>
   </section>`;
 }
@@ -309,9 +339,16 @@ export function renderSkill(idx, id) {
   const paths = pathwaysFor(idx, id);
   const people = lesson ? (lesson.contributors || []).map(c => ({ ...c, person: idx.people.get(c.id) })).filter(c => c.person) : [];
   const ROLE = { author: 'Written by', reviewer: 'Reviewed by', 'demo-rider': 'Demonstrated by', coach: 'Coach' };
+  const sources = lesson ? (lesson.sources || []).map(x => ({ ...x, src: idx.sources.get(x.id) })).filter(x => x.src) : [];
+  const pending = lesson ? (lesson.specialist_required || []).filter(p => p && (p.needs || p.section)) : [];
+  const techPending = pending.some(p => p.section === 'technique');
+  const practice = (lesson && lesson.practice) || {};
+  const hasPractice = !!(practice.setting || practice.focus || practice.feedback || (practice.stop || []).length || practice.notes);
 
   const toc = [['why', 'Why it matters'], lesson && ['physics', 'Physics'], ['watch', 'Watch'], lesson && ['technique', 'Technique'],
-    ['before', 'Before you start'], mistakes.length && ['mistakes', 'Mistakes'], ['drills', 'Drills'], ['pathway', 'Progression'], ['safety', 'Safety']]
+    ['before', 'Before you start'], mistakes.length && ['mistakes', 'Mistakes'], ['drills', rules.selfGuidedPractice ? 'Practice' : 'Coach-led practice'],
+    lesson && (lesson.rubric || []).length && ['review', 'Review your riding'], ['pathway', 'Progression'], ['safety', 'Safety'],
+    sources.length && ['learn-more', 'Further learning']]
     .filter(Boolean);
 
   const safetyBlock = lesson ? renderSafety(lesson, rules) : `<section class="coach-block" id="safety" aria-labelledby="safety-t"><h2 class="label" id="safety-t">Safety</h2><p>${esc(rules.info.text)}</p></section>`;
@@ -339,12 +376,19 @@ export function renderSkill(idx, id) {
     <p><strong>${esc(rules.info.label)}.</strong> ${esc(rules.info.text)}</p>
   </div></div>
 
+  ${pending.length ? `<div class="coach-banner coach-banner--draft" role="note"><div class="wrap">
+    <strong>Specialist authoring required.</strong> Parts of this lesson must be written or approved by a qualified specialist coach before it can be published:
+    <ul class="pending-list">${pending.map(p => `<li><strong>${esc(p.section || 'lesson')}:</strong> ${esc(p.needs)}</li>`).join('')}</ul>
+  </div></div>` : ''}
+
   <div class="wrap coach-skill">
     ${rules.showProtectiveFirst && lesson ? safetyBlock : ''}
 
     <section class="coach-block" id="why" aria-labelledby="why-t">
       <h2 class="label" id="why-t">Why this skill matters</h2>
+      ${lesson && lesson.performance_outcome ? `<div class="outcome"><p class="meta">What great execution looks like</p><p>${esc(lesson.performance_outcome)}</p></div>` : ''}
       <div class="coach-prose">${paras(s.why_it_matters)}${lesson ? paras(lesson.introduction) : ''}</div>
+      ${lesson && lesson.audience ? `<div class="audience"><p class="meta">Who this is for</p>${paras(lesson.audience)}</div>` : ''}
       ${lesson && (lesson.objectives || []).length ? `<div class="objectives"><p class="meta">By the end of this lesson you can</p>${list(lesson.objectives, 'checks')}</div>` : ''}
       ${!lesson ? '<p class="coach-empty">The full lesson for this skill is still being written.</p>' : ''}
     </section>
@@ -357,7 +401,7 @@ export function renderSkill(idx, id) {
         : `<div class="video-placeholder"><p><strong>Demonstration videos are being filmed.</strong> Until then, the technique breakdown below walks through each stage.</p></div>`}
     </section>
 
-    ${lesson ? renderTechnique(lesson, idx) : ''}
+    ${lesson ? renderTechnique(lesson, idx, techPending) : ''}
 
     <section class="coach-block" id="before" aria-labelledby="before-t">
       <h2 class="label" id="before-t">Before you start</h2>
@@ -379,11 +423,26 @@ export function renderSkill(idx, id) {
     <section class="coach-block" id="drills" aria-labelledby="drills-t">
       <h2 class="label" id="drills-t">${rules.selfGuidedPractice ? 'Practice drills' : 'Coach-led drills'}</h2>
       ${!rules.selfGuidedPractice ? `<div class="coach-callout coach-callout--c3"><p>These drills are here so you know what to expect. Do them only with a qualified specialist coach in a purpose-built training environment.</p></div>` : ''}
+      ${hasPractice ? `<div class="practice-design"><h3 class="practice-title">How to structure practice</h3>
+        <dl class="practice-grid">
+          ${practice.setting ? `<div><dt>Setting</dt><dd>${esc(practice.setting)}</dd></div>` : ''}
+          ${practice.focus ? `<div><dt>Focus</dt><dd>${esc(practice.focus)}</dd></div>` : ''}
+          ${practice.feedback ? `<div><dt>Feedback</dt><dd>${esc(practice.feedback)}</dd></div>` : ''}
+          ${(practice.stop || []).length ? `<div><dt>Stop when</dt><dd>${list(practice.stop)}</dd></div>` : ''}
+        </dl>${practice.notes ? `<p class="coach-note">${esc(practice.notes)}</p>` : ''}</div>` : ''}
       ${drills.length ? `<div class="drill-list">${drills.map(d => drillCard(idx, d, rules)).join('')}</div>` : '<p class="coach-empty">Drills for this skill are on the way.</p>'}
     </section>
 
+    ${lesson && (lesson.rubric || []).length ? `<section class="coach-block" id="review" aria-labelledby="review-t">
+      <h2 class="label" id="review-t">Review your riding</h2>
+      <p class="coach-intro">Film from a fixed, safe spot and compare several attempts, not your best one. Look for:</p>
+      ${list(lesson.rubric, 'rubric')}
+    </section>` : ''}
+
     <section class="coach-block" id="pathway" aria-labelledby="pathway-t">
       <h2 class="label" id="pathway-t">Progression</h2>
+      ${lesson && (lesson.readiness || []).length ? `<div class="stage-ready readiness"><p class="meta">Signs you're ready to progress</p>${list(lesson.readiness, 'checks')}
+        <p class="coach-note">These are prompts for you and your coach, not a safety certificate. Reading this lesson never means you're ready to ride something harder.</p></div>` : ''}
       ${paths.target.length || paths.includes.length ? [...paths.target, ...paths.includes].slice(0, 3).map(p => `
         <div class="path-inline"><p class="kicker">${p.target_skill_id === id ? 'Pathway to this skill' : 'Part of'}</p>
         <h3 class="stage-title"><a href="${href.pathway(p.id)}">${esc(p.name)}</a></h3>
@@ -395,11 +454,25 @@ export function renderSkill(idx, id) {
 
     ${rules.showProtectiveFirst && lesson ? '' : safetyBlock}
 
+    ${sources.length ? `<section class="coach-block" id="learn-more" aria-labelledby="learn-t">
+      <h2 class="label" id="learn-t">Further learning</h2>
+      <p class="coach-intro">This lesson is Mathlete's own writing, informed by these public resources. They're other creators' work: watch and read them on their own sites. Listing them doesn't mean they endorse Mathlete.</p>
+      ${['primary', 'comparison', 'further'].map(role => {
+        const group = sources.filter(x => (x.role || 'primary') === role);
+        return group.length ? `<div class="src-group"><p class="kicker">${esc(SOURCE_ROLE[role])}</p><ul class="src-list">${group.map(x => `<li>
+          ${x.src.url ? `<a href="${esc(x.src.url)}" target="_blank" rel="noopener noreferrer">${esc(x.src.title)}<span class="visually-hidden"> (opens in a new tab)</span></a>` : `<strong>${esc(x.src.title)}</strong>`}
+          <span class="meta">${esc([x.src.creator, x.src.publisher].filter(Boolean).join(' · '))}</span>
+          <span class="pill pill--quiet">${esc(ACCESS[x.src.access] || x.src.access)}</span>
+          ${x.note ? `<span class="src-note">${esc(x.note)}</span>` : ''}</li>`).join('')}</ul></div>` : '';
+      }).join('')}
+    </section>` : ''}
+
     <section class="coach-block coach-done" id="complete" aria-labelledby="done-t">
       <h2 class="label" id="done-t">After this lesson</h2>
       <p>Understanding a skill and being able to ride it are different things. Take the drills above to a suitable practice area and build up gradually.</p>
       <p class="meta">Coming soon with My Development: save this skill, mark the lesson complete, rate your understanding and log your practice.</p>
-      ${people.length ? `<p class="credits">${people.map(c => `${esc(ROLE[c.role] || 'By')} <strong>${esc(c.person.name)}</strong>${c.person.verified ? '' : ''}`).join(' · ')}</p>` : ''}
+      ${people.length ? `<p class="credits">${people.map(c => `${esc(ROLE[c.role] || 'By')} <strong>${esc(c.person.name)}</strong>${c.person.verified ? ' <span class="flag flag--ok">Verified coach</span>' : ''}`).join(' · ')}</p>` : ''}
+      ${lesson && (lesson.review_level || lesson._published_at) ? `<p class="credits">${lesson.review_level ? `Review standard: ${esc(lesson.review_level)}` : ''}${lesson.review_level && lesson._published_at ? ' · ' : ''}${lesson._published_at ? `Reviewed version ${esc(lesson._version)} published ${esc(fmtDate(lesson._published_at))}` : ''}</p>` : ''}
     </section>
   </div>`;
 }
@@ -416,11 +489,12 @@ function renderPhysics(lesson) {
   </section>`;
 }
 
-function renderTechnique(lesson, idx) {
+function renderTechnique(lesson, idx, techPending = false) {
   const stages = lesson.technique || [];
-  if (!stages.length) return '';
+  if (!stages.length && !techPending) return '';
   return `<section class="coach-block" id="technique" aria-labelledby="technique-t">
-    <h2 class="label" id="technique-t">Technique breakdown</h2>
+    <h2 class="label" id="technique-t">${techPending ? 'Skill components' : 'Technique breakdown'}</h2>
+    ${techPending ? `<div class="coach-callout coach-callout--c3"><p><strong>Not a how-to.</strong> These are the parts of the skill at a conceptual level, so you know what you're watching for. The step-by-step technique and progression will be written by a qualified specialist coach.</p></div>` : ''}
     <ol class="tech-stages">${stages.map((t, i) => {
       const m = t.media_id && idx.media.get(t.media_id);
       return `<li class="tech-stage">
@@ -428,7 +502,7 @@ function renderTechnique(lesson, idx) {
         <div class="stage-body">
           <h3 class="stage-title">${esc(t.title)}</h3>
           ${t.result ? `<p class="tech-result"><span class="meta">The goal</span> ${esc(t.result)}</p>` : ''}
-          ${t.movement ? `<p>${esc(t.movement)}</p>` : ''}
+          ${t.movement && !isPending(t.movement) ? `<p>${esc(t.movement)}</p>` : ''}
           ${t.interaction ? `<p class="tech-why"><span class="meta">Bike and rider</span> ${esc(t.interaction)}</p>` : ''}
           ${(t.cues || []).length ? `<div class="cues"><p class="meta">Coaching cues</p><ul>${t.cues.map(c => `<li>&ldquo;${esc(c)}&rdquo;</li>`).join('')}</ul></div>` : ''}
           ${(t.errors || []).length ? `<p class="tech-errors"><span class="meta">Watch for</span> ${esc(t.errors.join('; '))}</p>` : ''}
@@ -463,7 +537,8 @@ function mistakeCard(idx, m) {
     <p>${esc(m.description)}</p>
     ${m.looks_like ? `<p><span class="meta">What it looks like</span> ${esc(m.looks_like)}</p>` : ''}
     ${m.cause ? `<p><span class="meta">Why it happens</span> ${esc(m.cause)}</p>` : ''}
-    <p class="mistake-fix"><span class="meta">The fix</span> ${esc(m.correction)}</p>
+    ${isPending(m.correction) ? `<p class="mistake-fix mistake-fix--pending"><span class="meta">The fix</span> A qualified specialist coach will supply the correction for this one.</p>`
+      : `<p class="mistake-fix"><span class="meta">The fix</span> ${esc(m.correction)}</p>`}
     ${d ? `<p><span class="meta">Practise with</span> <a href="${href.drill(d.id)}">${esc(d.name)}</a></p>` : ''}
     ${m.media_id && idx.media.get(m.media_id) ? mediaCard(idx.media.get(m.media_id), { compact: true }) : ''}
   </article>`;

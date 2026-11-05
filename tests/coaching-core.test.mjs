@@ -47,8 +47,41 @@ test('search: "jump higher" also suggests pumping', () => {
 });
 
 test('search: a skill not in the library yet shows up as a planned topic', () => {
-  const r = core.search(idx, 'I want to learn a 360');
-  assert.ok(r.planned.some(p => p.topic === '360s' && p.discipline.id === 'slopestyle'));
+  const r = core.search(idx, 'I want to learn a cork');
+  assert.ok(r.planned.some(p => p.topic === 'Corks' && p.discipline.id === 'slopestyle'));
+});
+
+test('search: performance-rider questions find the advanced lessons', () => {
+  const cases = [
+    ['How do I whip?', 'whip'], ['Stop casing jumps', 'jump-performance'], ['Pick faster lines', 'line-choice'],
+    ['Brake later, go faster', 'brake-to-go-faster'], ['Plan a track walk', 'track-walk'], ['Learn a 360', 'trick-360'],
+    ['smoother landings', 'landing-flight-control'], ['suspension setup', 'suspension-testing'], ['wet roots', 'low-grip-conditions'],
+    ['backflip', 'backflip'], ['barspin', 'barspin']
+  ];
+  for (const [q, want] of cases) {
+    const r = core.search(idx, q);
+    assert.ok(ids(r).slice(0, 2).includes(want), `"${q}" -> ${ids(r).slice(0, 3).join(', ')}`);
+  }
+});
+
+test('integrity: every lesson cites a known source', () => {
+  for (const l of seed.lessons) {
+    assert.ok((l.sources || []).length > 0, l.id);
+    for (const x of l.sources) assert.ok(idx.sources.has(x.id), `${l.id}: ${x.id}`);
+  }
+});
+
+test('safety: every Class 3 lesson is supervised and still waits for a specialist', () => {
+  for (const s of seed.skills.filter(x => x.safety_class === 3)) {
+    const l = core.primaryLesson(idx, s.id);
+    assert.ok(l.safety.supervision, s.id);
+    assert.ok((l.specialist_required || []).length > 0 || JSON.stringify(l).includes('SPECIALIST AUTHORING REQUIRED'), s.id);
+  }
+  // Every trick lesson leaves its technique for a specialist.
+  for (const l of seed.lessons.filter(x => x.lesson_type === 'trick_technique')) {
+    assert.ok(l.specialist_required.some(p => p.section === 'technique'), l.id);
+    assert.ok(l.technique.every(t => !(t.cues || []).length), l.id + ' should have no coaching cues yet');
+  }
 });
 
 test('search: returns foundations and pathways for the best match', () => {

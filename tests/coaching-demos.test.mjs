@@ -42,3 +42,11 @@ test('jumps: more speed lands further, from deck to landing to overshoot', () =>
   // Overshoot lands on the flat below the landing.
   assert.ok(Math.abs(fast.y - (-4 * tb)) < 1e-6);
 });
+
+test('rotation: tucking spins faster, more airtime means more rotation', async () => {
+  const { spinTurns } = await import('../js/coaching/demos.js');
+  const open = spinTurns({ spin: 0.5, tuck: 0, airtime: 1 });
+  const tucked = spinTurns({ spin: 0.5, tuck: 1, airtime: 1 });
+  assert.ok(tucked.turns > open.turns);
+  assert.ok(Math.abs(spinTurns({ spin: 0.5, tuck: 0, airtime: 2 }).turns - 2 * open.turns) < 1e-9);
+});
