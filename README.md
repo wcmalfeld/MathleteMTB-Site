@@ -17,6 +17,8 @@ MathleteMTB-Site/
 ├── tool.html             # Opens members-only tools (tool.html?id=...)
 ├── learning-lab/         # Lab category pages (GENERATED, don't edit); learning-lab/ itself redirects home
 ├── content/tool-details/ # Each tool's full description, shown in its "Details" pop-up
+├── content/riding/       # Riding curriculum (lessons + sources); DRAFTS for coach review
+├── riding/               # Riding curriculum pages (GENERATED; hidden: noindex, not linked)
 ├── css/site.css          # All styling
 ├── css/lab.css           # Learning Lab's dark theme and components
 ├── js/
@@ -49,6 +51,15 @@ After changing any of those, run:
 node scripts/build-lab.mjs     # rewrites the tool grid in index.html and the pages in learning-lab/
 node scripts/check-site.mjs    # add --online to also check the tool links work
 ```
+
+**The riding curriculum** (`riding/`) is built from `content/riding/` by
+`node scripts/build-riding.mjs`. Every lesson is a draft awaiting coach
+review: the pages are kept out of search engines, carry a draft banner and
+aren't linked from the site (share `/riding/` with reviewers directly). To
+approve a lesson, set `status: 'approved'` and add
+`review: { by, date, version }` (Class 3 also needs
+`specialistVerified: true`); `check-site.mjs` refuses an approval without
+them. Linking the section from the site is a separate decision.
 
 To add a tool: add its entry (with the Learning Lab fields described at the
 top of `js/tools-config.js`), a preview image in `assets/` and its description

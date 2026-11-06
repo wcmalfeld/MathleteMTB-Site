@@ -9,6 +9,10 @@
 //   committed or published
 // - Learning Lab: every live tool has its listing fields, and the generated
 //   parts of index.html and the pages in learning-lab/ match the registry
+// - riding curriculum (riding/): pages up to date, every page noindex and
+//   unlinked from the site, every lesson cites known sources, nothing
+//   approved without a named reviewer, no trick technique in outlines and
+//   no universal settings (pressures, clicks, sag) in the content
 // - tutoring and booking: every page has "Book a Session", subject links
 //   match js/booking-config.js, and no prices are typed into the pages
 //   node scripts/check-site.mjs --online   also checks that every live
@@ -105,6 +109,34 @@ if (process.argv.includes('--online')) {
     check(`${t.name} responds at ${t.url}`, code === 200, 'HTTP ' + code);
   }
 }
+
+// ---- riding curriculum (drafts for coach review) ----
+const { render: renderRiding } = await import('./build-riding.mjs');
+const { LESSONS } = await import('../content/riding/curriculum.mjs');
+const { SOURCES: RIDE_SOURCES } = await import('../content/riding/sources.mjs');
+const ridingPages = renderRiding();
+const staleRiding = Object.entries(ridingPages).filter(([p, html]) => !existsSync(root + p) || read(p) !== html).map(([p]) => p);
+check('Riding pages are up to date (node scripts/build-riding.mjs)', staleRiding.length === 0, staleRiding.slice(0, 5).join(', '));
+check('Every riding page is noindex and has the draft banner', Object.values(ridingPages).every(h => h.includes('<meta name="robots" content="noindex, nofollow">') && h.includes('class="ride-banner"')));
+const siteHtml = ['index.html', 'ski/index.html', 'about.html', 'login.html', 'account.html', 'tool.html', 'college-beyond.html', 'tutoring.html', 'book.html', ...Object.keys(labPages)];
+const linksRiding = siteHtml.filter(p => /href="(\.\.\/)*riding\//.test(read(p)));
+check('Nothing outside riding/ links to the riding drafts', linksRiding.length === 0, linksRiding.join(', '));
+const slugs = LESSONS.map(l => l.slug);
+check('Riding lesson slugs and ids are unique', new Set(slugs).size === slugs.length && new Set(LESSONS.map(l => l.id)).size === LESSONS.length);
+const badSrc = LESSONS.filter(l => !l.sources.primary.length || [...l.sources.primary, ...l.sources.comparison].some(id => !RIDE_SOURCES[id]));
+check('Every riding lesson cites at least one primary source, all in the registry', badSrc.length === 0, badSrc.map(l => l.id).join(', '));
+const badNext = LESSONS.filter(l => (l.next || []).some(n => !slugs.includes(n)));
+check('Riding "Next" links point at real lessons', badNext.length === 0, badNext.map(l => l.id).join(', '));
+const badApproval = LESSONS.filter(l => l.status === 'approved' && !(l.review && l.review.by && l.review.date && (l.risk < 3 || l.review.specialistVerified)));
+check('No riding lesson is approved without a named reviewer and date (Class 3: verified specialist)', badApproval.length === 0, badApproval.map(l => l.id).join(', '));
+check('Riding lesson statuses are draft, specialist, outline or approved', LESSONS.every(l => ['draft', 'specialist', 'outline', 'approved'].includes(l.status)));
+const trickTech = LESSONS.filter(l => l.pathway === 'tricks' && l.status !== 'approved' && (l.model || l.practice || l.status !== 'outline'));
+check('Trick lessons stay outlines (no technique or practice) until approved', trickTech.length === 0, trickTech.map(l => l.id).join(', '));
+const draftsComplete = LESSONS.filter(l => (l.status === 'draft' || l.status === 'specialist') && !['outcome', 'who', 'prereqs', 'why', 'model', 'errors', 'practice', 'rubric', 'gates', 'specialist'].every(k => l[k] && (!Array.isArray(l[k]) || l[k].length)));
+check('Every full riding draft has all the required sections', draftsComplete.length === 0, draftsComplete.map(l => l.id).join(', '));
+const curriculumText = read('content/riding/curriculum.mjs');
+const settings = curriculumText.match(/\b\d+(\.\d+)?\s*(psi|bar\b|clicks?\b|mm of sag)|\d+\s*%\s*(sag|front|rear)|\b\d+\s*[:/]\s*\d+\s*(front|rear|brake)/gi) || [];
+check('No universal pressures, click counts, sag values or brake ratios in the riding content', settings.length === 0, settings.join(', '));
 
 // ---- tutoring & booking ----
 const bookingBox = { window: {} };

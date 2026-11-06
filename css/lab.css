@@ -292,3 +292,79 @@ body.lab--ski { --moss: #8EC5E0; }
 .lab--ski .pill--moss { border-color: rgba(142, 197, 224, 0.45); }
 .lab-head .lab-ski-title { font-size: clamp(64px, 12vw, 156px); line-height: 0.88; margin: 4px 0 30px; }
 .lab-ski-title span { color: var(--moss); }
+
+/* ---------- Riding curriculum (riding/): drafts for coach review ---------- */
+.ride-banner {
+  margin: 0;
+  padding: 10px 16px;
+  background: var(--contour);
+  color: var(--lab-deep);
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+.lab .ride-title { font-size: clamp(40px, 6vw, 76px); line-height: 0.95; }
+.ride-intro { max-width: 46rem; margin: 0 0 28px; color: var(--ink-soft); }
+.ride-status--draft { border-color: var(--contour); color: var(--contour); }
+.ride-status--specialist { border-color: var(--blaze); color: var(--blaze); }
+.ride-status--outline { border-color: var(--rule); color: var(--ink-soft); }
+.ride-status--approved { border-color: var(--moss); color: var(--moss); }
+.ride-risk--3 { border-color: var(--blaze); color: var(--blaze); }
+.ride-card--outline { border-style: dashed; }
+.ride-card .pill-row { margin: 4px 0 10px; }
+
+.ride-review-wrap { padding-bottom: 0; }
+.ride-review {
+  padding: 24px 26px;
+  background: var(--cream);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--contour);
+}
+.ride-review-title {
+  margin: 0 0 16px;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--contour);
+}
+.ride-review-sub, .ride-sub { margin: 18px 0 6px; font-weight: 600; color: var(--ink); }
+.ride-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 24px; margin: 0; }
+.ride-facts--stack { grid-template-columns: 1fr; }
+.ride-facts dt {
+  font-family: var(--f-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.ride-facts dd { margin: 4px 0 0; color: var(--text); }
+.ride-list { margin: 0; padding-left: 20px; }
+.ride-list li { margin: 6px 0; }
+
+.ride-section { padding: 48px 0; }
+.ride-body p, .ride-body li, .ride-body dd { font-size: 17px; line-height: 1.6; }
+.ride-h { margin: 22px 0 6px; font-family: var(--f-display); font-size: 22px; text-transform: uppercase; color: var(--ink); }
+.ride-h:first-child { margin-top: 0; }
+.ride-flag {
+  padding: 10px 14px;
+  border: 1px dashed var(--contour);
+  font-family: var(--f-mono);
+  font-size: 12.5px !important;
+  line-height: 1.5 !important;
+  color: var(--contour);
+}
+
+.ride-table-wrap { overflow-x: auto; }
+.ride-table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.ride-table th, .ride-table td { padding: 10px 12px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+.ride-table th { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+.ride-pending { font-family: var(--f-mono); font-size: 12px; color: var(--contour); white-space: nowrap; }
+.ride-check--text { color: var(--moss); }
+.ride-check--video, .ride-check--outline { color: var(--contour); }
+.ride-check--closed { color: var(--blaze); }
+
+.ride-sources { list-style: none; margin: 0; padding: 0; }
+.ride-source { display: flex; flex-direction: column; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+.ride-source-note { font-size: 15px; color: var(--ink-soft); }
