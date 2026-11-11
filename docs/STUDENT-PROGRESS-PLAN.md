@@ -21,8 +21,42 @@ in `docs/PROGRESS-TRACKING.md`; this file is the plan and the log.
   deploy, play one round signed in and confirm the rows appear, then
   replace the old `wcmalfeld.github.io/TrailBuilder_Math/` copy with a
   redirect page.
-- **Next: Phase 1c.** Gear Ratio Lab and Strava Showdown the same way,
-  then Summit Expedition, then the two prediction games.
+- **2026-11-10, Phase 1c part 1 built (not yet deployed).** Gear Ratio
+  Lab (`learning-lab/gear-ratio-lab/`, 13 question kinds) and Strava
+  Showdown (`learning-lab/strava-showdown/`, 12 kinds) moved in and
+  tracked the same way. Besides the one course problem per round, every
+  worksheet cell is recorded as its own question (only when checked with
+  a new value; flagged if the answer key had been opened), and Gear Ratio
+  Lab's tune-up prediction counts as correct within 5%. Strava
+  Showdown's podium picks and graph are not recorded. Same finishing
+  steps as Trail Builder; the old copies are
+  `wcmalfeld.github.io/GearRatioLab_LearningTool/` and
+  `.../StravaShowdown_LearningTool/`.
+- **2026-11-10, Phase 1c part 2 built (not yet deployed).**
+  - *Summit Expedition* (27 question kinds, one per skill). `tool.html`
+    now loads `js/progress.js` and the tool uses the player page's copy.
+    Up to four people share the screen, so the setup screen has a "Save
+    progress for" choice (default: the first climber; "Nobody" is an
+    option) and only that climber's answers are recorded. Tutor "Mark
+    correct" after a miss adds a correct attempt labelled as such. The
+    changed file is `private-tools/summit-expedition/index.html`
+    (git-ignored); it goes live with
+    `node scripts/admin.mjs upload private-tools/summit-expedition/index.html summit-expedition/index.html`.
+  - *Jump Lab* (`learning-lab/jump-lab/`, 10 kinds): each mission is one
+    question and every "Send it" an attempt; the multiple-choice
+    prediction before a mission and the Explore "Predict, then test"
+    questions are recorded too. The site copy is the built
+    `dist/jump-lab.html` with tracking added by hand, so the `src/` in
+    the old JumpLab_MTB folder no longer matches it.
+- **Open: MTB Physics Playground.** A React app in its own repo
+  (`wcmalfeld/mtb-physics`, built by its own GitHub Action, with
+  uncommitted work in the local checkout). Tracking it means adding calls
+  in that repo's source and serving its build from this site. Not started;
+  needs a decision on how the two repos fit together.
+- **Open: playing on the tutor's computer.** Attempts go to whoever is
+  logged in. A student playing on a tutor's login is recorded as the
+  tutor. Recording on behalf of an assigned student belongs with the
+  tutor tools in Phase 3.
 
 ### Note for Phase 2 (statistics)
 
@@ -99,7 +133,7 @@ to the browser.
 | 0 | Audit and this plan | Done |
 | 1a | Schema, roles, `record_attempt`, `js/progress.js`, admin commands, permission tests | Done |
 | 1b | Trail Builder moved in-repo and tracked (proof of concept); redirect page on the old address | Built; needs SQL re-run, deploy, redirect |
-| 1c | Gear Ratio Lab, Strava Showdown, Summit Expedition, then Jump Lab and Physics Playground | Next |
+| 1c | Gear Ratio Lab, Strava Showdown, Summit Expedition, then Jump Lab and Physics Playground | All built except Physics Playground (open) |
 | 2 | Student dashboard, weekly stats, skill performance, Review My Mistakes, goals, basic recommendations | |
 | 3 | Tutor dashboard: student list, profiles, review management, notes, session records | |
 | 4 | Session briefs, assignment builder, student assignments, reflections | |
@@ -118,9 +152,9 @@ tutoring sessions, reflections, parent links) in the same file style.
   original; similar-question practice follows per game.
 - **Moving games** changes their origin: browser-saved progress from the
   old copies is lost once.
-- **Jump Lab / Physics Playground** are prediction challenges. A
-  challenge maps to a question and "prediction within tolerance" to
-  correct; confirm the mapping when reading their code in 1c.
+- **Jump Lab missions are solved by trial.** A mission missed and then
+  landed in the same visit stays "needs review" until it is landed again
+  in a later visit, like any other question. At most five such items.
 - **Supabase plan.** Free projects pause after a week without activity
   and have no backups. Check before real student data lives there.
 - **Minors' data.** Profiles hold a first name only; no student data in

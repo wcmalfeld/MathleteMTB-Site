@@ -100,6 +100,10 @@ relative to the page):
 
 A private tool (loaded by `tool.html` into an iframe) doesn't load them
 itself; it uses the player page's copy: `var MP = window.parent.MathleteProgress;`
+(Summit Expedition is the example). After changing a private tool, upload
+it again with `node scripts/admin.mjs upload ...`. If several people take
+turns on one screen, record only the one the account belongs to, and let
+them say which player that is.
 
 **3. Call it where the game checks an answer:**
 
@@ -142,6 +146,12 @@ skill tags. The server works those out.
 
 Optional: `MathleteProgress.endSession(session, { metrics: { score: 8 } })`
 at a natural finish.
+
+Worksheets (a grid of answers checked together, as in Gear Ratio Lab and
+Strava Showdown): record each cell as its own question, and only when it
+is checked with a value it hasn't been checked with before, so pressing
+Check twice doesn't double-count. If the game has an answer key, send
+`hintsUsed: 1` for cells checked after it was opened.
 
 **4. Test:** play signed out (nothing breaks, the "log in to save" note
 appears once), then signed in, and check the rows with

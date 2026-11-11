@@ -293,6 +293,189 @@ insert into public.question_skills (question_id, skill_id) values
   ('trail-builder:calc-integral',            'calculus')
 on conflict do nothing;
 
+-- Gear Ratio Lab (learning-lab/gear-ratio-lab/): one course problem per
+-- round, every cell of the lab sheet, and the tune-up time prediction.
+insert into public.questions (id, game_id, title, question_type, difficulty) values
+  ('gear-ratio-lab:alg1-inequality',         'gear-ratio-lab', 'Smallest cog that stays under the push limit',     'numeric',    'intermediate'),
+  ('gear-ratio-lab:geo-circumference',       'gear-ratio-lab', 'Wheel circumference difference',                   'numeric',    'intermediate'),
+  ('gear-ratio-lab:geo-gear-inches',         'gear-ratio-lab', 'Gear inches of a gear',                            'numeric',    'intermediate'),
+  ('gear-ratio-lab:alg2-constraints',        'gear-ratio-lab', 'Largest chainring within every push limit',        'numeric',    'intermediate'),
+  ('gear-ratio-lab:precalc-angular-speed',   'gear-ratio-lab', 'Wheel angular speed in radians per second',        'numeric',    'advanced'),
+  ('gear-ratio-lab:stats-mean-percent-step', 'gear-ratio-lab', 'Mean percent jump across the cassette',            'numeric',    'advanced'),
+  ('gear-ratio-lab:stats-percent-change',    'gear-ratio-lab', 'Percent change between two cogs',                  'numeric',    'advanced'),
+  ('gear-ratio-lab:calc-related-rates',      'gear-ratio-lab', 'Acceleration from a changing cadence',             'numeric',    'advanced'),
+  ('gear-ratio-lab:sheet-ratio',             'gear-ratio-lab', 'Lab sheet: gear ratio',                            'numeric',    'intermediate'),
+  ('gear-ratio-lab:sheet-development',       'gear-ratio-lab', 'Lab sheet: distance per crank turn',               'numeric',    'intermediate'),
+  ('gear-ratio-lab:sheet-speed',             'gear-ratio-lab', 'Lab sheet: speed from cadence and gear',           'numeric',    'intermediate'),
+  ('gear-ratio-lab:sheet-time',              'gear-ratio-lab', 'Lab sheet: section time',                          'numeric',    'intermediate'),
+  ('gear-ratio-lab:tune-prediction',         'gear-ratio-lab', 'Predict the race time after a tune-up',            'prediction', 'advanced')
+on conflict (id) do update
+  set title = excluded.title, question_type = excluded.question_type, difficulty = excluded.difficulty;
+
+insert into public.question_skills (question_id, skill_id) values
+  ('gear-ratio-lab:alg1-inequality',         'algebra'),
+  ('gear-ratio-lab:geo-circumference',       'geometry'),
+  ('gear-ratio-lab:geo-gear-inches',         'geometry'),
+  ('gear-ratio-lab:geo-gear-inches',         'ratios-proportions'),
+  ('gear-ratio-lab:alg2-constraints',        'algebra'),
+  ('gear-ratio-lab:precalc-angular-speed',   'trigonometry'),
+  ('gear-ratio-lab:precalc-angular-speed',   'speed-velocity'),
+  ('gear-ratio-lab:stats-mean-percent-step', 'statistics'),
+  ('gear-ratio-lab:stats-mean-percent-step', 'percentages'),
+  ('gear-ratio-lab:stats-percent-change',    'percentages'),
+  ('gear-ratio-lab:calc-related-rates',      'calculus'),
+  ('gear-ratio-lab:sheet-ratio',             'ratios-proportions'),
+  ('gear-ratio-lab:sheet-development',       'geometry'),
+  ('gear-ratio-lab:sheet-development',       'ratios-proportions'),
+  ('gear-ratio-lab:sheet-speed',             'speed-velocity'),
+  ('gear-ratio-lab:sheet-speed',             'ratios-proportions'),
+  ('gear-ratio-lab:sheet-time',              'speed-velocity'),
+  ('gear-ratio-lab:tune-prediction',         'speed-velocity'),
+  ('gear-ratio-lab:tune-prediction',         'ratios-proportions')
+on conflict do nothing;
+
+-- Strava Showdown (learning-lab/strava-showdown/): one course problem per
+-- round and every cell of the stat sheet. The podium picks and the graph
+-- are not recorded.
+insert into public.questions (id, game_id, title, question_type, difficulty) values
+  ('strava-showdown:alg1-catch-up',            'strava-showdown', 'Catch-up time from two speeds (d = rt)',         'numeric', 'intermediate'),
+  ('strava-showdown:geo-distance',             'strava-showdown', 'Straight-line distance on the trail map',        'numeric', 'intermediate'),
+  ('strava-showdown:alg2-mean-of-rates',       'strava-showdown', 'Mean of split speeds vs. true average speed',    'numeric', 'intermediate'),
+  ('strava-showdown:precalc-rate-of-change',   'strava-showdown', 'Average rate of change of distance',             'numeric', 'advanced'),
+  ('strava-showdown:stats-standard-deviation', 'strava-showdown', 'Standard deviation of split times',              'numeric', 'advanced'),
+  ('strava-showdown:stats-z-score',            'strava-showdown', 'z-score of a rider''s average speed',            'numeric', 'advanced'),
+  ('strava-showdown:calc-integral',            'strava-showdown', 'Distance from a speed function (integral)',      'numeric', 'advanced'),
+  ('strava-showdown:calc-mean-value',          'strava-showdown', 'Mean Value Theorem: when was average speed hit', 'numeric', 'advanced'),
+  ('strava-showdown:sheet-avg-speed',          'strava-showdown', 'Stat sheet: average speed',                      'numeric', 'intermediate'),
+  ('strava-showdown:sheet-climb-rate',         'strava-showdown', 'Stat sheet: climb rate',                         'numeric', 'intermediate'),
+  ('strava-showdown:sheet-split-range',        'strava-showdown', 'Stat sheet: split range',                        'numeric', 'intermediate'),
+  ('strava-showdown:sheet-fastest-split',      'strava-showdown', 'Stat sheet: fastest split speed',                'numeric', 'intermediate')
+on conflict (id) do update
+  set title = excluded.title, question_type = excluded.question_type, difficulty = excluded.difficulty;
+
+insert into public.question_skills (question_id, skill_id) values
+  ('strava-showdown:alg1-catch-up',            'algebra'),
+  ('strava-showdown:alg1-catch-up',            'speed-velocity'),
+  ('strava-showdown:geo-distance',             'geometry'),
+  ('strava-showdown:alg2-mean-of-rates',       'algebra'),
+  ('strava-showdown:alg2-mean-of-rates',       'speed-velocity'),
+  ('strava-showdown:precalc-rate-of-change',   'algebra'),
+  ('strava-showdown:precalc-rate-of-change',   'speed-velocity'),
+  ('strava-showdown:stats-standard-deviation', 'statistics'),
+  ('strava-showdown:stats-z-score',            'statistics'),
+  ('strava-showdown:calc-integral',            'calculus'),
+  ('strava-showdown:calc-mean-value',          'calculus'),
+  ('strava-showdown:sheet-avg-speed',          'speed-velocity'),
+  ('strava-showdown:sheet-avg-speed',          'ratios-proportions'),
+  ('strava-showdown:sheet-climb-rate',         'ratios-proportions'),
+  ('strava-showdown:sheet-split-range',        'statistics'),
+  ('strava-showdown:sheet-fastest-split',      'speed-velocity'),
+  ('strava-showdown:sheet-fastest-split',      'ratios-proportions')
+on conflict do nothing;
+
+-- Summit Expedition (members-only, runs inside tool.html): one question
+-- kind per skill; the level (1-3) the student chose is in each attempt's
+-- snapshot, so no difficulty is set here. Only the climber picked under
+-- "Save progress for" is recorded.
+insert into public.questions (id, game_id, title, question_type) values
+  ('summit-expedition:lin',             'summit-expedition', 'Algebra 1: Solving linear equations',               'other'),
+  ('summit-expedition:slope',           'summit-expedition', 'Algebra 1: Slope and intercepts',                   'other'),
+  ('summit-expedition:eval',            'summit-expedition', 'Algebra 1: Evaluating expressions',                 'other'),
+  ('summit-expedition:exp',             'summit-expedition', 'Algebra 1: Exponent rules',                         'other'),
+  ('summit-expedition:poly',            'summit-expedition', 'Algebra 1: Expanding polynomials',                  'other'),
+  ('summit-expedition:factor',          'summit-expedition', 'Algebra 1: Solving quadratics by factoring',        'other'),
+  ('summit-expedition:sys',             'summit-expedition', 'Algebra 1: Systems of equations',                   'other'),
+  ('summit-expedition:pyth',            'summit-expedition', 'Geometry: Pythagorean theorem',                     'other'),
+  ('summit-expedition:circle',          'summit-expedition', 'Geometry: Circles: area and arc length',            'other'),
+  ('summit-expedition:logs',            'summit-expedition', 'Algebra 2: Evaluating logarithms',                  'other'),
+  ('summit-expedition:expeq',           'summit-expedition', 'Algebra 2: Exponential equations',                  'other'),
+  ('summit-expedition:logeq',           'summit-expedition', 'Algebra 2: Logarithmic equations',                  'other'),
+  ('summit-expedition:comp',            'summit-expedition', 'Algebra 2: Function composition',                   'other'),
+  ('summit-expedition:ratexp',          'summit-expedition', 'Algebra 2: Rational exponents',                     'other'),
+  ('summit-expedition:disc',            'summit-expedition', 'Algebra 2: The discriminant',                       'other'),
+  ('summit-expedition:unit',            'summit-expedition', 'Precalculus: Unit circle values',                   'other'),
+  ('summit-expedition:rad',             'summit-expedition', 'Precalculus: Degrees and radians',                  'other'),
+  ('summit-expedition:seq',             'summit-expedition', 'Precalculus: Sequences and series',                 'other'),
+  ('summit-expedition:vertex',          'summit-expedition', 'Precalculus: Vertex of a parabola',                 'other'),
+  ('summit-expedition:inverse',         'summit-expedition', 'Precalculus: Inverse functions',                    'other'),
+  ('summit-expedition:limits',          'summit-expedition', 'Calculus: Limits',                                  'other'),
+  ('summit-expedition:power',           'summit-expedition', 'Calculus: Power rule derivatives',                  'other'),
+  ('summit-expedition:product',         'summit-expedition', 'Calculus: Product and quotient rules',              'other'),
+  ('summit-expedition:chain',           'summit-expedition', 'Calculus: Chain rule',                              'other'),
+  ('summit-expedition:derivpt',         'summit-expedition', 'Calculus: Derivative at a point',                   'other'),
+  ('summit-expedition:integ',           'summit-expedition', 'Calculus: Indefinite integrals',                    'other'),
+  ('summit-expedition:defint',          'summit-expedition', 'Calculus: Definite integrals',                      'other')
+on conflict (id) do update
+  set title = excluded.title, question_type = excluded.question_type;
+
+insert into public.question_skills (question_id, skill_id) values
+  ('summit-expedition:lin',             'algebra'),
+  ('summit-expedition:slope',           'algebra'),
+  ('summit-expedition:eval',            'pre-algebra'),
+  ('summit-expedition:eval',            'algebra'),
+  ('summit-expedition:exp',             'algebra'),
+  ('summit-expedition:poly',            'algebra'),
+  ('summit-expedition:factor',          'algebra'),
+  ('summit-expedition:sys',             'algebra'),
+  ('summit-expedition:pyth',            'geometry'),
+  ('summit-expedition:circle',          'geometry'),
+  ('summit-expedition:logs',            'algebra'),
+  ('summit-expedition:expeq',           'algebra'),
+  ('summit-expedition:logeq',           'algebra'),
+  ('summit-expedition:comp',            'algebra'),
+  ('summit-expedition:ratexp',          'algebra'),
+  ('summit-expedition:disc',            'algebra'),
+  ('summit-expedition:unit',            'trigonometry'),
+  ('summit-expedition:rad',             'trigonometry'),
+  ('summit-expedition:seq',             'algebra'),
+  ('summit-expedition:vertex',          'algebra'),
+  ('summit-expedition:inverse',         'algebra'),
+  ('summit-expedition:limits',          'calculus'),
+  ('summit-expedition:power',           'calculus'),
+  ('summit-expedition:product',         'calculus'),
+  ('summit-expedition:chain',           'calculus'),
+  ('summit-expedition:derivpt',         'calculus'),
+  ('summit-expedition:integ',           'calculus'),
+  ('summit-expedition:defint',          'calculus')
+on conflict do nothing;
+
+-- Jump Lab (learning-lab/jump-lab/): each mission is one question (every
+-- "Send it" is an attempt), plus the multiple-choice prediction before a
+-- mission and the "Predict, then test" questions in Explore.
+insert into public.questions (id, game_id, title, question_type, difficulty) values
+  ('jump-lab:clear-the-gap',         'jump-lab', 'Mission: Clear the Gap (choose the lip angle)',            'prediction', 'beginner'),
+  ('jump-lab:minimum-speed',         'jump-lab', 'Mission: Minimum Speed (slowest speed that clears)',       'prediction', 'intermediate'),
+  ('jump-lab:perfect-trajectory',    'jump-lab', 'Mission: The Perfect Trajectory (speed and angle)',        'prediction', 'advanced'),
+  ('jump-lab:same-distance',         'jump-lab', 'Mission: Same Distance, Different Jumps',                  'prediction', 'advanced'),
+  ('jump-lab:solve-before-jump',     'jump-lab', 'Mission: Solve Before You Jump (calculate the landing)',   'numeric',    'advanced'),
+  ('jump-lab:mission-prediction',    'jump-lab', 'Prediction before a mission',                              'choice',     null),
+  ('jump-lab:predict-speed-plus-20', 'jump-lab', 'Predict: 20% more speed and jump distance',                'choice',     null),
+  ('jump-lab:predict-double-speed',  'jump-lab', 'Predict: double the speed and max height',                 'choice',     null),
+  ('jump-lab:predict-angle-up-5',    'jump-lab', 'Predict: 5 degrees steeper and distance',                  'choice',     null),
+  ('jump-lab:predict-drop-landing',  'jump-lab', 'Predict: lower landing and airtime',                       'choice',     null)
+on conflict (id) do update
+  set title = excluded.title, question_type = excluded.question_type, difficulty = excluded.difficulty;
+
+insert into public.question_skills (question_id, skill_id) values
+  ('jump-lab:clear-the-gap',         'forces-motion'),
+  ('jump-lab:minimum-speed',         'forces-motion'),
+  ('jump-lab:minimum-speed',         'algebra'),
+  ('jump-lab:perfect-trajectory',    'forces-motion'),
+  ('jump-lab:perfect-trajectory',    'trigonometry'),
+  ('jump-lab:same-distance',         'forces-motion'),
+  ('jump-lab:same-distance',         'trigonometry'),
+  ('jump-lab:solve-before-jump',     'forces-motion'),
+  ('jump-lab:solve-before-jump',     'trigonometry'),
+  ('jump-lab:solve-before-jump',     'algebra'),
+  ('jump-lab:mission-prediction',    'forces-motion'),
+  ('jump-lab:predict-speed-plus-20', 'forces-motion'),
+  ('jump-lab:predict-speed-plus-20', 'speed-velocity'),
+  ('jump-lab:predict-double-speed',  'forces-motion'),
+  ('jump-lab:predict-double-speed',  'speed-velocity'),
+  ('jump-lab:predict-angle-up-5',    'forces-motion'),
+  ('jump-lab:predict-drop-landing',  'forces-motion')
+on conflict do nothing;
+
 -- 4. Sessions, attempts and the review queue ------------------------
 create table if not exists public.game_sessions (
   id               uuid primary key,          -- made in the browser

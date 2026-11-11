@@ -114,7 +114,10 @@
   // Attempts made under a different login stay put until that student is
   // back; they are never sent under someone else's session.
   function flush() {
-    if (flushing) return flushing;
+    // Already sending: wait for that pass, then send whatever was added
+    // meanwhile (a worksheet check records many answers at once), unless
+    // the pass failed and a retry is already booked.
+    if (flushing) return flushing.then(function () { return retryTimer ? undefined : flush(); });
     flushing = currentUserId().then(function (uid) {
       var now = Date.now();
       var all = readQueue().filter(function (it) { return now - it.at < MAX_AGE_MS; });

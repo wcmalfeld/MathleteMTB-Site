@@ -47,8 +47,15 @@ check('Private tools point at a file in the bucket, not a public url', priv.ever
 
 // ---- games hosted in this repo (they share the login, so they can save progress) ----
 const SITE_ORIGIN = 'https://www.mathletemtb.com/';
-// How to find each game's question kinds in its source.
-const QUESTION_KINDS = { 'trail-builder': /'((?:alg1|geo|alg2|precalc|stats|calc)-[a-z0-9-]+)'/g };
+// How to find each game's question kinds in its source: the single-file
+// games name them '<course or area>-<topic>', e.g. 'geo-pythagorean'.
+const KIND = /'((?:alg1|geo|alg2|precalc|stats|calc|sheet|tune)-[a-z0-9-]+)'/g;
+// Jump Lab: its mission ids, one kind for mission predictions, and 'predict-<id>' for each Explore prediction.
+const jumpLabKinds = html => [
+  ...[...html.slice(html.indexOf('const CHALLENGES = ['), html.indexOf('const PREDICTIONS = [')).matchAll(/^    id: '([a-z0-9-]+)'/gm)].map(m => m[1]),
+  'mission-prediction',
+  ...[...html.slice(html.indexOf('const PREDICTIONS = ['), html.indexOf('const CONCEPTS = ')).matchAll(/^    id: '([a-z0-9-]+)'/gm)].map(m => 'predict-' + m[1])];
+const QUESTION_KINDS = { 'trail-builder': KIND, 'gear-ratio-lab': KIND, 'strava-showdown': KIND, 'jump-lab': jumpLabKinds };
 const hosted = pub.filter(t => (t.url || '').startsWith(SITE_ORIGIN)).map(t => ({ ...t, page: t.url.slice(SITE_ORIGIN.length) + 'index.html' }));
 check('Tools on mathletemtb.com live at learning-lab/<id>/ in this repo', hosted.every(t => t.page === `learning-lab/${t.id}/index.html` && existsSync(root + t.page)), hosted.map(t => t.page).join(', '));
 for (const t of hosted) {
@@ -58,9 +65,23 @@ for (const t of hosted) {
   // Every kind of question the game can ask must be registered, or the
   // server refuses to save attempts at it.
   const sql = read('supabase/progress.sql');
-  const kinds = [...new Set([...html.matchAll(QUESTION_KINDS[t.id] || /$^/g)].map(m => m[1]))];
+  const find = QUESTION_KINDS[t.id];
+  const kinds = typeof find === 'function' ? find(html) : [...new Set([...html.matchAll(find || /$^/g)].map(m => m[1]))];
   const missing = kinds.filter(k => !sql.includes(`'${t.id}:${k}'`));
-  check(`${t.page}: its question kinds are registered in supabase/progress.sql`, sql.includes(`'${t.id}:`) && missing.length === 0, missing.join(', '));
+  check(`${t.page}: its ${kinds.length} question kinds are registered in supabase/progress.sql`, kinds.length > 0 && missing.length === 0, missing.join(', '));
+}
+
+// ---- private tools that save progress (they use the player page's copy of js/progress.js) ----
+{
+  const player = read('tool.html');
+  const order = ['js/auth.js', 'js/progress.js', 'js/tool-player.js'].map(x => player.indexOf(x));
+  check('tool.html loads auth, then progress tracking, then the player', order.every(i => i > 0) && order[0] < order[1] && order[1] < order[2]);
+  const summit = 'private-tools/summit-expedition/index.html';
+  if (existsSync(root + summit)) {   // git-ignored, so only checked on your computer
+    const sql = read('supabase/progress.sql');
+    const missing = [...read(summit).matchAll(/defSkill\('[^']*', '([^']*)'/g)].map(m => m[1]).filter(k => !sql.includes(`'summit-expedition:${k}'`));
+    check('Summit Expedition: every skill is registered in supabase/progress.sql', missing.length === 0, missing.join(', '));
+  }
 }
 
 // ---- home page (the Lab) ----

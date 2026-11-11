@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Strava Showdown — Mathlete MTB</title>
+<meta name="description" content="Be the team's race analyst: crunch ride data, graph the field and decide who gets picked to race.">
+<link rel="canonical" href="https://www.mathletemtb.com/learning-lab/strava-showdown/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@400;600;700&display=swap">
+<style>
+/* Layout: race-day analyst desk — a pinned race bib as the masthead, ride summary cards like app screens, an analyst sheet and a live distance–time plot. */
+:root{
+  --paper:#E9EDF2; --surface:#FFFFFF; --sunk:#F3F5F8; --ink:#141B24; --muted:#586577; --line:#CBD3DE; --grid:#E3E8EF;
+  --accent:#1F5FD1; --accent-ink:#FFFFFF; --accent-soft:#E3ECFB;
+  --bib:#FFFFFF; --bib-ink:#141B24; --bib-band:#1F5FD1;
+  --good:#22844A; --bad:#B42A21; --good-soft:#DDF0E3; --bad-soft:#F8E0DD;
+  --r1:#1F5FD1; --r2:#C2410C; --r3:#15803D; --r4:#7C3AED; --r5:#B45309; --r6:#0E7490;
+  --display:"Overpass",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Overpass Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#0E131A; --surface:#161D27; --sunk:#111821; --ink:#E4E9F0; --muted:#98A5B6; --line:#2A3544; --grid:#1E2733;
+  --accent:#6E9CF2; --accent-ink:#0B1220; --accent-soft:#1B2840;
+  --bib:#E9EDF2; --bib-ink:#141B24; --bib-band:#3D72D8;
+  --good:#5BC47F; --bad:#F07C72; --good-soft:#15301F; --bad-soft:#3A1C1A;
+  --r1:#6E9CF2; --r2:#F08A57; --r3:#5BC47F; --r4:#B394F5; --r5:#E0A84E; --r6:#4FC1D6; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#0E131A; --surface:#161D27; --sunk:#111821; --ink:#E4E9F0; --muted:#98A5B6; --line:#2A3544; --grid:#1E2733;
+  --accent:#6E9CF2; --accent-ink:#0B1220; --accent-soft:#1B2840;
+  --bib:#E9EDF2; --bib-ink:#141B24; --bib-band:#3D72D8;
+  --good:#5BC47F; --bad:#F07C72; --good-soft:#15301F; --bad-soft:#3A1C1A;
+  --r1:#6E9CF2; --r2:#F08A57; --r3:#5BC47F; --r4:#B394F5; --r5:#E0A84E; --r6:#4FC1D6; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--display);font-size:16px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{margin:0;line-height:1.15;text-wrap:balance}
+p{margin:0}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)} .small{font-size:14px}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.between{justify-content:space-between}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px}
+.h2{font-size:24px;font-weight:800}
+
+/* Race bib masthead */
+.bib{background:var(--bib);color:var(--bib-ink);border-radius:6px;position:relative;overflow:hidden;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 20px;align-items:center;padding:18px 28px 18px;
+  box-shadow:0 1px 0 rgba(0,0,0,.08), 0 6px 18px -10px rgba(0,0,0,.35)}
+.bib::before,.bib::after{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:var(--paper);top:10px;box-shadow:inset 0 1px 2px rgba(0,0,0,.35)}
+.bib::before{left:10px} .bib::after{right:10px}
+.bib .band{position:absolute;left:0;right:0;bottom:0;height:8px;background:var(--bib-band)}
+.bib .evt{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:800;color:#4A5566}
+.bib h1{font-family:var(--display);font-weight:900;font-size:clamp(30px,6vw,54px);letter-spacing:-.01em;line-height:.95;text-transform:uppercase}
+.bib .no{font-family:var(--mono);font-weight:700;font-size:clamp(34px,6vw,56px);line-height:1;letter-spacing:-.02em}
+.bib .rank{font-size:13px;font-weight:700;text-align:right;color:#4A5566}
+@media (max-width:560px){.bib{grid-template-columns:minmax(0,1fr)} .bib .rank,.bib .nobox{text-align:left}}
+.meter{height:5px;border-radius:3px;background:#DCE2EA;overflow:hidden;width:180px;max-width:100%;margin-top:4px;margin-left:auto}
+.meter i{display:block;height:100%;background:var(--bib-band)}
+@media (max-width:560px){.meter{margin-left:0}}
+
+.phases{display:flex;gap:6px;flex-wrap:wrap}
+.phase{flex:1 1 110px;display:flex;gap:8px;align-items:center;padding:8px 12px;border-radius:5px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-weight:700;font-size:14px;letter-spacing:.05em;text-transform:uppercase}
+.phase b{font-family:var(--mono)}
+.phase.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.phase.done{color:var(--ink)}
+
+.btn{border:2px solid var(--ink);background:transparent;color:var(--ink);padding:9px 16px;border-radius:5px;font-weight:800}
+.btn:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.btn.go{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.go:hover{filter:brightness(1.07)}
+.btn.sm{padding:5px 10px;font-size:14px;border-width:1.5px}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:5px;padding:8px 12px;text-align:left;display:flex;flex-direction:column;min-width:0}
+.chip b{font-weight:800} .chip span{font-size:13px;color:var(--muted)}
+.chip[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.field{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.field h3{font-size:19px;font-weight:800}
+.roster{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:14px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:baseline}
+
+/* Brief */
+.brief{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:0 6px 6px 0;display:flex;flex-direction:column;gap:2px}
+.brief b{font-size:18px}
+
+/* Ride cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.ride{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0;border-top:4px solid var(--rc)}
+.ride .who{display:flex;align-items:center;gap:10px}
+.ride .av{width:34px;height:34px;border-radius:50%;background:var(--rc);color:var(--surface);display:grid;place-items:center;font-weight:800;font-size:14px;flex:none}
+.ride .nm{font-weight:800;line-height:1.1}
+.ride .tr{font-size:13px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.kpi .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.kpi .v{font-family:var(--mono);font-weight:700;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kpi .v small{font-size:12px;font-weight:400;color:var(--muted);margin-left:2px}
+.splits{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.split{background:var(--sunk);border-radius:4px;padding:4px 6px;text-align:center}
+.split .k{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+.split .v{font-family:var(--mono);font-size:14px;font-weight:600}
+.cards.compact .ride{padding:10px 12px;gap:8px}
+.cards.compact .kpi .v{font-size:15px}
+
+/* Podium */
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:560px){.podium{grid-template-columns:minmax(0,1fr)}}
+.place{border:1.5px solid var(--line);border-radius:6px;padding:10px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.place .pn{font-family:var(--mono);font-weight:700;font-size:22px}
+select,input[type=text],input[inputmode],textarea{font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:5px;padding:7px 9px;width:100%}
+textarea{min-height:120px;resize:vertical}
+label{font-weight:700;font-size:14px}
+
+/* Analyst sheet */
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:700;padding:8px;border-bottom:1.5px solid var(--ink);vertical-align:bottom}
+td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+td input{font-family:var(--mono);max-width:130px}
+td.ok input{border-color:var(--good);background:var(--good-soft)}
+td.no input{border-color:var(--bad);background:var(--bad-soft)}
+.key{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-left:6px;white-space:nowrap}
+.task{border:2px solid var(--accent);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.task .prompt{font-size:17px;max-width:66ch}
+.task input{max-width:180px;font-family:var(--mono);font-size:18px}
+.fb{font-weight:700} .fb.ok{color:var(--good)} .fb.no{color:var(--bad)}
+.ref{font-size:14px;color:var(--muted)}
+
+/* Plot */
+.plot{width:100%;height:auto;display:block;touch-action:manipulation;cursor:crosshair;user-select:none}
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+.rchip{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:999px;padding:5px 12px 5px 8px;background:var(--surface);color:var(--ink);font-weight:700;font-size:14px}
+.rchip[aria-pressed="true"]{border-color:var(--rc);box-shadow:inset 0 0 0 1.5px var(--rc)}
+.rchip .cnt{font-family:var(--mono);font-weight:600;color:var(--muted)}
+.rchip.full .cnt{color:var(--good)}
+
+/* Results */
+.results{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.results{grid-template-columns:minmax(0,1fr)}}
+.medal{display:flex;gap:16px;align-items:center}
+.disc{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:13px;letter-spacing:.08em;text-transform:uppercase;border:3px solid var(--ink);flex:none}
+.disc.gold{background:#E8B931;color:#2A1F00;border-color:#9C7A10}
+.disc.silver{background:#C9D0D4;color:#1C2226;border-color:#7E888E}
+.disc.bronze{background:#C98446;color:#2A1404;border-color:#86511F}
+.disc.none{background:transparent;color:var(--muted);border-style:dashed;border-color:var(--muted)}
+.score{font-family:var(--mono);font-size:44px;font-weight:700;line-height:1}
+.rubric{display:grid;grid-template-columns:minmax(0,1fr) 84px;gap:6px 12px;align-items:center;font-size:14.5px}
+.coach{background:var(--ink);color:var(--paper);border-radius:8px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.coach .eyebrow{color:color-mix(in srgb,var(--paper) 70%,transparent)}
+.coach p{font-size:19px;font-weight:700;max-width:60ch}
+.hist{display:flex;flex-direction:column;gap:6px}
+.hrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:8px 12px;background:var(--surface);border:1px solid var(--line);border-radius:5px;font-size:14px}
+.empty{border:1.5px dashed var(--line);border-radius:8px;padding:20px;text-align:center;color:var(--muted)}
+.note{font-size:14px;padding:8px 12px;border-radius:5px;background:var(--bad-soft);border-left:3px solid var(--bad)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:5px;font-weight:700;z-index:20;max-width:calc(100% - 32px)}
+details summary{cursor:pointer;font-weight:800}
+details ol{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:70ch}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="bib">
+    <div>
+      <div class="evt">Race analyst desk · Mountain bike team</div>
+      <h1>Strava Showdown</h1>
+    </div>
+    <div class="nobox" id="crew"></div>
+    <div class="band"></div>
+  </header>
+  <nav class="phases" id="phases" aria-label="Round phases"></nav>
+  <main id="app"></main>
+  <section class="col" id="history" aria-label="Past rounds"></section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<!-- Saves a signed-in student's answers to their Mathlete account. The game
+     plays the same without them (see docs/PROGRESS-TRACKING.md). -->
+<script src="../../js/supabase-config.js"></script>
+<script src="../../js/auth.js"></script>
+<script src="../../js/progress.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(e){ return d } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)) }catch(e){} }
+};
+const r1 = x => Math.round(x*10)/10, r2 = x => Math.round(x*100)/100;
+
+/* ---------- Deck ---------- */
+const FIELDS = [
+  {id:'coyote', name:'Coyote Ridge Cup', blurb:'The starter field. Two riders tie on every summary number.', twist:['maya','jonah'], riders:[
+    {id:'maya',  name:'Maya Ortiz',   trail:'Coyote Ridge',    dist:12,  elev:900,  splits:[15,15,15,15]},
+    {id:'jonah', name:'Jonah Reyes',  trail:'Coyote Ridge',    dist:12,  elev:900,  splits:[10,10,25,15]},
+    {id:'priya', name:'Priya Shah',   trail:'Aspen Loop',      dist:15,  elev:1600, splits:[17,19,20,16]},
+    {id:'leo',   name:'Leo Brandt',   trail:'Creekside',       dist:9.6, elev:450,  splits:[9,10,11,10]},
+    {id:'ana',   name:'Ana Kowalski', trail:'Summit Traverse', dist:20,  elev:2800, splits:[30,32,26,22]},
+    {id:'sam',   name:'Sam Okafor',   trail:'Creekside',       dist:6.5, elev:200,  splits:[6,6.5,7,6.5]}]},
+  {id:'summit', name:'Summit Series', blurb:'A climbing field. One rider saves everything for the finish.', twist:['rosa','theo'], riders:[
+    {id:'rosa', name:'Rosa Lin',    trail:'Bear Creek Climb', dist:16, elev:1800, splits:[20,20,20,20]},
+    {id:'theo', name:'Theo Grant',  trail:'Bear Creek Climb', dist:16, elev:1800, splits:[28,24,16,12]},
+    {id:'kai',  name:'Kai Morgan',  trail:'Lodgepole',        dist:14, elev:1200, splits:[14,15,16,15]},
+    {id:'nora', name:'Nora Fitz',   trail:'High Lonesome',    dist:18, elev:3000, splits:[24,26,27,23]},
+    {id:'eli',  name:'Eli Vance',   trail:'Meadow Run',       dist:10, elev:600,  splits:[9,10,11,10]}]},
+  {id:'creek', name:'Creekside Showdown', blurb:'A fast, flat field. Watch for a rider who goes out too hot.', twist:['ivy','marcus'], riders:[
+    {id:'ivy',    name:'Ivy Chen',    trail:'Willow Flats',   dist:8,    elev:400,  splits:[8,8,8,8]},
+    {id:'marcus', name:'Marcus Hale', trail:'Willow Flats',   dist:8,    elev:400,  splits:[6,6,10,10]},
+    {id:'zoe',    name:'Zoe Park',    trail:'Cottonwood',     dist:10.5, elev:750,  splits:[11,11,12,11]},
+    {id:'omar',   name:'Omar Diaz',   trail:'Ridge Spur',     dist:12,   elev:1100, splits:[13,14,14,14]},
+    {id:'lena',   name:'Lena Brooks', trail:'Willow Flats',   dist:7.5,  elev:250,  splits:[6,6,6.5,6.5]},
+    {id:'ravi',   name:'Ravi Nair',   trail:'Granite Saddle', dist:15,   elev:2400, splits:[21,23,24,22]}]}
+];
+const BRIEFS = [
+  {id:'speed', title:'Fastest average moving speed', stat:'speed', story:'The team needs a rider for a fast cross-country race. Rank the field by average moving speed.'},
+  {id:'climb', title:'Best climber', stat:'climb', story:'The next race climbs 3,000 ft. Rank the field by climb rate: feet of elevation gained per hour.'},
+  {id:'steady', title:'Most consistent pacer', stat:'range', story:'For a team relay, the coach wants an even pace. Rank by split range (slowest split minus fastest split), smallest first.'},
+  {id:'peak', title:'Strongest single effort', stat:'peak', story:'For a short sprint stage, rank by each rider’s fastest single split speed.'}
+];
+const STATS = {
+  speed:{label:'Avg speed', unit:'mph', dp:1, dir:-1, f:r=>r.dist/(time(r)/60), help:'distance ÷ hours'},
+  climb:{label:'Climb rate', unit:'ft/h', dp:0, dir:-1, f:r=>r.elev/(time(r)/60), help:'elevation ÷ hours'},
+  range:{label:'Split range', unit:'min', dp:1, dir:1, f:r=>Math.max(...r.splits)-Math.min(...r.splits), help:'slowest − fastest split'},
+  peak:{label:'Fastest split', unit:'mph', dp:1, dir:-1, f:r=>(r.dist/4)/(Math.min(...r.splits)/60), help:'¼ distance ÷ fastest split hours'}
+};
+const COURSES = {
+  alg1:{name:'Algebra I', grades:'Grade 9', skill:'Rates, d = rt, systems'},
+  geo:{name:'Geometry', grades:'Grades 9–10', skill:'Coordinate distance'},
+  alg2:{name:'Algebra II', grades:'Grades 10–11', skill:'Means of rates'},
+  precalc:{name:'Precalculus', grades:'Grades 11–12', skill:'Average rate of change'},
+  stats:{name:'Statistics', grades:'Grades 11–12', skill:'Spread and z-scores'},
+  calc:{name:'Calculus', grades:'Grade 12', skill:'Integrals and the MVT'}
+};
+const RANKS = [{name:'Junior Analyst',at:0},{name:'Data Wrangler',at:150},{name:'Race Strategist',at:400},{name:'Performance Lead',at:800},{name:'Head of Data',at:1400}];
+const PALETTE = ['--r1','--r2','--r3','--r4','--r5','--r6'];
+
+const time = r => r.splits.reduce((a,b)=>a+b,0);
+function clock(min){ const s = Math.round(min*60), h = Math.floor(s/3600), m = Math.floor(s%3600/60), x = s%60;
+  return h ? `${h}:${String(m).padStart(2,'0')}:${String(x).padStart(2,'0')}` : `${m}:${String(x).padStart(2,'0')}`; }
+const initials = n => n.split(' ').map(w=>w[0]).join('');
+const fmt = (v, dp) => v.toLocaleString(undefined,{minimumFractionDigits:dp, maximumFractionDigits:dp});
+
+/* ---------- State ---------- */
+let S;
+function fresh(){
+  const c = store.get('ss-course','alg1');
+  return {phase:'deal', course: COURSES[c]?c:'alg1', fieldId:null, briefId:null, pick:['','',''], final:['','',''],
+    ans:{}, checked:null, firstCheck:null, task:null, taskAns:'', taskTries:0, taskFirst:null, taskReveal:false,
+    plotRider:null, pts:{}, graphChecked:false, graphScore:null, coach:'', answer:'', rubric:[0,0,0,0,0], result:null, saved:false};
+}
+const field = () => FIELDS.find(f=>f.id===S.fieldId);
+const brief = () => BRIEFS.find(b=>b.id===S.briefId);
+const riders = () => field().riders;
+const colorOf = id => `var(${PALETTE[riders().findIndex(r=>r.id===id) % PALETTE.length]})`;
+function columns(){ const b = brief().stat; return b==='speed' ? ['speed','climb'] : ['speed', b]; }
+const keyVal = (r, st) => { const s = STATS[st]; const v = s.f(r); return s.dp ? Math.round(v*10**s.dp)/10**s.dp : Math.round(v); };
+function ranking(){ const st = brief().stat, d = STATS[st].dir; return riders().slice().sort((a,b)=> d*(keyVal(a,st)-keyVal(b,st))); }
+function podiumCorrect(pick){
+  const st = brief().stat, key = ranking();
+  return pick.map((id,i)=>{ const r = riders().find(x=>x.id===id); return !!r && keyVal(r,st)===keyVal(key[i],st); });
+}
+
+/* ---------- Course tasks ---------- */
+function makeTask(){
+  const F = field(), R = F.riders, B = (t)=>`<b class="num">${t}</b>`;
+  const tw = R.find(r=>r.id===F.twist[1]);
+  const rnd = a => a[Math.floor(Math.random()*a.length)];
+  const coin = Math.random()<0.5;
+  const speed = r => r.dist/(time(r)/60);
+  switch (S.course){
+    case 'alg1': {
+      const srt = R.slice().sort((a,b)=>speed(b)-speed(a));
+      const A = srt[0], Bk = srt[Math.min(2, srt.length-1)] , h = 5, vA = speed(A), vB = speed(Bk);
+      const t = vB*h/(vA-vB);
+      return {qid:'alg1-catch-up', prompt:`Imagine ${A.name} and ${Bk.name} ride the same trail at their average speeds (${B(fmt(r1(vA),1)+' mph')} and ${B(fmt(r1(vB),1)+' mph')}). ${Bk.name} starts ${B(h+' minutes')} earlier. How many minutes after ${A.name} starts does ${A.name} catch up? Round to 0.1 min.`,
+        answer:r1(t), tol:0.15, unit:' min', ref:'Set the distances equal: vA·t = vB·(t + 5), with t in minutes and speeds in miles per minute (or keep mph and divide by 60 on both sides).',
+        hint:`Solve ${fmt(r1(vA),1)}t = ${fmt(r1(vB),1)}(t + 5) for t.`}; }
+    case 'geo': {
+      const OFF = [[3,4],[2.4,3.2],[5,1.2],[1.5,3.6],[4,2.4],[2.8,2.1]];
+      const i = Math.floor(Math.random()*R.length), r = R[i], [dx,dy] = OFF[i % OFF.length];
+      const sx = 1.5, sy = 2, line = Math.hypot(dx,dy);
+      return {qid:'geo-distance', prompt:`On the trail map, ${r.name}'s ride starts at ${B(`(${sx}, ${sy})`)} and finishes at ${B(`(${r1(sx+dx)}, ${r1(sy+dy)})`)}, with units in miles. ${r.name} rode ${B(r.dist+' mi')}. How many times longer is the ride than the straight-line distance? Round to 0.1.`,
+        answer:r1(r.dist/line), tol:0.11, unit:'×', ref:'d = √((x₂ − x₁)² + (y₂ − y₁)²), then ride distance ÷ straight-line distance.',
+        hint:`The straight-line distance is √(${dx}² + ${dy}²). Divide ${r.dist} by it.`}; }
+    case 'alg2': {
+      const sp = tw.splits.map(s => (tw.dist/4)/(s/60)), m = sp.reduce((a,b)=>a+b,0)/4;
+      return {qid:'alg2-mean-of-rates', prompt:`${tw.name} rode four equal quarters of ${B(tw.dist+' mi')} in ${B(tw.splits.map(clock).join(', '))}. Find the speed on each quarter, then their arithmetic mean. Round to 0.1 mph. Compare it with the true average speed.`,
+        answer:r1(m), tol:0.06, unit:' mph', ref:'Split speed = (distance ÷ 4) ÷ (split minutes ÷ 60). Mean = sum ÷ 4. The true average is total distance ÷ total time (a harmonic mean of the split speeds).',
+        hint:`The four speeds are ${sp.map(v=>fmt(r1(v),1)).join(', ')} mph. Average them.`}; }
+    case 'precalc': {
+      const r = rnd(R), dt = r.splits[1]+r.splits[2];
+      return {qid:'precalc-rate-of-change', prompt:`${r.name}'s distance is a function of time, d(t). Find the average rate of change of d from the end of split 1 to the end of split 3 (that's ${B(r.dist/2+' mi')} over ${B(clock(dt))}). Give it in mph, rounded to 0.1.`,
+        answer:r1((r.dist/2)/(dt/60)), tol:0.06, unit:' mph', ref:'Average rate of change = [d(t₂) − d(t₁)] ÷ (t₂ − t₁)',
+        hint:`Convert ${dt} minutes to hours, then divide ${r.dist/2} by it.`}; }
+    case 'stats': {
+      if (coin){
+        const s = tw.splits, m = s.reduce((a,b)=>a+b,0)/4, sd = Math.sqrt(s.reduce((a,x)=>a+(x-m)**2,0)/4);
+        return {qid:'stats-standard-deviation', prompt:`Find the population standard deviation of ${tw.name}'s split times: ${B(s.map(x=>fmt(x,x%1?1:0)).join(', ')+' min')}. Round to 0.01 min.`,
+          answer:r2(sd), tol:0.011, unit:' min', ref:'σ = √( Σ(x − μ)² ÷ N )', hint:`The mean is ${fmt(m,2)} min. Square each difference from it, average those, then take the square root.`};
+      }
+      const sp = R.map(speed), m = sp.reduce((a,b)=>a+b,0)/sp.length, sd = Math.sqrt(sp.reduce((a,x)=>a+(x-m)**2,0)/sp.length);
+      const r = rnd(R), z = (speed(r)-m)/sd;
+      return {qid:'stats-z-score', prompt:`Across this field, average speeds have mean ${B(fmt(r2(m),2)+' mph')} and population SD ${B(fmt(r2(sd),2)+' mph')}. What is ${r.name}'s z-score for average speed? Round to 0.01.`,
+        answer:r2(z), tol:0.03, unit:'', ref:'z = (x − μ) ÷ σ', hint:`First find ${r.name}'s average speed: ${r.dist} ÷ (${time(r)} ÷ 60).`};
+    }
+    case 'calc': {
+      const nice = R.filter(r => { const a = speed(r) + 2*time(r)/60; return Math.abs(a*100 - Math.round(a*100)) < 1e-6; });
+      const r = rnd(nice.length?nice:R), V = speed(r), T = time(r)/60, a = r2(V + 2*T);
+      if (coin) return {qid:'calc-integral', prompt:`Model ${r.name}'s speed as v(t) = ${B(`${a} − 4t`)} mph, with t in hours, for 0 ≤ t ≤ ${B(fmt(r2(T),2))}. Find the distance ridden, ∫ v(t) dt over that interval. Round to 0.1 mi.`,
+        answer:r1(V*T), tol:0.06, unit:' mi', ref:'∫₀ᵀ (a − 4t) dt = aT − 2T²', hint:`Plug T = ${fmt(r2(T),2)} into aT − 2T². It should match the ride card.`};
+      return {qid:'calc-mean-value', prompt:`Model ${r.name}'s speed as v(t) = ${B(`${a} − 4t`)} mph, t in hours. The Mean Value Theorem says the rider hit the average speed of ${B(fmt(r1(V),1)+' mph')} at some time c. Find c in minutes. Round to 0.1.`,
+        answer:r1((a - V)/4*60), tol:0.15, unit:' min', ref:'Solve v(c) = average speed, then convert hours to minutes.', hint:`Solve ${a} − 4c = ${fmt(r1(V),1)} for c (hours), then multiply by 60.`};
+    }
+  }
+}
+
+function coachQuestion(){
+  const F = field(), R = F.riders, byId = id => R.find(r=>r.id===id);
+  const A = byId(F.twist[0]), B = byId(F.twist[1]);
+  const sp = r => STATS.speed.f(r), cl = r => STATS.climb.f(r);
+  const fastest = R.slice().sort((a,b)=>sp(b)-sp(a))[0], climber = R.slice().sort((a,b)=>cl(b)-cl(a))[0], slowest = R.slice().sort((a,b)=>sp(a)-sp(b))[0];
+  const Q = [
+    `${A.name} and ${B.name} have the same average speed and the same climb rate. The team needs one of them for a 40-mile race. Who do you pick, and why?`,
+    `Someone says ${B.name}'s average speed is just the average of their four split speeds. Are they right? Explain with numbers.`,
+    `Which single number from ${slowest.name}'s ride would you show them to help them improve? Use the graph to back it up.`
+  ];
+  if (fastest.id !== climber.id) Q.push(`${fastest.name} has the highest average speed, but ${climber.name} climbs fastest. The next race is mostly uphill. Who starts, and what number convinces you?`);
+  return Q[Math.floor(Math.random()*Q.length)];
+}
+
+/* ---------- Plot targets ---------- */
+function targets(r){
+  const F = field(), d = r.dist, s = r.splits, out = [];
+  if (F.twist.includes(r.id)){ let t=0; s.forEach((x,i)=>{ t+=x; out.push({t, d:d*(i+1)/4}); }); }
+  else out.push({t:time(r), d});
+  return out;
+}
+function plotBounds(){ const R = riders(); return {xMax: Math.ceil(Math.max(...R.map(time))/10)*10, yMax: Math.ceil(Math.max(...R.map(r=>r.dist))/2)*2}; }
+function checkGraph(){
+  const {xMax,yMax} = plotBounds(), tx = Math.max(1, xMax*0.02), ty = Math.max(0.25, yMax*0.025);
+  let hit=0, total=0;
+  riders().forEach(r=>{ const pool = (S.pts[r.id]||[]).slice();
+    targets(r).forEach(tg=>{ total++; const k = pool.findIndex(p=>Math.abs(p.t-tg.t)<=tx && Math.abs(p.d-tg.d)<=ty); if (k>=0){ hit++; pool.splice(k,1); } }); });
+  return {hit, total};
+}
+
+/* ---------- Scoring ---------- */
+function scoreRound(){
+  const cells = riders().length*columns().length + 1;
+  const correct = (S.firstCheck ? S.firstCheck.correct : 0) + (S.taskFirst ? 1 : 0);
+  const stats = Math.round(35*correct/cells);
+  const graph = S.graphScore ? Math.round(20*S.graphScore.hit/S.graphScore.total) : 0;
+  const fin = podiumCorrect(S.final).filter(Boolean).length*5;
+  const show = S.rubric.reduce((a,b)=>a+b,0);
+  const callHits = podiumCorrect(S.pick).filter(Boolean).length;
+  const called = callHits + (callHits===3 ? 2 : 0);
+  const total = stats+graph+fin+show+called;
+  return {stats, graph, fin, show, called, callHits, correct, cells, total, medal: total>=90?'gold':total>=75?'silver':total>=60?'bronze':'none'};
+}
+const hist = () => store.get('ss-history', []);
+function rankInfo(){ const p = hist().reduce((a,h)=>a+h.score,0); let i=0; RANKS.forEach((r,k)=>{ if(p>=r.at) i=k; });
+  const next = RANKS[i+1]; return {p, rank:RANKS[i], next, pct: next ? (p-RANKS[i].at)/(next.at-RANKS[i].at) : 1}; }
+
+/* ---------- Render pieces ---------- */
+function renderCrew(){
+  const r = rankInfo();
+  $('#crew').innerHTML = `<div class="no">${String(hist().length+1).padStart(3,'0')}</div>
+    <div class="rank">${r.rank.name} · <span class="num">${r.p.toLocaleString()} pts</span></div>
+    <div class="meter" role="progressbar" aria-label="Progress to next rank" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(r.pct*100)}"><i style="width:${Math.round(r.pct*100)}%"></i></div>`;
+}
+function renderPhases(){
+  const P = [['deal','Deal'],['call','Call it'],['crunch','Crunch'],['plot','Plot'],['showdown','Showdown']];
+  const i = P.findIndex(p=>p[0]===S.phase);
+  $('#phases').innerHTML = P.map((p,k)=>`<div class="phase ${k===i?'on':k<i?'done':''}" ${k===i?'aria-current="step"':''}><b>${k+1}</b>${p[1]}</div>`).join('');
+}
+function rideCard(r){
+  const t = time(r);
+  return `<article class="ride" style="--rc:${colorOf(r.id)}">
+    <div class="who"><div class="av" aria-hidden="true">${initials(r.name)}</div><div><div class="nm">${esc(r.name)}</div><div class="tr">${esc(r.trail)}</div></div></div>
+    <div class="kpis">
+      <div class="kpi"><div class="k">Distance</div><div class="v">${fmt(r.dist, r.dist%1?1:0)}<small>mi</small></div></div>
+      <div class="kpi"><div class="k">Moving time</div><div class="v">${clock(t)}</div></div>
+      <div class="kpi"><div class="k">Elev gain</div><div class="v">${r.elev.toLocaleString()}<small>ft</small></div></div>
+    </div>
+    <div><div class="k eyebrow" style="font-size:10.5px;margin-bottom:3px">Splits · each ${fmt(r.dist/4, (r.dist/4)%1?2:0).replace(/0$/,'')} mi</div>
+      <div class="splits">${r.splits.map((s,i)=>`<div class="split"><div class="k">Q${i+1}</div><div class="v">${clock(s)}</div></div>`).join('')}</div></div>
+  </article>`;
+}
+const briefBox = () => `<div class="brief"><span class="eyebrow">Race brief</span><b>${esc(brief().title)}</b><span class="small">${esc(brief().story)}</span></div>`;
+function podiumPicker(arr, name, locked){
+  const opts = id => `<option value="">Choose a rider</option>` + riders().map(r=>`<option value="${r.id}" ${id===r.id?'selected':''}>${esc(r.name)}</option>`).join('');
+  return `<div class="podium">${['1st','2nd','3rd'].map((p,i)=>`<div class="place"><span class="pn">${p}</span>
+    <label for="${name}${i}" style="position:absolute;left:-9999px">${p} place</label>
+    <select id="${name}${i}" data-podium="${name}" data-i="${i}" ${locked?'disabled':''}>${opts(arr[i])}</select></div>`).join('')}</div>`;
+}
+
+function renderDeal(){
+  const C = Object.entries(COURSES).map(([k,c])=>`<button class="chip" data-act="course" data-v="${k}" aria-pressed="${S.course===k}"><b>${c.name}</b><span>${c.grades} · ${c.skill}</span></button>`).join('');
+  const F = FIELDS.map(f=>`<article class="field"><div><div class="eyebrow">${f.riders.length} riders</div><h3>${esc(f.name)}</h3></div>
+      <p class="small muted">${esc(f.blurb)}</p>
+      <div class="roster">${f.riders.map((r,i)=>`<span><span class="dot" style="background:var(${PALETTE[i]})"></span>${esc(r.name)}</span>`).join('')}</div>
+      <div><button class="btn go sm" data-act="deal" data-v="${f.id}">Deal this field</button></div></article>`).join('');
+  return `<div class="col">
+    <section class="panel col">
+      <div><div class="eyebrow">Step 1 · Pick the course</div><h2 class="h2">Which math class is the analyst in?</h2></div>
+      <div class="chips" role="group" aria-label="Course">${C}</div>
+      <details><summary>How a round works</summary><ol>
+        <li><b>Deal.</b> A field of riders and a race brief that says what the team is selecting for.</li>
+        <li><b>Call it.</b> Predict the podium before any math. It locks in.</li>
+        <li><b>Crunch.</b> Compute each rider's stats on the analyst sheet, plus one problem for your course.</li>
+        <li><b>Plot.</b> Click to plot each rider on a distance–time graph. Slope is speed.</li>
+        <li><b>Showdown.</b> Answer the coach's question with numbers and the graph, then give your final podium.</li>
+      </ol></details>
+    </section>
+    <section class="col">
+      <div class="row between"><div><div class="eyebrow">Step 2 · Deal a field</div><h2 class="h2">Race fields</h2></div><button class="btn" data-act="dealRandom">Deal a random field</button></div>
+      <div class="fields">${F}</div>
+    </section>
+  </div>`;
+}
+
+function renderCall(){
+  const ready = S.pick.every(Boolean) && new Set(S.pick).size===3;
+  return `<div class="col">
+    <div class="row between"><div><div class="eyebrow">${esc(field().name)} · ${COURSES[S.course].name}</div><h2 class="h2">Call the podium before you calculate</h2></div>
+      <button class="btn sm" data-act="redrawBrief">Draw a different brief</button></div>
+    ${briefBox()}
+    <div class="cards">${riders().map(rideCard).join('')}</div>
+    <section class="panel col"><div><div class="eyebrow">Your prediction</div><p class="small muted">Go with your gut. You can't change it once the crunch starts.</p></div>
+      ${podiumPicker(S.pick,'pick',false)}
+      <div class="row"><button class="btn go" data-act="lock" ${ready?'':'disabled'}>Lock my prediction</button>${S.pick.some(Boolean)&&new Set(S.pick.filter(Boolean)).size<S.pick.filter(Boolean).length?'<span class="small" style="color:var(--bad)">Pick three different riders.</span>':''}</div>
+    </section>
+  </div>`;
+}
+
+function renderCrunch(){
+  const cols = columns(), chk = S.checked;
+  const head = cols.map(c=>`<th>${STATS[c].label}<br><span style="text-transform:none;letter-spacing:0;font-weight:400">${STATS[c].unit} · ${STATS[c].help}</span></th>`).join('');
+  const rows = riders().map(r=>`<tr><td><span class="dot" style="background:${colorOf(r.id)}"></span><b>${esc(r.name)}</b></td>${cols.map(c=>{
+      const k = r.id+'|'+c, st = chk ? chk.cells[k] : null;
+      return `<td class="${st===true?'ok':st===false?'no':''}"><label for="a-${r.id}-${c}" style="position:absolute;left:-9999px">${esc(r.name)} ${STATS[c].label}</label><input id="a-${r.id}-${c}" inputmode="decimal" data-ans="${k}" value="${esc(S.ans[k]||'')}" placeholder="${STATS[c].dp?'0.'+'0'.repeat(STATS[c].dp):'0'}">${S.showKey?`<span class="key">${fmt(keyVal(r,c),STATS[c].dp)}</span>`:''}</td>`; }).join('')}</tr>`).join('');
+  const T = S.task;
+  const taskBox = `<section class="task" aria-live="polite"><div class="eyebrow">${COURSES[S.course].name} problem</div>
+    <p class="prompt">${T.prompt}</p><p class="ref"><b>Formula card:</b> ${esc(T.ref)}</p>
+    ${S.taskFirst===null || (!S.taskOk && !S.taskReveal) ? `<form class="row" id="taskForm" autocomplete="off"><label for="taskIn" style="position:absolute;left:-9999px">Answer</label><input id="taskIn" inputmode="decimal" value="${esc(S.taskAns)}" placeholder="answer"><button class="btn go" type="submit">Check</button></form>` : ''}
+    ${S.taskFb ? `<p class="fb ${S.taskOk?'ok':'no'}">${esc(S.taskFb)}</p>` : ''}</section>`;
+  return `<div class="col">
+    ${briefBox()}
+    <div class="cards compact">${riders().map(rideCard).join('')}</div>
+    <section class="panel col">
+      <div class="row between"><div><div class="eyebrow">Analyst sheet</div><h2 class="h2">Crunch the numbers</h2></div>
+        <span class="small muted">Speeds to 0.1 mph · climb rate to the nearest ft/h · range to 0.1 min</span></div>
+      <div class="tablewrap"><table><thead><tr><th>Rider</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="row"><button class="btn go" data-act="checkSheet">Check my numbers</button>
+        ${chk ? `<span class="small"><b class="num">${chk.correct} of ${chk.total}</b> correct${S.firstCheck && S.firstCheck!==chk ? ` · first check: ${S.firstCheck.correct}` : ''}</span><button class="btn sm" data-act="toggleKey">${S.showKey?'Hide':'Show'} answer key</button>` : '<span class="small muted">Your first check counts toward the score. Fix mistakes after that for practice.</span>'}</div>
+    </section>
+    ${taskBox}
+    <div class="row"><button class="btn go" data-act="toPlot" ${S.firstCheck && S.taskFirst!==null ? '' : 'disabled'}>Go to the graph</button><span class="small muted">${S.firstCheck && S.taskFirst!==null ? '' : 'Check the sheet and answer the course problem first.'}</span></div>
+  </div>`;
+}
+
+function plotSVG(){
+  const {xMax,yMax} = plotBounds(), W=760, H=430, pl=58, pr=20, pt=16, pb=50;
+  const sx = t => pl + t/xMax*(W-pl-pr), sy = d => pt + (1-d/yMax)*(H-pt-pb);
+  let g = '';
+  for (let t=0; t<=xMax; t+=5){ const major = t%10===0; g += `<line x1="${sx(t)}" x2="${sx(t)}" y1="${pt}" y2="${H-pb}" stroke="var(--grid)" stroke-width="${major?1.2:.6}"/>`; if (major) g += `<text x="${sx(t)}" y="${H-pb+18}" text-anchor="middle" font-size="12" font-family="Overpass Mono, monospace" fill="var(--muted)">${t}</text>`; }
+  for (let d=0; d<=yMax; d+=1){ const major = d%2===0; g += `<line x1="${pl}" x2="${W-pr}" y1="${sy(d)}" y2="${sy(d)}" stroke="var(--grid)" stroke-width="${major?1.2:.6}"/>`; if (major) g += `<text x="${pl-8}" y="${sy(d)+4}" text-anchor="end" font-size="12" font-family="Overpass Mono, monospace" fill="var(--muted)">${d}</text>`; }
+  g += `<line x1="${pl}" x2="${W-pr}" y1="${sy(0)}" y2="${sy(0)}" stroke="var(--ink)"/><line x1="${pl}" x2="${pl}" y1="${pt}" y2="${H-pb}" stroke="var(--ink)"/>`;
+  g += `<text x="${(pl+W-pr)/2}" y="${H-8}" text-anchor="middle" font-size="13" font-weight="700" font-family="Overpass, sans-serif" fill="var(--ink)">Time (minutes)</text>`;
+  g += `<text transform="translate(16 ${(pt+H-pb)/2}) rotate(-90)" text-anchor="middle" font-size="13" font-weight="700" font-family="Overpass, sans-serif" fill="var(--ink)">Distance (miles)</text>`;
+  let marks = '';
+  riders().forEach(r=>{
+    const c = colorOf(r.id);
+    if (S.graphChecked){ const tg = [{t:0,d:0}].concat(targets(r));
+      marks += `<polyline points="${tg.map(p=>`${sx(p.t)},${sy(p.d)}`).join(' ')}" fill="none" stroke="${c}" stroke-width="1.5" stroke-dasharray="4 4" opacity=".8"/>`; }
+    const ps = (S.pts[r.id]||[]).slice().sort((a,b)=>a.t-b.t);
+    if (ps.length){ marks += `<polyline points="${[{t:0,d:0}].concat(ps).map(p=>`${sx(p.t)},${sy(p.d)}`).join(' ')}" fill="none" stroke="${c}" stroke-width="${S.plotRider===r.id?3.2:2.2}" stroke-linejoin="round"/>`;
+      ps.forEach(p=> marks += `<circle cx="${sx(p.t)}" cy="${sy(p.d)}" r="5" fill="${c}" stroke="var(--surface)" stroke-width="1.5"><title>${esc(r.name)}: ${p.t} min, ${p.d} mi</title></circle>`); }
+  });
+  return `<svg class="plot" id="plot" viewBox="0 0 ${W} ${H}" role="img" aria-label="Distance–time graph. Click to plot points for the selected rider." data-pl="${pl}" data-pr="${pr}" data-pt="${pt}" data-pb="${pb}">
+    <rect x="0" y="0" width="${W}" height="${H}" fill="var(--surface)"/>${g}${marks}
+    <g id="cursor" visibility="hidden"><circle r="6" fill="none" stroke="var(--ink)" stroke-width="1.5"/><text id="cursorTxt" x="10" y="-10" font-size="12" font-family="Overpass Mono, monospace" fill="var(--ink)"></text></g>
+  </svg>`;
+}
+function renderPlot(){
+  const F = field();
+  const chipsH = riders().map(r=>{ const need = targets(r).length, have = (S.pts[r.id]||[]).length;
+    return `<button class="rchip ${have>=need?'full':''}" style="--rc:${colorOf(r.id)}" data-act="plotRider" data-v="${r.id}" aria-pressed="${S.plotRider===r.id}"><span class="dot" style="background:${colorOf(r.id)};margin:0"></span>${esc(r.name.split(' ')[0])}<span class="cnt">${have}/${need}</span></button>`; }).join('');
+  const sel = riders().find(r=>r.id===S.plotRider);
+  const tw = F.twist.map(id=>riders().find(r=>r.id===id).name.split(' ')[0]).join(' and ');
+  const gs = S.graphScore;
+  return `<div class="col">
+    <section class="panel col">
+      <div class="row between"><div><div class="eyebrow">Ride graph</div><h2 class="h2">Plot the field</h2></div>
+        <div class="row">${S.graphChecked ? `<span class="small"><b class="num">${gs.hit} of ${gs.total}</b> points correct</span>` : `<button class="btn go" data-act="checkGraph">Check my graph</button>`}
+          <button class="btn go" data-act="toShowdown" ${S.graphChecked?'':'disabled'}>To the showdown</button></div></div>
+      <p class="small" style="max-width:75ch">Pick a rider, then click the graph. Plot each rider's <b>finish point</b> (moving time, total distance). For <b>${esc(tw)}</b>, plot the end of every split, all four points. Lines start at (0, 0). ${S.graphChecked?'Dashed lines show the correct graph.':''}</p>
+      <div class="legend">${chipsH}</div>
+      ${plotSVG()}
+      <div class="row between"><span class="small muted" id="readout">${sel ? `Plotting ${esc(sel.name)}. Points snap to 0.5 min and 0.1 mi.` : 'Choose a rider to start plotting.'}</span>
+        ${sel && !S.graphChecked ? `<div class="row"><button class="btn sm" data-act="undoPt">Undo last point</button><button class="btn sm" data-act="clearPts">Clear ${esc(sel.name.split(' ')[0])}</button></div>` : ''}</div>
+      ${S.graphChecked ? `<p class="small">Slopes: ${riders().map(r=>`${esc(r.name.split(' ')[0])} ${fmt(keyVal(r,'speed'),1)} mph`).join(' · ')}. The steeper the line, the faster the rider.</p>` : ''}
+    </section>
+  </div>`;
+}
+
+function renderShowdown(){
+  const crit = ['Uses specific numbers','Uses the graph','Names what the average hides','Answers the question asked','Clear conclusion'];
+  const ready = S.final.every(Boolean) && new Set(S.final).size===3;
+  if (S.result) return renderResults();
+  return `<div class="col">
+    <div class="coach"><span class="eyebrow">Coach's question</span><p>${esc(S.coach)}</p></div>
+    <div class="results">
+      <section class="panel col">
+        <div><label for="answer">Your answer</label><p class="small muted">Cite at least one number and one feature of the graph.</p></div>
+        <textarea id="answer" placeholder="I'd pick … because …">${esc(S.answer)}</textarea>
+        <div><div class="eyebrow" style="margin-bottom:6px">Final podium · ${esc(brief().title)}</div>${podiumPicker(S.final,'final',false)}</div>
+      </section>
+      <section class="panel col">
+        <div><div class="eyebrow">Showdown rubric</div><p class="small muted">The tutor scores each line from 0 to 5. Solo? Score yourself honestly.</p></div>
+        <div class="rubric">${crit.map((c,i)=>`<label for="rb${i}">${c}</label><select id="rb${i}" data-rubric="${i}">${[0,1,2,3,4,5].map(v=>`<option ${S.rubric[i]===v?'selected':''}>${v}</option>`).join('')}</select>`).join('')}</div>
+        <button class="btn go" data-act="finish" ${ready?'':'disabled'}>Finish the round</button>
+        ${ready?'':'<span class="small muted">Choose three different riders for the final podium.</span>'}
+      </section>
+    </div>
+  </div>`;
+}
+function renderResults(){
+  const R = S.result, key = ranking().slice(0,3), st = brief().stat;
+  const name = id => (riders().find(r=>r.id===id)||{}).name || '—';
+  const mn = {gold:'Gold',silver:'Silver',bronze:'Bronze',none:'Retry'}[R.medal];
+  const rows = [['Accurate stats', `${R.correct} of ${R.cells} right on the first check`, R.stats, 35],
+    ['Graph', `${S.graphScore.hit} of ${S.graphScore.total} points plotted correctly`, R.graph, 20],
+    ['Final ranking', `${R.fin/5} of 3 podium spots`, R.fin, 15],
+    ['Showdown answer', 'Rubric total', R.show, 25],
+    ['Called it', `${R.callHits} of 3 predicted spots${R.callHits===3?' (+2 perfect)':''}`, R.called, 5]];
+  return `<div class="results">
+    <section class="panel col">
+      <div class="medal"><div class="disc ${R.medal}">${mn}</div><div><div class="eyebrow">${esc(field().name)} · ${COURSES[S.course].name}</div><div class="score">${R.total}</div><div class="small muted">points · Gold 90, Silver 75, Bronze 60</div></div></div>
+      <div class="tablewrap"><table><thead><tr><th>Category</th><th>Why</th><th style="text-align:right">Points</th></tr></thead><tbody>
+        ${rows.map(x=>`<tr><td><b>${x[0]}</b></td><td class="small">${esc(x[1])}</td><td class="num" style="text-align:right;white-space:nowrap">${x[2]} / ${x[3]}</td></tr>`).join('')}</tbody></table></div>
+      <div class="row"><button class="btn go" data-act="again">New round</button><button class="btn" data-act="replay">Replay this field</button></div>
+    </section>
+    <section class="panel col">
+      <div class="eyebrow">Podium: ${esc(brief().title)}</div>
+      <div class="tablewrap"><table><thead><tr><th>Place</th><th>Answer key</th><th>${STATS[st].label}</th><th>You called</th><th>Final</th></tr></thead><tbody>
+        ${key.map((r,i)=>`<tr><td class="num">${i+1}</td><td><span class="dot" style="background:${colorOf(r.id)}"></span>${esc(r.name)}</td><td class="num">${fmt(keyVal(r,st),STATS[st].dp)} ${STATS[st].unit}</td><td>${esc(name(S.pick[i]))}</td><td>${esc(name(S.final[i]))}</td></tr>`).join('')}</tbody></table></div>
+      <p class="small muted">Ties count as correct either way. Discuss: what changed between your call and your final podium?</p>
+      ${S.answer ? `<div><div class="eyebrow">Your showdown answer</div><p class="small" style="white-space:pre-wrap">${esc(S.answer)}</p></div>` : ''}
+    </section>
+  </div>`;
+}
+function renderHistory(){
+  const h = hist();
+  const head = `<div class="row between"><div><div class="eyebrow">Analyst record</div><h2 class="h2">Past rounds</h2></div>
+    ${h.length ? (S.confirmClear ? `<div class="row"><span class="small">Remove all ${h.length} rounds?</span><button class="btn sm" data-act="clearYes">Remove</button><button class="btn sm" data-act="clearNo">Keep</button></div>` : `<button class="btn sm" data-act="clearAsk">Clear record</button>`) : ''}</div>`;
+  if (!h.length) return head + `<div class="empty">No rounds yet. Finish a showdown and it lands here, with points toward your next analyst rank.</div>`;
+  return head + `<div class="hist">${h.slice().reverse().slice(0,12).map(x=>`<div class="hrow"><span><b>${esc(x.field)}</b> · ${esc(x.brief)} · ${esc(x.course)}</span><span class="num">${x.score} pts · ${x.medal==='none'?'No medal':x.medal[0].toUpperCase()+x.medal.slice(1)}</span></div>`).join('')}</div>`;
+}
+
+function render(){
+  renderCrew(); renderPhases();
+  $('#app').innerHTML = S.phase==='deal' ? renderDeal() : S.phase==='call' ? renderCall() : S.phase==='crunch' ? renderCrunch() : S.phase==='plot' ? renderPlot() : renderShowdown();
+  $('#history').innerHTML = renderHistory();
+  const tf = $('#taskForm'); if (tf) tf.addEventListener('submit', e=>{ e.preventDefault(); checkTask(); });
+}
+let tt; function toast(t){ const el=$('#toast'); el.textContent=t; el.hidden=false; clearTimeout(tt); tt=setTimeout(()=>el.hidden=true,2600); }
+const top0 = () => window.scrollTo({top:0, behavior:'smooth'});
+
+/* ---------- Checking ---------- */
+const parseNum = raw => { const c = String(raw).replace(/[−–]/g,'-').replace(/[^0-9.\-]/g,''); return c===''||c==='-'||isNaN(parseFloat(c)) ? null : parseFloat(c); };
+function checkSheet(){
+  const cells = {}; let correct=0, total=0;
+  riders().forEach(r=>columns().forEach(c=>{ total++; const k=r.id+'|'+c, v=parseNum(S.ans[k]||''); const s=STATS[c];
+    const tol = s.dp ? 0.5/10**s.dp + 1e-9 : 1.01; // accept a one-unit rounding slip for whole-number rates
+    const ok = v!==null && Math.abs(v - keyVal(r,c)) <= (s.dp ? 0.051 : tol); cells[k]=ok; if(ok) correct++; trackCell(r,c,k,ok); }));
+  S.checked = {cells, correct, total}; if (!S.firstCheck) S.firstCheck = S.checked;
+  render();
+}
+function checkTask(){
+  const v = parseNum($('#taskIn').value); S.taskAns = $('#taskIn').value;
+  if (v===null){ S.taskFb='Type a number first.'; S.taskOk=false; return render(); }
+  const ok = Math.abs(v - S.task.answer) <= S.task.tol + 1e-9; S.taskTries++; trackTask(ok);
+  if (S.taskFirst===null) S.taskFirst = ok;
+  S.taskOk = ok;
+  if (ok) S.taskFb = `Correct: ${S.task.answer}${S.task.unit}.`;
+  else if (S.taskTries===1) S.taskFb = 'Not quite. ' + S.task.hint;
+  else { S.taskReveal = true; S.taskFb = `The answer is ${S.task.answer}${S.task.unit}. ${S.task.hint}`; }
+  render(); const i=$('#taskIn'); if(i) i.focus();
+}
+
+/* ---------- Plot interaction ---------- */
+function svgPoint(e){
+  const svg = $('#plot'); const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+  const q = p.matrixTransform(svg.getScreenCTM().inverse());
+  const {xMax,yMax} = plotBounds(), W=760, H=430, pl=58, pr=20, pt=16, pb=50;
+  const t = (q.x-pl)/(W-pl-pr)*xMax, d = (1-(q.y-pt)/(H-pt-pb))*yMax;
+  if (t<0 || t>xMax || d<0 || d>yMax) return null;
+  return {t: Math.round(t*2)/2, d: Math.round(d*10)/10, x: pl + (Math.round(t*2)/2)/xMax*(W-pl-pr), y: pt + (1-(Math.round(d*10)/10)/yMax)*(H-pt-pb)};
+}
+document.addEventListener('click', e=>{
+  const svg = e.target.closest && e.target.closest('#plot'); if (!svg || S.phase!=='plot' || S.graphChecked) return;
+  if (!S.plotRider){ toast('Choose a rider first.'); return; }
+  const p = svgPoint(e); if (!p) return;
+  const r = riders().find(x=>x.id===S.plotRider), need = targets(r).length, arr = S.pts[r.id] = S.pts[r.id]||[];
+  if (arr.length >= need){ toast(`${r.name.split(' ')[0]} has all ${need} point${need>1?'s':''}. Undo one to move it.`); return; }
+  arr.push({t:p.t, d:p.d}); render();
+});
+document.addEventListener('pointermove', e=>{
+  const svg = e.target.closest && e.target.closest('#plot'); const cur = document.getElementById('cursor'); if (!cur) return;
+  if (!svg){ cur.setAttribute('visibility','hidden'); return; }
+  const p = svgPoint(e); if (!p){ cur.setAttribute('visibility','hidden'); return; }
+  cur.setAttribute('visibility','visible'); cur.setAttribute('transform',`translate(${p.x} ${p.y})`);
+  const txt = document.getElementById('cursorTxt'); txt.textContent = `(${p.t} min, ${p.d} mi)`;
+  txt.setAttribute('text-anchor', p.x > 600 ? 'end' : 'start'); txt.setAttribute('x', p.x > 600 ? -10 : 10);
+});
+
+/* ---------- Progress tracking ----------
+   Sends each checked answer to js/progress.js. It returns at once, never
+   throws, and saves nothing unless a student is signed in. One round on
+   one field is one play session. Each kind of question (qid) is
+   registered in supabase/progress.sql. The podium picks and the graph are
+   not recorded. */
+const MP = window.MathleteProgress, GAME = 'strava-showdown';
+const plain = s => String(s).replace(/<[^>]+>/g,'');
+const sessionId = () => S.sid || (S.sid = MP.startSession());
+function trackTask(ok){
+  const t = S.task; if (!MP || !t || !t.qid) return;
+  MP.recordQuestionAttempt({gameId:GAME, questionId:GAME+':'+t.qid,
+    // Only the question's fixed parts, so every try at it matches up.
+    questionSnapshot:{prompt:plain(t.prompt), answer:t.answer, tolerance:t.tol, unit:t.unit.trim(), formula:t.ref, hint:t.hint,
+      course:COURSES[S.course].name, field:field().name},
+    studentAnswer:S.taskAns, correctAnswer:t.answer+t.unit, isCorrect:ok,
+    hintsUsed:S.taskTries>1?1:0,                          // the hint appears after the first miss
+    gameSessionId:sessionId()});
+}
+const SHEET_QID = {speed:'sheet-avg-speed', climb:'sheet-climb-rate', range:'sheet-split-range', peak:'sheet-fastest-split'};
+// One stat-sheet cell is one question. A cell is recorded when it is checked
+// with a new value, so pressing Check again doesn't repeat it.
+function trackCell(r, c, k, ok){
+  const raw = (S.ans[k]||'').trim(); S.sent = S.sent || {};
+  if (!MP || parseNum(raw)===null || S.sent[k]===raw) return;
+  S.sent[k] = raw;
+  const st = STATS[c];
+  MP.recordQuestionAttempt({gameId:GAME, questionId:GAME+':'+SHEET_QID[c],
+    questionSnapshot:{prompt:`${st.label} for ${r.name} on ${r.trail}: ${r.dist} mi, ${r.elev} ft of climbing, splits of ${r.splits.join(', ')} min`,
+      answer:keyVal(r,c), unit:st.unit, formula:st.help, miles:r.dist, feetClimbed:r.elev, splitMinutes:r.splits, field:field().name},
+    studentAnswer:raw, correctAnswer:fmt(keyVal(r,c),st.dp)+' '+st.unit, isCorrect:ok,
+    hintsUsed:S.keySeen?1:0,                              // the answer key had been opened
+    gameSessionId:sessionId()});
+}
+
+/* ---------- Actions ---------- */
+function startField(id){
+  const c = S.course; S = fresh(); S.course = c; S.fieldId = id; S.briefId = BRIEFS[Math.floor(Math.random()*BRIEFS.length)].id; S.phase='call'; render(); top0();
+}
+const H = {
+  course(v){ S.course=v; store.set('ss-course',v); render(); },
+  deal(v){ startField(v); },
+  dealRandom(){ startField(FIELDS[Math.floor(Math.random()*FIELDS.length)].id); },
+  redrawBrief(){ const others = BRIEFS.filter(b=>b.id!==S.briefId); S.briefId = others[Math.floor(Math.random()*others.length)].id; render(); },
+  lock(){ S.task = makeTask(); S.phase='crunch'; render(); top0(); },
+  checkSheet(){ checkSheet(); },
+  toggleKey(){ S.showKey=!S.showKey; S.keySeen=true; render(); },
+  toPlot(){ S.phase='plot'; S.plotRider = riders()[0].id; render(); top0(); },
+  plotRider(v){ S.plotRider=v; render(); },
+  undoPt(){ const a=S.pts[S.plotRider]; if(a&&a.length) a.pop(); render(); },
+  clearPts(){ S.pts[S.plotRider]=[]; render(); },
+  checkGraph(){ S.graphScore = checkGraph(); S.graphChecked = true; render(); },
+  toShowdown(){ S.coach = coachQuestion(); S.phase='showdown'; render(); top0(); },
+  finish(){
+    S.result = scoreRound();
+    if (MP && S.sid && !S.saved) MP.endSession(S.sid, {metrics:{score:S.result.total, medal:S.result.medal, course:COURSES[S.course].name}});
+    if (!S.saved){ const h = hist(); const before = rankInfo().rank.name;
+      h.push({field:field().name, brief:brief().title, course:COURSES[S.course].name, score:S.result.total, medal:S.result.medal, date:new Date().toISOString().slice(0,10)});
+      store.set('ss-history', h); S.saved = true; const after = rankInfo().rank.name;
+      if (after!==before) toast(`Promoted to ${after}!`); }
+    render(); top0();
+  },
+  again(){ const c=S.course; S=fresh(); S.course=c; render(); top0(); },
+  replay(){ startField(S.fieldId); },
+  clearAsk(){ S.confirmClear=true; render(); }, clearNo(){ S.confirmClear=false; render(); },
+  clearYes(){ store.set('ss-history',[]); S.confirmClear=false; toast('Record cleared.'); render(); }
+};
+document.addEventListener('click', e=>{ const b = e.target.closest('[data-act]'); if (!b || b.disabled) return; const f = H[b.dataset.act]; if (f) f(b.dataset.v); });
+document.addEventListener('input', e=>{
+  const t = e.target;
+  if (t.dataset.ans) S.ans[t.dataset.ans] = t.value;
+  if (t.id==='answer') S.answer = t.value;
+  if (t.id==='taskIn') S.taskAns = t.value;
+});
+document.addEventListener('change', e=>{
+  const t = e.target;
+  if (t.dataset.podium){ const arr = t.dataset.podium==='pick' ? S.pick : S.final; arr[+t.dataset.i] = t.value; render(); }
+  if (t.dataset.rubric){ S.rubric[+t.dataset.rubric] = +t.value; }
+});
+
+/* ---------- Boot ---------- */
+window.claude?.hot?.snapshot?.(() => S);
+const boot = d => { S = fresh(); if (d && d.phase) Object.assign(S, d); if (S.fieldId && !field()) S = fresh(); render(); };
+window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Gear Ratio Lab — Mathlete MTB</title>
+<meta name="description" content="Gear a race bike for a course, then work out ratios, speeds and times to beat a rival.">
+<link rel="canonical" href="https://www.mathletemtb.com/learning-lab/gear-ratio-lab/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: an engineer's drafting bench — a navy sidebar rail holds the brand, the phase stepper and the live work order; drawing sheets with crop marks hold the work on blueprint grid paper. */
+:root{
+  --paper:#ECF0F4; --surface:#FBFCFD; --sunk:#F1F4F7; --ink:#0E2238; --muted:#566A80; --line:#C3CEDA; --grid:#DEE5EC; --gridline:rgba(14,34,56,.06);
+  --plate:#0E2238; --plate-2:#08182A; --plate-ink:#E8EEF5; --plate-dim:#93A7BD;
+  --accent:#5B34C7; --accent-ink:#FFFFFF; --accent-soft:#ECE6FA;
+  --mark:#F5C518; --mark-ink:#1A1400;
+  --rival:#8592A3; --ghost:#B3BECB;
+  --good:#1F7F48; --bad:#B42A21; --good-soft:#DDF0E3; --bad-soft:#F8E0DD; --warn:#A35F00;
+  --ground:#D7DFE8; --metal:#97A3B2; --chain:#33435A;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#0A1828; --surface:#0F2236; --sunk:#0C1D2F; --ink:#E3ECF5; --muted:#8EA4BB; --line:#25405E; --grid:#16304D; --gridline:rgba(150,190,235,.07);
+  --plate:#06111E; --plate-2:#030A13; --plate-ink:#E3ECF5; --plate-dim:#7F97B0;
+  --accent:#B49BFF; --accent-ink:#160C33; --accent-soft:#231B44;
+  --mark:#F5C518; --mark-ink:#1A1400;
+  --rival:#8395AB; --ghost:#3E5774;
+  --good:#5BC47F; --bad:#F07C72; --good-soft:#123020; --bad-soft:#3A1C1A; --warn:#E0A84E;
+  --ground:#1A3350; --metal:#6F85A0; --chain:#B9C8D9; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#0A1828; --surface:#0F2236; --sunk:#0C1D2F; --ink:#E3ECF5; --muted:#8EA4BB; --line:#25405E; --grid:#16304D; --gridline:rgba(150,190,235,.07);
+  --plate:#06111E; --plate-2:#030A13; --plate-ink:#E3ECF5; --plate-dim:#7F97B0;
+  --accent:#B49BFF; --accent-ink:#160C33; --accent-soft:#231B44;
+  --mark:#F5C518; --mark-ink:#1A1400;
+  --rival:#8395AB; --ghost:#3E5774;
+  --good:#5BC47F; --bad:#F07C72; --good-soft:#123020; --bad-soft:#3A1C1A; --warn:#E0A84E;
+  --ground:#1A3350; --metal:#6F85A0; --chain:#B9C8D9; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background-color:var(--paper);color:var(--ink);font-family:var(--body);font-size:15.5px;line-height:1.55;
+  background-image:linear-gradient(var(--gridline) 1px, transparent 1px),linear-gradient(90deg, var(--gridline) 1px, transparent 1px);
+  background-size:24px 24px}
+h1,h2,h3{margin:0;line-height:1.05;text-wrap:balance;font-family:var(--display);font-weight:700;letter-spacing:.01em}
+p{margin:0}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)} .small{font-size:13.5px}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.between{justify-content:space-between}
+.h2{font-size:32px;text-transform:uppercase}
+.sr{position:absolute;left:-9999px}
+
+/* Shell */
+.shell{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:268px minmax(0,1fr);gap:24px;align-items:start;
+  padding-block:20px 48px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.main{display:flex;flex-direction:column;gap:20px;min-width:0}
+.side{position:sticky;top:calc(16px + env(safe-area-inset-top, 0px));background:var(--plate);color:var(--plate-ink);padding:20px 18px;display:flex;flex-direction:column;gap:22px;
+  max-height:calc(100vh - 32px);overflow:auto;border-left:6px solid var(--mark)}
+.brand{display:flex;flex-direction:column;gap:8px}
+.brand .evt{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--plate-dim)}
+.brand h1{font-size:52px;font-weight:800;text-transform:uppercase;line-height:.86;letter-spacing:.005em}
+.brand h1 span{color:var(--mark)}
+.logo{width:56px;height:56px;color:var(--mark)}
+.logo g{transform-origin:32px 32px;animation:spin 10s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0;position:relative}
+.steps li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start;padding:6px 0;position:relative;color:var(--plate-dim)}
+.steps li::before{content:"";position:absolute;left:14px;top:30px;bottom:-6px;width:2px;background:color-mix(in srgb,var(--plate-dim) 35%,transparent)}
+.steps li:last-child::before{display:none}
+.steps .n{width:30px;height:30px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:13px;background:var(--plate)}
+.steps b{display:block;font-family:var(--display);font-size:20px;text-transform:uppercase;letter-spacing:.03em;line-height:1.1;color:inherit}
+.steps span{font-size:12.5px}
+.steps li.done{color:var(--plate-ink)} .steps li.done .n{background:var(--plate-ink);color:var(--plate);border-color:var(--plate-ink)}
+.steps li.on{color:var(--mark)} .steps li.on .n{background:var(--mark);color:var(--mark-ink);border-color:var(--mark)}
+.wo{border-top:1px dashed color-mix(in srgb,var(--plate-dim) 50%,transparent);padding-top:16px;display:flex;flex-direction:column;gap:6px}
+.wo dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0;font-size:13.5px}
+.wo dt{color:var(--plate-dim);font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;padding-top:2px}
+.wo dd{margin:0;font-family:var(--mono);font-weight:600}
+.crew{border-top:1px dashed color-mix(in srgb,var(--plate-dim) 50%,transparent);padding-top:16px;font-size:13px;color:var(--plate-dim)}
+.crew b{display:block;color:var(--plate-ink);font-family:var(--display);font-size:22px;text-transform:uppercase;letter-spacing:.03em}
+.meter{height:6px;background:color-mix(in srgb,var(--plate-dim) 30%,transparent);overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;background:var(--mark)}
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:static;max-height:none;border-left:0;border-top:6px solid var(--mark)}
+  .brand{flex-direction:row;align-items:center;gap:14px} .brand h1{font-size:40px}
+  .steps{flex-direction:row;overflow-x:auto;gap:12px;padding-bottom:4px}
+  .steps li{grid-template-columns:30px auto;flex:none} .steps li::before{display:none} .steps span{display:none}
+}
+
+/* Drawing sheets */
+.panel{background:var(--surface);border:1px solid var(--line);padding:22px;position:relative}
+.panel::before,.panel::after{content:"";position:absolute;width:14px;height:14px;border-color:var(--ink);border-style:solid;opacity:.55}
+.panel::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
+.panel::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+
+.btn{border:1.5px solid var(--ink);background:transparent;color:var(--ink);padding:8px 16px;font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:.06em;text-transform:uppercase;border-radius:0}
+.btn:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.btn.go{background:var(--mark);border-color:var(--mark);color:var(--mark-ink);box-shadow:3px 3px 0 var(--ink)}
+.btn.go:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.btn.go:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.sm{padding:4px 10px;font-size:15px}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 12px;text-align:left;display:flex;flex-direction:column;min-width:0;border-radius:0}
+.chip b{font-family:var(--display);font-size:20px;text-transform:uppercase;letter-spacing:.03em;line-height:1.1}
+.chip span{font-size:12.5px;color:var(--muted)}
+.chip[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent);background:var(--accent-soft)}
+.seg{display:inline-flex;border:1.5px solid var(--ink)}
+.seg button{border:0;background:var(--surface);color:var(--ink);padding:8px 14px;font-weight:600;font-family:var(--mono);border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+
+/* Course list */
+.courses{display:flex;flex-direction:column;gap:0;border-top:1.5px solid var(--ink)}
+.ccard{display:grid;grid-template-columns:minmax(0,1.2fr) 240px minmax(0,.8fr) auto;gap:18px;align-items:center;padding:16px 4px;border-bottom:1px solid var(--line)}
+.ccard h3{font-size:26px;text-transform:uppercase}
+.ccard .spark{width:240px;height:60px;max-width:100%}
+.ccard .facts{display:grid;grid-template-columns:auto auto;gap:2px 12px;font-size:13px;justify-content:start}
+.ccard .facts dt{color:var(--muted);font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;padding-top:2px}
+.ccard .facts dd{margin:0;font-family:var(--mono);font-weight:600}
+.ccard dl{margin:0}
+@media (max-width:900px){.ccard{grid-template-columns:minmax(0,1fr) auto} .ccard .spark{grid-column:1/-1;width:100%} .ccard .facts{grid-column:1/2}}
+
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:600;padding:8px;border-bottom:1.5px solid var(--ink);vertical-align:bottom}
+td{padding:7px 8px;border-bottom:1px dotted var(--line);vertical-align:middle}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td input{font-family:var(--mono);max-width:110px}
+td.ok input{border-color:var(--good);background:var(--good-soft)}
+td.no input{border-color:var(--bad);background:var(--bad-soft)}
+tr.sel td{background:color-mix(in srgb,var(--mark) 16%,transparent)}
+.key{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:6px;white-space:nowrap}
+select,input[type=text],input[inputmode],textarea{font:inherit;color:var(--ink);background:var(--sunk);border:0;border-bottom:1.5px solid var(--ink);border-radius:0;padding:7px 9px;width:100%}
+select:focus,input:focus,textarea:focus{background:var(--surface)}
+td select{font-family:var(--mono);width:auto;min-width:96px}
+textarea{min-height:130px;resize:vertical;border:1px solid var(--line);border-bottom:1.5px solid var(--ink)}
+label{font-weight:600;font-size:13.5px}
+.grade{font-family:var(--mono);font-weight:600}
+.grade.up{color:var(--bad)} .grade.down{color:var(--good)}
+
+.plan{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,400px);gap:20px;align-items:start}
+@media (max-width:1100px){.plan{grid-template-columns:minmax(0,1fr)}}
+.drive{width:100%;height:auto;display:block;background:var(--sunk);background-image:linear-gradient(var(--gridline) 1px,transparent 1px),linear-gradient(90deg,var(--gridline) 1px,transparent 1px);background-size:16px 16px}
+.spin{animation:spin var(--d,2s) linear infinite}
+.formula{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);padding:12px 14px;font-family:var(--mono);font-size:13px;display:flex;flex-direction:column;gap:4px}
+.formula .eyebrow{margin-bottom:2px}
+
+.task{border:1.5px solid var(--ink);padding:16px 18px;display:flex;flex-direction:column;gap:10px;background:var(--surface);box-shadow:6px 6px 0 var(--accent)}
+.task .prompt{font-size:17px;max-width:66ch}
+.task input{max-width:180px;font-family:var(--mono);font-size:18px}
+.fb{font-weight:700} .fb.ok{color:var(--good)} .fb.no{color:var(--bad)}
+.ref{font-size:13.5px;color:var(--muted)}
+
+.profile{width:100%;height:auto;display:block}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--line)}
+@media (max-width:620px){.board{grid-template-columns:minmax(0,1fr)}}
+.tile{padding:10px 14px;border-right:1px solid var(--line)}
+.tile:last-child{border-right:0}
+.tile .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tile .v{font-family:var(--display);font-size:38px;font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums}
+.tile.you{box-shadow:inset 0 4px 0 var(--accent)} .tile.rival{box-shadow:inset 0 4px 0 var(--rival)} .tile.ghost{box-shadow:inset 0 4px 0 var(--ghost)}
+.banner{padding:12px 16px;font-family:var(--display);font-weight:700;font-size:22px;text-transform:uppercase;letter-spacing:.02em}
+.banner.win{background:var(--good-soft);color:var(--good)} .banner.lose{background:var(--bad-soft);color:var(--bad)} .banner.close{background:var(--accent-soft);color:var(--accent)}
+.walk{color:var(--bad);font-weight:700;font-size:11px;letter-spacing:.06em}
+
+.results{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:1000px){.results{grid-template-columns:minmax(0,1fr)}}
+.medal{display:flex;gap:16px;align-items:center}
+.disc{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:.06em;text-transform:uppercase;border:3px solid var(--ink);flex:none}
+.disc.gold{background:#E8B931;color:#2A1F00;border-color:#9C7A10}
+.disc.silver{background:#C9D0D4;color:#1C2226;border-color:#7E888E}
+.disc.bronze{background:#C98446;color:#2A1404;border-color:#86511F}
+.disc.none{background:transparent;color:var(--muted);border-style:dashed;border-color:var(--muted)}
+.score{font-family:var(--display);font-size:64px;font-weight:800;line-height:.9}
+.rubric{display:grid;grid-template-columns:minmax(0,1fr) 84px;gap:6px 12px;align-items:center;font-size:14px}
+.coach{background:var(--plate);color:var(--plate-ink);padding:18px 20px;display:flex;flex-direction:column;gap:6px;border-left:6px solid var(--mark)}
+.coach .eyebrow{color:var(--plate-dim)}
+.coach p{font-family:var(--display);font-size:28px;font-weight:600;line-height:1.15;max-width:44ch}
+.hist{display:flex;flex-direction:column;gap:0;border-top:1.5px solid var(--ink)}
+.hrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:9px 4px;border-bottom:1px dotted var(--line);font-size:13.5px}
+.empty{border:1.5px dashed var(--line);padding:20px;text-align:center;color:var(--muted);background:var(--surface)}
+.note{font-size:14px;padding:8px 12px;background:var(--bad-soft);border-left:3px solid var(--bad)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;font-weight:600;z-index:20;max-width:calc(100% - 32px);border-left:5px solid var(--mark)}
+details summary{cursor:pointer;font-family:var(--display);font-size:19px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+details ol{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:70ch}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="shell">
+  <aside class="side">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><g><circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="5" stroke-dasharray="4.7 4.7"/><circle cx="32" cy="32" r="16" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="32" cy="32" r="4" fill="currentColor"/><path d="M32 32 L32 10 M32 32 L51 43 M32 32 L13 43" stroke="currentColor" stroke-width="3"/></g></svg>
+      <div><div class="evt">Race mechanic's bench</div><h1>Gear<br>Ratio <span>Lab</span></h1></div>
+    </div>
+    <nav id="phases" aria-label="Round phases"></nav>
+    <div id="order"></div>
+    <div class="crew" id="crew"></div>
+  </aside>
+  <div class="main">
+    <main id="app"></main>
+    <section class="col" id="history" aria-label="Past rounds"></section>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<!-- Saves a signed-in student's answers to their Mathlete account. The game
+     plays the same without them (see docs/PROGRESS-TRACKING.md). -->
+<script src="../../js/supabase-config.js"></script>
+<script src="../../js/auth.js"></script>
+<script src="../../js/progress.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(e){ return d } },
+                set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)) }catch(e){} } };
+const r1 = x => Math.round(x*10)/10, r2 = x => Math.round(x*100)/100;
+const fmt = (v,dp) => v.toLocaleString(undefined,{minimumFractionDigits:dp, maximumFractionDigits:dp});
+function mmss(min){ const s = Math.round(min*60); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
+
+/* ---------- Parts and courses ---------- */
+const CASSETTE = [10,12,14,16,18,21,24,28,32,36,42,51];
+const RINGS = [30,32,34,36];
+const WHEELS = [27.5,29];
+const WALK_MPH = 3, SHIFT_S = 5;
+const COURSES = [
+  {id:'aspen', name:'Aspen Lift Loop', blurb:'A climbing loop with one brutal pitch. The sample course from the requirements doc.',
+   sections:[{name:'Dirt road start',len:0.5,grade:0,cad:90,push:2.3},{name:'Fire-road climb',len:1.2,grade:8,cad:75,push:1.1},
+     {name:'Steep pitch',len:0.3,grade:14,cad:65,push:0.75},{name:'Rolling singletrack',len:1.0,grade:3,cad:85,push:1.6},{name:'Flat finish',len:0.5,grade:0,cad:95,push:2.3}],
+   rival:{name:'Coach Dana', ring:30, wheel:29, cogs:[16,28,42,24,16]}},
+  {id:'creek', name:'Creek Classic', blurb:'Fast and mostly flat, with one short kicker. Big gears pay off here.',
+   sections:[{name:'Paved approach',len:0.8,grade:0,cad:95,push:2.6},{name:'Gravel rollers',len:1.5,grade:2,cad:90,push:1.9},
+     {name:'Short kicker',len:0.2,grade:9,cad:70,push:1.0},{name:'Creek flats',len:1.2,grade:1,cad:92,push:2.3}],
+   rival:{name:'Rider Theo', ring:32, wheel:29, cogs:[14,18,32,14]}},
+  {id:'summit', name:'Summit Grind', blurb:'A long climb, rock steps near the top, then a fast descent home.',
+   sections:[{name:'Valley warm-up',len:0.6,grade:1,cad:90,push:2.2},{name:'Switchback climb',len:2.0,grade:7,cad:75,push:1.15},
+     {name:'Rock steps',len:0.4,grade:12,cad:62,push:0.8},{name:'Summit ridge',len:0.8,grade:4,cad:80,push:1.4},{name:'Fast descent',len:1.5,grade:-6,cad:95,push:3.4}],
+   rival:{name:'Mechanic Ana', ring:32, wheel:29, cogs:[16,32,42,24,12]}},
+  {id:'short', name:'Night Short Track', blurb:'Short, punchy laps with lots of gear changes. Shift penalties add up.',
+   sections:[{name:'Start straight',len:0.3,grade:0,cad:100,push:2.4},{name:'Berm section',len:0.6,grade:2,cad:88,push:1.8},
+     {name:'Punchy climb',len:0.25,grade:10,cad:72,push:0.95},{name:'Descent',len:0.4,grade:-5,cad:95,push:3.0},{name:'Finish straight',len:0.3,grade:0,cad:100,push:2.4}],
+   rival:{name:'Rider Kai', ring:34, wheel:27.5, cogs:[16,21,36,12,16]}}
+];
+const MATH = {
+  alg1:{name:'Algebra I', grades:'Grade 9', skill:'Ratios, rates, inequalities'},
+  geo:{name:'Geometry', grades:'Grades 9–10', skill:'Circumference, gear inches'},
+  alg2:{name:'Algebra II', grades:'Grades 10–11', skill:'Inverse variation, constraints'},
+  precalc:{name:'Precalculus', grades:'Grades 11–12', skill:'Angular velocity'},
+  stats:{name:'Statistics', grades:'Grades 11–12', skill:'Percent steps, spread'},
+  calc:{name:'Calculus', grades:'Grade 12', skill:'Related rates'}
+};
+const RANKS = [{name:'Shop Rookie',at:0},{name:'Wrench',at:150},{name:'Race Mechanic',at:400},{name:'Team Tech',at:800},{name:'Chief Mechanic',at:1400}];
+
+/* ---------- Physics ---------- */
+const limitOf = (sec, wheel) => sec.push * 29 / wheel;   // push limits are printed for 29 in wheels
+function simulate(setup, course){
+  const rows = course.sections.map((sec,i)=>{
+    const cog = setup.cogs[i], ratio = setup.ring/cog, dev = Math.PI*setup.wheel*ratio/12;
+    const legal = ratio <= limitOf(sec, setup.wheel) + 1e-9;
+    const mph = legal ? dev*sec.cad*60/5280 : WALK_MPH;
+    return {sec, cog, ratio, dev, legal, mph, time: sec.len/mph*60};
+  });
+  let shifts = 0; for (let i=1;i<setup.cogs.length;i++) if (setup.cogs[i]!==setup.cogs[i-1]) shifts++;
+  const ride = rows.reduce((a,r)=>a+r.time,0);
+  return {rows, shifts, ride, total: ride + shifts*SHIFT_S/60, walked: rows.some(r=>!r.legal)};
+}
+const KEYS = {ratio:{dp:2,label:'Gear ratio',unit:'',help:'ring ÷ cog'}, dev:{dp:2,label:'Development',unit:'ft',help:'π × D × ratio ÷ 12'},
+              speed:{dp:1,label:'Speed',unit:'mph',help:'dev × cadence → mph'}, time:{dp:2,label:'Time',unit:'min',help:'length ÷ speed'}};
+function keyOf(row, k){ return k==='ratio'?r2(row.ratio) : k==='dev'?r2(row.dev) : k==='speed'?r1(row.mph) : r2(row.time); }
+function cellOk(row, k, v){
+  if (v===null) return false;
+  const key = keyOf(row,k);
+  if (k==='ratio') return Math.abs(v-key) <= 0.006;
+  if (k==='dev') return Math.abs(v-key) <= 0.03;
+  if (k==='speed') return Math.abs(v-key) <= 0.11;
+  return Math.abs(v-row.time) <= Math.max(0.03, row.time*0.012);
+}
+
+/* ---------- State ---------- */
+let S;
+function fresh(){
+  const m = store.get('grl-math','alg1');
+  return {phase:'spec', math: MATH[m]?m:'alg1', courseId:null, setup:null, preview:0, locked:null,
+    ans:{}, checked:null, firstCheck:null, showKey:false, task:null, taskAns:'', taskTries:0, taskFirst:null, taskOk:false, taskReveal:false, taskFb:'',
+    raced:false, tune:null, pred:'', tuned:null, question:'', answer:'', rubric:[0,0,0,0], result:null, saved:false};
+}
+const course = () => COURSES.find(c=>c.id===S.courseId);
+const best = () => store.get('grl-best', {});
+const hist = () => store.get('grl-history', []);
+
+/* ---------- Lab task (one per round, built from the student's own setup) ---------- */
+function makeTask(){
+  const C = course(), st = S.locked, sim = simulate(st, C), B = t => `<b class="num">${t}</b>`;
+  const coin = Math.random() < 0.5;
+  const steep = C.sections.reduce((a,s,i)=> s.push < C.sections[a].push ? i : a, 0), sec = C.sections[steep];
+  const first = sim.rows[0];
+  switch (S.math){
+    case 'alg1': {
+      const L = r2(limitOf(sec, st.wheel));
+      return {qid:'alg1-inequality', prompt:`On the ${sec.name}, the push limit is ${B(L)} with your ${st.wheel} in wheel. With your ${B(st.ring+'-tooth')} chainring, solve ${B(st.ring+' ÷ c ≤ '+L)} for c. What is the smallest whole number of cog teeth that keeps the rider pedaling?`,
+        answer: Math.ceil(st.ring/L - 1e-9), tol:0, unit:' teeth', ref:'Multiply both sides by c, then divide by the push limit. Round up: a cog can’t have part of a tooth.',
+        hint:`c ≥ ${st.ring} ÷ ${L}. Round up to the next whole number.`};
+    }
+    case 'geo':
+      if (coin) return {qid:'geo-circumference', prompt:`How much farther does a ${B('29 in')} wheel roll in one turn than a ${B('27.5 in')} wheel? Round to 0.1 in.`,
+        answer: r1(Math.PI*1.5), tol:0.06, unit:' in', ref:'C = πd, so the difference is π × (29 − 27.5).', hint:'Find both circumferences and subtract, or multiply π by the difference in diameters.'};
+      return {qid:'geo-gear-inches', prompt:`Mechanics compare gears in gear inches: wheel diameter × gear ratio. What is the gear-inch value of your ${B(st.ring+' × '+first.cog)} gear on a ${B(st.wheel+' in')} wheel? Round to 0.1.`,
+        answer: r1(st.wheel*st.ring/first.cog), tol:0.06, unit:' gear in', ref:'gear inches = D × (ring ÷ cog). Multiply by π to get inches traveled per crank turn.', hint:`${st.wheel} × ${st.ring} ÷ ${first.cog}.`};
+    case 'alg2': {
+      const maxRing = Math.floor(Math.min(...C.sections.map((s,i)=>limitOf(s, st.wheel)*st.cogs[i])) + 1e-9);
+      return {qid:'alg2-constraints', prompt:`Keep your cogs and wheel exactly as they are. The ratio for each section is R ÷ (that section's cog). What is the ${B('largest whole-number chainring R')} that keeps every section within its push limit?`,
+        answer:maxRing, tol:0, unit:' teeth', ref:'For each section, R ≤ push limit × cog. R must satisfy all of them, so take the smallest bound.',
+        hint:`Compute push limit × cog for every section, take the smallest, then round down.`};
+    }
+    case 'precalc':
+      return {qid:'precalc-angular-speed', prompt:`On the ${first.sec.name}, the rider pedals at ${B(first.sec.cad+' rpm')} in your ${B(st.ring+' × '+first.cog)} gear. What is the wheel's angular speed in radians per second? Round to 0.01.`,
+        answer: r2(first.sec.cad*(st.ring/first.cog)*2*Math.PI/60), tol:0.015, unit:' rad/s', ref:'Wheel rpm = cadence × ratio. ω = rpm × 2π ÷ 60.', hint:`Wheel rpm = ${first.sec.cad} × ${st.ring}/${first.cog}. Multiply by 2π, divide by 60.`};
+    case 'stats': {
+      const jumps = CASSETTE.slice(1).map((c,i)=>(c/CASSETTE[i]-1)*100);
+      if (coin) return {qid:'stats-mean-percent-step', prompt:`The cassette is ${B(CASSETTE.join('-'))}. Each step up is a percent jump: (bigger ÷ smaller − 1) × 100. What is the mean of all 11 percent jumps? Round to 0.1%.`,
+        answer: r1(jumps.reduce((a,b)=>a+b,0)/jumps.length), tol:0.11, unit:'%', ref:'Mean = sum ÷ count. The jump from 42 to 51 is (51 ÷ 42 − 1) × 100.', hint:'The jumps run 20.0, 16.7, 14.3, 12.5, … Add all 11 and divide by 11.'};
+      const i = 1 + Math.floor(Math.random()*10);
+      return {qid:'stats-percent-change', prompt:`What is the percent jump in gear ratio when you shift from the ${B(CASSETTE[i]+'')} cog to the ${B(CASSETTE[i+1]+'')} cog, with any chainring? Round to 0.1%.`,
+        answer: r1((1 - CASSETTE[i]/CASSETTE[i+1])*100), tol:0.11, unit:'% easier', ref:'Percent change = (new − old) ÷ old × 100. The chainring cancels out.', hint:`The ratio goes from R/${CASSETTE[i]} to R/${CASSETTE[i+1]}. Find (old − new) ÷ old.`};
+    }
+    case 'calc':
+      return {qid:'calc-related-rates', prompt:`On the ${first.sec.name} in your ${B(st.ring+' × '+first.cog)} gear, the rider raises cadence at ${B('4 rpm per second')}. Since speed = development × cadence, how fast is the bike accelerating, in mph per second? Round to 0.01.`,
+        answer: r2(first.dev*4*60/5280), tol:0.006, unit:' mph/s', ref:'dv/dt = development × dc/dt. Convert ft per minute to mph: × 60 ÷ 5280.', hint:`Development is ${fmt(r2(first.dev),2)} ft per crank turn. Multiply by 4, then convert.`};
+  }
+}
+function mechanicQuestion(){
+  const C = course(), st = S.locked, sim = simulate(st, C);
+  const worst = sim.rows.reduce((a,r,i)=> r.time > sim.rows[a].time ? i : a, 0);
+  const alt = st.ring===36 ? 34 : st.ring+2;
+  return [
+    `Would a ${alt}-tooth chainring have beaten ${C.rival.name}? Explain the trade-off using ratios.`,
+    `The ${sim.rows[worst].sec.name} took you the most time. Was that the gear, the cadence or the length? Back it up with numbers.`,
+    `Explain to a new rider why a bigger chainring helps on flat ground but hurts on climbs. Use one of your own gears as the example.`,
+    `Is the ${st.wheel===29?'27.5':'29'} in wheel worth switching to on this course? Use circumference and push limits to decide.`
+  ][Math.floor(Math.random()*4)];
+}
+
+/* ---------- Scoring ---------- */
+function scoreRound(){
+  const C = course(), mine = simulate(S.locked, C), rival = simulate(C.rival, C);
+  const cells = C.sections.length*4 + 1, correct = (S.firstCheck?S.firstCheck.correct:0) + (S.taskFirst?1:0);
+  const lab = Math.round(35*correct/cells);
+  const gap = mine.total - rival.total;
+  const race = gap < -1e-9 ? 20 : gap <= 0.5 ? 10 : 0;
+  const walk = mine.walked ? 0 : 10;
+  let tune = 0; if (S.tuned){ const err = Math.abs(S.tuned.pred - S.tuned.total)/S.tuned.total; tune = err<=0.05 ? 15 : err<=0.10 ? 8 : 0; }
+  const mech = S.rubric.reduce((a,b)=>a+b,0);
+  const total = lab+race+walk+tune+mech;
+  return {lab, race, walk, tune, mech, total, correct, cells, gap, medal: total>=90?'gold':total>=75?'silver':total>=60?'bronze':'none'};
+}
+function rankInfo(){ const p = hist().reduce((a,h)=>a+h.score,0); let i=0; RANKS.forEach((r,k)=>{ if(p>=r.at) i=k; });
+  const next = RANKS[i+1]; return {p, rank:RANKS[i], next, pct: next ? (p-RANKS[i].at)/(next.at-RANKS[i].at) : 1}; }
+
+/* ---------- Pieces ---------- */
+function renderCrew(){
+  const r = rankInfo();
+  $('#crew').innerHTML = `<b>${r.rank.name}</b><span class="num">${r.p.toLocaleString()} pts</span>${r.next?` · ${(r.next.at-r.p).toLocaleString()} to ${r.next.name}`:''}
+    <div class="meter" role="progressbar" aria-label="Progress to next rank" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(r.pct*100)}"><i style="width:${Math.round(r.pct*100)}%"></i></div>`;
+}
+function renderPhases(){
+  const P = [['spec','Spec','Pick a course'],['plan','Plan','Choose your gears'],['lab','Lab','Work the numbers'],['race','Race','Take on the rival'],['tune','Tune','One change, one prediction']];
+  const i = P.findIndex(p=>p[0]===S.phase);
+  $('#phases').innerHTML = `<ol class="steps">${P.map((p,k)=>`<li class="${k===i?'on':k<i?'done':''}" ${k===i?'aria-current="step"':''}><span class="n">${k<i?'✓':k+1}</span><div><b>${p[1]}</b><span>${p[2]}</span></div></li>`).join('')}</ol>`;
+}
+function renderOrder(){
+  const C = S.courseId ? course() : null, st = S.locked || S.setup;
+  const rows = [['Class', MATH[S.math].name], ['Course', C ? C.name : '—'],
+    ['Ring', st ? st.ring+'T' : '—'], ['Wheel', st ? st.wheel+' in' : '—'],
+    ['Rival', C ? C.rival.name : '—'], ['Best', C && best()[C.id] ? mmss(best()[C.id]) : '—']];
+  $('#order').innerHTML = `<div class="wo"><div class="eyebrow" style="color:var(--plate-dim)">Work order${S.locked?' · locked':''}</div>
+    <dl>${rows.map(r=>`<dt>${r[0]}</dt><dd>${esc(r[1])}</dd>`).join('')}</dl></div>`;
+}
+function sparkSVG(C){
+  const W=240, H=60; let d=0, e=0; const pts=[{d:0,e:0}]; C.sections.forEach(s=>{ d+=s.len; e+=s.len*5280*s.grade/100; pts.push({d,e}); });
+  const lo=Math.min(...pts.map(p=>p.e)), hi=Math.max(...pts.map(p=>p.e)), span=Math.max(hi-lo,150);
+  const sx=v=>4+v/d*(W-8), sy=v=>6+(1-(v-lo)/span)*(H-14);
+  const line = pts.map(p=>`${sx(p.d).toFixed(1)},${sy(p.e).toFixed(1)}`).join(' ');
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" role="img" aria-label="Elevation profile of ${esc(C.name)}, ${Math.round(hi-lo)} ft of relief">
+    <polygon points="${sx(0)},${H} ${line} ${sx(d)},${H}" fill="var(--ground)"/>
+    <polyline points="${line}" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+    ${pts.slice(1,-1).map(p=>`<line x1="${sx(p.d)}" x2="${sx(p.d)}" y1="${sy(p.e)}" y2="${H}" stroke="var(--line)" stroke-dasharray="2 2"/>`).join('')}</svg>`;
+}
+const gradeTxt = g => `<span class="grade ${g>0?'up':g<0?'down':''}">${g>0?'+':g<0?'−':''}${Math.abs(g)}%</span>`;
+function courseTable(C, wheel){
+  return `<div class="tablewrap"><table><thead><tr><th>Section</th><th class="n">Length</th><th class="n">Grade</th><th class="n">Cadence</th><th class="n">Push limit${wheel&&wheel!==29?' ('+wheel+' in)':''}</th></tr></thead><tbody>
+    ${C.sections.map(s=>`<tr><td>${esc(s.name)}</td><td class="n">${s.len} mi</td><td class="n">${gradeTxt(s.grade)}</td><td class="n">${s.cad} rpm</td><td class="n">${fmt(r2(wheel?limitOf(s,wheel):s.push),2)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+function renderSpec(){
+  const M = Object.entries(MATH).map(([k,m])=>`<button class="chip" data-act="math" data-v="${k}" aria-pressed="${S.math===k}"><b>${m.name}</b><span>${m.grades} · ${m.skill}</span></button>`).join('');
+  const B = best();
+  const C = COURSES.map((c,i)=>{ const steep = Math.max(...c.sections.map(s=>s.grade)), low = Math.min(...c.sections.map(s=>s.push));
+    return `<article class="ccard"><div class="col" style="gap:4px"><div class="eyebrow">Course ${String(i+1).padStart(2,'0')}</div><h3>${esc(c.name)}</h3><p class="small muted">${esc(c.blurb)}</p></div>
+      ${sparkSVG(c)}
+      <dl class="facts"><dt>Distance</dt><dd>${r1(c.sections.reduce((a,s)=>a+s.len,0))} mi</dd><dt>Sections</dt><dd>${c.sections.length}</dd><dt>Steepest</dt><dd>${steep}%</dd><dt>Tightest limit</dt><dd>${fmt(low,2)}</dd>${B[c.id]?`<dt>Your best</dt><dd>${mmss(B[c.id])}</dd>`:''}</dl>
+      <button class="btn go sm" data-act="pickCourse" data-v="${c.id}">Take it</button></article>`; }).join('');
+  return `<div class="col">
+    <section class="panel col">
+      <div><div class="eyebrow">Step 1 · Pick the course of study</div><h2 class="h2">Which math class is the mechanic in?</h2></div>
+      <div class="chips" role="group" aria-label="Math course">${M}</div>
+      <details><summary>How a round works</summary><ol>
+        <li><b>Spec.</b> Pick a race course. Each section lists its grade, the rider's cadence, and the push limit: the biggest gear ratio the rider can turn there.</li>
+        <li><b>Plan.</b> Choose a chainring, a wheel and one rear cog per section. Go over a push limit and the rider walks at 3 mph. Each cog change costs 5 seconds.</li>
+        <li><b>Lab.</b> Work out the ratio, distance per crank turn, speed and time for every section, plus one problem for your class.</li>
+        <li><b>Race.</b> Your setup races the rival's on the course profile.</li>
+        <li><b>Tune.</b> Change one part, predict your new time, test it, and answer the mechanic's question.</li>
+      </ol></details>
+    </section>
+    <section class="panel col"><div><div class="eyebrow">Step 2 · Pick a race course</div><h2 class="h2">Course board</h2></div><div class="courses">${C}</div></section>
+  </div>`;
+}
+
+function drivetrainSVG(ring, cog, wheel, cad){
+  const ratio = ring/cog, k = 2.1, rR = ring*k*0.95, rC = cog*k*0.95, wR = 132*wheel/29;
+  const crankP = 60/cad*1.6, wheelP = crankP/ratio;
+  const cx1 = 150, cy1 = 190, cx2 = 420, cy2 = 160;
+  const teeth = (r,n) => `stroke-dasharray="${(2*Math.PI*r/(n*2)).toFixed(2)} ${(2*Math.PI*r/(n*2)).toFixed(2)}"`;
+  const spokes = Array.from({length:12},(_,i)=>{ const a=i*Math.PI/6; return `<line x1="${cx2}" y1="${cy2}" x2="${(cx2+Math.cos(a)*wR).toFixed(1)}" y2="${(cy2+Math.sin(a)*wR).toFixed(1)}" stroke="var(--metal)" stroke-width="1"/>`; }).join('');
+  return `<svg class="drive" viewBox="0 0 600 340" role="img" aria-label="Drivetrain: ${ring}-tooth chainring driving a ${cog}-tooth cog on a ${wheel} inch wheel">
+    <g class="spin" style="--d:${wheelP.toFixed(2)}s;transform-origin:${cx2}px ${cy2}px">
+      <circle cx="${cx2}" cy="${cy2}" r="${wR}" fill="none" stroke="var(--ink)" stroke-width="10"/>
+      <circle cx="${cx2}" cy="${cy2}" r="${wR-9}" fill="none" stroke="var(--metal)" stroke-width="2"/>${spokes}
+      <circle cx="${cx2}" cy="${cy2}" r="${rC}" fill="var(--surface)" stroke="var(--accent)" stroke-width="6" ${teeth(rC,cog)}/>
+    </g>
+    <line x1="${cx1}" y1="${cy1-rR}" x2="${cx2}" y2="${cy2-rC}" stroke="var(--chain)" stroke-width="3"/>
+    <line x1="${cx1}" y1="${cy1+rR}" x2="${cx2}" y2="${cy2+rC}" stroke="var(--chain)" stroke-width="3"/>
+    <g class="spin" style="--d:${crankP.toFixed(2)}s;transform-origin:${cx1}px ${cy1}px">
+      <circle cx="${cx1}" cy="${cy1}" r="${rR}" fill="var(--surface)" stroke="var(--accent)" stroke-width="7" ${teeth(rR,ring)}/>
+      <circle cx="${cx1}" cy="${cy1}" r="${rR*0.55}" fill="none" stroke="var(--metal)" stroke-width="3"/>
+      <line x1="${cx1}" y1="${cy1}" x2="${cx1}" y2="${cy1+rR+34}" stroke="var(--ink)" stroke-width="8" stroke-linecap="round"/>
+      <rect x="${cx1-16}" y="${cy1+rR+30}" width="32" height="8" rx="3" fill="var(--ink)"/>
+    </g>
+    <circle cx="${cx1}" cy="${cy1}" r="7" fill="var(--ink)"/><circle cx="${cx2}" cy="${cy2}" r="6" fill="var(--ink)"/>
+    <text x="${cx1}" y="${330}" text-anchor="middle" font-size="13" font-family="IBM Plex Mono, monospace" fill="var(--muted)">${ring}T chainring</text>
+    <text x="${cx2}" y="${330}" text-anchor="middle" font-size="13" font-family="IBM Plex Mono, monospace" fill="var(--muted)">${cog}T cog · ${wheel} in wheel</text>
+  </svg>`;
+}
+
+function setupEditor(st, opts){
+  const C = course();
+  const rings = `<div class="seg" role="group" aria-label="Chainring">${RINGS.map(r=>`<button data-act="${opts.prefix}Ring" data-v="${r}" aria-pressed="${st.ring===r}">${r}T</button>`).join('')}</div>`;
+  const wheels = `<div class="seg" role="group" aria-label="Wheel">${WHEELS.map(w=>`<button data-act="${opts.prefix}Wheel" data-v="${w}" aria-pressed="${st.wheel===w}">${w} in</button>`).join('')}</div>`;
+  const rows = C.sections.map((s,i)=>`<tr class="${opts.preview===i?'sel':''}"><td><b>${esc(s.name)}</b></td><td class="n">${s.len} mi</td><td class="n">${gradeTxt(s.grade)}</td><td class="n">${s.cad} rpm</td><td class="n">${fmt(r2(limitOf(s,st.wheel)),2)}</td>
+    <td><label class="sr" for="${opts.prefix}cog${i}">Cog for ${esc(s.name)}</label><select id="${opts.prefix}cog${i}" data-cog="${opts.prefix}" data-i="${i}"><option value="">Pick a cog</option>${CASSETTE.map(c=>`<option value="${c}" ${st.cogs[i]===c?'selected':''}>${c}T</option>`).join('')}</select></td></tr>`).join('');
+  return `<div class="row" style="gap:18px"><div class="col" style="gap:6px"><span class="eyebrow">Chainring</span>${rings}</div><div class="col" style="gap:6px"><span class="eyebrow">Wheel diameter</span>${wheels}</div></div>
+    <div class="tablewrap"><table><thead><tr><th>Section</th><th class="n">Length</th><th class="n">Grade</th><th class="n">Cadence</th><th class="n">Push limit</th><th>Rear cog</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function renderPlan(){
+  const st = S.setup, C = course(), i = S.preview, sec = C.sections[i], cog = st.cogs[i] || 28;
+  const ready = st.cogs.every(Boolean);
+  return `<div class="plan">
+    <section class="panel col">
+      <div><div class="eyebrow">${esc(C.name)} · ${MATH[S.math].name}</div><h2 class="h2">Build your setup</h2></div>
+      <p class="small muted" style="max-width:68ch">Push limits are printed for a 29 in wheel. A 27.5 in wheel is easier to turn, so its limits are 29 ÷ 27.5 times higher. Pick a cog whose ratio stays at or below each limit. No ratios are shown: that's your job.</p>
+      ${setupEditor(st, {prefix:'p', preview:i})}
+      <div class="row"><button class="btn go" data-act="lock" ${ready?'':'disabled'}>Lock the setup</button><span class="small muted">${ready?'Locked setups race as-is. You get one change in the Tune phase.':'Pick a cog for every section.'}</span></div>
+    </section>
+    <aside class="col">
+      <section class="panel col">
+        <div class="eyebrow">Preview · ${esc(sec.name)}</div>
+        ${drivetrainSVG(st.ring, cog, st.wheel, sec.cad)}
+        <p class="small muted">The crank turns at the rider's cadence (slowed down here). Watch how many times the wheel turns for each pedal turn as you change gears.</p>
+      </section>
+      <div class="formula"><span class="eyebrow">Formula card</span><span>ratio = chainring ÷ cog</span><span>development = π × D × ratio  (inches; ÷ 12 for feet)</span><span>speed = development × cadence</span></div>
+    </aside>
+  </div>`;
+}
+
+function renderLab(){
+  const C = course(), sim = simulate(S.locked, C), chk = S.checked;
+  const head = Object.values(KEYS).map(k=>`<th>${k.label}${k.unit?` (${k.unit})`:''}<br><span style="text-transform:none;letter-spacing:0;font-weight:400">${k.help}</span></th>`).join('');
+  const rows = sim.rows.map((r,i)=>`<tr><td><b>${esc(r.sec.name)}</b><div class="small muted num">${S.locked.ring}/${r.cog} · ${r.sec.cad} rpm · ${r.sec.len} mi</div></td>${Object.keys(KEYS).map(k=>{
+      const id = i+'|'+k, st = chk ? chk.cells[id] : null;
+      return `<td class="${st===true?'ok':st===false?'no':''}"><label class="sr" for="l-${i}-${k}">${esc(r.sec.name)} ${KEYS[k].label}</label><input id="l-${i}-${k}" inputmode="decimal" data-ans="${id}" value="${esc(S.ans[id]||'')}" placeholder="${'0.'+'0'.repeat(KEYS[k].dp)}">${S.showKey?`<span class="key">${fmt(keyOf(r,k),KEYS[k].dp)}</span>`:''}</td>`; }).join('')}</tr>`).join('');
+  const T = S.task;
+  return `<div class="col">
+    <section class="panel col">
+      <div class="row between"><div><div class="eyebrow">Lab sheet · ${S.locked.ring}T ring · ${S.locked.wheel} in wheel</div><h2 class="h2">Run the numbers</h2></div>
+        <span class="small muted">Ratio and development to 0.01 · speed to 0.1 mph · time to 0.01 min</span></div>
+      <p class="small" style="max-width:76ch">If a gear is over the push limit, the rider walks: speed is ${WALK_MPH} mph. Use 5,280 ft per mile.</p>
+      <div class="tablewrap"><table><thead><tr><th>Section</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="row"><button class="btn go" data-act="checkLab">Check my lab sheet</button>
+        ${chk ? `<span class="small"><b class="num">${chk.correct} of ${chk.total}</b> correct${S.firstCheck!==chk?` · first check: ${S.firstCheck.correct}`:''}</span><button class="btn sm" data-act="toggleKey">${S.showKey?'Hide':'Show'} answer key</button>` : '<span class="small muted">Your first check counts toward the score. After that, fix mistakes for practice.</span>'}</div>
+    </section>
+    <section class="task" aria-live="polite"><div class="eyebrow">${MATH[S.math].name} problem</div>
+      <p class="prompt">${T.prompt}</p><p class="ref"><b>Formula card:</b> ${esc(T.ref)}</p>
+      ${(S.taskFirst===null || (!S.taskOk && !S.taskReveal)) ? `<form class="row" id="taskForm" autocomplete="off"><label class="sr" for="taskIn">Answer</label><input id="taskIn" inputmode="decimal" value="${esc(S.taskAns)}" placeholder="answer"><button class="btn go" type="submit">Check</button></form>` : ''}
+      ${S.taskFb?`<p class="fb ${S.taskOk?'ok':'no'}">${esc(S.taskFb)}</p>`:''}
+    </section>
+    <div class="row"><button class="btn go" data-act="toRace" ${S.firstCheck && S.taskFirst!==null?'':'disabled'}>Race it</button><span class="small muted">${S.firstCheck && S.taskFirst!==null?'':'Check the lab sheet and answer the problem first.'}</span></div>
+  </div>`;
+}
+
+/* Race profile + animation */
+function timeline(setup){
+  const sim = simulate(setup, course()); const ev = []; let t = 0, d = 0;
+  sim.rows.forEach((r,i)=>{ if (i>0 && setup.cogs[i]!==setup.cogs[i-1]){ ev.push({t0:t, t1:t+SHIFT_S/60, d0:d, d1:d}); t += SHIFT_S/60; }
+    ev.push({t0:t, t1:t+r.time, d0:d, d1:d+r.sec.len}); t += r.time; d += r.sec.len; });
+  return {ev, total:t};
+}
+function posAt(tl, t){ for (const e of tl.ev){ if (t <= e.t1) return e.d0 + (e.d1-e.d0)*((t-e.t0)/((e.t1-e.t0)||1)); } return tl.ev.at(-1).d1; }
+function profileSVG(){
+  const C = course(), W=760, H=240, pl=20, pr=20, pt=30, pb=40;
+  const pts = [{d:0,e:0}]; let d=0, e=0; C.sections.forEach(s=>{ d+=s.len; e+=s.len*5280*s.grade/100; pts.push({d,e}); });
+  const lo = Math.min(...pts.map(p=>p.e)), hi = Math.max(...pts.map(p=>p.e)), span = Math.max(hi-lo, 200);
+  const sx = v => pl + v/d*(W-pl-pr), sy = v => pt + (1-(v-lo)/span)*(H-pt-pb);
+  const line = pts.map(p=>`${sx(p.d).toFixed(1)},${sy(p.e).toFixed(1)}`).join(' ');
+  const labels = C.sections.map((s,i)=>{ const x = (sx(pts[i].d)+sx(pts[i+1].d))/2; return `<text x="${x}" y="${H-12}" text-anchor="middle" font-size="11.5" font-family="IBM Plex Sans, sans-serif" fill="var(--muted)">${i+1}. ${esc(s.name.split(' ')[0])}</text>`; }).join('');
+  const ticks = pts.map(p=>`<line x1="${sx(p.d)}" x2="${sx(p.d)}" y1="${pt}" y2="${H-pb}" stroke="var(--grid)"/>`).join('');
+  S._prof = {sx, sy, pts};
+  return `<svg class="profile" viewBox="0 0 ${W} ${H}" role="img" aria-label="Course profile with both riders racing">
+    ${ticks}<polygon points="${sx(0)},${H-pb} ${line} ${sx(d)},${H-pb}" fill="var(--ground)"/>
+    <polyline points="${line}" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/>
+    ${labels}
+    <g id="dotGhost" visibility="hidden"><circle r="7" fill="none" stroke="var(--ghost)" stroke-width="2.5" stroke-dasharray="3 2"/></g>
+    <g id="dotRival"><circle r="8" fill="var(--rival)" stroke="var(--surface)" stroke-width="2"/></g>
+    <g id="dotYou"><circle r="8" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/></g>
+    <text id="clock" x="${W-pr}" y="20" text-anchor="end" font-size="14" font-weight="700" font-family="IBM Plex Mono, monospace" fill="var(--ink)">0:00</text>
+  </svg>`;
+}
+let anim = null;
+function placeDot(id, dist){ const P = S._prof; if (!P) return; let k = 1; while (k < P.pts.length-1 && dist > P.pts[k].d) k++;
+  const a = P.pts[k-1], b = P.pts[k], f = (dist-a.d)/((b.d-a.d)||1), e = a.e + (b.e-a.e)*f;
+  const g = document.getElementById(id); if (g) g.setAttribute('transform', `translate(${P.sx(dist).toFixed(1)} ${(P.sy(e)-9).toFixed(1)})`); }
+function runRace(){
+  cancelAnimationFrame(anim);
+  const C = course(), you = timeline(S.locked), riv = timeline(C.rival), bt = best()[C.id];
+  const end = Math.max(you.total, riv.total), dur = 6000, start = performance.now();
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const g = document.getElementById('dotGhost'); if (g && bt) g.setAttribute('visibility','visible');
+  const ghostRate = bt ? (C.sections.reduce((a,s)=>a+s.len,0) / bt) : 0;
+  const frame = now => {
+    const t = reduce ? end : Math.min(end, (now-start)/dur*end);
+    placeDot('dotYou', posAt(you, Math.min(t, you.total))); placeDot('dotRival', posAt(riv, Math.min(t, riv.total)));
+    if (bt) placeDot('dotGhost', Math.min(t, bt) * ghostRate);
+    const c = document.getElementById('clock'); if (c) c.textContent = mmss(t);
+    if (t < end) anim = requestAnimationFrame(frame); else { if (!S.raced){ S.raced = true; render(); } }
+  };
+  anim = requestAnimationFrame(frame);
+}
+function renderRace(){
+  const C = course(), mine = simulate(S.locked, C), riv = simulate(C.rival, C), bt = best()[C.id];
+  const gap = mine.total - riv.total;
+  const banner = !S.raced ? '' : gap < -1e-9 ? `<div class="banner win">You beat ${esc(C.rival.name)} by ${mmss(-gap)}.</div>`
+    : gap <= 0.5 ? `<div class="banner close">${esc(C.rival.name)} won by ${mmss(gap)}. Close enough for half the race points.</div>`
+    : `<div class="banner lose">${esc(C.rival.name)} won by ${mmss(gap)}. Find the time in the Tune phase.</div>`;
+  const rows = C.sections.map((s,i)=>{ const a = mine.rows[i], b = riv.rows[i];
+    return `<tr><td>${esc(s.name)}</td><td class="n">${S.locked.ring}/${a.cog}${a.legal?'':' <span class="walk">WALK</span>'}</td><td class="n">${fmt(r1(a.mph),1)}</td><td class="n">${mmss(a.time)}</td><td class="n">${C.rival.ring}/${b.cog}</td><td class="n">${fmt(r1(b.mph),1)}</td><td class="n">${mmss(b.time)}</td></tr>`; }).join('');
+  return `<div class="col">
+    <section class="panel col">
+      <div class="row between"><div><div class="eyebrow">${esc(C.name)}</div><h2 class="h2">Race day</h2></div><div class="row"><button class="btn sm" data-act="replayRace">Replay</button>${S.raced?`<button class="btn go" data-act="toTune">Go to the Tune phase</button>`:''}</div></div>
+      ${profileSVG()}
+      <div class="row small"><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--accent);margin-right:5px"></span>You</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--rival);margin-right:5px"></span>${esc(C.rival.name)} (${C.rival.ring}T, ${C.rival.wheel} in)</span>${bt?`<span class="muted">Dashed: your best, ${mmss(bt)}</span>`:''}</div>
+      ${S.raced ? `<div class="board">
+        <div class="tile you"><div class="k">Your time</div><div class="v">${mmss(mine.total)}</div><div class="small muted">${mine.shifts} shift${mine.shifts===1?'':'s'} · +${mine.shifts*SHIFT_S} s</div></div>
+        <div class="tile rival"><div class="k">${esc(C.rival.name)}</div><div class="v">${mmss(riv.total)}</div><div class="small muted">${riv.shifts} shifts · +${riv.shifts*SHIFT_S} s</div></div>
+        <div class="tile ghost"><div class="k">Push limits</div><div class="v">${mine.walked?'Walked':'All legal'}</div><div class="small muted">${mine.walked?'A gear was too big to push.':'+10 points'}</div></div></div>${banner}` : '<p class="small muted">Racing…</p>'}
+    </section>
+    ${S.raced ? `<section class="panel col"><div class="eyebrow">Section by section</div><div class="tablewrap"><table><thead><tr><th>Section</th><th class="n">Your gear</th><th class="n">mph</th><th class="n">Time</th><th class="n">Rival gear</th><th class="n">mph</th><th class="n">Time</th></tr></thead><tbody>${rows}</tbody></table></div></section>` : ''}
+  </div>`;
+}
+
+function renderTune(){
+  if (S.result) return renderResults();
+  const C = course(), base = simulate(S.locked, C), t = S.tune;
+  const changes = changeCount(S.locked, t);
+  const tunedBox = S.tuned ? (()=>{ const err = Math.abs(S.tuned.pred - S.tuned.total)/S.tuned.total*100;
+      return `<div class="board"><div class="tile"><div class="k">Predicted</div><div class="v">${mmss(S.tuned.pred)}</div></div>
+        <div class="tile you"><div class="k">Actual</div><div class="v">${mmss(S.tuned.total)}</div><div class="small muted">${S.tuned.total<base.total?'Faster by '+mmss(base.total-S.tuned.total):S.tuned.total>base.total?'Slower by '+mmss(S.tuned.total-base.total):'No change'}${S.tuned.walked?' · rider walked':''}</div></div>
+        <div class="tile ${err<=5?'you':''}"><div class="k">Prediction error</div><div class="v">${fmt(r1(err),1)}%</div><div class="small muted">${err<=5?'Full 15 points':err<=10?'8 points':'0 points'}</div></div></div>`; })() : '';
+  return `<div class="col">
+    <div class="coach"><span class="eyebrow">Mechanic's question</span><p>${esc(S.question)}</p></div>
+    <div class="results">
+      <section class="panel col">
+        <div><div class="eyebrow">Tune · your time ${mmss(base.total)}</div><h2 class="h2">Make one change</h2>
+          <p class="small muted">Change exactly one thing: the chainring, the wheel, or one section's cog. Predict the new time, then test it.</p></div>
+        ${S.tuned ? '' : setupEditor(t, {prefix:'t', preview:-1})}
+        ${S.tuned ? tunedBox : `<div class="row"><div style="max-width:220px"><label for="pred">Predicted new time (minutes)</label><input id="pred" inputmode="decimal" value="${esc(S.pred)}" placeholder="e.g. 23.75"></div>
+          <button class="btn go" data-act="testTune" ${changes===1?'':'disabled'}>Test it</button><span class="small ${changes>1?'':'muted'}" style="${changes>1?'color:var(--bad)':''}">${changes===0?'Change one part first.':changes===1?'One change: ready to test.':'Only one change allowed. Undo the extras.'}</span></div>`}
+      </section>
+      <section class="panel col">
+        <div><label for="answer">Your answer to the mechanic</label><p class="small muted">Use ratios or times from your lab sheet.</p></div>
+        <textarea id="answer" placeholder="A ${S.locked.ring===36?34:S.locked.ring+2}-tooth ring would …">${esc(S.answer)}</textarea>
+        <div class="eyebrow">Rubric · tutor scores 0–5 each</div>
+        <div class="rubric">${['Uses numbers','Explains the trade-off','Answers the question asked','Clear conclusion'].map((c,i)=>`<label for="rb${i}">${c}</label><select id="rb${i}" data-rubric="${i}">${[0,1,2,3,4,5].map(v=>`<option ${S.rubric[i]===v?'selected':''}>${v}</option>`).join('')}</select>`).join('')}</div>
+        <button class="btn go" data-act="finish" ${S.tuned?'':'disabled'}>Finish the round</button>${S.tuned?'':'<span class="small muted">Test your tune change first.</span>'}
+      </section>
+    </div>
+  </div>`;
+}
+function renderResults(){
+  const R = S.result, C = course();
+  const mn = {gold:'Gold',silver:'Silver',bronze:'Bronze',none:'Retry'}[R.medal];
+  const rows = [['Accurate lab sheet',`${R.correct} of ${R.cells} right on the first check`,R.lab,35],
+    ['Race result', R.gap<0?`Beat ${C.rival.name} by ${mmss(-R.gap)}`:`${C.rival.name} won by ${mmss(R.gap)}`, R.race, 20],
+    ['No walking', R.walk?'Every gear within its push limit':'At least one section walked', R.walk, 10],
+    ['Tune prediction', `Predicted ${mmss(S.tuned.pred)}, actual ${mmss(S.tuned.total)}`, R.tune, 15],
+    ["Mechanic's answer", 'Rubric total', R.mech, 20]];
+  return `<div class="results">
+    <section class="panel col">
+      <div class="medal"><div class="disc ${R.medal}">${mn}</div><div><div class="eyebrow">${esc(C.name)} · ${MATH[S.math].name}</div><div class="score">${R.total}</div><div class="small muted">points · Gold 90, Silver 75, Bronze 60</div></div></div>
+      <div class="tablewrap"><table><thead><tr><th>Category</th><th>Why</th><th class="n">Points</th></tr></thead><tbody>
+        ${rows.map(x=>`<tr><td><b>${x[0]}</b></td><td class="small">${esc(x[1])}</td><td class="n">${x[2]} / ${x[3]}</td></tr>`).join('')}</tbody></table></div>
+      <div class="row"><button class="btn go" data-act="again">New round</button><button class="btn" data-act="replayCourse">Try this course again</button></div>
+    </section>
+    <section class="panel col">
+      <div class="eyebrow">Best time on ${esc(C.name)}</div>
+      <div class="score" style="font-size:34px">${mmss(best()[C.id])}</div>
+      <p class="small muted">Your next attempt on this course races against this time as a ghost rider.</p>
+      ${S.answer?`<div><div class="eyebrow">Your answer</div><p class="small" style="white-space:pre-wrap">${esc(S.answer)}</p></div>`:''}
+    </section>
+  </div>`;
+}
+function renderHistory(){
+  const h = hist();
+  const head = `<div class="row between"><div><div class="eyebrow">Shop log</div><h2 class="h2">Past rounds</h2></div>
+    ${h.length ? (S.confirmClear ? `<div class="row"><span class="small">Remove all ${h.length} rounds and best times?</span><button class="btn sm" data-act="clearYes">Remove</button><button class="btn sm" data-act="clearNo">Keep</button></div>` : `<button class="btn sm" data-act="clearAsk">Clear log</button>`) : ''}</div>`;
+  if (!h.length) return head + `<div class="empty">No rounds yet. Finish a round and it lands here, with points toward your next mechanic rank.</div>`;
+  return head + `<div class="hist">${h.slice().reverse().slice(0,12).map(x=>`<div class="hrow"><span><b>${esc(x.course)}</b> · ${esc(x.setup)} · ${esc(x.math)}</span><span class="num">${mmss(x.time)} · ${x.score} pts · ${x.medal==='none'?'No medal':x.medal[0].toUpperCase()+x.medal.slice(1)}</span></div>`).join('')}</div>`;
+}
+
+function render(){
+  renderCrew(); renderPhases(); renderOrder();
+  $('#app').innerHTML = S.phase==='spec' ? renderSpec() : S.phase==='plan' ? renderPlan() : S.phase==='lab' ? renderLab() : S.phase==='race' ? renderRace() : renderTune();
+  $('#history').innerHTML = renderHistory();
+  const tf = $('#taskForm'); if (tf) tf.addEventListener('submit', e=>{ e.preventDefault(); checkTask(); });
+  if (S.phase==='race'){ if (!S.raced) runRace(); else { const C = course(); placeDot('dotYou', posAt(timeline(S.locked), Infinity)); placeDot('dotRival', posAt(timeline(C.rival), Infinity));
+      const c = document.getElementById('clock'); if (c) c.textContent = mmss(Math.max(timeline(S.locked).total, timeline(C.rival).total)); } }
+}
+let tt; function toast(t){ const el=$('#toast'); el.textContent=t; el.hidden=false; clearTimeout(tt); tt=setTimeout(()=>el.hidden=true,2600); }
+const top0 = () => window.scrollTo({top:0, behavior:'smooth'});
+const parseNum = raw => { const c = String(raw).replace(/[−–]/g,'-').replace(/[^0-9.\-]/g,''); return c===''||c==='-'||isNaN(parseFloat(c)) ? null : parseFloat(c); };
+const clone = st => ({ring:st.ring, wheel:st.wheel, cogs:st.cogs.slice()});
+function changeCount(a, b){ let n = (a.ring!==b.ring?1:0) + (a.wheel!==b.wheel?1:0); a.cogs.forEach((c,i)=>{ if (c!==b.cogs[i]) n++; }); return n; }
+
+function checkLab(){
+  const sim = simulate(S.locked, course()); const cells = {}; let correct=0, total=0;
+  sim.rows.forEach((r,i)=>Object.keys(KEYS).forEach(k=>{ total++; const id=i+'|'+k, ok = cellOk(r,k,parseNum(S.ans[id]||'')); cells[id]=ok; if(ok) correct++; trackCell(r,k,id,ok); }));
+  S.checked = {cells, correct, total}; if (!S.firstCheck) S.firstCheck = S.checked; render();
+}
+function checkTask(){
+  S.taskAns = $('#taskIn').value; const v = parseNum(S.taskAns);
+  if (v===null){ S.taskFb='Type a number first.'; S.taskOk=false; return render(); }
+  const ok = Math.abs(v - S.task.answer) <= S.task.tol + 1e-9; S.taskTries++; trackTask(ok); if (S.taskFirst===null) S.taskFirst = ok; S.taskOk = ok;
+  if (ok) S.taskFb = `Correct: ${S.task.answer}${S.task.unit}.`;
+  else if (S.taskTries===1) S.taskFb = 'Not quite. ' + S.task.hint;
+  else { S.taskReveal = true; S.taskFb = `The answer is ${S.task.answer}${S.task.unit}. ${S.task.hint}`; }
+  render(); const i=$('#taskIn'); if (i) i.focus();
+}
+
+/* ---------- Progress tracking ----------
+   Sends each checked answer to js/progress.js. It returns at once, never
+   throws, and saves nothing unless a student is signed in. One round on
+   one course is one play session. Each kind of question (qid) is
+   registered in supabase/progress.sql. */
+const MP = window.MathleteProgress, GAME = 'gear-ratio-lab';
+const plain = s => String(s).replace(/<[^>]+>/g,'');
+const sessionId = () => S.sid || (S.sid = MP.startSession());
+function trackTask(ok){
+  const t = S.task; if (!MP || !t || !t.qid) return;
+  MP.recordQuestionAttempt({gameId:GAME, questionId:GAME+':'+t.qid,
+    // Only the question's fixed parts, so every try at it matches up.
+    questionSnapshot:{prompt:plain(t.prompt), answer:t.answer, tolerance:t.tol, unit:t.unit.trim(), formula:t.ref, hint:t.hint,
+      course:MATH[S.math].name, raceCourse:course().name},
+    studentAnswer:S.taskAns, correctAnswer:t.answer+t.unit, isCorrect:ok,
+    hintsUsed:S.taskTries>1?1:0,                          // the hint appears after the first miss
+    gameSessionId:sessionId()});
+}
+const SHEET_QID = {ratio:'sheet-ratio', dev:'sheet-development', speed:'sheet-speed', time:'sheet-time'};
+// One lab-sheet cell is one question. A cell is recorded when it is checked
+// with a new value, so pressing Check again doesn't repeat it.
+function trackCell(row, k, id, ok){
+  const raw = (S.ans[id]||'').trim(); S.sent = S.sent || {};
+  if (!MP || parseNum(raw)===null || S.sent[id]===raw) return;
+  S.sent[id] = raw;
+  const st = S.locked, K = KEYS[k];
+  MP.recordQuestionAttempt({gameId:GAME, questionId:GAME+':'+SHEET_QID[k],
+    questionSnapshot:{prompt:`${K.label} on the ${row.sec.name}: ${st.ring} × ${row.cog} gear, ${st.wheel} in wheel, ${row.sec.cad} rpm, ${row.sec.len} mi`
+        + (row.legal ? '' : `. This gear is over the push limit, so the rider walks at ${WALK_MPH} mph`),
+      answer:keyOf(row,k), unit:K.unit, formula:K.help, chainring:st.ring, cog:row.cog, wheel:st.wheel, cadence:row.sec.cad, miles:row.sec.len,
+      pushLimit:r2(limitOf(row.sec, st.wheel)), walking:!row.legal, raceCourse:course().name},
+    studentAnswer:raw, correctAnswer:fmt(keyOf(row,k),K.dp)+(K.unit?' '+K.unit:''), isCorrect:ok,
+    hintsUsed:S.keySeen?1:0,                              // the answer key had been opened
+    gameSessionId:sessionId()});
+}
+// The tune-up prediction: right if within 5% of the simulated time (full marks in the game).
+function trackTune(){
+  const T = S.tuned; if (!MP || !T) return;
+  const st = T.setup;
+  MP.recordQuestionAttempt({gameId:GAME, questionId:GAME+':tune-prediction',
+    questionSnapshot:{prompt:`Predict the race time on ${course().name} after retuning to a ${st.ring}-tooth chainring, ${st.wheel} in wheel and cogs ${st.cogs.join('-')}`,
+      answer:r2(T.total), unit:'min', tolerance:'within 5%', raceCourse:course().name},
+    studentAnswer:S.pred, correctAnswer:fmt(T.total,2)+' min', isCorrect:Math.abs(T.pred-T.total)/T.total<=0.05,
+    gameSessionId:sessionId()});
+}
+
+/* ---------- Actions ---------- */
+function startCourse(id){ const m=S.math; S=fresh(); S.math=m; S.courseId=id; S.setup={ring:32, wheel:29, cogs:course().sections.map(()=>null)}; S.phase='plan'; render(); top0(); }
+const H = {
+  math(v){ S.math=v; store.set('grl-math',v); render(); },
+  pickCourse(v){ startCourse(v); },
+  pRing(v){ S.setup.ring=+v; render(); }, pWheel(v){ S.setup.wheel=+v; render(); },
+  tRing(v){ S.tune.ring=+v; render(); }, tWheel(v){ S.tune.wheel=+v; render(); },
+  lock(){ S.locked = clone(S.setup); S.task = makeTask(); S.phase='lab'; render(); top0(); },
+  checkLab(){ checkLab(); }, toggleKey(){ S.showKey=!S.showKey; S.keySeen=true; render(); },
+  toRace(){ S.phase='race'; S.raced=false; render(); top0(); },
+  replayRace(){ S.raced=false; render(); },
+  toTune(){ cancelAnimationFrame(anim); S.tune = clone(S.locked); S.question = mechanicQuestion(); S.phase='tune'; render(); top0(); },
+  testTune(){ const p = parseNum(S.pred); if (p===null || p<=0){ toast('Enter your predicted time in minutes first.'); return; }
+    const sim = simulate(S.tune, course()); S.tuned = {pred:p, total:sim.total, walked:sim.walked, setup:clone(S.tune)}; trackTune(); render(); },
+  finish(){
+    S.result = scoreRound();
+    if (MP && S.sid && !S.saved) MP.endSession(S.sid, {metrics:{score:S.result.total, medal:S.result.medal, course:MATH[S.math].name}});
+    if (!S.saved){ const C = course(), mine = simulate(S.locked, C).total, bestRun = Math.min(mine, S.tuned && !S.tuned.walked ? S.tuned.total : Infinity, mine);
+      const b = best(); if (!b[C.id] || bestRun < b[C.id]) b[C.id] = bestRun; store.set('grl-best', b);
+      const before = rankInfo().rank.name; const h = hist();
+      h.push({course:C.name, setup:`${S.locked.ring}T · ${S.locked.wheel} in`, math:MATH[S.math].name, time:mine, score:S.result.total, medal:S.result.medal, date:new Date().toISOString().slice(0,10)});
+      store.set('grl-history', h); S.saved = true; const after = rankInfo().rank.name; if (after!==before) toast(`Promoted to ${after}!`); }
+    render(); top0();
+  },
+  again(){ const m=S.math; S=fresh(); S.math=m; render(); top0(); },
+  replayCourse(){ startCourse(S.courseId); },
+  clearAsk(){ S.confirmClear=true; render(); }, clearNo(){ S.confirmClear=false; render(); },
+  clearYes(){ store.set('grl-history',[]); store.set('grl-best',{}); S.confirmClear=false; toast('Shop log cleared.'); render(); }
+};
+document.addEventListener('click', e=>{ const b = e.target.closest('[data-act]'); if (!b || b.disabled) return; const f = H[b.dataset.act]; if (f) f(b.dataset.v); });
+document.addEventListener('input', e=>{ const t = e.target;
+  if (t.dataset.ans) S.ans[t.dataset.ans] = t.value;
+  if (t.id==='taskIn') S.taskAns = t.value;
+  if (t.id==='pred') S.pred = t.value;
+  if (t.id==='answer') S.answer = t.value; });
+document.addEventListener('change', e=>{ const t = e.target;
+  if (t.dataset.cog){ const st = t.dataset.cog==='p' ? S.setup : S.tune; st.cogs[+t.dataset.i] = t.value ? +t.value : null; if (t.dataset.cog==='p') S.preview = +t.dataset.i; render();
+    const el = document.getElementById(t.id); if (el) el.focus(); }
+  if (t.dataset.rubric) S.rubric[+t.dataset.rubric] = +t.value; });
+
+/* ---------- Boot ---------- */
+window.claude?.hot?.snapshot?.(() => { const c = Object.assign({}, S); delete c._prof; return c; });
+const boot = d => { S = fresh(); if (d && d.phase) Object.assign(S, d); if (S.courseId && !course()) S = fresh(); render(); };
+window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
+</script>
+
+</body>
+</html>

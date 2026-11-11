@@ -76,7 +76,7 @@ window.MATHLETE_TOOLS = [
     name: 'Gear Ratio Lab',
     access: 'public',
     status: 'live',
-    url: 'https://wcmalfeld.github.io/GearRatioLab_LearningTool/',
+    url: 'https://www.mathletemtb.com/learning-lab/gear-ratio-lab/',   // in this repo: learning-lab/gear-ratio-lab/
     category: 'bike-workshop',
     summary: 'Gear a race bike for a course, then work out ratios, speeds and times to beat a rival.',
     image: 'assets/gear-ratio-lab.jpg',
@@ -91,7 +91,7 @@ window.MATHLETE_TOOLS = [
     name: 'Strava Showdown',
     access: 'public',
     status: 'live',
-    url: 'https://wcmalfeld.github.io/StravaShowdown_LearningTool/',
+    url: 'https://www.mathletemtb.com/learning-lab/strava-showdown/',   // in this repo: learning-lab/strava-showdown/
     category: 'race-team',
     summary: 'Be the team’s race analyst: crunch ride data, graph the field and decide who gets picked to race.',
     image: 'assets/strava-showdown.jpg',
@@ -106,7 +106,7 @@ window.MATHLETE_TOOLS = [
     name: 'Jump Lab',
     access: 'public',
     status: 'live',
-    url: 'https://wcmalfeld.github.io/JumpLab_MTB/JumpLab_MTB/dist/jump-lab.html',
+    url: 'https://www.mathletemtb.com/learning-lab/jump-lab/',   // in this repo: learning-lab/jump-lab/
     category: 'engineering',
     summary: 'Set the speed, angle and heights of a jump, predict where the rider lands, then send it and check the projectile-motion math.',
     image: 'assets/jump-lab.jpg',
