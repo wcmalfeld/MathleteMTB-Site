@@ -188,6 +188,39 @@ async function main() {
   r = await call('POST', '/rest/v1/rpc/record_attempt', { body: { p_attempt_id: randomUUID(), p_game_id: GAME, p_question_id: QUESTION, p_snapshot: snap, p_is_correct: true } });
   record('A logged-out visitor cannot record attempts', !r.ok, `HTTP ${r.status}`);
 
+  // --- dashboard and review page (Phase 2) ---
+  const dash = (who, student) => call('POST', '/rest/v1/rpc/student_dashboard', { token: people[who].token, body: student ? { p_student: student } : {} });
+  r = await dash('A');
+  record('Dashboard: weekly numbers count questions, not retries', r.ok && r.data.week.questions === 3 && r.data.week.first_correct === 1 && r.data.week.eventually_correct === 2 && r.data.week.sessions === 2, r.text);
+  record('Dashboard: one mistake waiting, one corrected', r.ok && r.data.review.waiting === 1 && r.data.review.corrected === 1, r.ok ? JSON.stringify(r.data.review) : r.text);
+  record('Dashboard: too few answers shows "not enough data", never a grade', r.ok && r.data.skills.length === 1 && r.data.skills[0].id === 'geometry' && r.data.skills[0].status === 'not_enough_data' && r.data.skills[0].n === 3, r.ok ? JSON.stringify(r.data.skills) : r.text);
+  record('Dashboard: suggests reviewing the saved mistake first', r.ok && r.data.recommendations.length >= 1 && r.data.recommendations[0].type === 'review', r.ok ? JSON.stringify(r.data.recommendations) : r.text);
+  r = await dash('T', people.A.id);
+  record('A tutor can open their assigned student\'s dashboard', r.ok && r.data.student.display_name === 'Test A', r.text);
+  r = await dash('U', people.A.id);
+  record('A tutor cannot open a student who isn\'t theirs', r.status === 403, `HTTP ${r.status}`);
+  r = await dash('B', people.A.id);
+  record('A student cannot open another student\'s dashboard', r.status === 403, `HTTP ${r.status}`);
+  r = await call('POST', '/rest/v1/rpc/student_dashboard', { body: {} });
+  record('A logged-out visitor cannot open a dashboard', !r.ok, `HTTP ${r.status}`);
+  r = await read('A', 'review_items', 'select=id,status&status=eq.needs_review');
+  const waitingItem = rows(r)[0] && rows(r)[0].id;
+  r = await call('POST', '/rest/v1/rpc/start_review', { token: people.A.token, body: { p_review_item_id: waitingItem } });
+  record('Opening a saved question marks it in progress', r.ok && r.data === 'in_progress', r.text);
+  const review = (who, ok, id = randomUUID()) => call('POST', '/rest/v1/rpc/record_review_attempt', { token: people[who].token, body: { p_attempt_id: id, p_review_item_id: waitingItem, p_is_correct: ok, p_student_answer: '15' } });
+  r = await review('B', true);
+  record('A student cannot answer another student\'s review question', r.status === 404, `HTTP ${r.status}`);
+  r = await review('A', false);
+  record('A wrong try from the review page is another attempt on the same question', r.ok && r.data.attempt_number === 2 && r.data.review_status === 'in_progress', r.text);
+  r = await review('A', true);
+  record('A right try from the review page marks it corrected', r.ok && r.data.attempt_number === 3 && r.data.review_status === 'corrected', r.text);
+  r = await read('A', 'question_attempts', 'select=context,snapshot,correct_answer&context=eq.review&order=attempt_number.desc&limit=1');
+  record('...and carries the original question, taken from the server', rows(r).length === 1 && rows(r)[0].snapshot.prompt === 'A 20 m trail climbs 3 m. What is the grade?' && rows(r)[0].correct_answer === '25', r.text);
+  r = await dash('A');
+  record('Review tries don\'t count as new questions on the dashboard', r.ok && r.data.week.questions === 3 && r.data.review.waiting === 0, r.ok ? JSON.stringify(r.data.week) : r.text);
+  r = await call('PATCH', '/rest/v1/progress_settings?key=eq.min_sample', { token: people.A.token, body: { value: 1 }, headers: { Prefer: 'return=representation' } });
+  record('A student cannot change the dashboard settings', !(r.ok && rows(r).length > 0), `HTTP ${r.status}`);
+
   // --- access changes take effect immediately ---
   await admin('PATCH', `/rest/v1/student_tutors?student_id=eq.${people.A.id}&tutor_id=eq.${people.T.id}`, { body: { active: false }, headers: { Prefer: 'return=minimal' } });
   r = await read('T', 'question_attempts');

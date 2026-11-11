@@ -3,7 +3,7 @@
   'use strict';
   var A = window.MathleteAuth;
   var params = new URLSearchParams(location.search);
-  var next = A.safeNext(params.get('next')) || 'index.html#tools';
+  var next = A.safeNext(params.get('next')) || 'dashboard.html';   // students land on their dashboard
 
   var notice = document.getElementById('notice');
   var form = document.getElementById('login-form');

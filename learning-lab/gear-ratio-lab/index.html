@@ -279,6 +279,7 @@ function simulate(setup, course){
 const KEYS = {ratio:{dp:2,label:'Gear ratio',unit:'',help:'ring ÷ cog'}, dev:{dp:2,label:'Development',unit:'ft',help:'π × D × ratio ÷ 12'},
               speed:{dp:1,label:'Speed',unit:'mph',help:'dev × cadence → mph'}, time:{dp:2,label:'Time',unit:'min',help:'length ÷ speed'}};
 function keyOf(row, k){ return k==='ratio'?r2(row.ratio) : k==='dev'?r2(row.dev) : k==='speed'?r1(row.mph) : r2(row.time); }
+const cellTol = (row, k) => k==='ratio' ? 0.006 : k==='dev' ? 0.03 : k==='speed' ? 0.11 : r2(Math.max(0.03, row.time*0.012));
 function cellOk(row, k, v){
   if (v===null) return false;
   const key = keyOf(row,k);
@@ -695,7 +696,7 @@ function trackCell(row, k, id, ok){
   MP.recordQuestionAttempt({gameId:GAME, questionId:GAME+':'+SHEET_QID[k],
     questionSnapshot:{prompt:`${K.label} on the ${row.sec.name}: ${st.ring} × ${row.cog} gear, ${st.wheel} in wheel, ${row.sec.cad} rpm, ${row.sec.len} mi`
         + (row.legal ? '' : `. This gear is over the push limit, so the rider walks at ${WALK_MPH} mph`),
-      answer:keyOf(row,k), unit:K.unit, formula:K.help, chainring:st.ring, cog:row.cog, wheel:st.wheel, cadence:row.sec.cad, miles:row.sec.len,
+      answer:keyOf(row,k), tolerance:cellTol(row,k), unit:K.unit, formula:K.help, chainring:st.ring, cog:row.cog, wheel:st.wheel, cadence:row.sec.cad, miles:row.sec.len,
       pushLimit:r2(limitOf(row.sec, st.wheel)), walking:!row.legal, raceCourse:course().name},
     studentAnswer:raw, correctAnswer:fmt(keyOf(row,k),K.dp)+(K.unit?' '+K.unit:''), isCorrect:ok,
     hintsUsed:S.keySeen?1:0,                              // the answer key had been opened

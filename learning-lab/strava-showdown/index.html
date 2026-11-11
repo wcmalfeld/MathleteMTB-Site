@@ -657,7 +657,7 @@ function trackCell(r, c, k, ok){
   const st = STATS[c];
   MP.recordQuestionAttempt({gameId:GAME, questionId:GAME+':'+SHEET_QID[c],
     questionSnapshot:{prompt:`${st.label} for ${r.name} on ${r.trail}: ${r.dist} mi, ${r.elev} ft of climbing, splits of ${r.splits.join(', ')} min`,
-      answer:keyVal(r,c), unit:st.unit, formula:st.help, miles:r.dist, feetClimbed:r.elev, splitMinutes:r.splits, field:field().name},
+      answer:keyVal(r,c), tolerance:st.dp ? 0.051 : 1.01, unit:st.unit, formula:st.help, miles:r.dist, feetClimbed:r.elev, splitMinutes:r.splits, field:field().name},
     studentAnswer:raw, correctAnswer:fmt(keyVal(r,c),st.dp)+' '+st.unit, isCorrect:ok,
     hintsUsed:S.keySeen?1:0,                              // the answer key had been opened
     gameSessionId:sessionId()});

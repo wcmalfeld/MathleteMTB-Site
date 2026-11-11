@@ -65,6 +65,28 @@ in `docs/PROGRESS-TRACKING.md`; this file is the plan and the log.
   nothing is saved after logging out. (Physics Playground was skipped:
   its questions weren't on the server yet. Summit Expedition can't be
   tested this way until the new file is uploaded.)
+- **2026-11-11, Phase 2 part 1 built (not yet deployed).** The student's
+  own pages: `dashboard.html` (this week, next steps, skills, recent
+  activity), `my-progress.html` (skills in detail, every answer, a page
+  at a time) and `review.html` (Review My Mistakes, with a retry on the
+  page). After logging in, students land on the dashboard; "My Dashboard"
+  is in the main nav for signed-in members. New in the database:
+  `progress_settings`, the `question_first_tries` view,
+  `student_dashboard()`, `start_review()`, `record_review_attempt()` and
+  a `question_key` column. Details in `docs/PROGRESS-TRACKING.md`.
+  Checked locally: 31 database checks and 44 checks of the three pages
+  in real Chrome with a made-up student. **To switch on:** re-run
+  `supabase/progress.sql`, run `node scripts/test-progress.mjs`, deploy.
+  - *First-try accuracy* is the first try at a question within a play
+    session (the Phase 2 note above), from the view.
+  - *Retry on the review page* works for number, multiple-choice and
+    Summit Expedition's typed-math questions. Jump Lab missions (and the
+    Gear Ratio Lab tune-up prediction) link back to the game.
+  - *Not built yet:* student goals; "practice a similar question" is a
+    link to the game, not a generated twin.
+- **Next: Phase 2 part 2.** Student goals (table, progress from real
+  activity, a My Goals page; tutors create them in Phase 3, the admin
+  script until then).
 - **Open: playing on the tutor's computer.** Attempts go to whoever is
   logged in. A student playing on a tutor's login is recorded as the
   tutor. Recording on behalf of an assigned student belongs with the
@@ -146,7 +168,7 @@ to the browser.
 | 1a | Schema, roles, `record_attempt`, `js/progress.js`, admin commands, permission tests | Done |
 | 1b | Trail Builder moved in-repo and tracked (proof of concept); redirect page on the old address | Built; needs SQL re-run, deploy, redirect |
 | 1c | Gear Ratio Lab, Strava Showdown, Summit Expedition, then Jump Lab and Physics Playground | All built; needs SQL re-run, deploy, Summit upload |
-| 2 | Student dashboard, weekly stats, skill performance, Review My Mistakes, goals, basic recommendations | |
+| 2 | Student dashboard, weekly stats, skill performance, Review My Mistakes, goals, basic recommendations | Built except goals; needs SQL re-run and deploy |
 | 3 | Tutor dashboard: student list, profiles, review management, notes, session records | |
 | 4 | Session briefs, assignment builder, student assignments, reflections | |
 | 5 | Mastery refinements, parent reports, parent accounts | |

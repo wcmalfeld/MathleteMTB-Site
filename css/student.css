@@ -1,0 +1,283 @@
+/* ============================================================
+   STUDENT PAGES (dashboard.html, my-progress.html, review.html)
+   Loaded after site.css and lab.css on body.lab pages, so it uses
+   the Lab's dark tokens. Everything here is for signed-in students:
+   the section tabs, this-week tiles, skill meters, activity lists
+   and the review cards.
+
+   Status colors (always shown with an icon and a word, never alone):
+     strong = green, developing = blue, needs practice = rust,
+     not enough data = no color.
+   These three were checked together on the dark card surface for
+   color-blind separation, lightness and contrast; the Lab's own moss
+   and contour gold are too close to each other to tell apart, so
+   don't swap them back in.
+   ============================================================ */
+body.lab {
+  --st-strong: #58A862;
+  --st-developing: #4F97EA;
+  --st-needs: #E36A40;
+}
+
+.student-head { padding-bottom: 36px; }
+.student-head .page-title { font-size: clamp(40px, 6.4vw, 76px); }
+.student-head .hero-lede { max-width: 40rem; }
+
+/* ---------- section tabs ---------- */
+.student-tabs { border-bottom: 1px solid var(--rule); background: var(--panel); }
+.student-tabs ul {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.student-tabs ul::-webkit-scrollbar { display: none; }
+.student-tabs a {
+  display: block;
+  padding: 16px 0 14px;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  color: var(--ink-soft);
+  border-bottom: 2px solid transparent;
+}
+.student-tabs a:hover { color: var(--ink); }
+.student-tabs a[aria-current="page"] { color: var(--ink); border-color: var(--blaze); }
+.student-tabs .tab-count {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-size: 11.5px;
+  color: var(--ink);
+}
+
+/* ---------- page sections ---------- */
+.student-section { padding: 56px 0; }
+.student-section + .student-section { border-top: 1px solid var(--rule); }
+.student-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-bottom: 26px;
+}
+.student-section-head .meta { max-width: 34rem; }
+.student-state { padding: 72px 0; }
+.student-state p { max-width: 36rem; color: var(--text); }
+.student-empty {
+  padding: 26px 24px;
+  border: 1px dashed var(--rule);
+  color: var(--text);
+  max-width: 44rem;
+}
+.student-empty p { margin: 0 0 14px; }
+.student-empty p:last-child { margin-bottom: 0; }
+.student-note { margin: 18px 0 0; font-size: 13.5px; color: var(--ink-soft); max-width: 46rem; }
+
+/* ---------- this week: stat tiles ---------- */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.stat { background: var(--cream); padding: 20px 20px 18px; min-width: 0; }
+.stat-label { margin: 0 0 10px; font-size: 13.5px; color: var(--ink-soft); }
+.stat-value {
+  margin: 0;
+  font-family: var(--f-body);
+  font-weight: 600;
+  font-size: 34px;
+  line-height: 1.05;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.stat-value small { font-size: 16px; font-weight: 500; color: var(--ink-soft); }
+.stat-sub { margin: 8px 0 0; font-size: 13px; color: var(--ink-soft); }
+.stat-sub a { color: var(--ink); }
+.stat--empty .stat-value { color: var(--ink-soft); }
+
+/* ---------- next steps ---------- */
+.rec-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; list-style: none; margin: 0; padding: 0; }
+.rec {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 20px;
+  background: var(--cream);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--blaze);
+}
+.rec-kicker { margin: 0; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+.rec-title { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 24px; line-height: 1.05; text-transform: uppercase; color: var(--ink); }
+.rec-why { margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--text); flex: 1; }
+.rec .read-link { align-self: flex-start; }
+
+/* ---------- skills ---------- */
+.skill-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+.skill {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.1fr) minmax(140px, 2fr) minmax(150px, auto);
+  align-items: center;
+  gap: 8px 22px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.skill-name { margin: 0; font-weight: 600; font-size: 16px; color: var(--ink); }
+.skill-name small { display: block; margin-top: 3px; font-weight: 400; font-size: 13px; color: var(--ink-soft); }
+.skill-figure { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.skill-pct { flex: 0 0 3.2em; font-weight: 600; font-size: 18px; font-variant-numeric: tabular-nums; color: var(--ink); text-align: right; }
+.meter { flex: 1; height: 8px; border-radius: 999px; overflow: hidden; background: var(--tint); }
+.meter > span { display: block; height: 100%; border-radius: 999px; min-width: 2px; }
+.meter--strong { background: rgba(88, 168, 98, 0.22); }
+.meter--strong > span { background: var(--st-strong); }
+.meter--developing { background: rgba(79, 151, 234, 0.22); }
+.meter--developing > span { background: var(--st-developing); }
+.meter--needs_practice { background: rgba(227, 106, 64, 0.22); }
+.meter--needs_practice > span { background: var(--st-needs); }
+.skill-detail { margin: 0; font-size: 13px; color: var(--ink-soft); grid-column: 2 / -1; }
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.status-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink-soft);
+  font-size: 12px;
+  line-height: 1;
+  color: var(--ink-soft);
+}
+.status--strong .status-icon { border-color: var(--st-strong); color: var(--st-strong); }
+.status--developing .status-icon { border-color: var(--st-developing); color: var(--st-developing); }
+.status--needs_practice .status-icon { border-color: var(--st-needs); color: var(--st-needs); }
+.status--not_enough_data { color: var(--ink-soft); }
+.trend { font-size: 13px; color: var(--ink-soft); }
+
+@media (max-width: 720px) {
+  .skill { grid-template-columns: 1fr auto; }
+  .skill-figure { grid-column: 1 / -1; grid-row: 2; }
+  .skill-detail { grid-column: 1 / -1; }
+}
+
+/* ---------- activity and history lists ---------- */
+.rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.row-title { margin: 0; font-weight: 600; color: var(--ink); }
+.row-meta { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+.row-side { text-align: right; font-size: 14px; color: var(--text); white-space: nowrap; }
+.row-body { grid-column: 1 / -1; margin: 2px 0 0; font-size: 14.5px; line-height: 1.5; color: var(--text); overflow-wrap: anywhere; }
+/* Right / not yet: the words stay in the text color; only the tick or cross is colored. */
+.mark { display: inline-block; font-family: var(--f-mono); font-size: 12.5px; white-space: nowrap; color: var(--ink); }
+.mark--right::first-letter { color: var(--st-strong); }
+.mark--wrong::first-letter { color: var(--st-needs); }
+.answer { font-family: var(--f-mono); font-size: 13.5px; color: var(--ink); overflow-wrap: anywhere; }
+
+/* ---------- filters ---------- */
+.student-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 20px; margin-bottom: 24px; }
+.student-filters label { display: flex; flex-direction: column; gap: 6px; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+.student-filters select {
+  font: inherit;
+  font-family: var(--f-body);
+  font-size: 15px;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 9px 12px;
+  color: var(--ink);
+  background: var(--cream);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+}
+.student-filters select:focus { outline: 2px solid var(--blaze); outline-offset: 1px; }
+.student-count { margin: -8px 0 18px; }
+.lab button.button { color: var(--lab-deep); }
+.button--quiet {
+  background: transparent;
+  color: var(--ink) !important;
+  border: 1px solid var(--rule) !important;
+  padding: 12px 20px;
+}
+.button--quiet:hover { background: var(--tint) !important; }
+
+/* ---------- review cards ---------- */
+.review-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.review-card { background: var(--cream); border: 1px solid var(--rule); }
+.review-card[data-open="true"] { border-color: rgba(236, 239, 231, 0.3); }
+.review-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 20px;
+  width: 100%;
+  padding: 18px 20px;
+  background: none;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.review-summary:hover .review-title { color: var(--blaze); }
+.review-summary:focus-visible { outline: 2px solid var(--blaze); outline-offset: -2px; }
+.review-title { margin: 0; font-weight: 600; font-size: 17px; color: var(--ink); }
+.review-preview { margin: 0; font-size: 14.5px; color: var(--text); grid-column: 1 / -1; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.review-facts { margin: 0; grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; color: var(--ink-soft); }
+.review-body { padding: 4px 20px 22px; border-top: 1px solid var(--rule); }
+.review-body h3 { margin: 22px 0 8px; font-family: var(--f-mono); font-weight: 500; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+.problem { margin: 0; font-size: 17px; line-height: 1.55; color: var(--ink); overflow-wrap: anywhere; }
+.problem-math { margin: 12px 0 0; font-size: 19px; overflow-x: auto; color: var(--ink); }
+.problem-context { margin: 12px 0 0; padding: 0; list-style: none; font-size: 14.5px; color: var(--text); }
+.problem-context li { margin: 3px 0; }
+.problem-context b { font-weight: 600; color: var(--ink); }
+.problem-graph { display: block; width: 100%; max-width: 420px; height: auto; margin-top: 14px; background: var(--bg); border: 1px solid var(--rule); }
+.tries { list-style: none; margin: 0; padding: 0; font-size: 14.5px; color: var(--text); }
+.tries li { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 5px 0; }
+.retry { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.retry .input { width: auto; flex: 1 1 200px; max-width: 320px; }
+.lab .input { border-color: var(--rule); }
+.retry-unit { color: var(--ink-soft); }
+.choices { display: grid; gap: 8px; margin: 0 0 14px; padding: 0; border: 0; }
+.choices label { display: flex; align-items: flex-start; gap: 10px; padding: 11px 14px; border: 1px solid var(--rule); cursor: pointer; color: var(--ink); }
+.choices label:has(input:checked) { border-color: var(--blaze); background: var(--tint); }
+.choices input { margin-top: 3px; accent-color: var(--blaze); }
+.feedback { margin: 16px 0 0; padding: 14px 16px; border-left: 3px solid var(--chalk); background: var(--tint); color: var(--ink); font-size: 15.5px; line-height: 1.5; }
+.feedback--right { border-color: var(--st-strong); }
+.feedback--wrong { border-color: var(--blaze); }
+.feedback p { margin: 0 0 8px; }
+.feedback p:last-child, .feedback ol:last-child { margin-bottom: 0; }
+.feedback ol { margin: 6px 0 0; padding-left: 22px; }
+.review-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; margin-top: 20px; }
+.format-hint { margin: 8px 0 0; font-size: 13px; color: var(--ink-soft); }
+
+@media (max-width: 640px) {
+  .student-section { padding: 40px 0; }
+  .stat-value { font-size: 28px; }
+  .review-summary, .review-body { padding-left: 16px; padding-right: 16px; }
+}

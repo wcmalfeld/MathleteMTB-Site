@@ -61,8 +61,8 @@
           form.hidden = true;
           return A.status({ force: true }).then(function (st) {
             if (st.member) {
-              show('success', 'Password saved. Taking you to the learning tools…');
-              setTimeout(function () { location.replace('index.html#tools'); }, 1200);
+              show('success', 'Password saved. Taking you to your dashboard…');
+              setTimeout(function () { location.replace('dashboard.html'); }, 1200);
             } else if (st.error) {
               show('success', 'Password saved. You can now log in.');
             } else {

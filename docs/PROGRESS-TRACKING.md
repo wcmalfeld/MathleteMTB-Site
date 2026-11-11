@@ -195,6 +195,75 @@ add a new kind of question to `src/progress.tsx`, register it in
 - Nothing becomes **mastered** automatically.
 - Every change is logged in `review_events`.
 
+## The student pages
+
+| Page | Shows | Reads |
+|---|---|---|
+| `dashboard.html` | This week, next steps, skills, recent sessions | `student_dashboard()` |
+| `my-progress.html` | Skills in detail; every answer, 25 at a time | `student_dashboard()`, `question_attempts` |
+| `review.html` | Saved missed questions; try one again | `review_items`, `question_attempts`, `start_review()`, `record_review_attempt()` |
+
+Shared code is `js/student.js`; the look is `css/student.css`. Text from
+the database is always put on the page as plain text, never as HTML
+(`check-site.mjs` checks this).
+
+### How the numbers are worked out
+
+- **A question counts once per play session.** The view
+  `question_first_tries` keeps the first try at each question in each
+  session. "Questions attempted" counts those rows, so retries never
+  inflate it, and a fixed question met again in a later session is a
+  fresh first try. Tries made on the review page are left out.
+- **First-try accuracy** = first tries that were right ÷ first tries.
+  **Right in the end** = questions answered correctly at some point in
+  that session.
+- **This week** starts Monday 00:00 in the `timezone` setting.
+- **Practice time** adds up only the gaps between one answer and the
+  next in the same session, and only gaps up to `active_gap_minutes`.
+  Leaving a tab open adds nothing; a single answer adds nothing.
+- **Skill status** looks at the last `skill_window_days`. Fewer than
+  `min_sample` first tries shows "Not enough data" and no percentage.
+  Otherwise `strong_at` or more is Strong, `developing_at` or more is
+  Developing, below that Needs practice. A question tagged with two
+  skills counts once in each. The pages say these are practice
+  indicators, not grades.
+- **Next steps** are fixed rules, in this order, at most four: saved
+  mistakes waiting; the weakest skill that needs practice; a skill not
+  practiced for `stale_days`; a strong skill to push further; and, if
+  nothing has been done this week, "play a round". Each links straight
+  to the review page or a game.
+
+### Changing a threshold
+
+Edit the row in `progress_settings` (Supabase → Table Editor). It takes
+effect at once and re-running `progress.sql` won't overwrite it.
+
+| key | default | meaning |
+|---|---|---|
+| `timezone` | America/Denver | where the week starts |
+| `skill_window_days` | 30 | how far back skills look (and the comparison period before) |
+| `min_sample` | 5 | first tries needed before a skill gets a percentage |
+| `strong_at` / `developing_at` | 0.8 / 0.6 | status cut-offs |
+| `active_gap_minutes` | 10 | longest gap that counts as practice time |
+| `stale_days` | 14 | when a skill is suggested as a refresher |
+
+### Review My Mistakes
+
+- Opening a saved question marks it **In progress**.
+- The page can re-ask questions that are a number, multiple choice, or
+  Summit Expedition's typed math (it loads math.js and MathJax only
+  then, and checks answers the way the game does). Missions that only
+  make sense in the simulator link back to the game.
+- A wrong try gives the question's hint; a second wrong try shows the
+  answer and working and locks that question until the page is reloaded,
+  so the answer can't simply be typed back in.
+- The browser sends only the review item, the answer and right/wrong.
+  `record_review_attempt()` takes the question from the student's own
+  original attempt on the server, so a review try always counts toward
+  the right question. A right one marks it **Corrected**.
+- Order "Most important first": tutor-flagged, missed more than once, in
+  a skill that needs practice, never retried, missed in the last week.
+
 ## Adding or changing skills
 
 Add a row to the `insert into public.skills` list in

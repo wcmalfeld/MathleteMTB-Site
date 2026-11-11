@@ -155,6 +155,7 @@ function page({ path, depth, title, description, body, sport = 'mtb' }) {
       <li><a href="ski/"${sport === 'ski' ? ' class="active"' : ''}>Ski</a></li>
       <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
       <li><a href="about.html">About</a></li>
+      <li data-auth-show="member" hidden><a href="dashboard.html">My Dashboard</a></li>
       <li data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
       <li class="nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
     </ul>

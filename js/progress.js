@@ -98,7 +98,7 @@
   function send(sb, it) {
     var call = it.kind === 'end'
       ? sb.rpc('end_game_session', { p_session_id: it.sessionId, p_completed: it.completed, p_metrics: it.metrics })
-      : sb.rpc('record_attempt', it.params);
+      : sb.rpc(it.kind === 'review' ? 'record_review_attempt' : 'record_attempt', it.params);
     return call.then(function (res) {
       if (!res.error) return 'saved';
       var status = res.status || 0;
@@ -250,6 +250,45 @@
     }
   }
 
+  // Record a try at a saved question from the review page (review.html).
+  // Only the review item, the answer and whether it was right are sent:
+  // the server looks up the question itself from the student's original
+  // attempt. Resolves like recordQuestionAttempt.
+  function recordReviewAttempt(a) {
+    try {
+      a = a || {};
+      if (!a.reviewItemId || typeof a.isCorrect !== 'boolean') return Promise.resolve({ saved: false, reason: 'invalid' });
+      var item = {
+        id: uuid(), kind: 'review', at: Date.now(),
+        params: {
+          p_review_item_id: a.reviewItemId,
+          p_is_correct: a.isCorrect,
+          p_student_answer: str(a.studentAnswer),
+          p_hints_used: int(a.hintsUsed) || 0,
+          p_time_ms: a.timeToAnswerMs !== undefined ? int(a.timeToAnswerMs) : null
+        }
+      };
+      item.params.p_attempt_id = item.id;
+      return currentUserId().then(function (uid) {
+        if (!uid) return { saved: false, reason: 'anonymous' };
+        item.uid = uid;
+        var q = readQueue();
+        q.push(item);
+        if (!writeQueue(q)) {
+          return A.client().then(function (sb) { return send(sb, item); }).then(function (outcome) {
+            return { saved: outcome === 'saved', attemptId: item.id };
+          });
+        }
+        return flush().then(function () {
+          var waiting = inQueue(item.id);
+          return { saved: !waiting, queued: waiting, attemptId: item.id };
+        });
+      }).catch(function () { return { saved: false, reason: 'error' }; });
+    } catch (e) {
+      return Promise.resolve({ saved: false, reason: 'error' });
+    }
+  }
+
   // Mark a session finished (optional). metrics: a small object, e.g. { score: 8 }.
   function endSession(sessionId, opts) {
     try {
@@ -276,6 +315,7 @@
   var api = {
     startSession: startSession,
     recordQuestionAttempt: recordQuestionAttempt,
+    recordReviewAttempt: recordReviewAttempt,
     endSession: endSession,
     flush: flush,
     showLoginNote: true

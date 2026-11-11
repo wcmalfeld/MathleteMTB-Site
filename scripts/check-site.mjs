@@ -90,6 +90,23 @@ for (const t of hosted) {
   }
 }
 
+// ---- student pages (dashboard, progress, review) ----
+for (const page of ['dashboard.html', 'my-progress.html', 'review.html']) {
+  const html = read(page);
+  const order = ['js/tools-config.js', 'js/supabase-config.js', 'js/auth.js', 'js/progress.js', 'js/student.js'].map(x => html.indexOf(x));
+  check(`${page} loads config, Supabase config, auth, progress, then the student scripts`, order.every((v, i) => v > 0 && (i === 0 || v > order[i - 1])));
+  check(`${page} is kept out of search engines`, html.includes('<meta name="robots" content="noindex">'));
+}
+{
+  // Text from the database must never be inserted as HTML on these pages.
+  const unsafe = ['js/student.js', 'js/dashboard.js', 'js/my-progress.js', 'js/review.js'].filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write/.test(read(f)));
+  check('Student pages never build HTML from data (text only)', unsafe.length === 0, unsafe.join(', '));
+  const sql = read('supabase/progress.sql');
+  const calls = [...new Set(['js/student.js', 'js/dashboard.js', 'js/my-progress.js', 'js/review.js', 'js/progress.js'].flatMap(f => [...read(f).matchAll(/\.rpc\(([^,)]+)[,)]/g)].flatMap(m => [...m[1].matchAll(/'([a-z]+_[a-z_]+)'/g)].map(x => x[1]))))];
+  const missing = calls.filter(fn => !sql.includes(`function public.${fn}(`));
+  check(`Every database function the pages call exists in supabase/progress.sql (${calls.join(', ')})`, calls.length >= 5 && missing.length === 0, missing.join(', '));
+}
+
 // ---- home page (the Lab) ----
 const index = read('index.html');
 const cards = [...index.matchAll(/<article\b[^>]*\bdata-lab-tool="([^"]+)"/g)].map(m => m[1]);

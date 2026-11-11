@@ -547,6 +547,9 @@ create table if not exists public.question_attempts (
   created_at      timestamptz not null default now(),
   unique (student_id, question_id, question_hash, attempt_number)
 );
+-- The game's own name for a fixed question (e.g. a mission id), when it
+-- sent one. Kept so a review attempt can be matched to the same question.
+alter table public.question_attempts add column if not exists question_key text;
 create index if not exists question_attempts_student_time_idx on public.question_attempts (student_id, occurred_at desc);
 create index if not exists question_attempts_student_created_idx on public.question_attempts (student_id, created_at desc);
 create index if not exists question_attempts_question_idx on public.question_attempts (question_id);
@@ -739,10 +742,10 @@ begin
 
   begin
     insert into public.question_attempts
-      (id, student_id, game_id, question_id, question_hash, game_session_id, context, snapshot,
+      (id, student_id, game_id, question_id, question_hash, question_key, game_session_id, context, snapshot,
        student_answer, correct_answer, is_correct, attempt_number, hints_used, time_to_answer_ms, occurred_at)
     values
-      (p_attempt_id, v_uid, p_game_id, p_question_id, v_hash, p_session_id, v_context, p_snapshot,
+      (p_attempt_id, v_uid, p_game_id, p_question_id, v_hash, nullif(btrim(p_question_key), ''), p_session_id, v_context, p_snapshot,
        p_student_answer, p_correct_answer, p_is_correct, v_n,
        least(greatest(coalesce(p_hints_used, 0), 0), 100),
        case when p_time_ms between 0 and 86400000 then p_time_ms end,
@@ -845,3 +848,340 @@ revoke all on function public.record_attempt(uuid, text, text, jsonb, boolean, t
 revoke all on function public.end_game_session(uuid, boolean, jsonb) from public, anon;
 grant execute on function public.record_attempt(uuid, text, text, jsonb, boolean, text, text, integer, integer, uuid, text, timestamptz, text) to authenticated;
 grant execute on function public.end_game_session(uuid, boolean, jsonb) to authenticated;
+
+-- ============================================================
+-- Phase 2: the student's own view of their progress
+-- (dashboard.html, my-progress.html, review.html).
+-- ============================================================
+
+-- 6. Settings ---------------------------------------------------
+-- The numbers the dashboards use, in one place. Change a value here (or
+-- in the dashboard's table editor) and every page follows. Re-running
+-- this file never overwrites a value you changed.
+create table if not exists public.progress_settings (
+  key   text primary key,
+  value jsonb not null,
+  note  text
+);
+insert into public.progress_settings (key, value, note) values
+  ('timezone',           '"America/Denver"', 'Weeks start Monday 00:00 in this timezone.'),
+  ('skill_window_days',  '30',   'Skill accuracy looks at this many days, and compares with the same number before.'),
+  ('min_sample',         '5',    'Fewer first tries than this in the window shows "Not enough data".'),
+  ('strong_at',          '0.8',  'First-try accuracy at or above this is "Strong".'),
+  ('developing_at',      '0.6',  'At or above this (and below strong) is "Developing"; below is "Needs practice".'),
+  ('active_gap_minutes', '10',   'Practice time counts gaps between answers up to this long.'),
+  ('stale_days',         '14',   'A skill not practiced for this long is suggested as a refresher.')
+on conflict (key) do nothing;
+
+alter table public.progress_settings enable row level security;
+drop policy if exists "Signed-in users can read settings" on public.progress_settings;
+create policy "Signed-in users can read settings" on public.progress_settings for select to authenticated using (true);
+revoke all on public.progress_settings from anon, authenticated;
+grant select on public.progress_settings to authenticated;
+
+create or replace function public.progress_setting(p_key text, p_default numeric)
+returns numeric
+language sql
+stable
+set search_path = ''
+as $$
+  select coalesce((select (s.value #>> '{}')::numeric from public.progress_settings s where s.key = p_key), p_default);
+$$;
+revoke all on function public.progress_setting(text, numeric) from public, anon;
+grant execute on function public.progress_setting(text, numeric) to authenticated;
+
+-- 7. First tries --------------------------------------------------
+-- One row per question per play session: the student's FIRST try at it
+-- in that session, plus whether they got there in the end. This is what
+-- "questions attempted" and "first-attempt accuracy" count, so retries
+-- never inflate the numbers and a fixed question met again in a later
+-- session counts as a fresh first try. Attempts made on the review page
+-- are left out (they are re-tries by definition). Attempts with no
+-- session are grouped by day.
+-- The view runs with the reader's own rights, so the row-level rules on
+-- question_attempts apply to it unchanged.
+create or replace view public.question_first_tries
+with (security_invoker = true) as
+select distinct on (a.student_id, a.question_id, a.question_hash,
+                    coalesce(a.game_session_id::text, to_char(a.occurred_at at time zone 'UTC', 'YYYY-MM-DD')))
+  a.student_id,
+  a.game_id,
+  a.question_id,
+  a.question_hash,
+  a.game_session_id,
+  a.id          as attempt_id,
+  a.occurred_at,
+  a.is_correct  as first_correct,
+  bool_or(a.is_correct) over w   as eventually_correct,
+  max(a.hints_used) over w > 0   as used_hint,
+  count(*) over w                as tries
+from public.question_attempts a
+where a.context <> 'review'
+window w as (partition by a.student_id, a.question_id, a.question_hash,
+                          coalesce(a.game_session_id::text, to_char(a.occurred_at at time zone 'UTC', 'YYYY-MM-DD')))
+order by a.student_id, a.question_id, a.question_hash,
+         coalesce(a.game_session_id::text, to_char(a.occurred_at at time zone 'UTC', 'YYYY-MM-DD')),
+         a.occurred_at, a.attempt_number;
+
+revoke all on public.question_first_tries from anon, authenticated;
+grant select on public.question_first_tries to authenticated;
+
+-- 8. The dashboard in one call -------------------------------------
+-- Everything dashboard.html and my-progress.html show, as one JSON
+-- document. With no argument it is the signed-in student's own; a tutor
+-- passes one of their assigned students (anyone else is refused). It
+-- runs with the caller's rights, so it can only ever read rows the
+-- row-level rules already allow.
+--   week             this week so far (and last week, for comparison)
+--   skills           first-try accuracy per skill over the window, with
+--                    the sample size and a plain status; "not_enough_data"
+--                    below min_sample. These are practice indicators, not
+--                    grades.
+--   recent           the latest play sessions
+--   review           how many missed questions are waiting
+--   recommendations  rule-based next steps, most important first
+create or replace function public.student_dashboard(p_student uuid default null)
+returns jsonb
+language plpgsql
+stable
+set search_path = ''
+as $$
+declare
+  v_uid   uuid := auth.uid();
+  v_sid   uuid := coalesce(p_student, auth.uid());
+  v_tz    text;
+  v_week  timestamptz;
+  v_win   integer := public.progress_setting('skill_window_days', 30);
+  v_min   integer := public.progress_setting('min_sample', 5);
+  v_strong numeric := public.progress_setting('strong_at', 0.8);
+  v_dev    numeric := public.progress_setting('developing_at', 0.6);
+  v_gap    numeric := public.progress_setting('active_gap_minutes', 10);
+  v_stale  integer := public.progress_setting('stale_days', 14);
+  v_student jsonb; v_weekj jsonb; v_prev jsonb; v_skills jsonb; v_recent jsonb; v_review jsonb;
+  v_recs jsonb := '[]'::jsonb;
+  v_waiting integer; v_minutes integer; v_sessions integer; v_completed integer;
+  r record;
+  v_used text[] := '{}';
+begin
+  if v_uid is null or not public.has_tool_access() then
+    raise sqlstate 'PT403' using message = 'Sign in with an active account.';
+  end if;
+  if v_sid <> v_uid and v_sid not in (select public.my_student_ids()) then
+    raise sqlstate 'PT403' using message = 'That student is not assigned to you.';
+  end if;
+
+  v_tz := coalesce((select s.value #>> '{}' from public.progress_settings s where s.key = 'timezone'), 'America/Denver');
+  v_week := date_trunc('week', now() at time zone v_tz) at time zone v_tz;
+
+  select jsonb_build_object('display_name', p.display_name, 'grade_level', p.grade_level, 'since', p.created_at,
+           'tutors', coalesce((select jsonb_agg(t.display_name order by t.display_name)
+                               from public.student_tutors st join public.profiles t on t.user_id = st.tutor_id
+                               where st.student_id = v_sid and st.active), '[]'::jsonb))
+    into v_student
+  from public.profiles p where p.user_id = v_sid;
+
+  -- This week and last week
+  select jsonb_build_object('questions', count(*), 'first_correct', count(*) filter (where f.first_correct),
+           'eventually_correct', count(*) filter (where f.eventually_correct), 'with_hints', count(*) filter (where f.used_hint))
+    into v_weekj
+  from public.question_first_tries f where f.student_id = v_sid and f.occurred_at >= v_week;
+  select jsonb_build_object('questions', count(*), 'first_correct', count(*) filter (where f.first_correct))
+    into v_prev
+  from public.question_first_tries f
+  where f.student_id = v_sid and f.occurred_at >= v_week - interval '7 days' and f.occurred_at < v_week;
+
+  select count(distinct a.game_session_id) into v_sessions
+  from public.question_attempts a
+  where a.student_id = v_sid and a.occurred_at >= v_week and a.game_session_id is not null;
+  select count(*) into v_completed
+  from public.game_sessions s where s.student_id = v_sid and s.completed and s.ended_at >= v_week;
+  -- Practice time: only the gaps between one answer and the next in the
+  -- same session, and only short ones. A tab left open counts for nothing.
+  select coalesce(round(sum(extract(epoch from g.gap)) / 60), 0) into v_minutes
+  from (select a.occurred_at - lag(a.occurred_at) over (partition by a.game_session_id order by a.occurred_at) as gap
+        from public.question_attempts a
+        where a.student_id = v_sid and a.occurred_at >= v_week and a.game_session_id is not null) g
+  where g.gap <= make_interval(secs => v_gap * 60);
+  select count(*) into v_waiting
+  from public.review_items ri where ri.student_id = v_sid and ri.status in ('needs_review', 'in_progress');
+
+  v_weekj := v_weekj || jsonb_build_object('start', v_week, 'sessions', v_sessions, 'completed', v_completed,
+                                           'active_minutes', v_minutes, 'previous', v_prev);
+
+  -- Skills
+  with cur as (
+    select qs.skill_id, count(*) n, count(*) filter (where f.first_correct) c, count(*) filter (where f.eventually_correct) e,
+           count(*) filter (where f.used_hint) h, count(distinct f.question_hash) uq, count(distinct f.game_session_id) sess
+    from public.question_first_tries f join public.question_skills qs on qs.question_id = f.question_id
+    where f.student_id = v_sid and f.occurred_at >= now() - make_interval(days => v_win)
+    group by qs.skill_id),
+  prev as (
+    select qs.skill_id, count(*) n, count(*) filter (where f.first_correct) c
+    from public.question_first_tries f join public.question_skills qs on qs.question_id = f.question_id
+    where f.student_id = v_sid and f.occurred_at >= now() - make_interval(days => 2 * v_win)
+      and f.occurred_at < now() - make_interval(days => v_win)
+    group by qs.skill_id),
+  ever as (
+    select qs.skill_id, count(*) n, max(f.occurred_at) last_at
+    from public.question_first_tries f join public.question_skills qs on qs.question_id = f.question_id
+    where f.student_id = v_sid
+    group by qs.skill_id)
+  select coalesce(jsonb_agg(jsonb_build_object(
+           'id', s.id, 'name', s.name, 'parent', s.parent_id,
+           'n', coalesce(cur.n, 0), 'correct', coalesce(cur.c, 0), 'eventually_correct', coalesce(cur.e, 0),
+           'with_hints', coalesce(cur.h, 0), 'questions', coalesce(cur.uq, 0), 'sessions', coalesce(cur.sess, 0),
+           'prev_n', coalesce(prev.n, 0), 'prev_correct', coalesce(prev.c, 0),
+           'total_n', ever.n, 'last_at', ever.last_at,
+           'status', case when coalesce(cur.n, 0) < v_min then 'not_enough_data'
+                          when cur.c::numeric / cur.n >= v_strong then 'strong'
+                          when cur.c::numeric / cur.n >= v_dev then 'developing'
+                          else 'needs_practice' end)
+         order by s.sort_order), '[]'::jsonb)
+    into v_skills
+  from ever join public.skills s on s.id = ever.skill_id
+  left join cur on cur.skill_id = s.id left join prev on prev.skill_id = s.id;
+
+  -- Recent sessions
+  select coalesce(jsonb_agg(x.j order by x.started_at desc), '[]'::jsonb) into v_recent
+  from (select s.started_at,
+               jsonb_build_object('id', s.id, 'game_id', s.game_id, 'started_at', s.started_at, 'last_activity_at', s.last_activity_at,
+                 'completed', s.completed, 'metrics', s.metrics,
+                 'questions', (select count(*) from public.question_first_tries f where f.game_session_id = s.id),
+                 'first_correct', (select count(*) from public.question_first_tries f where f.game_session_id = s.id and f.first_correct)) as j
+        from public.game_sessions s where s.student_id = v_sid
+        order by s.started_at desc limit 8) x;
+
+  select jsonb_build_object('waiting', v_waiting,
+           'corrected', (select count(*) from public.review_items ri where ri.student_id = v_sid and ri.status in ('corrected', 'mastered')),
+           'by_skill', coalesce((select jsonb_agg(jsonb_build_object('id', t.skill_id, 'name', t.name, 'count', t.n) order by t.n desc, t.name)
+                                 from (select qs.skill_id, sk.name, count(*) n
+                                       from public.review_items ri
+                                       join public.question_skills qs on qs.question_id = ri.question_id
+                                       join public.skills sk on sk.id = qs.skill_id
+                                       where ri.student_id = v_sid and ri.status in ('needs_review', 'in_progress')
+                                       group by qs.skill_id, sk.name) t), '[]'::jsonb))
+    into v_review;
+
+  -- Recommendations: simple rules, most important first, at most four.
+  -- 1. Missed questions waiting.
+  if v_waiting > 0 then
+    v_recs := v_recs || jsonb_build_object('type', 'review', 'count', v_waiting,
+                'skill_id', v_review #>> '{by_skill,0,id}', 'skill_name', v_review #>> '{by_skill,0,name}',
+                'minutes', least(30, greatest(5, v_waiting * 3)));
+  end if;
+  -- 2. The weakest skill with enough data.
+  for r in select e ->> 'id' id, e ->> 'name' name, (e ->> 'n')::int n, (e ->> 'correct')::int c
+           from jsonb_array_elements(v_skills) e where e ->> 'status' = 'needs_practice'
+           order by (e ->> 'correct')::numeric / (e ->> 'n')::numeric, (e ->> 'n')::int desc limit 1 loop
+    v_recs := v_recs || jsonb_build_object('type', 'practice_skill', 'skill_id', r.id, 'skill_name', r.name, 'n', r.n, 'correct', r.c,
+                'game_id', (select q.game_id from public.questions q join public.question_skills qs on qs.question_id = q.id
+                            where qs.skill_id = r.id and q.active group by q.game_id order by count(*) desc, q.game_id limit 1));
+    v_used := v_used || r.id;
+  end loop;
+  -- 3. A skill not practiced for a while.
+  for r in select e ->> 'id' id, e ->> 'name' name, (e ->> 'last_at')::timestamptz last_at
+           from jsonb_array_elements(v_skills) e
+           where (e ->> 'last_at')::timestamptz < now() - make_interval(days => v_stale) and not (e ->> 'id' = any (v_used))
+           order by (e ->> 'last_at')::timestamptz limit 1 loop
+    v_recs := v_recs || jsonb_build_object('type', 'refresh_skill', 'skill_id', r.id, 'skill_name', r.name,
+                'days', floor(extract(epoch from now() - r.last_at) / 86400),
+                'game_id', (select q.game_id from public.questions q join public.question_skills qs on qs.question_id = q.id
+                            where qs.skill_id = r.id and q.active group by q.game_id order by count(*) desc, q.game_id limit 1));
+    v_used := v_used || r.id;
+  end loop;
+  -- 4. A strong skill: try something harder.
+  for r in select e ->> 'id' id, e ->> 'name' name, (e ->> 'n')::int n, (e ->> 'correct')::int c
+           from jsonb_array_elements(v_skills) e where e ->> 'status' = 'strong' and not (e ->> 'id' = any (v_used))
+           order by (e ->> 'correct')::numeric / (e ->> 'n')::numeric desc, (e ->> 'n')::int desc limit 1 loop
+    v_recs := v_recs || jsonb_build_object('type', 'level_up', 'skill_id', r.id, 'skill_name', r.name, 'n', r.n, 'correct', r.c,
+                'game_id', (select q.game_id from public.questions q join public.question_skills qs on qs.question_id = q.id
+                            where qs.skill_id = r.id and q.active
+                            group by q.game_id order by count(*) filter (where q.difficulty = 'advanced') desc, count(*) desc, q.game_id limit 1));
+  end loop;
+  -- 5. Nothing yet this week (or nothing at all): just play.
+  if (v_weekj ->> 'questions')::int = 0 then
+    v_recs := v_recs || jsonb_build_object('type', 'play',
+                'game_id', (select s.game_id from public.game_sessions s where s.student_id = v_sid order by s.started_at desc limit 1));
+  end if;
+
+  return jsonb_build_object(
+    'student', v_student, 'week', v_weekj, 'skills', v_skills, 'recent', v_recent, 'review', v_review,
+    'recommendations', (select coalesce(jsonb_agg(e), '[]'::jsonb) from (select e from jsonb_array_elements(v_recs) with ordinality t(e, i) order by i limit 4) z),
+    'settings', jsonb_build_object('timezone', v_tz, 'window_days', v_win, 'min_sample', v_min, 'strong_at', v_strong, 'developing_at', v_dev),
+    'generated_at', now());
+end;
+$$;
+revoke all on function public.student_dashboard(uuid) from public, anon;
+grant execute on function public.student_dashboard(uuid) to authenticated;
+
+-- 9. Review My Mistakes ----------------------------------------------
+-- A student opening a saved question: "needs review" becomes "in progress".
+create or replace function public.start_review(p_review_item_id uuid)
+returns text
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_uid uuid := auth.uid();
+  v_item public.review_items%rowtype;
+begin
+  if v_uid is null or not public.has_tool_access() then
+    raise sqlstate 'PT403' using message = 'Sign in with an active account.';
+  end if;
+  select * into v_item from public.review_items r where r.id = p_review_item_id and r.student_id = v_uid for update;
+  if not found then
+    raise sqlstate 'PT404' using message = 'No such review item.';
+  end if;
+  if v_item.status = 'needs_review' then
+    update public.review_items r set status = 'in_progress', last_activity_at = now() where r.id = v_item.id;
+    insert into public.review_events (review_item_id, student_id, from_status, to_status, actor_id, actor_role, note)
+    values (v_item.id, v_uid, 'needs_review', 'in_progress', v_uid, 'student', 'Opened for review');
+    return 'in_progress';
+  end if;
+  return v_item.status;
+end;
+$$;
+
+-- A try at a saved question from the review page. The browser sends only
+-- which review item, the answer and whether it was right; the question
+-- itself (and so which question this counts toward) comes from the
+-- student's own original attempt, here on the server. A right answer
+-- marks the item "corrected" (never "mastered").
+create or replace function public.record_review_attempt(
+  p_attempt_id     uuid,
+  p_review_item_id uuid,
+  p_is_correct     boolean,
+  p_student_answer text default null,
+  p_hints_used     integer default 0,
+  p_time_ms        integer default null
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_uid   uuid := auth.uid();
+  v_first public.question_attempts%rowtype;
+begin
+  if v_uid is null or not public.has_tool_access() then
+    raise sqlstate 'PT403' using message = 'Sign in with an active account to save progress.';
+  end if;
+  select a.* into v_first
+  from public.review_items r join public.question_attempts a on a.id = r.first_attempt_id
+  where r.id = p_review_item_id and r.student_id = v_uid;
+  if not found then
+    raise sqlstate 'PT404' using message = 'No such review item.';
+  end if;
+  return public.record_attempt(
+    p_attempt_id, v_first.game_id, v_first.question_id, v_first.snapshot, p_is_correct,
+    p_student_answer, v_first.correct_answer, p_hints_used, p_time_ms,
+    null, 'review', now(), v_first.question_key);
+end;
+$$;
+
+revoke all on function public.start_review(uuid) from public, anon;
+revoke all on function public.record_review_attempt(uuid, uuid, boolean, text, integer, integer) from public, anon;
+grant execute on function public.start_review(uuid) to authenticated;
+grant execute on function public.record_review_attempt(uuid, uuid, boolean, text, integer, integer) to authenticated;
