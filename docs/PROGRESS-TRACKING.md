@@ -157,6 +157,22 @@ Check twice doesn't double-count. If the game has an answer key, send
 appears once), then signed in, and check the rows with
 `node scripts/admin.mjs` or the Supabase table view.
 
+## Updating the MTB Physics Playground
+
+The Playground is a React app in its own repository. Its tracking code is
+`src/progress.tsx` there; it reports to `window.MathleteProgress` when the
+app runs on this site and does nothing anywhere else. To publish a new
+version:
+
+1. In the Playground folder: `npm run build`
+2. In this folder: `node scripts/import-playground.mjs /path/to/mtb-physics/dist`
+3. `node scripts/check-site.mjs`, then commit and push this site.
+
+The import replaces `learning-lab/physics-playground/` and adds the three
+site scripts to its `index.html`. Don't edit that folder by hand. If you
+add a new kind of question to `src/progress.tsx`, register it in
+`supabase/progress.sql` and add it to the list in `scripts/check-site.mjs`.
+
 ## What happens to an attempt
 
 1. `js/progress.js` gives it an id and puts it on a waiting list in the

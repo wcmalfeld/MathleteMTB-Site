@@ -43,10 +43,11 @@ that server-side check.
 | `tool-05` | Tool 06 (Coming Soon placeholder) | public |
 | `summit-expedition` | Summit Expedition | **private** (bucket: `summit-expedition/index.html`) |
 
-Trail Builder, Gear Ratio Lab, Strava Showdown and Jump Lab are in this repo
-at `learning-lab/<id>/` (so they share the site's login and can save a
-signed-in student's progress; see `docs/PROGRESS-TRACKING.md`). The MTB
-Physics Playground is hosted on its own public GitHub Pages site. The Coming Soon placeholder is public
+All five live public tools are in this repo at `learning-lab/<id>/` (so they
+share the site's login and can save a signed-in student's progress; see
+`docs/PROGRESS-TRACKING.md`). The MTB Physics Playground is developed in its
+own repository and its build is copied in with
+`node scripts/import-playground.mjs`. The Coming Soon placeholder is public
 too, so visitors see six cards.
 (`MATHLETE_PUBLIC_TOOL_COUNT` at the bottom of `js/tools-config.js` is now 6.)
 Summit Expedition is members-only: its file lives in the private bucket, and

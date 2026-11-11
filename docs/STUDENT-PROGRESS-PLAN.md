@@ -48,11 +48,23 @@ in `docs/PROGRESS-TRACKING.md`; this file is the plan and the log.
     questions are recorded too. The site copy is the built
     `dist/jump-lab.html` with tracking added by hand, so the `src/` in
     the old JumpLab_MTB folder no longer matches it.
-- **Open: MTB Physics Playground.** A React app in its own repo
-  (`wcmalfeld/mtb-physics`, built by its own GitHub Action, with
-  uncommitted work in the local checkout). Tracking it means adding calls
-  in that repo's source and serving its build from this site. Not started;
-  needs a decision on how the two repos fit together.
+- **2026-11-10, MTB Physics Playground built (not yet deployed).**
+  Decision: it keeps its own repository (`wcmalfeld/mtb-physics`, a React
+  app) and its build is copied into `learning-lab/physics-playground/`
+  with `node scripts/import-playground.mjs <path-to-dist>`. Tracking lives
+  in that repo as `src/progress.tsx` plus one line in `src/App.tsx` (not
+  yet committed there). 10 question kinds: launch predictions, the two
+  in-challenge questions, and the "Try it without the simulation" checks.
+  The Send It and Race labs' predictions and all written explanations are
+  not recorded. The build in this repo was made from that repo's last
+  commit plus the tracking, without its uncommitted work in progress.
+- **2026-11-10, end-to-end check passed.** In real Chrome, signed in as a
+  throwaway student against the real project: Trail Builder, Gear Ratio
+  Lab, Strava Showdown and Jump Lab answers arrive in the database with
+  the right student, attempt numbers, hints, review item and session;
+  nothing is saved after logging out. (Physics Playground was skipped:
+  its questions weren't on the server yet. Summit Expedition can't be
+  tested this way until the new file is uploaded.)
 - **Open: playing on the tutor's computer.** Attempts go to whoever is
   logged in. A student playing on a tutor's login is recorded as the
   tutor. Recording on behalf of an assigned student belongs with the
@@ -133,7 +145,7 @@ to the browser.
 | 0 | Audit and this plan | Done |
 | 1a | Schema, roles, `record_attempt`, `js/progress.js`, admin commands, permission tests | Done |
 | 1b | Trail Builder moved in-repo and tracked (proof of concept); redirect page on the old address | Built; needs SQL re-run, deploy, redirect |
-| 1c | Gear Ratio Lab, Strava Showdown, Summit Expedition, then Jump Lab and Physics Playground | All built except Physics Playground (open) |
+| 1c | Gear Ratio Lab, Strava Showdown, Summit Expedition, then Jump Lab and Physics Playground | All built; needs SQL re-run, deploy, Summit upload |
 | 2 | Student dashboard, weekly stats, skill performance, Review My Mistakes, goals, basic recommendations | |
 | 3 | Tutor dashboard: student list, profiles, review management, notes, session records | |
 | 4 | Session briefs, assignment builder, student assignments, reflections | |
