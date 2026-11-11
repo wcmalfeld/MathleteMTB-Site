@@ -45,6 +45,24 @@ check('Tool ids are unique', new Set(tools.map(t => t.id)).size === tools.length
 check('Live public tools have an https url', pub.filter(t => t.status === 'live').every(t => /^https:\/\//.test(t.url || '')));
 check('Private tools point at a file in the bucket, not a public url', priv.every(t => t.file && !t.url));
 
+// ---- games hosted in this repo (they share the login, so they can save progress) ----
+const SITE_ORIGIN = 'https://www.mathletemtb.com/';
+// How to find each game's question kinds in its source.
+const QUESTION_KINDS = { 'trail-builder': /'((?:alg1|geo|alg2|precalc|stats|calc)-[a-z0-9-]+)'/g };
+const hosted = pub.filter(t => (t.url || '').startsWith(SITE_ORIGIN)).map(t => ({ ...t, page: t.url.slice(SITE_ORIGIN.length) + 'index.html' }));
+check('Tools on mathletemtb.com live at learning-lab/<id>/ in this repo', hosted.every(t => t.page === `learning-lab/${t.id}/index.html` && existsSync(root + t.page)), hosted.map(t => t.page).join(', '));
+for (const t of hosted) {
+  const html = read(t.page);
+  const order = ['../../js/supabase-config.js', '../../js/auth.js', '../../js/progress.js'].map(s => html.indexOf(`src="${s}"`));
+  check(`${t.page} loads Supabase config, auth, then progress tracking`, order.every(i => i > 0) && order[0] < order[1] && order[1] < order[2]);
+  // Every kind of question the game can ask must be registered, or the
+  // server refuses to save attempts at it.
+  const sql = read('supabase/progress.sql');
+  const kinds = [...new Set([...html.matchAll(QUESTION_KINDS[t.id] || /$^/g)].map(m => m[1]))];
+  const missing = kinds.filter(k => !sql.includes(`'${t.id}:${k}'`));
+  check(`${t.page}: its question kinds are registered in supabase/progress.sql`, sql.includes(`'${t.id}:`) && missing.length === 0, missing.join(', '));
+}
+
 // ---- home page (the Lab) ----
 const index = read('index.html');
 const cards = [...index.matchAll(/<article\b[^>]*\bdata-lab-tool="([^"]+)"/g)].map(m => m[1]);

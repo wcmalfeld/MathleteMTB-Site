@@ -14,6 +14,15 @@
 //                                                      put a private tool in the private bucket
 //   node scripts/admin.mjs inquiries [all]             College & Beyond inquiries not yet handled (or all)
 //   node scripts/admin.mjs handled <inquiry-id>        mark an inquiry as handled
+//
+// Students and tutors (needs supabase/progress.sql; see docs/PROGRESS-TRACKING.md):
+//   node scripts/admin.mjs role you@example.com tutor   make an account a student, tutor or admin
+//   node scripts/admin.mjs name you@example.com Noah    set the first name shown on dashboards
+//   node scripts/admin.mjs assign student@example.com tutor@example.com
+//                                                      give a tutor access to a student's progress
+//   node scripts/admin.mjs unassign student@example.com tutor@example.com
+//                                                      take it away again (immediate)
+//   node scripts/admin.mjs roster                      every account's role, and who tutors whom
 
 import { readFileSync, existsSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
@@ -81,7 +90,31 @@ async function grant(user) {
     { user_id: user.id, email: user.email, active: true },
     { Prefer: 'resolution=merge-duplicates,return=minimal' });
   await api('PUT', `/auth/v1/admin/users/${user.id}`, { ban_duration: 'none' });
+  await ensureProfile(user);
 }
+
+// Every account gets a profile (a student, named after their email until
+// you run "name"). An existing profile is left exactly as it is.
+async function ensureProfile(user) {
+  try {
+    await api('POST', '/rest/v1/profiles?on_conflict=user_id',
+      { user_id: user.id, display_name: (user.email || 'Mathlete').split('@')[0].slice(0, 60) },
+      { Prefer: 'resolution=ignore-duplicates,return=minimal' });
+  } catch (e) {
+    console.log(`\n  Note: no profile was made for ${user.email} (${e.message}).`);
+    console.log('  Progress tracking needs supabase/progress.sql run in the Supabase SQL Editor.');
+  }
+}
+
+async function profileOf(email) {
+  const user = await requireUser(email);
+  await ensureProfile(user);
+  const rows = await api('GET', `/rest/v1/profiles?user_id=eq.${user.id}&select=user_id,role,display_name`);
+  if (!rows.length) die(`${email} has no profile. Run supabase/progress.sql in the Supabase SQL Editor first.`);
+  return rows[0];
+}
+
+const ROLES = ['student', 'tutor', 'parent', 'admin'];
 
 const commands = {
   async invite(email) {
@@ -144,6 +177,71 @@ const commands = {
     console.log('');
   },
 
+  async role(email, role) {
+    if (!ROLES.includes(role)) die(`Usage: role <email> <${ROLES.join('|')}>`);
+    const p = await profileOf(email);
+    if (p.role === role) return console.log(`\n  ${email} is already a ${role}.\n`);
+    if (role === 'student') {
+      const links = await api('GET', `/rest/v1/student_tutors?tutor_id=eq.${p.user_id}&active=eq.true&select=student_id`);
+      if (links.length) die(`${email} still tutors ${links.length} student(s). Run "unassign" for each first (see "roster").`);
+    } else {
+      const links = await api('GET', `/rest/v1/student_tutors?student_id=eq.${p.user_id}&active=eq.true&select=tutor_id`);
+      if (links.length) die(`${email} is still a student of ${links.length} tutor(s). Run "unassign" for each first (see "roster").`);
+    }
+    await api('PATCH', `/rest/v1/profiles?user_id=eq.${p.user_id}`, { role }, { Prefer: 'return=minimal' });
+    console.log(`\n  ${email} is now a${role === 'admin' ? 'n' : ''} ${role} (was ${p.role}).`);
+    if (role === 'tutor') console.log('  They see no students until you run: node scripts/admin.mjs assign <student-email> ' + email);
+    if (role === 'admin') console.log('  Admins can see every student\'s progress.');
+    console.log('');
+  },
+
+  async name(email, ...words) {
+    const display_name = words.join(' ').trim();
+    if (!display_name || display_name.length > 60) die('Usage: name <email> <first name>   (up to 60 characters)');
+    const p = await profileOf(email);
+    await api('PATCH', `/rest/v1/profiles?user_id=eq.${p.user_id}`, { display_name }, { Prefer: 'return=minimal' });
+    console.log(`\n  ${email} is now shown as "${display_name}".\n`);
+  },
+
+  async assign(studentEmail, tutorEmail) {
+    const student = await profileOf(studentEmail), tutor = await profileOf(tutorEmail);
+    if (student.role !== 'student') die(`${studentEmail} is a ${student.role}, not a student.`);
+    if (!['tutor', 'admin'].includes(tutor.role)) die(`${tutorEmail} is a ${tutor.role}. Make them a tutor first: node scripts/admin.mjs role ${tutorEmail} tutor`);
+    await api('POST', '/rest/v1/student_tutors?on_conflict=student_id,tutor_id',
+      { student_id: student.user_id, tutor_id: tutor.user_id, active: true },
+      { Prefer: 'resolution=merge-duplicates,return=minimal' });
+    console.log(`\n  ${tutor.display_name} (${tutorEmail}) can now see ${student.display_name}'s progress.\n`);
+  },
+
+  async unassign(studentEmail, tutorEmail) {
+    const student = await profileOf(studentEmail), tutor = await profileOf(tutorEmail);
+    const rows = await api('PATCH', `/rest/v1/student_tutors?student_id=eq.${student.user_id}&tutor_id=eq.${tutor.user_id}`,
+      { active: false }, { Prefer: 'return=representation' });
+    if (!rows.length) die(`${tutorEmail} wasn't assigned to ${studentEmail}.`);
+    console.log(`\n  ${tutor.display_name} (${tutorEmail}) can no longer see ${student.display_name}'s progress. Nothing was deleted.\n`);
+  },
+
+  async roster() {
+    const [profiles, members, links] = await Promise.all([
+      api('GET', '/rest/v1/profiles?select=user_id,role,display_name&order=role.asc,display_name.asc'),
+      api('GET', '/rest/v1/members?select=user_id,email,active'),
+      api('GET', '/rest/v1/student_tutors?select=student_id,tutor_id&active=eq.true')
+    ]);
+    if (!profiles.length) return console.log('\n  No profiles yet.\n');
+    const email = id => (members.find(m => m.user_id === id) || {}).email || '(no access row)';
+    const label = id => { const p = profiles.find(x => x.user_id === id); return p ? p.display_name : '?'; };
+    console.log('');
+    for (const p of profiles) {
+      const m = members.find(x => x.user_id === p.user_id);
+      const who = p.role === 'student'
+        ? links.filter(l => l.student_id === p.user_id).map(l => label(l.tutor_id))
+        : links.filter(l => l.tutor_id === p.user_id).map(l => label(l.student_id));
+      const rel = p.role === 'student' ? `tutor: ${who.join(', ') || 'none'}` : p.role === 'tutor' ? `students: ${who.join(', ') || 'none'}` : '';
+      console.log(`  ${p.role.padEnd(7)}  ${p.display_name}  <${email(p.user_id)}>${m && !m.active ? '  REVOKED' : ''}${rel ? '  |  ' + rel : ''}`);
+    }
+    console.log('');
+  },
+
   async inquiries(which) {
     const filter = which === 'all' ? '' : '&handled=eq.false';
     const rows = await api('GET', `/rest/v1/inquiries?select=*&order=created_at.desc${filter}`);
@@ -182,14 +280,21 @@ async function main() {
   const [cmd, ...args] = process.argv.slice(2);
   if (typeof fetch !== 'function') die('This script needs Node 18 or newer (try: nvm use 20).');
   if (!cmd || !commands[cmd]) {
-    const header = readFileSync(new URL(import.meta.url), 'utf8').split('\n').filter(l => l.startsWith('//')).slice(0, 15);
+    const lines = readFileSync(new URL(import.meta.url), 'utf8').split('\n').slice(1);
+    const header = lines.slice(0, lines.findIndex(l => !l.startsWith('//')));
     console.log(header.map(l => l.replace(/^\/\/ ?/, '')).join('\n'));
     process.exit(cmd ? 1 : 0);
   }
   if (!BASE || !KEY) die('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env (see .env.example).');
-  if (['invite', 'create', 'grant', 'restore', 'revoke', 'reset', 'reset-link'].includes(cmd)) {
-    if (!args[0] || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(args[0])) die(`Usage: ${cmd} <email>`);
+  const isEmail = v => !!v && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
+  if (['invite', 'create', 'grant', 'restore', 'revoke', 'reset', 'reset-link', 'role', 'name'].includes(cmd)) {
+    if (!isEmail(args[0])) die(`Usage: ${cmd} <email>${cmd === 'role' ? ' <' + ROLES.join('|') + '>' : cmd === 'name' ? ' <first name>' : ''}`);
     args[0] = args[0].trim().toLowerCase();
+  }
+  if (['assign', 'unassign'].includes(cmd)) {
+    if (!isEmail(args[0]) || !isEmail(args[1])) die(`Usage: ${cmd} <student-email> <tutor-email>`);
+    args[0] = args[0].trim().toLowerCase();
+    args[1] = args[1].trim().toLowerCase();
   }
   try {
     await commands[cmd](...args);

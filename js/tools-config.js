@@ -4,7 +4,10 @@
    or private. See docs/ACCESS.md for the full picture.
 
    access: 'public'  - anyone can use it, no login. Give it a `url`
-                       where it is hosted publicly.
+                       where it is hosted publicly. A game that saves
+                       students' progress has to live in this repo
+                       (learning-lab/<id>/) so it shares the site's login;
+                       its `url` is its full www.mathletemtb.com address.
            'private' - members only. Its single-file HTML lives in the
                        private Supabase Storage bucket at `file`, and is
                        only ever served to a signed-in, active member.
@@ -43,7 +46,7 @@ window.MATHLETE_TOOLS = [
     name: 'Trail Builder',
     access: 'public',
     status: 'live',
-    url: 'https://wcmalfeld.github.io/TrailBuilder_Math/',
+    url: 'https://www.mathletemtb.com/learning-lab/trail-builder/',   // in this repo: learning-lab/trail-builder/
     category: 'trail-crew',
     summary: 'Design a mountain bike trail for a client, solving a math problem for every segment you build.',
     image: 'assets/trailbuilder.jpg',

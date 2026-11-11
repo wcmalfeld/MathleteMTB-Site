@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Trail Builder — Mathlete MTB</title>
+<meta name="description" content="Design a mountain bike trail for a client, solving a math problem for every segment you build.">
+<link rel="canonical" href="https://www.mathletemtb.com/learning-lab/trail-builder/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Overpass+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a trail-crew field kit — routed wooden header sign, topo-paper ground, work-order cards and a crew logbook beside a live elevation profile. */
+:root{
+  --paper:#EBF0EB; --surface:#F7FAF7; --ink:#17231C; --muted:#56665C; --line:#C6D1C8; --contour:#D9E1DA;
+  --wood:#5C3E22; --wood-2:#4A3119; --wood-ink:#F2E4BE;
+  --blaze:#D4521A; --blaze-ink:#FFFFFF; --blaze-soft:#F8E1D4;
+  --green:#2E8A4D; --blue:#2357A6; --diamond:#141A16; --diamond-line:#141A16; --sign-edge:#FFFFFF;
+  --good:#2E7D46; --bad:#B02A1F; --good-soft:#DCEEDF; --bad-soft:#F6DEDA;
+  --ground:#C3D3BF; --ground-edge:#8FA78A;
+  --display:"Overpass",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Overpass Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#101612; --surface:#18211B; --ink:#E2EAE4; --muted:#9BAAA0; --line:#2D3A31; --contour:#18201A;
+  --wood:#4B321C; --wood-2:#3A2614; --wood-ink:#ECD9A8;
+  --blaze:#F07B3C; --blaze-ink:#1A0E06; --blaze-soft:#3A2418;
+  --green:#4DB873; --blue:#5B8EE0; --diamond:#0A0D0B; --diamond-line:#E2EAE4; --sign-edge:#E2EAE4;
+  --good:#5CC481; --bad:#F0786C; --good-soft:#173322; --bad-soft:#3A1D1A;
+  --ground:#223128; --ground-edge:#3F5847; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#101612; --surface:#18211B; --ink:#E2EAE4; --muted:#9BAAA0; --line:#2D3A31; --contour:#18201A;
+  --wood:#4B321C; --wood-2:#3A2614; --wood-ink:#ECD9A8;
+  --blaze:#F07B3C; --blaze-ink:#1A0E06; --blaze-soft:#3A2418;
+  --green:#4DB873; --blue:#5B8EE0; --diamond:#0A0D0B; --diamond-line:#E2EAE4; --sign-edge:#E2EAE4;
+  --good:#5CC481; --bad:#F0786C; --good-soft:#173322; --bad-soft:#3A1D1A;
+  --ground:#223128; --ground-edge:#3F5847; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--display);font-size:16px;line-height:1.5;
+  background-image:repeating-radial-gradient(circle at 85% -10%, transparent 0 38px, var(--contour) 38px 39px);}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.15}
+p{margin:0}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--blaze);outline-offset:2px}
+
+/* Header sign */
+.sign{background:var(--wood);color:var(--wood-ink);border-radius:6px;padding:16px 20px;
+  box-shadow:inset 0 0 0 3px var(--wood-2), inset 0 0 0 5px color-mix(in srgb, var(--wood-ink) 35%, transparent);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;
+  background-image:repeating-linear-gradient(178deg, transparent 0 9px, color-mix(in srgb,var(--wood-2) 55%,transparent) 9px 10px);}
+.sign h1{font-weight:900;font-size:clamp(28px,5vw,44px);letter-spacing:.08em;text-transform:uppercase}
+.sign .sub{font-size:13px;letter-spacing:.16em;text-transform:uppercase;opacity:.85}
+.crew{display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:0}
+.crew .rank{font-weight:800;font-size:18px;letter-spacing:.06em;text-transform:uppercase}
+.crew .pts{font-size:13px;opacity:.85}
+.bar{width:200px;max-width:100%;height:6px;border-radius:3px;background:color-mix(in srgb,var(--wood-ink) 25%,transparent);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--wood-ink)}
+
+/* Phase tracker */
+.phases{display:flex;gap:6px;flex-wrap:wrap}
+.phase{flex:1 1 120px;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:4px;
+  border:1px solid var(--line);color:var(--muted);font-weight:700;font-size:14px;letter-spacing:.06em;text-transform:uppercase;background:var(--surface)}
+.phase b{font-family:var(--mono);font-weight:600}
+.phase.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.phase.done{color:var(--ink)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+.btn{border:2px solid var(--ink);background:transparent;color:var(--ink);padding:9px 16px;border-radius:4px;font-weight:800;letter-spacing:.04em}
+.btn:hover{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.btn.go{background:var(--blaze);border-color:var(--blaze);color:var(--blaze-ink)}
+.btn.go:hover{filter:brightness(1.07)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:5px 10px;font-size:14px;border-width:1.5px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* Survey */
+.layers{display:flex;flex-wrap:wrap;gap:8px}
+.layer{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:4px;padding:8px 12px;text-align:left;display:flex;flex-direction:column;gap:0;min-width:0}
+.layer b{font-weight:800}
+.layer span{font-size:13px;color:var(--muted)}
+.layer[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.regions{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.region{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:4px;padding:10px 12px;text-align:left;display:flex;flex-direction:column;gap:2px;min-width:0}
+.region b{font-weight:800;font-size:17px}
+.region .rp{font-size:13px;font-weight:700;color:var(--muted)}
+.region .rb{font-size:13px;color:var(--muted)}
+.region[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.clients{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.wo{background:var(--surface);border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.wo-head{padding:12px 16px;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.wo-head h3{font-size:19px;font-weight:800}
+.wo-body{padding:12px 16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:14px}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0}
+.reqs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.reqs li{display:flex;gap:8px;align-items:flex-start}
+.reqs li::before{content:"";flex:none;width:10px;height:10px;margin-top:6px;border:1.5px solid var(--muted);border-radius:2px}
+.reqs li.ok::before{background:var(--good);border-color:var(--good)}
+.reqs li.bonus{color:var(--muted)}
+.wo-foot{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lock{font-size:13px;color:var(--muted)}
+.tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;padding:2px 7px;border-radius:3px;border:1px solid currentColor}
+.tag.legend{color:var(--blaze)}
+details summary{cursor:pointer;font-weight:800}
+details ol{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:70ch}
+
+/* Build */
+.build{display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.build{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{border-left:3px solid var(--line);padding:2px 10px}
+.stat .k{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.stat .v{font-family:var(--mono);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat.warn{border-color:var(--bad)} .stat.warn .v{color:var(--bad)}
+.stat.good{border-color:var(--good)}
+.profile{width:100%;height:auto;display:block}
+.shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.seg{background:var(--surface);border:1.5px solid var(--line);border-radius:5px;padding:10px;text-align:left;color:var(--ink);display:flex;flex-direction:column;gap:6px;min-width:0}
+.seg:hover:not([disabled]){border-color:var(--ink)}
+.seg[disabled]{opacity:.45;cursor:not-allowed}
+.seg .top{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.seg .nm{font-weight:800;font-size:15px;line-height:1.2}
+.seg .meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:grid;grid-template-columns:1fr 1fr;gap:0 6px;font-variant-numeric:tabular-nums}
+.seg .price{font-family:var(--mono);font-weight:600;font-size:16px}
+.seg .sale{color:var(--blaze);font-size:11px;font-weight:800;letter-spacing:.1em}
+.glyph{width:64px;height:28px;flex:none}
+.glyph path{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+.q{border:2px solid var(--blaze);background:var(--blaze-soft);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.q .prompt{font-size:18px;max-width:62ch}
+.q input{font-family:var(--mono);font-size:20px;padding:8px 12px;border:2px solid var(--ink);border-radius:4px;background:var(--surface);color:var(--ink);width:180px;max-width:100%}
+.fb{font-weight:700}
+.fb.bad{color:var(--bad)} .fb.good{color:var(--good)}
+
+.strip{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:3px;padding:3px 8px;font-size:13px;background:var(--surface)}
+.chip .i{font-family:var(--mono);color:var(--muted)}
+
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:700;padding:6px 8px;border-bottom:1.5px solid var(--ink)}
+td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+th.n{text-align:right}
+.mark{font-weight:800}
+.mark.ok{color:var(--good)} .mark.no{color:var(--bad)}
+.note{font-size:14px;padding:8px 12px;border-radius:4px;background:var(--bad-soft);color:var(--ink);border-left:3px solid var(--bad)}
+.note.info{background:color-mix(in srgb,var(--blue) 12%,var(--surface));border-color:var(--blue)}
+.co{border:1.5px dashed var(--muted);border-radius:5px;padding:10px 12px;font-size:14px;display:flex;flex-direction:column;gap:6px}
+
+/* Ride */
+.rides{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rides li{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface)}
+.die{width:32px;height:32px;border-radius:6px;border:2px solid var(--ink);display:grid;place-items:center;font-family:var(--mono);font-weight:600}
+.die.auto{border-style:dashed;color:var(--muted);font-size:12px}
+.rides li.new{animation:pop .35s ease-out}
+@keyframes pop{from{transform:translateY(-4px);opacity:.3}to{transform:none;opacity:1}}
+.pts-tag{font-family:var(--mono);font-weight:600;white-space:nowrap}
+.pts-tag.plus{color:var(--good)} .pts-tag.minus{color:var(--bad)}
+
+/* Review */
+.review{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.review{grid-template-columns:minmax(0,1fr)}}
+.medal{display:flex;align-items:center;gap:16px}
+.medal .disc{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:14px;letter-spacing:.08em;text-transform:uppercase;flex:none;border:3px solid var(--ink)}
+.disc.gold{background:#E8B931;color:#2A1F00;border-color:#9C7A10}
+.disc.silver{background:#C9D0D4;color:#1C2226;border-color:#7E888E}
+.disc.bronze{background:#C98446;color:#2A1404;border-color:#86511F}
+.disc.none{background:transparent;color:var(--muted);border-style:dashed;border-color:var(--muted)}
+.score{font-family:var(--mono);font-size:44px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+label{font-weight:700;font-size:14px;display:block;margin-bottom:4px}
+input[type=text],textarea{width:100%;font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink)}
+textarea{min-height:110px;resize:vertical}
+
+/* Network */
+.net{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.post{background:var(--wood);color:var(--wood-ink);border-radius:4px;padding:10px 14px;display:flex;flex-direction:column;gap:2px;min-width:0;
+  box-shadow:inset 0 0 0 2px var(--wood-2)}
+.post .tn{font-weight:900;letter-spacing:.06em;text-transform:uppercase;font-size:16px;overflow-wrap:anywhere}
+.post .tm{font-size:12.5px;opacity:.85}
+.empty{border:1.5px dashed var(--line);border-radius:6px;padding:24px;text-align:center;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:4px;font-weight:700;z-index:20;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="sign">
+    <div>
+      <div class="sub">Trail crew work orders</div>
+      <h1>Trail Builder</h1>
+    </div>
+    <div class="crew" id="crew"></div>
+  </header>
+  <nav class="phases" id="phases" aria-label="Round phases"></nav>
+  <main id="app"></main>
+  <section class="col" id="network" aria-label="My trail network"></section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<!-- Saves a signed-in student's answers to their Mathlete account. The game
+     plays the same without them (see docs/PROGRESS-TRACKING.md). -->
+<script src="../../js/supabase-config.js"></script>
+<script src="../../js/auth.js"></script>
+<script src="../../js/progress.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d }catch(e){ return d } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)) }catch(e){} }
+};
+
+/* ---------- Data ---------- */
+const ORDER = ['flow','switch','berm','bridge','rock','drop','table','gap'];
+const SEG = {
+  flow:  {name:'Flow trail',       cost:10, usd:975,  len:200, elev:-20, diff:1, g:'M2 8 C14 4, 20 14, 32 14 S50 22, 62 22'},
+  switch:{name:'Switchback climb', cost:15, usd:1450, len:150, elev:60,  diff:2, g:'M2 24 L40 20 L12 15 L44 10 L16 6 L62 4'},
+  berm:  {name:'Berm turn',        cost:15, usd:1525, len:100, elev:-30, diff:2, g:'M2 6 C32 4, 30 26, 62 22'},
+  bridge:{name:'Wooden bridge',    cost:20, usd:1980, len:80,  elev:0,   diff:1, g:'M2 14 L62 14 M12 14 v8 M24 14 v8 M36 14 v8 M48 14 v8'},
+  rock:  {name:'Rock garden',      cost:25, usd:2499, len:120, elev:-40, diff:4, g:'M2 6 L10 9 L14 7 L20 12 L26 10 L32 15 L38 13 L46 18 L52 17 L62 22'},
+  drop:  {name:'Drop',             cost:30, usd:2950, len:40,  elev:-50, diff:5, g:'M2 8 L32 8 L34 22 L62 22'},
+  table: {name:'Tabletop jump',    cost:35, usd:3475, len:60,  elev:-20, diff:4, g:'M2 20 L18 20 L26 10 L40 10 L48 20 L62 22'},
+  gap:   {name:'Gap jump',         cost:45, usd:4490, len:70,  elev:-30, diff:6, g:'M2 18 L22 18 L30 8 M40 13 L46 20 L62 22'}
+};
+const SALE_OK = ['flow','switch','berm','bridge','drop','table','gap']; // 20% off lands on whole cents
+
+const LAYERS = {
+  alg1:   {name:'Algebra I',   grades:'Grade 9',      skill:'Linear models and inequalities'},
+  geo:    {name:'Geometry',    grades:'Grades 9–10',  skill:'Right triangles, Pythagorean theorem'},
+  alg2:   {name:'Algebra II',  grades:'Grades 10–11', skill:'Quadratics, exponentials, logs'},
+  precalc:{name:'Precalculus', grades:'Grades 11–12', skill:'Trigonometry and angles'},
+  stats:  {name:'Statistics',  grades:'Grades 11–12', skill:'Probability and expected value'},
+  calc:   {name:'Calculus',    grades:'Grade 12',     skill:'Derivatives and integrals'}
+};
+
+const cnt = (m,t) => m.counts[t] || 0;
+const REGIONS = {
+  nz: {name:'New Zealand', place:'Queenstown', blurb:'Gondola-served flow trails, Coronet Peak alpine runs and a world-famous jump park.', clients:[
+  {id:'pine', kind:'Grade 2 · Queenstown Bike Park', name:"Hammy's / Lower Hammy's", budget:150, start:2590, drop:200,
+   about:"The park's longest and gentlest run: about 6 km of wide, smooth trail from the top of the Skyline Gondola, with bermed corners, rollers and a couple of tabletops.",
+   reqs:[
+     {label:'Average difficulty 2.5 or lower', test:m=>m.n>0 && m.avg<=2.5},
+     {label:'At least two berm turns', test:m=>cnt(m,'berm')>=2},
+     {label:'Trail at least 1,000 ft long', test:m=>m.len>=1000},
+     {label:'Nothing harder than a blue square', test:m=>m.n>0 && m.max<=4}],
+   bonus:{label:'Include a tabletop jump', test:m=>cnt(m,'table')>=1}},
+  {id:'greenway', kind:'Grade 3 · Queenstown Bike Park', name:'Vertigo & Lazy Vertigo', budget:200, start:2610, drop:250,
+   about:'Machine-built blue flow trails from the gondola summit down to the Midway Clearing: big banked corners, doubles, rollers, step-ups and step-downs.',
+   reqs:[
+     {label:'At least three berm turns', test:m=>cnt(m,'berm')>=3},
+     {label:'At least two tabletop jumps', test:m=>cnt(m,'table')>=2},
+     {label:'Nothing harder than a blue square', test:m=>m.n>0 && m.max<=4},
+     {label:'No wooden bridges (it is all dirt)', test:m=>m.n>0 && cnt(m,'bridge')===0}],
+   bonus:{label:'At least four berm turns', test:m=>cnt(m,'berm')>=4}},
+  {id:'ridgeline', kind:'Advanced · Coronet Peak', name:'Rude Rock', budget:250, start:3990, drop:300,
+   about:'A 3 km roller coaster sculpted along the contours of Coronet Peak, dropping 353 m from 1,217 m. Only rideable after the spring snowmelt.',
+   reqs:[
+     {label:'Trail at least 800 ft long', test:m=>m.len>=800},
+     {label:'At least two tabletop jumps', test:m=>cnt(m,'table')>=2},
+     {label:'At least two berm turns', test:m=>cnt(m,'berm')>=2},
+     {label:'Average difficulty 3 or higher', test:m=>m.n>0 && m.avg>=3}],
+   bonus:{label:'Include a drop', test:m=>cnt(m,'drop')>=1}},
+  {id:'night', kind:'Club jump park · Fernhill', name:'Wynyard Jump Park / Wynyard DH', budget:260, start:1840, drop:200,
+   about:'Free, volunteer-built park run by the Queenstown Mountain Bike Club. The DH drops 226 m through switchback berms and creek sections; the Dream Track has jumps up to 60 ft.',
+   reqs:[
+     {label:'At least three tabletop jumps', test:m=>cnt(m,'table')>=3},
+     {label:'At least one gap jump', test:m=>cnt(m,'gap')>=1},
+     {label:'At least two berm turns', test:m=>cnt(m,'berm')>=2},
+     {label:'No rock gardens (keep the jump line smooth)', test:m=>m.n>0 && cnt(m,'rock')===0}],
+   bonus:{label:'Cross the creek with a wooden bridge', test:m=>cnt(m,'bridge')>=1}},
+  {id:'redcanyon', kind:'Expert · Ben Lomond', name:'Banjo Snapper', budget:280, start:2600, drop:300,
+   about:"Known as one of Queenstown's gnarliest trails. Locals link it as Subsidy to Banjo Snapper to Pandemic: raw, steep and technical.",
+   reqs:[
+     {label:'At least two rock gardens', test:m=>cnt(m,'rock')>=2},
+     {label:'At least one drop', test:m=>cnt(m,'drop')>=1},
+     {label:'No flow trails (it is raw and technical)', test:m=>m.n>0 && cnt(m,'flow')===0},
+     {label:'Average difficulty 3.5 or higher', test:m=>m.n>0 && m.avg>=3.5}],
+   bonus:{label:'At least two drops', test:m=>cnt(m,'drop')>=2}},
+  {id:'aspen', kind:'Gondola bike park · Bob’s Peak', name:'Skyline Bike Park', budget:300, start:2590, drop:400,
+   about:'Over 30 trails and 30 km graded 2 to 6, served by the Skyline Gondola: 790 m at the top, 450 m of vertical, longest run 6 km.',
+   reqs:[
+     {label:'At least one green circle segment', test:m=>cnt(m,'flow')+cnt(m,'switch')+cnt(m,'berm')+cnt(m,'bridge')>=1},
+     {label:'At least one blue square segment', test:m=>cnt(m,'rock')+cnt(m,'table')>=1},
+     {label:'At least one black or double black segment', test:m=>cnt(m,'drop')+cnt(m,'gap')>=1},
+     {label:'Trail at least 900 ft long', test:m=>m.len>=900}],
+   bonus:{label:'Use all four signs: include both a drop and a gap jump', test:m=>cnt(m,'drop')>=1 && cnt(m,'gap')>=1}},
+  {id:'worldcup', kind:'Legendary client', legendary:true, name:'World Cup Downhill', budget:400, start:2460, drop:450,
+   about:'The double black line on Ben Lomond, entered off Lazy Vertigo: extreme freeride terrain with drops, gap jumps, steep chutes and a rock garden at the bottom.',
+   reqs:[
+     {label:'At least two gap jumps', test:m=>cnt(m,'gap')>=2},
+     {label:'At least two drops', test:m=>cnt(m,'drop')>=2},
+     {label:'At least one rock garden', test:m=>cnt(m,'rock')>=1},
+     {label:'Average difficulty 4 or higher', test:m=>m.n>0 && m.avg>=4}],
+   bonus:{label:'Finish with $50 or more for repairs', test:m=>m.left>=5000}}
+  ]},
+  chile: {name:'Chile', place:'Santiago, the Andes and the Lake District', blurb:'Ride from city hills to volcanoes and 3,000 m Andes peaks.', clients:[
+  {id:'parquemet', kind:'Green · Santiago city park', name:'Parque Metropolitano', budget:150, start:2820, drop:100,
+   about:'Bike trails on Cerro San Cristóbal above Santiago, with a cable car. Beginners start on the Zorzal and Anfiteatro circuits (500 and 700 m long).',
+   reqs:[
+     {label:'Green circles only (difficulty 1–2)', test:m=>m.n>0 && m.max<=2},
+     {label:'Trail at least 1,000 ft long', test:m=>m.len>=1000},
+     {label:'At least two berm turns', test:m=>cnt(m,'berm')>=2},
+     {label:'Keep at least $15 for cable car tickets', test:m=>m.left>=1500}],
+   bonus:{label:'Include a wooden bridge', test:m=>cnt(m,'bridge')>=1}},
+  {id:'huilohuilo', kind:'Blue · Los Ríos rainforest', name:'Huilo Huilo Bike Park', budget:200, start:3790, drop:200,
+   about:'A 7.4 km circuit served by the Cóndor Andino cable car from 1,156 m. Groomed flow trails like El Traro, loamy steeps and soft volcanic soil.',
+   reqs:[
+     {label:'At least three berm turns', test:m=>cnt(m,'berm')>=3},
+     {label:'At least one tabletop jump', test:m=>cnt(m,'table')>=1},
+     {label:'Nothing harder than a blue square', test:m=>m.n>0 && m.max<=4},
+     {label:'Trail at least 800 ft long', test:m=>m.len>=800}],
+   bonus:{label:'Cross a forest stream with a wooden bridge', test:m=>cnt(m,'bridge')>=1}},
+  {id:'cerduo', kind:'Blue · Pucón', name:'Cerduo Bike Park', budget:200, start:2300, drop:200,
+   about:'Classic forested downhill runs near Pucón in the Chilean Lake District, reached after a half-hour climb.',
+   reqs:[
+     {label:'At least one switchback climb', test:m=>cnt(m,'switch')>=1},
+     {label:'At least one rock garden', test:m=>cnt(m,'rock')>=1},
+     {label:'Average difficulty 3 or lower', test:m=>m.n>0 && m.avg<=3},
+     {label:'Trail at least 900 ft long', test:m=>m.len>=900}],
+   bonus:{label:'Include a berm turn and a tabletop jump', test:m=>cnt(m,'berm')>=1 && cnt(m,'table')>=1}},
+  {id:'villarrica', kind:'Black · Volcán Villarrica', name:'Villarrica Volcano Downhill', budget:260, start:4590, drop:350,
+   about:'A steep descent of about 1,000 m from the ski area on an active volcano. Riders pick lines through loose volcanic scree.',
+   reqs:[
+     {label:'At least three rock gardens (volcanic scree)', test:m=>cnt(m,'rock')>=3},
+     {label:'At least one drop', test:m=>cnt(m,'drop')>=1},
+     {label:'No wooden bridges (nothing grows up here)', test:m=>m.n>0 && cnt(m,'bridge')===0},
+     {label:'Average difficulty 3.5 or higher', test:m=>m.n>0 && m.avg>=3.5}],
+   bonus:{label:'Nine or fewer segments', test:m=>m.n>0 && m.n<=9}},
+  {id:'laparva', kind:'Expert · High Andes', name:'La Parva Bike Park', budget:330, start:10660, drop:400,
+   about:'About 10 km of lift-served trails at roughly 3,250 m, among the highest bike parks in the world. Snow-free only from January.',
+   reqs:[
+     {label:'At least two tabletop jumps', test:m=>cnt(m,'table')>=2},
+     {label:'At least one rock garden', test:m=>cnt(m,'rock')>=1},
+     {label:'At least one drop', test:m=>cnt(m,'drop')>=1},
+     {label:'Trail at least 700 ft long', test:m=>m.len>=700}],
+   bonus:{label:'Include a gap jump', test:m=>cnt(m,'gap')>=1}},
+  {id:'andespacifico', kind:'Enduro race', name:'Andes Pacífico Enduro', budget:340, start:11480, drop:250,
+   about:'A multi-day enduro race from the high Andes to the Pacific coast, with stages near 4,000 m and over 4,000 m of descending.',
+   reqs:[
+     {label:'At least two switchback climbs (enduro has transfers)', test:m=>cnt(m,'switch')>=2},
+     {label:'Trail at least 1,200 ft long', test:m=>m.len>=1200},
+     {label:'At least one rock garden', test:m=>cnt(m,'rock')>=1},
+     {label:'At least one drop', test:m=>cnt(m,'drop')>=1}],
+   bonus:{label:'Include a gap jump', test:m=>cnt(m,'gap')>=1}},
+  {id:'valparaiso', kind:'Legendary client', legendary:true, name:'Valparaíso Cerro Abajo', budget:400, start:600, drop:450,
+   about:'The famous urban downhill race through the hillside streets of Valparaíso: about 2.4 km, more than 1,600 steps, wallrides, jumps and drops, finishing at Plaza Aníbal Pinto.',
+   reqs:[
+     {label:'At least three drops (staircases)', test:m=>cnt(m,'drop')>=3},
+     {label:'At least one gap jump', test:m=>cnt(m,'gap')>=1},
+     {label:'At least two berm turns (wallrides)', test:m=>cnt(m,'berm')>=2},
+     {label:'Average difficulty 4 or higher', test:m=>m.n>0 && m.avg>=4}],
+   bonus:{label:'Finish with $40 or more for repairs', test:m=>m.left>=4000}}
+  ]},
+  scotland: {name:'Scotland', place:'Highlands and Tweed Valley', blurb:'Rocky slabs, rooty forests and the most famous World Cup track in the world.', clients:[
+  {id:'bluedoon', kind:'Blue · Nevis Range', name:'Blue Doon', budget:180, start:2130, drop:200,
+   about:'The longest lift-served blue trail in the UK, from the Nevis Range gondola: open hillside with views over Loch Linnhe, then into the forest.',
+   reqs:[
+     {label:'Nothing harder than a blue square', test:m=>m.n>0 && m.max<=4},
+     {label:'Trail at least 1,100 ft long', test:m=>m.len>=1100},
+     {label:'At least two berm turns', test:m=>cnt(m,'berm')>=2},
+     {label:'Average difficulty 2 or lower', test:m=>m.n>0 && m.avg<=2}],
+   bonus:{label:'Include a wooden bridge', test:m=>cnt(m,'bridge')>=1}},
+  {id:'glentress', kind:'Red · Tweed Valley', name:'Glentress Red & Spooky Wood', budget:200, start:1640, drop:200,
+   about:'The flagship 7stanes trail centre. The red loop climbs through dense forest to Caresman Hill, then drops into Spooky Wood, 1.5 km of sweeping berms.',
+   reqs:[
+     {label:'At least four berm turns', test:m=>cnt(m,'berm')>=4},
+     {label:'At least one switchback climb', test:m=>cnt(m,'switch')>=1},
+     {label:'At least one tabletop jump', test:m=>cnt(m,'table')>=1},
+     {label:'Nothing harder than a blue square', test:m=>m.n>0 && m.max<=4}],
+   bonus:{label:'Trail at least 1,000 ft long', test:m=>m.len>=1000}},
+  {id:'golspie', kind:'Black · Highland Wildcat', name:'Highland Wildcat, Golspie', budget:260, start:1300, drop:150,
+   about:'A volunteer-run trail with one of the UK’s longest descents: about 7 km of twisty singletrack, jumps and berms from the summit of Ben Bhraggie almost to sea level.',
+   reqs:[
+     {label:'At least two switchback climbs (the technical climb)', test:m=>cnt(m,'switch')>=2},
+     {label:'At least two berm turns', test:m=>cnt(m,'berm')>=2},
+     {label:'At least one tabletop jump', test:m=>cnt(m,'table')>=1},
+     {label:'Trail at least 1,000 ft long', test:m=>m.len>=1000}],
+   bonus:{label:'Include a rock garden', test:m=>cnt(m,'rock')>=1}},
+  {id:'laggan', kind:'Black · Laggan Wolftrax', name:'Laggan Wolftrax Black', budget:240, start:1500, drop:250,
+   about:'Highland trail centre known for rock: Air’s Rock (a 10 m slab at about 45°), the Triple Attack slabs and the Devil’s Chessboard rock staircase.',
+   reqs:[
+     {label:'At least three rock gardens (the slabs)', test:m=>cnt(m,'rock')>=3},
+     {label:'At least one drop', test:m=>cnt(m,'drop')>=1},
+     {label:'No gap jumps', test:m=>m.n>0 && cnt(m,'gap')===0},
+     {label:'Average difficulty 3 or higher', test:m=>m.n>0 && m.avg>=3}],
+   bonus:{label:'Four rock gardens', test:m=>cnt(m,'rock')>=4}},
+  {id:'golfie', kind:'Enduro · Innerleithen', name:'The Golfie', budget:240, start:1400, drop:250,
+   about:'Steep, technical enduro trails in Caberston Forest above Innerleithen, with names like Angry Sheep, Lone Wolf and Repeat Offender.',
+   reqs:[
+     {label:'At least two rock gardens', test:m=>cnt(m,'rock')>=2},
+     {label:'At least one switchback climb', test:m=>cnt(m,'switch')>=1},
+     {label:'At least one drop', test:m=>cnt(m,'drop')>=1},
+     {label:'No flow trails (it is all tech)', test:m=>m.n>0 && cnt(m,'flow')===0}],
+   bonus:{label:'Average difficulty 3.5 or higher', test:m=>m.n>0 && m.avg>=3.5}},
+  {id:'innerleithen', kind:'Double black · Plora Rig', name:'Innerleithen Downhill', budget:300, start:1600, drop:350,
+   about:'Uplift-served downhill tracks off Plora Rig, including Matador, Make or Brake and Cresta Run. Graded extreme and among the best in the UK.',
+   reqs:[
+     {label:'At least two drops', test:m=>cnt(m,'drop')>=2},
+     {label:'At least one gap jump', test:m=>cnt(m,'gap')>=1},
+     {label:'At least one rock garden', test:m=>cnt(m,'rock')>=1},
+     {label:'Average difficulty 4 or higher', test:m=>m.n>0 && m.avg>=4}],
+   bonus:{label:'Finish with $30 or more for the uplift', test:m=>m.left>=3000}},
+  {id:'fortwilliam', kind:'Legendary client', legendary:true, name:'Fort William World Cup DH', budget:440, start:2150, drop:450,
+   about:'One of the most famous World Cup downhill tracks: 2.82 km dropping 555 m from 655 m on Aonach Mòr, with rock gardens, huge jumps and a flat-out motorway section.',
+   reqs:[
+     {label:'At least two rock gardens', test:m=>cnt(m,'rock')>=2},
+     {label:'At least two gap jumps', test:m=>cnt(m,'gap')>=2},
+     {label:'At least one drop', test:m=>cnt(m,'drop')>=1},
+     {label:'Average difficulty 4 or higher', test:m=>m.n>0 && m.avg>=4}],
+   bonus:{label:'Include a flow trail (the motorway)', test:m=>cnt(m,'flow')>=1}}
+  ]},
+  canada: {name:'Canada', place:'British Columbia and Québec', blurb:'Big jumps in Whistler, wooden features on the North Shore and alpine singletrack.', clients:[
+  {id:'kamloops', kind:'Green · Kamloops', name:'Kamloops Bike Ranch', budget:160, start:1600, drop:150,
+   about:'A free city bike park with easy cross-country trails for beginners and floodlit tabletop jumps in The Corral at the bottom.',
+   reqs:[
+     {label:'At least one tabletop jump', test:m=>cnt(m,'table')>=1},
+     {label:'Average difficulty 2.5 or lower', test:m=>m.n>0 && m.avg<=2.5},
+     {label:'Trail at least 900 ft long', test:m=>m.len>=900},
+     {label:'No drops or gap jumps', test:m=>m.n>0 && cnt(m,'drop')+cnt(m,'gap')===0}],
+   bonus:{label:'Two tabletop jumps', test:m=>cnt(m,'table')>=2}},
+  {id:'halfnelson', kind:'Blue · Squamish', name:'Half Nelson', budget:220, start:2000, drop:250,
+   about:'One of the best-known flow trails in the world: one rider counted 68 berms and 102 tabletops and rollers, with no mandatory gaps or drops.',
+   reqs:[
+     {label:'At least four berm turns', test:m=>cnt(m,'berm')>=4},
+     {label:'At least two tabletop jumps', test:m=>cnt(m,'table')>=2},
+     {label:'No drops or gap jumps', test:m=>m.n>0 && cnt(m,'drop')+cnt(m,'gap')===0},
+     {label:'No rock gardens', test:m=>m.n>0 && cnt(m,'rock')===0}],
+   bonus:{label:'Trail at least 900 ft long', test:m=>m.len>=900}},
+  {id:'crankitup', kind:'Blue · Whistler Bike Park', name:'Crank It Up', budget:240, start:3300, drop:250,
+   about:'A blue jump trail in the Whistler Bike Park, the largest in the world. It is a smaller, mellower version of A-Line for learning to jump.',
+   reqs:[
+     {label:'At least three tabletop jumps', test:m=>cnt(m,'table')>=3},
+     {label:'At least two berm turns', test:m=>cnt(m,'berm')>=2},
+     {label:'Nothing harder than a blue square', test:m=>m.n>0 && m.max<=4},
+     {label:'Trail at least 700 ft long', test:m=>m.len>=700}],
+   bonus:{label:'Four tabletop jumps', test:m=>cnt(m,'table')>=4}},
+  {id:'northshore', kind:'Double black · North Shore', name:'North Shore Mt Fromme', budget:290, start:2950, drop:250,
+   about:'The birthplace of freeride. Technical, rooty, rocky trails above Vancouver with hand-built wooden ladders and bridges and tight switchbacks.',
+   reqs:[
+     {label:'At least three wooden bridges (ladder bridges)', test:m=>cnt(m,'bridge')>=3},
+     {label:'At least two rock gardens', test:m=>cnt(m,'rock')>=2},
+     {label:'At least one drop', test:m=>cnt(m,'drop')>=1},
+     {label:'At least one switchback climb', test:m=>cnt(m,'switch')>=1}],
+   bonus:{label:'Two drops', test:m=>cnt(m,'drop')>=2}},
+  {id:'aline', kind:'Black · Whistler Bike Park', name:'A-Line', budget:350, start:3600, drop:300,
+   about:'Probably the most famous jump trail in the world. Its biggest tabletops and doubles in Whistler’s Fitzsimmons zone send riders up to 40 ft.',
+   reqs:[
+     {label:'At least four tabletop jumps', test:m=>cnt(m,'table')>=4},
+     {label:'At least one gap jump', test:m=>cnt(m,'gap')>=1},
+     {label:'At least two berm turns', test:m=>cnt(m,'berm')>=2},
+     {label:'No rock gardens (smooth dirt only)', test:m=>m.n>0 && cnt(m,'rock')===0}],
+   bonus:{label:'Two gap jumps', test:m=>cnt(m,'gap')>=2}},
+  {id:'topworld', kind:'Black · Whistler Peak', name:'Top of the World', budget:300, start:7160, drop:400,
+   about:'Starts at the summit of Whistler Mountain (2,182 m), above the treeline, with rocky alpine singletrack and glacier views all the way down.',
+   reqs:[
+     {label:'At least two rock gardens', test:m=>cnt(m,'rock')>=2},
+     {label:'At least two berm turns', test:m=>cnt(m,'berm')>=2},
+     {label:'Trail at least 1,000 ft long', test:m=>m.len>=1000},
+     {label:'No wooden bridges (above the treeline)', test:m=>m.n>0 && cnt(m,'bridge')===0}],
+   bonus:{label:'Include a drop', test:m=>cnt(m,'drop')>=1}},
+  {id:'msa', kind:'Legendary client', legendary:true, name:'Mont-Sainte-Anne World Cup DH', budget:400, start:2620, drop:450,
+   about:'Québec’s legendary downhill, raced at World Cups since 1991: fast, rooty and rocky, from the 800 m summit toward the St. Lawrence River.',
+   reqs:[
+     {label:'At least three rock gardens (roots and rocks)', test:m=>cnt(m,'rock')>=3},
+     {label:'At least two drops', test:m=>cnt(m,'drop')>=2},
+     {label:'At least one gap jump', test:m=>cnt(m,'gap')>=1},
+     {label:'Average difficulty 4 or higher', test:m=>m.n>0 && m.avg>=4}],
+   bonus:{label:'Finish with $40 or more for repairs', test:m=>m.left>=4000}}
+  ]},
+  tasmania: {name:'Tasmania', place:'Australia’s island state', blurb:'Rainforest flow, granite boulders and a descent to the beach.', clients:[
+  {id:'hollybank', kind:'Green · Launceston', name:'Hollybank', budget:160, start:1150, drop:150,
+   about:'More than 20 km of cross-country, downhill and enduro trails in forest a short drive from Launceston.',
+   reqs:[
+     {label:'Green circles only (difficulty 1–2)', test:m=>m.n>0 && m.max<=2},
+     {label:'Trail at least 1,100 ft long', test:m=>m.len>=1100},
+     {label:'At least one wooden bridge', test:m=>cnt(m,'bridge')>=1},
+     {label:'At least two berm turns', test:m=>cnt(m,'berm')>=2}],
+   bonus:{label:'Keep at least $20 for the trail fund', test:m=>m.left>=2000}},
+  {id:'bluetier', kind:'Blue · Blue Derby', name:'Blue Tier', budget:220, start:2620, drop:300,
+   about:'A 23 km ride from the Blue Tier plateau through rainforest and granite, about 70% downhill, finishing with the Big Chook descent to the Weldborough pub.',
+   reqs:[
+     {label:'Trail at least 1,300 ft long', test:m=>m.len>=1300},
+     {label:'At least two berm turns', test:m=>cnt(m,'berm')>=2},
+     {label:'At least one rock garden (granite)', test:m=>cnt(m,'rock')>=1},
+     {label:'Nothing harder than a blue square', test:m=>m.n>0 && m.max<=4}],
+   bonus:{label:'Include a wooden bridge', test:m=>cnt(m,'bridge')>=1}},
+  {id:'bayoffires', kind:'Blue · St Helens', name:'Bay of Fires Trail', budget:240, start:1970, drop:150,
+   about:'A 42 km wilderness trail from the Blue Tier plateau (600 m) past granite boulders: a 14 km descent, 400 m of climbing, then the last 6 km down to Swimcart Beach.',
+   reqs:[
+     {label:'At least two switchback climbs', test:m=>cnt(m,'switch')>=2},
+     {label:'Trail at least 1,300 ft long', test:m=>m.len>=1300},
+     {label:'At least one rock garden (granite boulders)', test:m=>cnt(m,'rock')>=1},
+     {label:'Nothing harder than a blue square', test:m=>m.n>0 && m.max<=4}],
+   bonus:{label:'Eleven or more segments', test:m=>m.n>=11}},
+  {id:'atlas', kind:'Black · Blue Derby', name:'Atlas & Black Dragon', budget:260, start:2300, drop:300,
+   about:'Atlas is a 15 km backcountry descent in the hills near Weldborough. Black Dragon splits off it for a steeper, more technical run down the ridgeline.',
+   reqs:[
+     {label:'At least two rock gardens', test:m=>cnt(m,'rock')>=2},
+     {label:'At least one drop', test:m=>cnt(m,'drop')>=1},
+     {label:'At least two berm turns', test:m=>cnt(m,'berm')>=2},
+     {label:'Average difficulty 3 or higher', test:m=>m.n>0 && m.avg>=3}],
+   bonus:{label:'Trail at least 900 ft long', test:m=>m.len>=900}},
+  {id:'northsouth', kind:'Blue · kunanyi / Mt Wellington', name:'North South Track', budget:220, start:2360, drop:250,
+   about:'Some of Hobart’s best riding: singletrack across the forested slopes of kunanyi/Mount Wellington, with rocky sections and views over the city.',
+   reqs:[
+     {label:'At least two rock gardens', test:m=>cnt(m,'rock')>=2},
+     {label:'At least one switchback climb', test:m=>cnt(m,'switch')>=1},
+     {label:'Nothing harder than a blue square', test:m=>m.n>0 && m.max<=4},
+     {label:'Trail at least 1,000 ft long', test:m=>m.len>=1000}],
+   bonus:{label:'Include a wooden bridge', test:m=>cnt(m,'bridge')>=1}},
+  {id:'maydena', kind:'Gravity park · Abbotts Peak', name:'Maydena Bike Park', budget:320, start:3610, drop:450,
+   about:'A gravity park in the Derwent Valley with 820 m of vertical on Abbotts Peak and trails from flowing blues to steep double blacks.',
+   reqs:[
+     {label:'At least one green circle segment', test:m=>cnt(m,'flow')+cnt(m,'switch')+cnt(m,'berm')+cnt(m,'bridge')>=1},
+     {label:'At least one blue square segment', test:m=>cnt(m,'rock')+cnt(m,'table')>=1},
+     {label:'At least one black or double black segment', test:m=>cnt(m,'drop')+cnt(m,'gap')>=1},
+     {label:'Trail at least 800 ft long', test:m=>m.len>=800}],
+   bonus:{label:'Use all four signs: include both a drop and a gap jump', test:m=>cnt(m,'drop')>=1 && cnt(m,'gap')>=1}},
+  {id:'hardline', kind:'Legendary client', legendary:true, name:'Red Bull Hardline Tasmania', budget:480, start:3030, drop:450,
+   about:'One of the hardest downhill races on Earth, held at Maydena since 2024. The course drops about 575 m from 925 m with huge gap jumps and drops.',
+   reqs:[
+     {label:'At least three gap jumps', test:m=>cnt(m,'gap')>=3},
+     {label:'At least three drops', test:m=>cnt(m,'drop')>=3},
+     {label:'No flow trails or bridges', test:m=>m.n>0 && cnt(m,'flow')+cnt(m,'bridge')===0},
+     {label:'Average difficulty 4.5 or higher', test:m=>m.n>0 && m.avg>=4.5}],
+   bonus:{label:'Finish with $60 or more for repairs', test:m=>m.left>=6000}}
+  ]}
+};
+const CLIENTS = Object.entries(REGIONS).flatMap(([rk,r]) => r.clients.map(c => ({...c, region:rk})));
+
+const CHANGE_ORDERS = [
+  {id:'sponsor', title:'Sponsor donation', text:'A local bike shop chips in $20. Your budget goes up.', budget:20},
+  {id:'permit',  title:'Permit fee', text:'The county charges a $15 trail permit. Your budget goes down.', budget:-15},
+  {id:'extend',  title:'Finish line moved', text:'The parking lot moved downhill. The trail must now end 50 ft lower.', drop:50}
+];
+
+const RANKS = [
+  {name:'Trail Rookie', at:0}, {name:'Dig Crew', at:150}, {name:'Trail Boss', at:400},
+  {name:'Park Designer', at:800}, {name:'Master Builder', at:1400}
+];
+const MAX_SEGS = 12;
+
+/* ---------- State ---------- */
+let S;
+function fresh(){
+  const saved = store.get('tb-layer','alg1'), reg = store.get('tb-region','nz');
+  return {phase:'survey', layer: LAYERS[saved] ? saved : 'alg1', region: REGIONS[reg] ? reg : 'nz', clientId:null, trail:[], q:null,
+          asked:0, firstTry:0, co:null, sale:null, msg:'', ride:null, result:null};
+}
+const client = () => CLIENTS.find(c => c.id === S.clientId);
+const budgetC = () => client().budget*100 + ((S.co && S.co.budget) || 0)*100;
+const finishElev = () => client().start - client().drop - ((S.co && S.co.drop) || 0);
+function priceOf(type){
+  if (S.layer === 'bikeshop'){ const u = SEG[type].usd; return S.sale === type ? Math.round(u*0.8) : u; }
+  return SEG[type].cost*100;
+}
+function metrics(trail = S.trail){
+  const c = client(); const m = {counts:{}, len:0, elev:c.start, spent:0, n:trail.length, sumD:0, max:0, high:0};
+  trail.forEach(t => { const s = SEG[t.type]; m.counts[t.type]=(m.counts[t.type]||0)+1; m.len+=s.len; m.elev+=s.elev;
+    m.spent+=t.price; m.sumD+=s.diff; m.max=Math.max(m.max,s.diff); if(s.diff>=4) m.high++; });
+  m.avg = m.n ? m.sumD/m.n : 0; m.left = budgetC() - m.spent; return m;
+}
+function money(c){ return S.layer==='bikeshop' ? '$'+(c/100).toFixed(2) : '$'+Math.round(c/100).toLocaleString(); }
+const ft = n => n.toLocaleString();
+const signed = n => (n>0?'+':n<0?'−':'')+Math.abs(n);
+
+/* ---------- Signs and glyphs ---------- */
+function signOf(d){ return d<=2 ? 'green' : d<=4 ? 'blue' : d===5 ? 'black' : 'double'; }
+const SIGN_NAME = {green:'Green circle', blue:'Blue square', black:'Black diamond', double:'Double black diamond'};
+function signSVG(d, size=18){
+  const k = signOf(d), e = 'stroke="var(--sign-edge)" stroke-width="1.5"';
+  let inner = k==='green' ? `<circle cx="10" cy="10" r="7.5" fill="var(--green)" ${e}/>`
+    : k==='blue' ? `<rect x="3" y="3" width="14" height="14" fill="var(--blue)" ${e}/>`
+    : k==='black' ? `<rect x="4.5" y="4.5" width="11" height="11" transform="rotate(45 10 10)" fill="var(--diamond)" ${e}/>`
+    : `<rect x="1" y="5.5" width="9" height="9" transform="rotate(45 5.5 10)" fill="var(--diamond)" ${e}/><rect x="10" y="5.5" width="9" height="9" transform="rotate(45 14.5 10)" fill="var(--diamond)" ${e}/>`;
+  return `<svg width="${size*(k==='double'?1.1:1)}" height="${size}" viewBox="0 0 20 20" role="img" aria-label="${SIGN_NAME[k]}, difficulty ${d}">${inner}</svg>`;
+}
+const lineColor = d => ({green:'var(--green)', blue:'var(--blue)', black:'var(--diamond-line)', double:'var(--diamond-line)'})[signOf(d)];
+const glyph = t => `<svg class="glyph" viewBox="0 0 64 28" aria-hidden="true"><path d="${SEG[t].g}"/></svg>`;
+
+/* ---------- Questions (the math layer) ---------- */
+function makeQuestion(type){
+  const s = SEG[type], m = metrics(), p = priceOf(type);
+  const q = {type, tries:0, kind:'num', tol:0, revealed:false, fb:'', t0:Date.now()};
+  q.unit = ''; q.ref = '';
+  const r1 = x => Math.round(x*10)/10, r2 = x => Math.round(x*100)/100;
+  const B = (t) => `<b class="num">${t}</b>`;
+  const rise = Math.abs(s.elev), dir = s.elev<0 ? 'drops' : 'climbs';
+  // qid names the kind of question for progress tracking; each one is registered in supabase/progress.sql.
+  const set = (prompt, answer, tol, unit, ref, hint, qid) => Object.assign(q, {prompt, answer, tol, unit, ref, hint, qid});
+  const coin = Math.random() < 0.5;
+  switch (S.layer){
+    case 'alg1': {
+      if (['flow','switch','berm','rock'].includes(type)){
+        const slope = s.elev/s.len, x = s.len*3/4;
+        set(`The ${s.name} ${dir} ${B(rise+' ft')} over ${B(s.len+' ft')} of run at a constant grade, starting at ${B(ft(m.elev)+' ft')}. Model it as y = mx + b, where x is distance into the segment. What is the elevation at x = ${B(x+' ft')}? Round to 0.1 ft.`,
+          r1(m.elev + slope*x), 0.051, ' ft', 'm = rise ÷ run · b = starting elevation · y = mx + b',
+          `Here m = ${s.elev} ÷ ${s.len} = ${slope} and b = ${m.elev}. Substitute x = ${x}.`, 'alg1-linear-model');
+      } else {
+        const L = m.left/100, P = p/100;
+        set(`After you buy the ${s.name} for ${B('$'+P)}, you want to spend the rest on $10 flow trails. Right now you have ${B('$'+L)}. Solve ${B(P+' + 10n ≤ '+L)} for the greatest whole number n.`,
+          Math.floor((L-P)/10), 0, ' flow trails', 'Isolate n: subtract, then divide. Round down to a whole number.',
+          `Subtract ${P} from both sides, then divide by 10. You can't buy part of a trail, so round down.`, 'alg1-inequality');
+      }
+      break; }
+    case 'geo': {
+      if (type==='bridge'){
+        set(`The ${s.name} deck is ${B('80 ft')} long. Deck boards are ${B('6 in')} wide and laid side by side across the deck with no gaps. How many boards does the crew need?`,
+          160, 0, ' boards', '1 ft = 12 in', 'Convert 80 ft to inches, then divide by the board width.', 'geo-unit-conversion');
+      } else if (type==='berm' && coin){
+        set(`The ${s.name} is a quarter circle with radius ${B('64 ft')} measured to the rider's line. How long is the rider's path through the turn? Round to 0.1 ft.`,
+          r1(2*Math.PI*64/4), 0.051, ' ft', 'Arc length = (θ ÷ 360°) × 2πr',
+          'A quarter circle is 90°, so take ¼ of the circumference 2π(64).', 'geo-arc-length');
+      } else {
+        set(`Treat the ${s.name} as a right triangle: horizontal run ${B(s.len+' ft')}, vertical ${s.elev<0?'drop':'rise'} ${B(rise+' ft')}. How far does the rider travel along the slope? Round to 0.1 ft.`,
+          r1(Math.hypot(s.len, rise)), 0.051, ' ft', 'a² + b² = c²',
+          `c = √(${s.len}² + ${rise}²).`, 'geo-pythagorean');
+      }
+      break; }
+    case 'alg2': {
+      const Q = {
+        table: coin
+          ? [`The rider leaves the ${s.name} lip with height h(t) = ${B('−16t² + 24t')} feet above the lip, t in seconds. How long is the rider in the air before landing back at lip height?`, 1.5, 0.011, ' s', 'Set h(t) = 0 and factor, or use the quadratic formula.', 'Factor: −8t(2t − 3) = 0. Take the positive root.', 'alg2-quadratic-roots']
+          : [`On the ${s.name}, h(t) = ${B('−16t² + 24t')} feet above the lip. What is the rider's maximum height?`, 9, 0.011, ' ft', 'Vertex at t = −b ÷ 2a', 'Find t = −24 ÷ (2 · −16), then plug it into h(t).', 'alg2-quadratic-vertex'],
+        gap: coin
+          ? [`Over the ${s.name}, the rider's height above the landing is h(t) = ${B('−16t² + 16t + 12')} feet. When does the rider touch down (h = 0)? Answer in seconds.`, 1.5, 0.011, ' s', 't = (−b ± √(b² − 4ac)) ÷ 2a', 'Divide by −4: 4t² − 4t − 3 = 0, then factor (2t − 3)(2t + 1) = 0.', 'alg2-quadratic-roots']
+          : [`Over the ${s.name}, h(t) = ${B('−16t² + 16t + 12')} feet above the landing. What is the peak height?`, 16, 0.011, ' ft', 'Vertex at t = −b ÷ 2a', 'The vertex is at t = 0.5. Evaluate h(0.5).', 'alg2-quadratic-vertex'],
+        drop: [`The ${s.name} lip is 9 ft above the landing, so h(t) = ${B('9 − 16t²')}. How many seconds until the rider lands?`, 0.75, 0.011, ' s', 'Set h(t) = 0 and solve for t > 0.', '16t² = 9, so t = √(9 ÷ 16).', 'alg2-quadratic-roots'],
+        flow: [`Riders on the ${s.name} grow ${B('15% per month')} from ${B('120')} in month 0. Using R(t) = 120(1.15)ᵗ, how many riders are there in month 4? Round to a whole rider.`, Math.round(120*1.15**4), 0.5, ' riders', 'Exponential growth: A(t) = A₀(1 + r)ᵗ', 'Compute 120 × 1.15⁴.', 'alg2-exponential'],
+        rock: [`Each winter the ${s.name} loses ${B('6%')} of its rocks to erosion. It starts with ${B('400')} rocks. How many remain after 3 winters? Round to a whole rock.`, Math.round(400*0.94**3), 0.5, ' rocks', 'Exponential decay: A(t) = A₀(1 − r)ᵗ', 'Compute 400 × 0.94³.', 'alg2-exponential'],
+        switch: [`Traffic on the ${s.name} grows ${B('15% per month')}. How many months until it doubles? Solve 2 = 1.15ᵗ and round to 0.1.`, r1(Math.log(2)/Math.log(1.15)), 0.051, ' months', 'Take logs: t = log 2 ÷ log 1.15', 'Use logarithms on both sides.', 'alg2-logarithms'],
+        berm: [`The ${s.name}'s banked wall follows y = ${B('−0.5x² + 4x')}, where x is feet from the inside edge. How tall is the wall at its highest point?`, 8, 0.011, ' ft', 'Vertex at x = −b ÷ 2a', 'x = −4 ÷ (2 · −0.5) = 4. Evaluate y(4).', 'alg2-quadratic-vertex'],
+        bridge: [`The ${s.name} is rated for ${B('1,000 lb')} and loses ${B('4%')} of its strength each year. After how many whole years does the rating first drop below ${B('800 lb')}?`, 6, 0, ' years', 'Solve 1000(0.96)ᵗ < 800 with logs.', 't > log 0.8 ÷ log 0.96 ≈ 5.47, so round up.', 'alg2-logarithms']
+      }[type];
+      set(...Q); break; }
+    case 'precalc': {
+      if (type==='bridge'){
+        set(`The ${s.name} has a gentle arch: y = ${B('2 sin(πx ÷ 80)')} feet, for x from 0 to 80 ft. How high is the deck at x = ${B('20 ft')}? Round to 0.01 ft.`,
+          r2(2*Math.sin(Math.PI*20/80)), 0.006, ' ft', 'sin(π/4) = √2 ÷ 2 (calculator in radian mode)', 'Evaluate 2 sin(π/4).', 'precalc-sine-eval');
+      } else if (type==='berm' && coin){
+        set(`A rider takes the ${s.name} at ${B('22 ft/s')} on a turn of radius ${B('30 ft')}. The ideal banking angle satisfies tan θ = v² ÷ (r g), with g = 32.2 ft/s². Find θ in degrees, rounded to 0.1.`,
+          r1(Math.atan(22*22/(30*32.2))*180/Math.PI), 0.051, '°', 'θ = tan⁻¹(v² ÷ rg) (calculator in degree mode)', 'Compute 22² ÷ (30 × 32.2), then take the inverse tangent.', 'precalc-banking-angle');
+      } else {
+        set(`The ${s.name} ${dir} ${B(rise+' ft')} over ${B(s.len+' ft')} of horizontal run. What is its angle ${s.elev<0?'below':'above'} horizontal? Round to 0.1°.`,
+          r1(Math.atan(rise/s.len)*180/Math.PI), 0.051, '°', 'tan θ = opposite ÷ adjacent (calculator in degree mode)', `θ = tan⁻¹(${rise} ÷ ${s.len}).`, 'precalc-slope-angle');
+      }
+      break; }
+    case 'stats': {
+      const rule = 'Ride die: 1 Crash (−10 pts), 6 Flow bonus (+3 pts), anything else 0. Segments rated 5+ subtract 1 from the roll (minimum 1).';
+      if (s.diff >= 3){
+        const ev = s.diff>=5 ? -20/6 : (3-10)/6;
+        set(`The ${s.name} is rated ${B(s.diff)}, so the rider rolls the die on it. What is the expected value of the points from this segment? Round to 0.01.`,
+          r2(ev), 0.011, ' pts', rule + ' E(X) = Σ x · P(x)',
+          s.diff>=5 ? 'With −1, raw rolls 1 and 2 both become a crash, and a 6 becomes 5 so there is no flow bonus.' : 'Each face has probability 1/6. Add up value × probability.', 'stats-expected-value');
+      } else {
+        const a = S.trail.filter(t=>{const d=SEG[t.type].diff; return d>=3 && d<5}).length;
+        const b = S.trail.filter(t=>SEG[t.type].diff>=5).length;
+        if (a+b === 0){
+          set(`Before you add any risky segments: if the rider rolls the die twice, what is the probability both rolls are a 5 or 6? Give a percent rounded to 0.1.`,
+            r1(100/9), 0.051, '%', 'Independent events: P(A and B) = P(A) · P(B)', 'Each roll: 2/6. Multiply, then convert to a percent.', 'stats-independent-events');
+        } else {
+          set(`Your trail so far has ${B(a)} die segment${a===1?'':'s'} with a 1/6 crash chance and ${B(b)} with a 2/6 crash chance. Rolls are independent. What is the probability the rider gets through all of them without crashing? Give a percent rounded to 0.1.`,
+            r1(100*(5/6)**a*(4/6)**b), 0.051, '%', 'P(no crash) = product of each segment’s P(no crash)', `Compute (5/6)^${a} × (4/6)^${b}, then × 100.`, 'stats-independent-events');
+        }
+      }
+      break; }
+    case 'calc': {
+      const Q = {
+        flow: [`The ${s.name} profile is y(x) = ${B(ft(m.elev)+' − 0.0005x²')} feet, x in feet. What is the slope dy/dx at x = ${B('100 ft')}? (ft per ft)`, -0.1, 0.0051, '', 'd/dx(axⁿ) = naxⁿ⁻¹', 'dy/dx = −0.001x. Evaluate at x = 100.', 'calc-derivative-slope'],
+        rock: [`The ${s.name} profile is y(x) = ${B(ft(m.elev)+' − x² ÷ 360')} feet. What is the instantaneous slope at x = ${B('90 ft')}? Round to 0.01.`, -0.5, 0.0051, '', 'Power rule', 'dy/dx = −2x ÷ 360 = −x ÷ 180.', 'calc-derivative-slope'],
+        berm: [`Through the ${s.name}, the rider's distance is s(t) = ${B('2t² + 10t')} feet. What is the rider's speed at t = ${B('3 s')}?`, 22, 0.011, ' ft/s', 'v(t) = s′(t)', 's′(t) = 4t + 10.', 'calc-velocity'],
+        switch: [`The crew digs the ${s.name} at a rate of r(t) = ${B('3t² + 2')} feet per hour. How many feet do they dig in the first ${B('5 hours')}?`, 135, 0.011, ' ft', '∫₀⁵ r(t) dt', 'An antiderivative is t³ + 2t. Evaluate from 0 to 5.', 'calc-integral'],
+        drop: [`Off the ${s.name}, height above the landing is h(t) = ${B('9 − 16t²')} feet. The rider lands at t = 0.75 s. What is the rider's speed at landing?`, 24, 0.011, ' ft/s', 'Speed = |h′(t)|', 'h′(t) = −32t. Evaluate at 0.75 and take the absolute value.', 'calc-velocity'],
+        table: [`On the ${s.name}, h(t) = ${B('−16t² + 24t')} feet. Use the derivative to find the rider's maximum height.`, 9, 0.011, ' ft', 'Max where h′(t) = 0', 'h′(t) = −32t + 24 = 0 gives t = 0.75. Evaluate h(0.75).', 'calc-optimization'],
+        gap: [`Over the ${s.name}, h(t) = ${B('−16t² + 16t + 12')} feet above the landing, and touchdown is at t = 1.5 s. What is the rider's speed at touchdown?`, 32, 0.011, ' ft/s', 'Speed = |h′(t)|', 'h′(t) = −32t + 16. Evaluate at 1.5.', 'calc-velocity'],
+        bridge: [`The ${s.name} deck sags along y = ${B('0.001x(x − 80)')} feet below the straight line between its ends, for 0 ≤ x ≤ 80. What is the area between the deck and that line? Round to 0.1 ft².`, r1(0.001*80**3/6), 0.051, ' ft²', 'Area = ∫₀⁸⁰ |y| dx', 'Expand: 0.001(x² − 80x). Integrate, then take the absolute value.', 'calc-integral']
+      }[type];
+      set(...Q); break; }
+  }
+  return q;
+}
+function fmtAnswer(q){
+  if (q.kind==='money') return money(q.answer);
+  return (Number.isInteger(q.answer) ? q.answer.toLocaleString() : String(q.answer)) + q.unit;
+}
+function checkAnswer(raw){
+  const q = S.q; const clean = String(raw).replace(/[−–]/g,'-').replace(/[^0-9.\-]/g,'');
+  if (clean==='' || clean==='-' || isNaN(parseFloat(clean))){ q.fb = 'Type a number first.'; q.fbKind='bad'; return render(); }
+  const v = parseFloat(clean);
+  const ok = q.kind==='money' ? Math.round(v*100)===q.answer : Math.abs(v - q.answer) <= q.tol + 1e-9;
+  q.tries++;
+  trackAttempt(q, raw, ok);
+  if (ok){ place(q.tries===1, raw); return; }
+  if (q.tries===1){ q.fb = 'Not quite. ' + q.hint; q.fbKind='bad'; }
+  else { q.revealed = true; q.fb = `The answer is ${fmtAnswer(q)}. Look at how it was found, then place the segment.`; q.fbKind='bad'; }
+  render(); focusAnswer();
+}
+
+/* ---------- Progress tracking ----------
+   Sends each checked answer to js/progress.js. It returns at once, never
+   throws, and saves nothing unless a student is signed in. One round for
+   one client is one play session. */
+const MP = window.MathleteProgress;
+const sessionId = () => S.sid || (S.sid = MP.startSession());
+function trackAttempt(q, raw, ok){
+  if (!MP || !q.qid) return;
+  const now = Date.now(), secs = (now - q.t0)/1000; q.t0 = now;
+  MP.recordQuestionAttempt({
+    gameId: 'trail-builder', questionId: 'trail-builder:' + q.qid,
+    // Only the question's fixed parts, so every try at it matches up.
+    questionSnapshot: {prompt: q.prompt.replace(/<[^>]+>/g,''), answer: q.answer, tolerance: q.tol, unit: q.unit.trim(),
+      formula: q.ref, hint: q.hint, course: LAYERS[S.layer].name, segment: SEG[q.type].name},
+    studentAnswer: raw, correctAnswer: fmtAnswer(q), isCorrect: ok,
+    hintsUsed: q.tries > 1 ? 1 : 0,                       // the hint appears after the first miss
+    timeToAnswer: secs > 0 && secs < 1800 ? secs : undefined,  // ignore a tab left open
+    gameSessionId: sessionId()
+  });
+}
+
+/* ---------- Actions ---------- */
+function canBuy(type){
+  const m = metrics(), s = SEG[type];
+  if (m.n >= MAX_SEGS) return `The trail permit allows ${MAX_SEGS} segments at most.`;
+  if (priceOf(type) > m.left) return `You can't afford the ${s.name}.`;
+  const t = S.trail;
+  if (s.diff>=4 && t.length>=2 && SEG[t[t.length-1].type].diff>=4 && SEG[t[t.length-2].type].diff>=4)
+    return 'Riders need recovery: no more than two segments rated 4+ in a row.';
+  return '';
+}
+function place(first, raw){
+  const q = S.q; S.asked++; if (first) S.firstTry++;
+  S.trail.push({type:q.type, price:priceOf(q.type), ok:first, ans:String(raw)});
+  S.q = null; S.msg = '';
+  if (S.layer==='bikeshop') rollSale();
+  render();
+}
+function rollSale(){ S.sale = SALE_OK[Math.floor(Math.random()*SALE_OK.length)]; }
+
+function startRound(id){
+  const keep = S.layer; S = fresh(); S.layer = keep; S.clientId = id; S.phase = 'build';
+  if (S.layer==='bikeshop') rollSale();
+  render(); window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* Ride */
+const FACES = {1:'crash',2:'washout',3:'flat',4:'sketchy',5:'clean',6:'flow'};
+const OUT_NAME = {crash:'Crash', washout:'Washout', flat:'Flat tire', sketchy:'Sketchy but upright', clean:'Clean line', flow:'Flow bonus', auto:'Clean line'};
+function rideStep(){
+  const R = S.ride; if (R.i >= S.trail.length) return;
+  const t = S.trail[R.i], s = SEG[t.type], next = S.trail[R.i+1];
+  const r = {i:R.i, type:t.type, pts:0, cost:0, note:''};
+  if (s.diff < 3){ r.out='auto'; r.note='Easy section, rolled through.'; }
+  else {
+    const raw = 1 + Math.floor(Math.random()*6); r.raw = raw;
+    r.roll = s.diff>=5 ? Math.max(1, raw-1) : raw; r.out = FACES[r.roll];
+    if (s.diff>=5) r.note = `Rolled ${raw}, −1 for a ${SIGN_NAME[signOf(s.diff)].toLowerCase()}. `;
+    const fix = c => { if (R.cash >= c){ R.cash -= c; R.repairs += c; r.cost = c; return true } return false; };
+    if (r.out==='flat'){ const c = S.layer==='bikeshop'?500:500; if (fix(c)) r.note += `Paid ${money(c)} for a new tube.`; else { r.pts=-5; r.note += 'No money left for a tube.'; } }
+    else if (r.out==='washout'){ if (fix(t.price)) r.note += `Rebuilt it for ${money(t.price)}.`; else { r.pts=-10; r.note += "Couldn't afford to rebuild it."; } }
+    else if (r.out==='crash'){ if (next && (next.type==='bridge'||next.type==='flow')){ r.note += `Recovered on the ${SEG[next.type].name.toLowerCase()} right after.`; } else { r.pts=-10; r.note += 'No easy section after it to recover.'; } }
+    else if (r.out==='flow'){ r.pts=3; r.note += 'Perfect line.'; }
+    else if (r.out==='clean'){ r.note += 'Smooth.'; }
+    else r.note += 'Made it.';
+  }
+  R.results.push(r); R.i++;
+}
+function rideSummary(){
+  const res = S.ride.results; let runs=0, run=0, faceBonus=0, pen=0;
+  res.forEach(r => { const clean = r.out==='clean'||r.out==='flow'||r.out==='auto';
+    if (clean) run++; else { if (run>=2) runs++; run=0; }
+    if (r.pts>0) faceBonus+=r.pts; if (r.pts<0) pen+=-r.pts; });
+  if (run>=2) runs++;
+  return {runs, faceBonus, pen, score: Math.max(0, Math.min(20, 10 + runs*5 + faceBonus - pen))};
+}
+function scoreRound(){
+  const c = client(), m = metrics(), rs = rideSummary();
+  const brief = c.reqs.filter(r => r.test(m)).length*10;
+  const bonus = c.bonus.test(m) ? 10 : 0;
+  const b = budgetC(), ratio = m.spent / b;
+  const budget = ratio >= 0.9 ? 20 : Math.round(20*ratio/0.9);
+  const math = S.asked ? Math.round(20*S.firstTry/S.asked) : 0;
+  const total = brief + bonus + budget + rs.score + math;
+  const medal = total>=90?'gold':total>=75?'silver':total>=60?'bronze':'none';
+  return {brief, bonus, budget, ride:rs.score, rs, math, total, medal, ratio};
+}
+
+/* ---------- Network ---------- */
+const net = () => store.get('tb-network', []);
+const totalPts = () => net().reduce((a,t)=>a+t.score,0);
+const golds = () => net().filter(t=>t.medal==='gold').length;
+function rankInfo(){
+  const p = totalPts(); let i = 0; RANKS.forEach((r,k)=>{ if (p>=r.at) i=k; });
+  const next = RANKS[i+1]; const pct = next ? (p-RANKS[i].at)/(next.at-RANKS[i].at) : 1;
+  return {p, rank:RANKS[i], next, pct};
+}
+const legendaryOpen = () => totalPts() >= 400 || golds() >= 3;
+
+/* ---------- Rendering ---------- */
+function renderCrew(){
+  const r = rankInfo();
+  $('#crew').innerHTML = `<div class="rank">${r.rank.name}</div>
+    <div class="pts num">${r.p.toLocaleString()} crew points${r.next ? ` · ${(r.next.at-r.p).toLocaleString()} to ${r.next.name}` : ' · top rank'}</div>
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(r.pct*100)}"><i style="width:${Math.round(r.pct*100)}%"></i></div>`;
+}
+function renderPhases(){
+  const P = [['survey','Survey'],['build','Build'],['ride','Ride'],['review','Review']];
+  const idx = P.findIndex(p=>p[0]===S.phase);
+  $('#phases').innerHTML = P.map((p,i)=>`<div class="phase ${i===idx?'on':i<idx?'done':''}" ${i===idx?'aria-current="step"':''}><b>${i+1}</b>${p[1]}</div>`).join('');
+}
+
+function workOrder(c, live){
+  const m = live ? metrics() : null;
+  const finish = live ? finishElev() : c.start - c.drop;
+  const budget = live ? budgetC()/100 : c.budget;
+  const locked = c.legendary && !legendaryOpen();
+  return `<article class="wo">
+    <div class="wo-head"><div><div class="eyebrow">${esc(c.kind)}</div><h3>${esc(c.name)}</h3></div>
+      ${c.legendary?'<span class="tag legend">Legendary</span>':''}</div>
+    <div class="wo-body">
+      ${c.about?`<p class="small muted">${esc(c.about)}</p>`:''}
+      <dl class="facts">
+        <dt>Budget</dt><dd class="num">$${budget.toLocaleString(undefined,{minimumFractionDigits: S.layer==='bikeshop'?2:0, maximumFractionDigits:2})}</dd>
+        <dt>Trailhead</dt><dd class="num">${ft(c.start)} ft</dd>
+        <dt>Finish</dt><dd class="num">${ft(finish)} ft</dd>
+      </dl>
+      <ul class="reqs">${c.reqs.map(r=>`<li class="${m && r.test(m)?'ok':''}">${esc(r.label)}</li>`).join('')}
+        <li class="bonus ${m && c.bonus.test(m)?'ok':''}">Bonus +10: ${esc(c.bonus.label)}</li></ul>
+    </div>
+    ${live ? '' : `<div class="wo-foot">${locked
+      ? `<span class="lock">Unlocks at Trail Boss rank or after 3 Gold trails</span>`
+      : `<span class="small muted">Gold 90 · Silver 75 · Bronze 60</span><button class="btn go sm" data-act="start" data-v="${c.id}">Take this job</button>`}</div>`}
+  </article>`;
+}
+
+function renderSurvey(){
+  const L = Object.entries(LAYERS).map(([k,l])=>`<button class="layer" data-act="layer" data-v="${k}" aria-pressed="${S.layer===k}"><b>${l.name}</b><span>${l.grades} · ${l.skill}</span></button>`).join('');
+  return `<div class="col">
+    <section class="panel col">
+      <div><div class="eyebrow">Step 1 · Pick the course</div><h2 style="font-size:24px;font-weight:800">Which math class is your crew in?</h2></div>
+      <div class="layers" role="group" aria-label="Math level">${L}</div>
+      <details><summary>How to play</summary>
+        <ol>
+          <li><b>Survey.</b> Take a work order. The client gives you a budget, a trailhead elevation and where the trail must finish.</li>
+          <li><b>Build.</b> Buy segments from the shop. Before each one goes in, you solve the math for it. Your trail must end exactly at the finish elevation.</li>
+          <li><b>Ride.</b> A test rider rolls the die on every segment rated 3 or higher. Flats and washouts cost money, so leftover budget helps.</li>
+          <li><b>Review.</b> Score up to 100 points (plus a bonus), name your trail, explain why it works, and add it to your trail network.</li>
+        </ol>
+      </details>
+    </section>
+    <section class="col">
+      <div class="row" style="justify-content:space-between">
+        <div><div class="eyebrow">Step 2 · Pick a destination</div><h2 style="font-size:24px;font-weight:800">Where will your crew build?</h2></div>
+      </div>
+      <div class="regions" role="group" aria-label="Destination">${Object.entries(REGIONS).map(([k,r])=>`<button class="region" data-act="region" data-v="${k}" aria-pressed="${S.region===k}"><b>${esc(r.name)}</b><span class="rp">${esc(r.place)}</span><span class="rb">${esc(r.blurb)}</span></button>`).join('')}</div>
+      <div class="row" style="justify-content:space-between">
+        <div><div class="eyebrow">Step 3 · Take a work order</div><h2 style="font-size:24px;font-weight:800">Clients waiting in ${esc(REGIONS[S.region].name)}</h2></div>
+        <button class="btn" data-act="random">Draw a random client</button>
+      </div>
+      <div class="clients">${CLIENTS.filter(c=>c.region===S.region).map(c=>workOrder(c,false)).join('')}</div>
+    </section>
+  </div>`;
+}
+
+function profileSVG(trail, rideAt){
+  const c = client(), fin = finishElev();
+  const pts = [{x:0,y:c.start}]; let x=0, y=c.start;
+  trail.forEach(t=>{ const s=SEG[t.type]; x+=s.len; y+=s.elev; pts.push({x,y,d:s.diff}); });
+  const W=800, H=250, pl=70, pr=20, pt=24, pb=34;
+  const maxX = Math.max(x, 1000) * 1.04;
+  const ys = pts.map(p=>p.y).concat([fin, c.start]);
+  const lo = Math.min(...ys) - 40, hi = Math.max(...ys) + 40;
+  const sx = v => pl + v/maxX*(W-pl-pr), sy = v => pt + (hi-v)/(hi-lo)*(H-pt-pb);
+  let ground = `M${sx(0)} ${H-pb} ` + pts.map(p=>`L${sx(p.x).toFixed(1)} ${sy(p.y).toFixed(1)}`).join(' ') + ` L${sx(x)} ${H-pb} Z`;
+  let segs = '';
+  for (let i=1;i<pts.length;i++){
+    segs += `<line x1="${sx(pts[i-1].x).toFixed(1)}" y1="${sy(pts[i-1].y).toFixed(1)}" x2="${sx(pts[i].x).toFixed(1)}" y2="${sy(pts[i].y).toFixed(1)}" stroke="${lineColor(pts[i].d)}" stroke-width="5" stroke-linecap="round"/>`;
+    segs += `<circle cx="${sx(pts[i].x).toFixed(1)}" cy="${sy(pts[i].y).toFixed(1)}" r="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>`;
+  }
+  const end = pts[pts.length-1], atFinish = end.y===fin && trail.length>0;
+  let rider = '';
+  if (rideAt!=null){ const p = pts[Math.min(rideAt, pts.length-1)];
+    rider = `<circle cx="${sx(p.x)}" cy="${sy(p.y)-12}" r="8" fill="var(--blaze)" stroke="var(--surface)" stroke-width="2"/>`; }
+  const ticks = [c.start, fin];
+  return `<svg class="profile" viewBox="0 0 ${W} ${H}" role="img" aria-label="Elevation profile: trailhead ${ft(c.start)} ft, current end ${ft(end.y)} ft, finish ${ft(fin)} ft">
+    <path d="${ground}" fill="var(--ground)" stroke="none"/>
+    <line x1="${pl}" x2="${W-pr}" y1="${sy(fin)}" y2="${sy(fin)}" stroke="var(--blaze)" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <text x="${W-pr}" y="${sy(fin)-6}" text-anchor="end" font-size="12" font-family="Overpass, sans-serif" font-weight="700" fill="var(--blaze)">FINISH ${ft(fin)} FT</text>
+    <line x1="${pl}" x2="${W-pr}" y1="${H-pb}" y2="${H-pb}" stroke="var(--ground-edge)" stroke-width="1"/>
+    ${ticks.map((v,i)=>`<text x="${pl-8}" y="${sy(v)+4}" text-anchor="end" font-size="12" font-family="Overpass Mono, monospace" fill="var(--muted)">${ft(v)}</text>`).join('')}
+    <text x="${pl}" y="${H-12}" font-size="12" font-family="Overpass Mono, monospace" fill="var(--muted)">0 ft</text>
+    <text x="${W-pr}" y="${H-12}" text-anchor="end" font-size="12" font-family="Overpass Mono, monospace" fill="var(--muted)">${ft(x)} ft built</text>
+    ${segs}
+    <rect x="${sx(0)-4}" y="${sy(c.start)-26}" width="3" height="26" fill="var(--ink)"/>
+    <path d="M${sx(0)-1} ${sy(c.start)-26} l16 5 l-16 5 z" fill="var(--blaze)"/>
+    ${atFinish ? `<circle cx="${sx(end.x)}" cy="${sy(end.y)}" r="7" fill="none" stroke="var(--good)" stroke-width="2.5"/>` : ''}
+    ${rider}
+  </svg>`;
+}
+
+function logbook(){
+  if (!S.trail.length) return `<p class="small muted">Every segment you buy is logged here with your answer.</p>`;
+  const c = client(); let left = budgetC(), elev = c.start;
+  const rows = S.trail.map((t,i)=>{ const s=SEG[t.type]; left-=t.price; elev+=s.elev;
+    return `<tr><td class="n">${i+1}</td><td>${esc(s.name)}</td><td class="n">${money(t.price)}</td><td class="n">${money(left)}</td><td class="n">${ft(elev)}</td><td class="mark ${t.ok?'ok':'no'}">${t.ok?'✓':'✗'}</td></tr>`; }).join('');
+  return `<div class="tablewrap"><table><thead><tr><th class="n">#</th><th>Segment</th><th class="n">Cost</th><th class="n">Left</th><th class="n">Elev ft</th><th title="Correct on first try">1st</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="small muted">First-try answers: <span class="num">${S.firstTry} of ${S.asked}</span></p>`;
+}
+
+function renderBuild(){
+  const c = client(), m = metrics(), fin = finishElev();
+  const ready = m.n>0 && m.elev===fin && m.left>=0;
+  let shop;
+  if (S.q){
+    const q = S.q, s = SEG[q.type];
+    shop = `<section class="q" aria-live="polite">
+      <div class="row">${glyph(q.type)}<div><div class="eyebrow">Crew logbook check</div><h3 style="font-size:20px;font-weight:800">${esc(s.name)} ${signSVG(s.diff)}</h3></div></div>
+      <p class="prompt">${q.prompt}</p>
+      ${q.ref ? `<p class="small"><span class="eyebrow">Formula card</span> ${esc(q.ref)}</p>` : ''}
+      ${q.revealed
+        ? `<div class="row"><button class="btn go" data-act="placeRevealed">Place the segment</button><button class="btn" data-act="cancelQ">Don't buy it</button></div>`
+        : `<form class="row" id="qform" autocomplete="off"><label for="answer" class="sr" style="position:absolute;left:-9999px">Your answer</label>
+            <input id="answer" inputmode="decimal" placeholder="${q.kind==='money'?'$':'answer'}">
+            <button class="btn go" type="submit">Check</button><button class="btn" type="button" data-act="cancelQ">Cancel</button></form>`}
+      ${q.fb ? `<p class="fb ${q.fbKind}">${esc(q.fb)}</p>` : ''}
+    </section>`;
+  } else {
+    shop = `<section class="col"><div class="row" style="justify-content:space-between"><div><div class="eyebrow">Segment shop</div><h3 style="font-size:20px;font-weight:800">Buy the next piece of trail</h3></div>
+        ${S.trail.length?'<button class="btn sm" data-act="undo">Undo last segment</button>':''}</div>
+      <div class="shop">${ORDER.map(t=>{ const s=SEG[t], why=canBuy(t), p=priceOf(t);
+        const priceTxt = S.layer==='singletrack' ? `${s.cost/5} hrs` : money(p);
+        return `<button class="seg" data-act="buy" data-v="${t}" ${why?`disabled title="${esc(why)}"`:''} aria-label="${s.name}${why?': '+esc(why):''}">
+          <div class="top">${glyph(t)}${signSVG(s.diff)}</div>
+          <div class="nm">${s.name}</div>
+          ${S.sale===t && S.layer==='bikeshop' ? `<div class="sale">20% OFF TODAY</div>`:''}
+          <div class="price">${S.sale===t && S.layer==='bikeshop' ? money(s.usd) : priceTxt}</div>
+          <div class="meta"><span>${s.len} ft</span><span>${signed(s.elev)} ft</span><span>diff ${s.diff}</span><span></span></div>
+        </button>`; }).join('')}</div>
+      ${S.msg?`<p class="note">${esc(S.msg)}</p>`:''}
+    </section>`;
+  }
+  const coBox = S.co
+    ? `<div class="co"><b>Change order: ${esc(S.co.title)}</b><span>${esc(S.co.text)}</span></div>`
+    : `<div class="co"><b>Tutor tools</b><span class="muted">Play the client and shake things up once per round.</span><div><button class="btn sm" data-act="changeOrder">Issue a change order</button></div></div>`;
+  const hideLeft = S.layer==='trailhead' || S.layer==='bikeshop';
+  return `<div class="build">
+    <aside class="col">
+      ${workOrder(c, true)}
+      ${coBox}
+      <section class="panel col"><div class="eyebrow">Crew logbook</div>${logbook()}</section>
+    </aside>
+    <div class="col">
+      <section class="panel col">
+        <div class="stats">
+          <div class="stat ${m.left<0?'warn':''}"><div class="k">Budget left</div><div class="v">${money(m.left)}</div></div>
+          <div class="stat ${m.elev===fin&&m.n?'good':''}"><div class="k">Elevation</div><div class="v">${ft(m.elev)}</div></div>
+          <div class="stat"><div class="k">Length</div><div class="v">${ft(m.len)}</div></div>
+          <div class="stat"><div class="k">Segments</div><div class="v">${m.n}/${MAX_SEGS}</div></div>
+        </div>
+        ${profileSVG(S.trail)}
+        ${S.trail.length ? `<div class="strip">${S.trail.map((t,i)=>`<span class="chip"><span class="i">${i+1}</span>${signSVG(SEG[t.type].diff,13)}${esc(SEG[t.type].name)}</span>`).join('')}</div>` : ''}
+        <div class="row" style="justify-content:space-between">
+          <p class="small muted" style="max-width:52ch">${m.left<0 ? 'You are over budget. Undo a segment to get back under it.' : ready ? 'Your trail reaches the finish. Send the test rider when you are ready.' : `Build from the trailhead down to the finish at ${ft(fin)} ft. Switchback climbs win back elevation if you overshoot.`}</p>
+          <button class="btn go" data-act="toRide" ${ready?'':'disabled'}>Send the test rider</button>
+        </div>
+      </section>
+      ${shop}
+    </div>
+  </div>`;
+}
+
+function renderRide(){
+  const R = S.ride, done = R.i >= S.trail.length;
+  const list = R.results.map((r,k)=>{ const s=SEG[r.type];
+    const pts = r.pts ? `<span class="pts-tag ${r.pts>0?'plus':'minus'}">${r.pts>0?'+':'−'}${Math.abs(r.pts)} pts</span>` : (r.cost ? `<span class="pts-tag minus">−${money(r.cost)}</span>` : '<span></span>');
+    return `<li class="${k===R.results.length-1?'new':''}"><div class="die ${r.out==='auto'?'auto':''}">${r.out==='auto'?'auto':r.roll}</div>
+      <div><b>${r.i+1}. ${esc(s.name)}: ${OUT_NAME[r.out]}</b><div class="small muted">${esc(r.note)}</div></div>${pts}</li>`; }).join('');
+  const rs = rideSummary();
+  return `<div class="col">
+    <section class="panel col">
+      <div class="row" style="justify-content:space-between"><div><div class="eyebrow">Test ride</div><h2 style="font-size:24px;font-weight:800">${done?'Ride complete':'Rider on course'}</h2></div>
+        <div class="row">
+          ${done ? `<button class="btn go" data-act="toReview">See the score</button>` : `<button class="btn go" data-act="rideOne">Ride the next segment</button><button class="btn" data-act="rideAll">Ride the rest</button>`}
+        </div></div>
+      ${profileSVG(S.trail, R.i)}
+      <div class="stats">
+        <div class="stat"><div class="k">Repair money</div><div class="v">${money(R.cash)}</div></div>
+        <div class="stat"><div class="k">Flow runs</div><div class="v">${rs.runs}</div></div>
+        <div class="stat"><div class="k">Penalties</div><div class="v">${rs.pen}</div></div>
+        <div class="stat"><div class="k">Segment</div><div class="v">${Math.min(R.i, S.trail.length)}/${S.trail.length}</div></div>
+      </div>
+      <p class="small muted">Segments rated 3+ roll the die (black diamonds −1). 1 Crash · 2 Washout · 3 Flat tire · 4 Sketchy · 5 Clean line · 6 Flow bonus. Two or more clean segments in a row make a flow run worth +5.</p>
+    </section>
+    ${R.results.length ? `<ol class="rides">${list}</ol>` : `<div class="empty">The rider is at the trailhead. Roll for the first segment.</div>`}
+  </div>`;
+}
+
+function renderReview(){
+  const r = S.result, c = client(), m = metrics();
+  const medalName = {gold:'Gold',silver:'Silver',bronze:'Bronze',none:'Retry'}[r.medal];
+  const rows = [
+    ['Meets the brief', `${c.reqs.filter(q=>q.test(m)).length} of ${c.reqs.length} requirements`, r.brief, 40],
+    ['Client bonus', c.bonus.label, r.bonus, 10],
+    ['Budget efficiency', `Spent ${Math.round(r.ratio*100)}% of the budget`, r.budget, 20],
+    ['Ride quality', `${r.rs.runs} flow run${r.rs.runs===1?'':'s'}, ${r.rs.pen} penalty points`, r.ride, 20],
+    ['Math justification', `${S.firstTry} of ${S.asked} correct on the first try`, r.math, 20]
+  ];
+  return `<div class="review">
+    <section class="panel col">
+      <div class="medal"><div class="disc ${r.medal}">${medalName}</div>
+        <div><div class="eyebrow">${esc(c.name)} · ${LAYERS[S.layer].name}</div><div class="score">${r.total}</div><div class="small muted">points · Gold 90, Silver 75, Bronze 60</div></div></div>
+      <div class="tablewrap"><table><thead><tr><th>Category</th><th>Why</th><th class="n">Points</th></tr></thead><tbody>
+        ${rows.map(x=>`<tr><td><b>${x[0]}</b></td><td class="small">${esc(x[1])}</td><td class="n">${x[2]} / ${x[3]}</td></tr>`).join('')}
+      </tbody></table></div>
+      ${profileSVG(S.trail)}
+    </section>
+    <section class="panel col">
+      <div><div class="eyebrow">Your pitch to the client</div><h2 style="font-size:22px;font-weight:800">Name it and explain it</h2></div>
+      <div><label for="trailName">Trail name</label><input type="text" id="trailName" maxlength="40" value="${esc(S.draftName || '')}" placeholder="e.g. Switchback Sally"></div>
+      <div><label for="pitch">Why this trail works, with numbers</label><textarea id="pitch" placeholder="My trail meets the brief because it is ${ft(m.len)} ft long, costs ${money(m.spent)}…">${esc(S.draftPitch||'')}</textarea></div>
+      <p class="small muted">Tutors: ask how they knew they could afford the hardest segment, and what they would change for a higher score.</p>
+      <div class="row"><button class="btn go" data-act="save">Add to my trail network</button><button class="btn" data-act="rebuild">Rebuild for this client</button><button class="btn" data-act="newJob">New work order</button></div>
+    </section>
+  </div>`;
+}
+
+function renderNetwork(){
+  const list = net();
+  const head = `<div class="row" style="justify-content:space-between"><div><div class="eyebrow">Your bike park</div><h2 style="font-size:24px;font-weight:800">Trail network</h2></div>
+    ${list.length ? (S.confirmClear ? `<div class="row"><span class="small">Remove all ${list.length} trails?</span><button class="btn sm" data-act="clearYes">Remove</button><button class="btn sm" data-act="clearNo">Keep</button></div>` : `<button class="btn sm" data-act="clearAsk">Clear trails</button>`) : ''}</div>`;
+  if (!list.length) return head + `<div class="empty">No trails yet. Finish a work order and add it here. Every trail you save earns crew points toward your next rank.</div>`;
+  return head + `<div class="net">${list.slice().reverse().map(t=>`<div class="post"><div class="tn">${esc(t.name)}</div>
+    <div class="tm">${esc(t.client)}${t.region ? ' · '+esc(t.region) : ''} · ${esc(t.layer)} · <span class="num">${t.score} pts</span> · ${t.medal==='none'?'No medal':t.medal[0].toUpperCase()+t.medal.slice(1)}</div>
+    ${t.pitch ? `<div class="tm" style="opacity:.75">“${esc(t.pitch.slice(0,120))}${t.pitch.length>120?'…':''}”</div>`:''}</div>`).join('')}</div>`;
+}
+
+function render(){
+  renderCrew(); renderPhases();
+  const app = $('#app');
+  app.innerHTML = S.phase==='survey' ? renderSurvey() : S.phase==='build' ? renderBuild() : S.phase==='ride' ? renderRide() : renderReview();
+  $('#network').innerHTML = renderNetwork();
+  const f = $('#qform'); if (f) f.addEventListener('submit', e => { e.preventDefault(); checkAnswer($('#answer').value); });
+}
+function focusAnswer(){ const a = $('#answer'); if (a) a.focus(); }
+let toastT;
+function toast(t){ const el=$('#toast'); el.textContent=t; el.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>el.hidden=true, 2600); }
+
+/* ---------- Events ---------- */
+const H = {
+  layer(v){ S.layer=v; store.set('tb-layer', v); render(); },
+  region(v){ if (!REGIONS[v]) return; S.region=v; store.set('tb-region', v); render(); },
+  start(v){ startRound(v); },
+  random(){ const pool = CLIENTS.filter(c=>c.region===S.region && (!c.legendary || legendaryOpen())); startRound(pool[Math.floor(Math.random()*pool.length)].id); },
+  buy(v){ const why = canBuy(v); if (why){ S.msg = why; return render(); } S.q = makeQuestion(v); render(); focusAnswer(); },
+  cancelQ(){ S.q=null; render(); },
+  placeRevealed(){ place(false, '(shown)'); },
+  undo(){ const t = S.trail.pop(); if (t){ S.asked--; if (t.ok) S.firstTry--; } S.msg=''; render(); },
+  changeOrder(){ S.co = CHANGE_ORDERS[Math.floor(Math.random()*CHANGE_ORDERS.length)]; toast('Change order: '+S.co.title); render(); },
+  toRide(){ const m = metrics(); S.ride = {i:0, results:[], cash:m.left, repairs:0}; S.phase='ride'; render(); window.scrollTo({top:0,behavior:'smooth'}); },
+  rideOne(){ rideStep(); render(); },
+  rideAll(){ while (S.ride.i < S.trail.length) rideStep(); render(); },
+  toReview(){ S.result = scoreRound(); if (MP && S.sid) MP.endSession(S.sid, {metrics:{score:S.result.total, medal:S.result.medal, course:LAYERS[S.layer].name}}); S.phase='review'; render(); window.scrollTo({top:0,behavior:'smooth'}); },
+  save(){
+    const name = ($('#trailName').value||'').trim(); const pitch = ($('#pitch').value||'').trim();
+    if (!name){ toast('Give your trail a name first.'); $('#trailName').focus(); return; }
+    const list = net(); list.push({name, pitch, client:client().name, region:REGIONS[client().region].name, layer:LAYERS[S.layer].name, score:S.result.total, medal:S.result.medal, date:new Date().toISOString().slice(0,10), segs:S.trail.map(t=>t.type)});
+    const before = rankInfo().rank.name; store.set('tb-network', list); const after = rankInfo().rank.name;
+    toast(before!==after ? `Promoted to ${after}!` : `${name} added to your trail network.`);
+    S.phase='survey'; S.clientId=null; S.trail=[]; S.draftName=''; S.draftPitch=''; render();
+  },
+  rebuild(){ startRound(S.clientId); },
+  newJob(){ const l=S.layer; S=fresh(); S.layer=l; render(); },
+  clearAsk(){ S.confirmClear=true; render(); },
+  clearNo(){ S.confirmClear=false; render(); },
+  clearYes(){ store.set('tb-network', []); S.confirmClear=false; toast('Trail network cleared.'); render(); }
+};
+document.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (!b || b.disabled) return; const f = H[b.dataset.act]; if (f) f(b.dataset.v); });
+document.addEventListener('input', e => { if (e.target.id==='trailName') S.draftName=e.target.value; if (e.target.id==='pitch') S.draftPitch=e.target.value; });
+
+/* ---------- Boot ---------- */
+window.claude?.hot?.snapshot?.(() => S);
+const boot = d => { S = fresh(); if (d && d.phase) Object.assign(S, d); if (S.clientId && !client()) S = fresh(); render(); };
+window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
+</script>
+
+</body>
+</html>
