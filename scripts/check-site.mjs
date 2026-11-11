@@ -55,13 +55,19 @@ const jumpLabKinds = html => [
   ...[...html.slice(html.indexOf('const CHALLENGES = ['), html.indexOf('const PREDICTIONS = [')).matchAll(/^    id: '([a-z0-9-]+)'/gm)].map(m => m[1]),
   'mission-prediction',
   ...[...html.slice(html.indexOf('const PREDICTIONS = ['), html.indexOf('const CONCEPTS = ')).matchAll(/^    id: '([a-z0-9-]+)'/gm)].map(m => 'predict-' + m[1])];
-const QUESTION_KINDS = { 'trail-builder': KIND, 'gear-ratio-lab': KIND, 'strava-showdown': KIND, 'jump-lab': jumpLabKinds };
+// Physics Playground: a minified build, so its kinds are listed here (they are defined in src/progress.tsx in its own repository).
+const playgroundKinds = () => ['predict-outcome', 'predict-distance', 'predict-airtime', 'q-compare-runs', 'q-angle-components', 'calc-vx-q', 'calc-vy-q', 'compare-vy-q', 'height-time-q', 'graph-q'];
+const QUESTION_KINDS = { 'trail-builder': KIND, 'gear-ratio-lab': KIND, 'strava-showdown': KIND, 'jump-lab': jumpLabKinds, 'physics-playground': playgroundKinds };
 const hosted = pub.filter(t => (t.url || '').startsWith(SITE_ORIGIN)).map(t => ({ ...t, page: t.url.slice(SITE_ORIGIN.length) + 'index.html' }));
 check('Tools on mathletemtb.com live at learning-lab/<id>/ in this repo', hosted.every(t => t.page === `learning-lab/${t.id}/index.html` && existsSync(root + t.page)), hosted.map(t => t.page).join(', '));
 for (const t of hosted) {
   const html = read(t.page);
   const order = ['../../js/supabase-config.js', '../../js/auth.js', '../../js/progress.js'].map(s => html.indexOf(`src="${s}"`));
   check(`${t.page} loads Supabase config, auth, then progress tracking`, order.every(i => i > 0) && order[0] < order[1] && order[1] < order[2]);
+  if (t.id === 'physics-playground') {
+    const asset = (html.match(/assets\/(index-[^"]+\.js)/) || [])[1];
+    check(`${t.page}: the build exists and has progress tracking in it`, !!asset && existsSync(root + `learning-lab/${t.id}/assets/${asset}`) && read(`learning-lab/${t.id}/assets/${asset}`).includes('MathleteProgress'));
+  }
   // Every kind of question the game can ask must be registered, or the
   // server refuses to save attempts at it.
   const sql = read('supabase/progress.sql');

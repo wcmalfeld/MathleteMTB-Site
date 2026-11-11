@@ -476,6 +476,42 @@ insert into public.question_skills (question_id, skill_id) values
   ('jump-lab:predict-drop-landing',  'forces-motion')
 on conflict do nothing;
 
+-- MTB Physics Playground (learning-lab/physics-playground/, built from its
+-- own repository; see scripts/import-playground.mjs): launch predictions,
+-- the two in-challenge questions, and the "Try it without the simulation"
+-- checks. Written explanations are not graded, so they are not recorded.
+insert into public.questions (id, game_id, title, question_type, difficulty) values
+  ('physics-playground:predict-outcome',    'physics-playground', 'Predict: short of, inside or beyond the target',      'choice',  null),
+  ('physics-playground:predict-distance',   'physics-playground', 'Predict: farther or closer than the last launch',     'choice',  null),
+  ('physics-playground:predict-airtime',    'physics-playground', 'Predict: longer or shorter in the air than last time', 'choice', null),
+  ('physics-playground:q-compare-runs',     'physics-playground', 'Which setting caused the difference between two runs', 'choice', 'beginner'),
+  ('physics-playground:q-angle-components', 'physics-playground', 'How a steeper angle changes vx and vy',               'choice',  'intermediate'),
+  ('physics-playground:calc-vx-q',          'physics-playground', 'Calculate a horizontal velocity component',           'numeric', 'intermediate'),
+  ('physics-playground:calc-vy-q',          'physics-playground', 'Calculate a vertical velocity component',             'numeric', 'intermediate'),
+  ('physics-playground:compare-vy-q',       'physics-playground', 'Compare two riders'' vertical velocities',            'choice',  'intermediate'),
+  ('physics-playground:height-time-q',      'physics-playground', 'Takeoff height and flight time',                      'choice',  'beginner'),
+  ('physics-playground:graph-q',            'physics-playground', 'Read the landing distance from a trajectory graph',   'choice',  'beginner')
+on conflict (id) do update
+  set title = excluded.title, question_type = excluded.question_type, difficulty = excluded.difficulty;
+
+insert into public.question_skills (question_id, skill_id) values
+  ('physics-playground:predict-outcome',    'forces-motion'),
+  ('physics-playground:predict-distance',   'forces-motion'),
+  ('physics-playground:predict-airtime',    'forces-motion'),
+  ('physics-playground:q-compare-runs',     'forces-motion'),
+  ('physics-playground:q-angle-components', 'forces-motion'),
+  ('physics-playground:q-angle-components', 'trigonometry'),
+  ('physics-playground:calc-vx-q',          'trigonometry'),
+  ('physics-playground:calc-vx-q',          'speed-velocity'),
+  ('physics-playground:calc-vy-q',          'trigonometry'),
+  ('physics-playground:calc-vy-q',          'speed-velocity'),
+  ('physics-playground:compare-vy-q',       'trigonometry'),
+  ('physics-playground:compare-vy-q',       'speed-velocity'),
+  ('physics-playground:height-time-q',      'forces-motion'),
+  ('physics-playground:graph-q',            'forces-motion'),
+  ('physics-playground:graph-q',            'geometry')
+on conflict do nothing;
+
 -- 4. Sessions, attempts and the review queue ------------------------
 create table if not exists public.game_sessions (
   id               uuid primary key,          -- made in the browser
