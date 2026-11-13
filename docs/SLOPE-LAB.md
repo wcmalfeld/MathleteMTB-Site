@@ -4,9 +4,15 @@ A standalone learning module built from [SlopeRelationshipsLab.md](SlopeRelation
 It lives in `learning-lab/slope-lab/` and depends on nothing else on the
 site: no login, no site navigation, no shared styles.
 
-- **Address:** `https://www.mathletemtb.com/learning-lab/slope-lab/` once deployed.
-- **Status:** unlisted. Nothing links to it and it is `noindex`, so it stays
-  private-by-obscurity until you decide where it goes (the plan is Algebra I).
+- **Address:** `https://www.mathletemtb.com/learning-lab/slope-lab/`.
+- **Where it's listed:** Classes → Algebra 1 → Linear Relationships → Slope
+  and Rate of Change (and six related topics; see docs/CLASSES.md). Opened
+  from a topic, it shows a link back to that topic.
+- **Saving progress:** its page (`index.html` + `main.js`) loads the site's
+  progress tracking, so a signed-in student's answers are saved as
+  `slope-lab:<question id>` and count toward the curriculum skills in
+  `content/classes/activities.mjs`. The module itself still knows nothing
+  about the site.
 
 ## What's in it
 
@@ -69,10 +75,12 @@ const lab = mount(document.getElementById('somewhere'), {
 ```
 
 The same events fire on the element as `slopelab:attempt`,
-`slopelab:progress` and `slopelab:complete`. To save to Mathlete student
-accounts later, pass an `onAttempt` that calls `MathleteProgress` (one
-adapter; nothing in the lab changes). That wiring was deliberately left
-out of V1, as the PRD asks.
+`slopelab:progress` and `slopelab:complete`. `main.js` is the example
+adapter: it passes `onAttempt` to `MathleteProgress` and adds a `backLink`.
+
+If you add or remove a question, also update its objective in
+`content/classes/activities.mjs` (check-site.mjs compares them), rebuild
+Classes and re-run `supabase/curriculum.sql`.
 
 ## Progress storage
 

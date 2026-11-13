@@ -7,7 +7,8 @@
 //     routing:    'hash',              // 'hash' (default, back button works) | 'memory' (host owns the URL)
 //     onAttempt:  record => {},        // every answer: question, answer, right or not, attempt number, hints
 //     onProgress: summary => {},       // after any change
-//     onComplete: summary => {}        // once, when the module is finished
+//     onComplete: summary => {},       // once, when the module is finished
+//     backLink:   { href, label }      // optional: a link back to where the student came from
 //   });
 //   lab.summary(); lab.go('practice'); lab.destroy();
 //
@@ -47,7 +48,9 @@ export function mount(target, opts = {}) {
   const root = el('div', { class: 'slab' },
     el('a', { class: 'sl-skip', href: '#sl-main', onclick: e => { e.preventDefault(); main.focus(); } }, 'Skip to the lesson'),
     el('header', { class: 'sl-top' }, el('div', { class: 'sl-wrap sl-top-row' },
-      el('p', { class: 'sl-brand' }, 'Mathlete', el('span', { 'aria-hidden': 'true' }, '.'), ' ', el('span', { class: 'sl-brand-sub' }, 'Slope & Linear Relationships Lab')),
+      el('div', { class: 'sl-top-left' },
+        opts.backLink && opts.backLink.href ? el('a', { class: 'sl-back', href: opts.backLink.href }, el('span', { 'aria-hidden': 'true' }, '← '), opts.backLink.label || 'Back') : null,
+        el('p', { class: 'sl-brand' }, 'Mathlete', el('span', { 'aria-hidden': 'true' }, '.'), ' ', el('span', { class: 'sl-brand-sub' }, 'Slope & Linear Relationships Lab'))),
       el('p', { class: 'sl-saved', 'aria-live': 'polite' }))),
     el('div', { class: 'sl-navbar' }, el('div', { class: 'sl-wrap' }, nav)),
     el('div', { class: 'sl-wrap' }, main));

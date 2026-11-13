@@ -152,6 +152,7 @@ function page({ path, depth, title, description, body, sport = 'mtb' }) {
     <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
     <ul class="nav-links">
       <li><a href="index.html"${sport === 'mtb' ? ' class="active"' : ''}>The Lab</a></li>
+      <li><a href="classes/">Classes</a></li>
       <li><a href="ski/"${sport === 'ski' ? ' class="active"' : ''}>Ski</a></li>
       <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
       <li><a href="about.html">About</a></li>

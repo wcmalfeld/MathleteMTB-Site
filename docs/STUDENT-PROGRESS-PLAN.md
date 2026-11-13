@@ -189,6 +189,7 @@ to the browser.
 | 3 | Tutor dashboard: student list, profiles, review management, notes, session records | |
 | 4 | Session briefs, assignment builder, student assignments, reflections | |
 | 5 | Mastery refinements, parent reports, parent accounts | |
+| CL | Classes: Algebra 1, Algebra 2, Geometry, Precalculus by unit, topic and skill; Slope Lab integrated and saving progress against curriculum skills (see `docs/CLASSES.md`) | Built; needs `supabase/curriculum.sql` run and deploy |
 | C1 | MTB Coaching, first slice (separate module; see `docs/COACHING.md`): coaches with specialties, rider goals with steps, training plan, ride log | Built, then hidden on request (not linked; pages redirect; SQL not run) |
 
 Later phases add their own tables (goals, assignments, tutor notes,

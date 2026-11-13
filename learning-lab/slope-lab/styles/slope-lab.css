@@ -31,6 +31,9 @@
 /* ---------- top bar and section nav ---------- */
 .slab .sl-top { border-bottom: 1px solid var(--rule); background: var(--paper); }
 .slab .sl-top-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; }
+.slab .sl-top-left { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; min-width: 0; }
+.slab .sl-back { font-family: var(--f-mono); font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.slab .sl-back:hover { color: var(--blaze-dark); border-color: var(--blaze-dark); }
 .slab .sl-brand { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 20px; text-transform: uppercase; letter-spacing: 0.01em; color: var(--ink); }
 .slab .sl-brand > span[aria-hidden] { color: var(--blaze); }
 .slab .sl-brand-sub { font-family: var(--f-body); font-weight: 500; font-size: 14px; text-transform: none; color: var(--ink-soft); letter-spacing: 0; }

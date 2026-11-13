@@ -143,18 +143,47 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   const dir = 'learning-lab/slope-lab/';
   const html = read(dir + 'index.html');
   const css = read(dir + 'styles/slope-lab.css').replace(/\/\*[\s\S]*?\*\//g, '');
-  const leaking = css.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@media') && !sel.startsWith('@')).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith('.slab'));
+  const leaking = css.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@')).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith('.slab'));
   check('Slope lab styles are all scoped under .slab (nothing leaks into other pages)', leaking.length === 0, leaking.slice(0, 5).join(' | '));
-  check('Slope lab stands alone: no site login, nav or progress scripts', !/auth\.js|supabase|tools-config|progress\.js|site\.css|site-nav/.test(html));
+  // The module stays independent: only its page (index.html + main.js) talks to the site.
   const js = execSync(`find ${root + dir} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
+  const coupled = js.filter(f => !f.endsWith('/main.js') && /MathleteProgress|MathleteAuth|supabase|tools-config/.test(readFileSync(f, 'utf8')));
+  check('Slope lab module doesn’t depend on the site (only its page connects it)', coupled.length === 0 && !/site\.css|site-nav|site\.js/.test(html), coupled.join(', '));
+  check('Slope lab page loads progress tracking in order, then the module', ['js/supabase-config.js', 'js/auth.js', 'js/progress.js', 'src="main.js'].map(x => html.indexOf(x)).every((v, i, a) => v > 0 && (i === 0 || v > a[i - 1])));
   const unsafe = js.filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(/.test(readFileSync(f, 'utf8')));
   check('Slope lab never builds HTML from strings', unsafe.length === 0, unsafe.join(', '));
-  // Until it has a home, it stays unlisted: noindex, and nothing links to it.
-  const listed = tools.some(t => t.id === 'slope-lab' || /slope-lab/.test(t.url || ''));
-  if (!listed) {
-    const linking = execSync(`grep -rl 'slope-lab' --include='*.html' ${root} || true`, { encoding: 'utf8' }).split('\n').filter(f => f && !f.includes('/learning-lab/slope-lab/') && !f.includes('node_modules'));
-    check('Slope lab is unlisted for now: noindex, and no page links to it', html.includes('<meta name="robots" content="noindex">') && linking.length === 0, linking.join(', '));
-  }
+  check('Slope lab is listed: indexable, and linked from Algebra 1 → Slope and Rate of Change', !html.includes('noindex') &&
+    existsSync(root + 'classes/algebra-1/slope-and-rate-of-change/index.html') && read('classes/algebra-1/slope-and-rate-of-change/index.html').includes('href="learning-lab/slope-lab/?from='));
+}
+
+// ---- Classes (generated from content/classes/ by scripts/build-classes.mjs) ----
+{
+  const { loadClasses } = await import('../content/classes/model.mjs');
+  const { render: renderClasses } = await import('./build-classes.mjs');
+  const { ACTIVITIES } = await import('../content/classes/activities.mjs');
+  const model = loadClasses();
+  check('Classes content has no id or reference problems', model.errors.length === 0, model.errors.slice(0, 5).join('; '));
+  const want = renderClasses();
+  const staleC = Object.entries(want).filter(([p, h]) => !existsSync(root + p) || read(p) !== h).map(([p]) => p);
+  check('Classes pages and supabase/curriculum.sql are up to date (node scripts/build-classes.mjs)', staleC.length === 0, staleC.slice(0, 5).join(', '));
+  check('Classes: Algebra 1, Algebra 2, Geometry and Precalculus, 9 units each, every topic with skills',
+    model.courses.map(c => c.name).join() === 'Algebra 1,Algebra 2,Geometry,Precalculus' && model.courses.every(c => c.units.length === 9) && model.topics.every(t => t.skills.length >= 2));
+  const lab = ACTIVITIES.find(a => a.id === 'slope-lab');
+  const { QUESTIONS: LABQ } = await import('../learning-lab/slope-lab/content/questions.js');
+  const labMap = Object.fromEntries(LABQ.map(q => [q.id, q.objective]));
+  const tracked = Object.keys(lab.tracking.questions);
+  check('Slope lab: every lab question is linked to curriculum skills, and no others', tracked.length === LABQ.length && LABQ.every(q => lab.tracking.questions[q.id] && lab.tracking.questions[q.id].length));
+  const activitiesText = read('content/classes/activities.mjs');
+  const objMismatch = LABQ.filter(q => !new RegExp(`\\b${q.id}: '${q.objective}'`).test(activitiesText)).map(q => q.id);
+  check('Slope lab: question objectives in activities.mjs match the lab', objMismatch.length === 0, objMismatch.join(', '));
+  check('Classes progress function exists in supabase/curriculum.sql', read('js/classes.js').includes("rpc('curriculum_progress'") && read('supabase/curriculum.sql').includes('function public.curriculum_progress('));
+  check('Classes pages never build HTML from strings', !/\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write/.test(read('js/classes.js')));
+  const emptyWithCard = model.topics.filter(t => !t.activities.length && read(t.href + 'index.html').includes('class="cls-activity"')).map(t => t.id);
+  check('Topics without activities show the honest empty state (no placeholder cards)', emptyWithCard.length === 0 &&
+    model.topics.filter(t => !t.activities.length).every(t => read(t.href + 'index.html').includes('Learning activities for this topic are being developed.')), emptyWithCard.join(', '));
+  const navless = execSync(`grep -rL 'href="classes/"' --include='*.html' ${root} || true`, { encoding: 'utf8' }).split('\n')
+    .filter(f => f && /<nav class="site-nav"/.test(readFileSync(f, 'utf8')) && !f.includes('node_modules')).map(f => f.replace(root, ''));
+  check('Every page with the site nav links to Classes', navless.length === 0, navless.slice(0, 5).join(', '));
 }
 
 // ---- home page (the Lab) ----
