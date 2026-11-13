@@ -70,7 +70,9 @@ function save(who, o = {}) {
       p_attempt_id: o.id || randomUUID(), p_game_id: o.game || GAME, p_question_id: o.question || QUESTION,
       p_snapshot: o.snapshot || snap, p_is_correct: !!o.correct, p_student_answer: o.answer || '24', p_correct_answer: '25',
       p_hints_used: o.hints || 0, p_time_ms: 18000, p_session_id: o.session || null, p_context: o.context || 'game',
-      p_client_time: new Date().toISOString()
+      // serverClock: let the server stamp the time (used where a test compares against a server timestamp,
+      // so a slightly slow clock on this computer can't change the result)
+      p_client_time: o.serverClock ? null : new Date().toISOString()
     }
   });
 }
@@ -220,6 +222,35 @@ async function main() {
   record('Review tries don\'t count as new questions on the dashboard', r.ok && r.data.week.questions === 3 && r.data.review.waiting === 0, r.ok ? JSON.stringify(r.data.week) : r.text);
   r = await call('PATCH', '/rest/v1/progress_settings?key=eq.min_sample', { token: people.A.token, body: { value: 1 }, headers: { Prefer: 'return=representation' } });
   record('A student cannot change the dashboard settings', !(r.ok && rows(r).length > 0), `HTTP ${r.status}`);
+
+  // --- goals (Phase 2) ---
+  const rpc = (who, fn, body) => call('POST', '/rest/v1/rpc/' + fn, { token: people[who].token, body });
+  r = await rpc('B', 'save_goal', { p_kind: 'questions', p_title: 'Answer 2 questions', p_target: 2 });
+  const ownGoal = r.data;
+  record('A student can set a goal for themselves', r.ok && typeof ownGoal === 'string', r.text);
+  r = await rpc('T', 'save_goal', { p_kind: 'custom', p_title: 'Explain slope out loud', p_student: people.A.id });
+  const tutorGoal = r.data;
+  record('A tutor can set a goal for their student', r.ok && typeof tutorGoal === 'string', r.text);
+  r = await rpc('U', 'save_goal', { p_kind: 'questions', p_title: 'x', p_target: 1, p_student: people.A.id });
+  record('A tutor cannot set a goal for a student who isn\'t theirs', r.status === 403, `HTTP ${r.status}`);
+  r = await rpc('B', 'save_goal', { p_kind: 'questions', p_title: 'x', p_target: 1, p_student: people.A.id });
+  record('A student cannot set a goal for another student', r.status === 403, `HTTP ${r.status}`);
+  r = await rpc('A', 'student_goals', {});
+  record('The student sees the tutor\'s goal, named, and cannot change it', r.ok && r.data.length === 1 && r.data[0].set_by === 'tutor' && r.data[0].set_by_name === 'Test T' && r.data[0].can_edit === false, r.text);
+  r = await rpc('A', 'set_goal_status', { p_goal_id: tutorGoal, p_status: 'completed' });
+  record('A student cannot tick off a goal their tutor set', r.status === 403, `HTTP ${r.status}`);
+  r = await rpc('T', 'set_goal_status', { p_goal_id: tutorGoal, p_status: 'completed' });
+  record('The tutor can mark it done', r.ok && r.data === 'completed', r.text);
+  await save('B', { correct: true, session: randomUUID(), snapshot: { ...snap, prompt: 'Goal question one' }, serverClock: true });
+  r = await rpc('B', 'student_goals', {});
+  record('Goal progress counts real activity since it was set (1 of 2)', r.ok && r.data[0].progress === 1 && r.data[0].status === 'active', r.text);
+  await save('B', { correct: false, session: randomUUID(), snapshot: { ...snap, prompt: 'Goal question two' }, serverClock: true });
+  r = await rpc('B', 'student_goals', {});
+  record('...and the goal completes itself at the target', r.ok && r.data[0].progress === 2 && r.data[0].status === 'completed', r.text);
+  r = await rpc('A', 'student_goals', { p_student: people.B.id });
+  record('A student cannot read another student\'s goals', r.status === 403, `HTTP ${r.status}`);
+  r = await call('POST', '/rest/v1/student_goals', { token: people.B.token, body: { student_id: people.B.id, kind: 'questions', title: 'x', target: 1 }, headers: { Prefer: 'return=representation' } });
+  record('Goals cannot be written to the table directly', !r.ok, `HTTP ${r.status}`);
 
   // --- access changes take effect immediately ---
   await admin('PATCH', `/rest/v1/student_tutors?student_id=eq.${people.A.id}&tutor_id=eq.${people.T.id}`, { body: { active: false }, headers: { Prefer: 'return=minimal' } });

@@ -202,6 +202,7 @@ add a new kind of question to `src/progress.tsx`, register it in
 | `dashboard.html` | This week, next steps, skills, recent sessions | `student_dashboard()` |
 | `my-progress.html` | Skills in detail; every answer, 25 at a time | `student_dashboard()`, `question_attempts` |
 | `review.html` | Saved missed questions; try one again | `review_items`, `question_attempts`, `start_review()`, `record_review_attempt()` |
+| `goals.html` | Goals with measured progress; set a goal | `student_goals()`, `save_goal()`, `set_goal_status()` |
 
 Shared code is `js/student.js`; the look is `css/student.css`. Text from
 the database is always put on the page as plain text, never as HTML
@@ -263,6 +264,37 @@ effect at once and re-running `progress.sql` won't overwrite it.
   the right question. A right one marks it **Corrected**.
 - Order "Most important first": tutor-flagged, missed more than once, in
   a skill that needs practice, never retried, missed in the last week.
+
+### Goals
+
+| Kind | Counts, since the goal was set |
+|---|---|
+| `sessions` | practice sessions with at least one answer |
+| `questions` | questions attempted (first tries; retries and review tries don't count) |
+| `corrections` | missed questions that became Corrected |
+| `skill` | questions attempted in one skill |
+| `game` | rounds of one game finished |
+| `custom` | nothing: it is a goal in words, marked done by hand |
+
+- Measured goals complete themselves when the target is reached (the
+  next time anyone looks at the goals). Nothing that happened before the
+  goal was set counts, and nothing after it is done changes it.
+- A student can set, remove and (for goals in words) finish **their own**
+  goals. A goal set by a tutor can only be changed by a tutor; the
+  student sees who set it. At most 12 active goals per student.
+- A goal past its date is flagged "Past due"; it still counts progress.
+- Until the tutor dashboard exists, set a goal for a student from the
+  terminal:
+
+  | Task | Command |
+  |---|---|
+  | Three practice sessions by Sunday | `node scripts/admin.mjs goal student@example.com sessions 3` |
+  | Correct five mistakes by a date | `node scripts/admin.mjs goal student@example.com corrections 5 2026-11-22` |
+  | A goal in words | `node scripts/admin.mjs goal student@example.com custom Explain slope out loud` |
+  | See a student's goals | `node scripts/admin.mjs goals student@example.com` |
+
+  Skill and game goals, and marking a goal in words done, come with the
+  tutor dashboard (for now: the `student_goals` table in Supabase).
 
 ## Adding or changing skills
 

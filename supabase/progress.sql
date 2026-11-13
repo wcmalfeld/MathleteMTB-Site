@@ -1185,3 +1185,268 @@ revoke all on function public.start_review(uuid) from public, anon;
 revoke all on function public.record_review_attempt(uuid, uuid, boolean, text, integer, integer) from public, anon;
 grant execute on function public.start_review(uuid) to authenticated;
 grant execute on function public.record_review_attempt(uuid, uuid, boolean, text, integer, integer) to authenticated;
+
+-- 10. Goals ------------------------------------------------------------
+-- Weekly learning goals, set by a tutor for a student or by a student
+-- for themselves. Most kinds measure themselves from real activity since
+-- the goal was set, so nobody ticks a box:
+--   sessions     practice sessions (any game)
+--   questions    questions attempted (first tries, so retries don't count)
+--   corrections  missed questions corrected
+--   skill        questions attempted in one skill
+--   game         rounds of one game finished
+--   custom       anything else in words; a tutor (or the student who set
+--                it) marks it done
+-- Nobody writes to this table from the browser: goals are made and
+-- changed through save_goal() and set_goal_status(), which check who is
+-- asking. A student can change only goals they set themselves; a tutor
+-- can change any goal of a student assigned to them.
+create table if not exists public.student_goals (
+  id              uuid primary key default gen_random_uuid(),
+  student_id      uuid not null references public.profiles (user_id) on delete cascade,
+  created_by      uuid references public.profiles (user_id) on delete set null,
+  created_by_role text not null default 'student' check (created_by_role in ('student', 'tutor', 'admin')),
+  kind            text not null check (kind in ('sessions', 'questions', 'corrections', 'skill', 'game', 'custom')),
+  title           text not null check (char_length(btrim(title)) between 1 and 140),
+  target          integer check (target is null or target between 1 and 500),
+  skill_id        text references public.skills (id),
+  game_id         text,
+  starts_at       timestamptz not null default now(),
+  due_on          date,
+  status          text not null default 'active' check (status in ('active', 'completed', 'archived')),
+  completed_at    timestamptz,
+  completed_by    uuid,
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now(),
+  check ((kind = 'custom') = (target is null)),
+  check ((kind = 'skill') = (skill_id is not null)),
+  check ((kind = 'game') = (game_id is not null))
+);
+create index if not exists student_goals_student_idx on public.student_goals (student_id, status, created_at desc);
+
+alter table public.student_goals enable row level security;
+drop policy if exists "Own or assigned student's goals" on public.student_goals;
+create policy "Own or assigned student's goals"
+  on public.student_goals for select to authenticated
+  using ((select public.has_tool_access())
+         and (student_id = (select auth.uid()) or student_id in (select public.my_student_ids())));
+revoke all on public.student_goals from anon, authenticated;
+grant select on public.student_goals to authenticated;
+
+-- A student's goals with their progress, newest first. Goals that have
+-- reached their target are marked completed as a side effect (that is
+-- why this is not a plain view). No argument = the signed-in student's
+-- own; a tutor passes an assigned student.
+create or replace function public.student_goals(p_student uuid default null)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_uid  uuid := auth.uid();
+  v_sid  uuid := coalesce(p_student, auth.uid());
+  v_self boolean;
+  v_tz   text;
+  v_today date;
+  g      public.student_goals%rowtype;
+  v_progress integer;
+  v_out  jsonb := '[]'::jsonb;
+begin
+  if v_uid is null or not public.has_tool_access() then
+    raise sqlstate 'PT403' using message = 'Sign in with an active account.';
+  end if;
+  v_self := v_sid = v_uid;
+  if not v_self and v_sid not in (select public.my_student_ids()) then
+    raise sqlstate 'PT403' using message = 'That student is not assigned to you.';
+  end if;
+  v_tz := coalesce((select s.value #>> '{}' from public.progress_settings s where s.key = 'timezone'), 'America/Denver');
+  v_today := (now() at time zone v_tz)::date;
+
+  for g in select * from public.student_goals x
+           where x.student_id = v_sid and x.status <> 'archived'
+           order by (x.status = 'active') desc, x.created_at desc limit 50 loop
+    v_progress := case g.kind
+      when 'sessions' then (select count(distinct a.game_session_id) from public.question_attempts a
+                            where a.student_id = v_sid and a.game_session_id is not null
+                              and a.occurred_at >= g.starts_at and a.occurred_at <= coalesce(g.completed_at, now()))
+      when 'questions' then (select count(*) from public.question_first_tries f
+                             where f.student_id = v_sid and f.occurred_at >= g.starts_at and f.occurred_at <= coalesce(g.completed_at, now()))
+      when 'skill' then (select count(*) from public.question_first_tries f
+                         join public.question_skills qs on qs.question_id = f.question_id
+                         where f.student_id = v_sid and qs.skill_id = g.skill_id
+                           and f.occurred_at >= g.starts_at and f.occurred_at <= coalesce(g.completed_at, now()))
+      when 'corrections' then (select count(distinct e.review_item_id) from public.review_events e
+                               where e.student_id = v_sid and e.to_status = 'corrected'
+                                 and e.created_at >= g.starts_at and e.created_at <= coalesce(g.completed_at, now()))
+      when 'game' then (select count(*) from public.game_sessions s
+                        where s.student_id = v_sid and s.game_id = g.game_id and s.completed
+                          and s.ended_at >= g.starts_at and s.ended_at <= coalesce(g.completed_at, now()))
+      else null end;
+
+    if g.status = 'active' and g.kind <> 'custom' and v_progress >= g.target then
+      update public.student_goals x set status = 'completed', completed_at = now(), updated_at = now() where x.id = g.id;
+      g.status := 'completed'; g.completed_at := now();
+    end if;
+
+    v_out := v_out || jsonb_build_object(
+      'id', g.id, 'kind', g.kind, 'title', g.title, 'target', g.target,
+      'progress', case when g.kind = 'custom' then null else least(v_progress, g.target) end,
+      'skill_id', g.skill_id, 'skill_name', (select sk.name from public.skills sk where sk.id = g.skill_id),
+      'game_id', g.game_id, 'due_on', g.due_on, 'status', g.status,
+      'past_due', g.status = 'active' and g.due_on is not null and g.due_on < v_today,
+      'set_by', case when g.created_by = v_sid then 'student' else g.created_by_role end,
+      'set_by_name', (select p.display_name from public.profiles p where p.user_id = g.created_by and g.created_by <> v_sid),
+      -- what the person asking may do with it
+      'can_edit', g.status = 'active' and (not v_self or g.created_by = v_uid),
+      'can_complete', g.status = 'active' and g.kind = 'custom' and (not v_self or g.created_by = v_uid),
+      'created_at', g.created_at, 'completed_at', g.completed_at);
+  end loop;
+  return v_out;
+end;
+$$;
+
+-- Create a goal (p_goal_id null) or change one. A student may only make
+-- goals for themselves and change goals they made; a tutor or admin may
+-- do both for a student assigned to them.
+create or replace function public.save_goal(
+  p_kind     text,
+  p_title    text,
+  p_target   integer default null,
+  p_skill_id text default null,
+  p_game_id  text default null,
+  p_due_on   date default null,
+  p_student  uuid default null,
+  p_goal_id  uuid default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_uid  uuid := auth.uid();
+  v_sid  uuid := coalesce(p_student, auth.uid());
+  v_role text;
+  v_self boolean;
+  v_goal public.student_goals%rowtype;
+  v_id   uuid;
+begin
+  if v_uid is null or not public.has_tool_access() then
+    raise sqlstate 'PT403' using message = 'Sign in with an active account.';
+  end if;
+  v_role := public.my_role();
+  if v_role is null then
+    raise sqlstate 'PT403' using message = 'This account has no profile yet.';
+  end if;
+
+  if p_goal_id is not null then
+    select * into v_goal from public.student_goals x where x.id = p_goal_id for update;
+    if not found then raise sqlstate 'PT404' using message = 'No such goal.'; end if;
+    v_sid := v_goal.student_id;
+  end if;
+  v_self := v_sid = v_uid;
+  if not v_self and v_sid not in (select public.my_student_ids()) then
+    raise sqlstate 'PT403' using message = 'That student is not assigned to you.';
+  end if;
+  if v_self and v_role <> 'student' then
+    raise sqlstate 'PT422' using message = 'Goals are for student accounts.';
+  end if;
+  if p_goal_id is not null and v_self and v_goal.created_by is distinct from v_uid then
+    raise sqlstate 'PT403' using message = 'Only your tutor can change a goal they set.';
+  end if;
+  if p_goal_id is not null and v_goal.status <> 'active' then
+    raise sqlstate 'PT422' using message = 'Only an active goal can be changed.';
+  end if;
+
+  if p_kind is null or p_kind not in ('sessions', 'questions', 'corrections', 'skill', 'game', 'custom') then
+    raise sqlstate 'PT422' using message = 'Unknown kind of goal.';
+  end if;
+  if char_length(btrim(coalesce(p_title, ''))) not between 1 and 140 then
+    raise sqlstate 'PT422' using message = 'Give the goal a short title (up to 140 characters).';
+  end if;
+  if p_kind = 'custom' then
+    p_target := null;
+  elsif p_target is null or p_target not between 1 and 500 then
+    raise sqlstate 'PT422' using message = 'Set a target between 1 and 500.';
+  end if;
+  if p_kind = 'skill' then
+    if not exists (select 1 from public.skills sk where sk.id = p_skill_id and sk.active) then
+      raise sqlstate 'PT422' using message = 'Pick a skill.';
+    end if;
+  else p_skill_id := null; end if;
+  if p_kind = 'game' then
+    if not exists (select 1 from public.questions q where q.game_id = p_game_id and q.active) then
+      raise sqlstate 'PT422' using message = 'Pick a game.';
+    end if;
+  else p_game_id := null; end if;
+  if p_due_on is not null and (p_due_on < current_date - 1 or p_due_on > current_date + 366) then
+    raise sqlstate 'PT422' using message = 'Pick a due date within the next year.';
+  end if;
+
+  if p_goal_id is not null then
+    update public.student_goals x
+       set kind = p_kind, title = btrim(p_title), target = p_target, skill_id = p_skill_id, game_id = p_game_id,
+           due_on = p_due_on, updated_at = now()
+     where x.id = p_goal_id;
+    return p_goal_id;
+  end if;
+
+  if (select count(*) from public.student_goals x where x.student_id = v_sid and x.status = 'active') >= 12 then
+    raise sqlstate 'PT422' using message = 'That is a lot of goals. Finish or remove one first (12 at most).';
+  end if;
+  insert into public.student_goals (student_id, created_by, created_by_role, kind, title, target, skill_id, game_id, due_on)
+  values (v_sid, v_uid, case when v_self then 'student' else v_role end, p_kind, btrim(p_title), p_target, p_skill_id, p_game_id, p_due_on)
+  returning id into v_id;
+  return v_id;
+end;
+$$;
+
+-- Mark a goal done ('completed': custom goals only; the others complete
+-- themselves), remove it from the list ('archived'), or reopen it
+-- ('active'). Same rule as save_goal for who may.
+create or replace function public.set_goal_status(p_goal_id uuid, p_status text)
+returns text
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_uid  uuid := auth.uid();
+  v_goal public.student_goals%rowtype;
+  v_self boolean;
+begin
+  if v_uid is null or not public.has_tool_access() then
+    raise sqlstate 'PT403' using message = 'Sign in with an active account.';
+  end if;
+  if p_status is null or p_status not in ('active', 'completed', 'archived') then
+    raise sqlstate 'PT422' using message = 'Unknown status.';
+  end if;
+  select * into v_goal from public.student_goals x where x.id = p_goal_id for update;
+  if not found then raise sqlstate 'PT404' using message = 'No such goal.'; end if;
+  v_self := v_goal.student_id = v_uid;
+  if not v_self and v_goal.student_id not in (select public.my_student_ids()) then
+    raise sqlstate 'PT404' using message = 'No such goal.';
+  end if;
+  if v_self and v_goal.created_by is distinct from v_uid then
+    raise sqlstate 'PT403' using message = 'Only your tutor can change a goal they set.';
+  end if;
+  if p_status = 'completed' and v_goal.kind <> 'custom' then
+    raise sqlstate 'PT422' using message = 'This goal completes itself when the target is reached.';
+  end if;
+  update public.student_goals x
+     set status = p_status, updated_at = now(),
+         completed_at = case when p_status = 'completed' then now() when p_status = 'active' then null else x.completed_at end,
+         completed_by = case when p_status = 'completed' then v_uid when p_status = 'active' then null else x.completed_by end
+   where x.id = p_goal_id;
+  return p_status;
+end;
+$$;
+
+revoke all on function public.student_goals(uuid) from public, anon;
+revoke all on function public.save_goal(text, text, integer, text, text, date, uuid, uuid) from public, anon;
+revoke all on function public.set_goal_status(uuid, text) from public, anon;
+grant execute on function public.student_goals(uuid) to authenticated;
+grant execute on function public.save_goal(text, text, integer, text, text, date, uuid, uuid) to authenticated;
+grant execute on function public.set_goal_status(uuid, text) to authenticated;
+

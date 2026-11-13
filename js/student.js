@@ -112,13 +112,42 @@
     return row;
   }
 
+  // ---------- goals ----------
+
+  // One goal: what it is, how far along (measured from real activity),
+  // when it's due and who set it. `actions` are optional buttons.
+  function goalRow(g, actions) {
+    var done = g.status === 'completed', measured = g.kind !== 'custom';
+    var facts = [];
+    if (done) facts.push('Done ' + fmtDate(g.completed_at, { month: 'short', day: 'numeric' }));
+    else if (g.due_on) facts.push((g.past_due ? 'Was due ' : 'Due ') + fmtDate(g.due_on + 'T12:00:00', { weekday: 'short', month: 'short', day: 'numeric' }));
+    facts.push(g.set_by === 'student' ? 'Set by you' : 'Set by ' + (g.set_by_name || 'your tutor'));
+    if (!measured && !done) facts.push('your tutor marks this one done');
+    var figure = measured
+      ? el('div', { class: 'skill-figure' },
+          el('span', { class: 'skill-pct goal-count' }, g.progress + ' of ' + g.target),
+          el('div', { class: 'meter meter--' + (done ? 'strong' : 'developing'), role: 'img', 'aria-label': g.progress + ' of ' + g.target + ' done' },
+            g.progress ? el('span', { style: 'width:' + Math.round(100 * g.progress / g.target) + '%' }) : null))
+      : el('div', { class: 'skill-figure' });
+    var state = done ? { tone: 'strong', icon: '✓', label: 'Done' }
+              : g.past_due ? { tone: 'needs_practice', icon: '!', label: 'Past due' }
+              : { tone: 'developing', icon: '↗', label: !measured ? 'To do' : g.progress ? 'In progress' : 'Not started' };
+    var row = el('li', { class: 'skill goal' },
+      el('p', { class: 'skill-name' }, g.title, el('small', null, facts.join(' · '))),
+      figure,
+      el('span', { class: 'status status--' + state.tone }, el('span', { class: 'status-icon', 'aria-hidden': 'true' }, state.icon), state.label));
+    if (actions && actions.length) row.appendChild(el('p', { class: 'skill-detail goal-actions' }, actions));
+    return row;
+  }
+
   // ---------- page shell ----------
 
   var TABS = [
     { id: 'dashboard', href: 'dashboard.html', label: 'Dashboard' },
     { id: 'play', href: 'index.html#tools', label: 'Play' },
     { id: 'progress', href: 'my-progress.html', label: 'My Progress' },
-    { id: 'review', href: 'review.html', label: 'Review My Mistakes' }
+    { id: 'review', href: 'review.html', label: 'Review My Mistakes' },
+    { id: 'goals', href: 'goals.html', label: 'My Goals' }
   ];
   function drawTabs(current, waiting) {
     var host = document.getElementById('student-tabs');
@@ -183,7 +212,7 @@
   window.MathleteStudent = {
     el: el, clear: clear, fmtDate: fmtDate, fmtDateTime: fmtDateTime, ago: ago, pct: pct, plural: plural,
     gameName: gameName, gameUrl: gameUrl, gameMinutes: gameMinutes,
-    statusChip: statusChip, skillRow: skillRow, STATUS: STATUS,
+    statusChip: statusChip, skillRow: skillRow, goalRow: goalRow, STATUS: STATUS,
     drawTabs: drawTabs, showState: showState, ready: ready, loadDashboard: loadDashboard, fail: fail
   };
 })();

@@ -84,9 +84,26 @@ in `docs/PROGRESS-TRACKING.md`; this file is the plan and the log.
     Gear Ratio Lab tune-up prediction) link back to the game.
   - *Not built yet:* student goals; "practice a similar question" is a
     link to the game, not a generated twin.
-- **Next: Phase 2 part 2.** Student goals (table, progress from real
-  activity, a My Goals page; tutors create them in Phase 3, the admin
-  script until then).
+- **2026-11-11, Phase 2 part 1 live and confirmed.** SQL run, deployed,
+  `test-progress.mjs` 54/54, and an end-to-end run in real Chrome against
+  the real database as a throwaway student passed (log in → empty
+  dashboard → play → numbers appear → review page → retry → corrected).
+- **2026-11-11, Phase 2 part 2 built (not yet deployed): goals.**
+  `goals.html` (My Goals) plus a Goals strip on the dashboard. A goal is
+  one of: practice sessions, questions answered, mistakes corrected,
+  questions in one skill, rounds of one game finished (all measured from
+  real activity since the goal was set, completing themselves at the
+  target), or a goal in words (marked done by whoever set it; a tutor's
+  by the tutor). Students set their own on the page; until the tutor
+  dashboard exists, set one for a student with
+  `node scripts/admin.mjs goal <email> sessions 3`. New in the database:
+  `student_goals` table and `student_goals()`, `save_goal()`,
+  `set_goal_status()`. Checked locally: 24 database checks, 15 more page
+  checks. **To switch on:** re-run `supabase/progress.sql`, run
+  `node scripts/test-progress.mjs` (expect 66), deploy.
+- **Phase 2 is complete** once that is live. Still open from it:
+  "practice a similar question" is a link to the game.
+- **Next: Phase 3**, the tutor dashboard.
 - **Open: playing on the tutor's computer.** Attempts go to whoever is
   logged in. A student playing on a tutor's login is recorded as the
   tutor. Recording on behalf of an assigned student belongs with the
@@ -168,7 +185,7 @@ to the browser.
 | 1a | Schema, roles, `record_attempt`, `js/progress.js`, admin commands, permission tests | Done |
 | 1b | Trail Builder moved in-repo and tracked (proof of concept); redirect page on the old address | Built; needs SQL re-run, deploy, redirect |
 | 1c | Gear Ratio Lab, Strava Showdown, Summit Expedition, then Jump Lab and Physics Playground | All built; needs SQL re-run, deploy, Summit upload |
-| 2 | Student dashboard, weekly stats, skill performance, Review My Mistakes, goals, basic recommendations | Built except goals; needs SQL re-run and deploy |
+| 2 | Student dashboard, weekly stats, skill performance, Review My Mistakes, goals, basic recommendations | Part 1 live; goals built, needs SQL re-run and deploy |
 | 3 | Tutor dashboard: student list, profiles, review management, notes, session records | |
 | 4 | Session briefs, assignment builder, student assignments, reflections | |
 | 5 | Mastery refinements, parent reports, parent accounts | |

@@ -23,6 +23,12 @@
 //   node scripts/admin.mjs unassign student@example.com tutor@example.com
 //                                                      take it away again (immediate)
 //   node scripts/admin.mjs roster                      every account's role, and who tutors whom
+//   node scripts/admin.mjs goal student@example.com sessions 3 [YYYY-MM-DD]
+//                                                      set a goal for a student: sessions | questions | corrections <how many>,
+//                                                      with an optional due date (default: this coming Sunday)
+//   node scripts/admin.mjs goal student@example.com custom Explain slope out loud
+//                                                      a goal in words (you mark it done in the Supabase table for now)
+//   node scripts/admin.mjs goals student@example.com   list a student's goals
 
 import { readFileSync, existsSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
@@ -242,6 +248,38 @@ const commands = {
     console.log('');
   },
 
+  async goal(email, kind, ...rest) {
+    const TITLES = { sessions: n => `Complete ${n} practice session${n === 1 ? '' : 's'}`, questions: n => `Answer ${n} question${n === 1 ? '' : 's'}`,
+                     corrections: n => `Correct ${n} missed question${n === 1 ? '' : 's'}` };
+    if (kind !== 'custom' && !TITLES[kind]) die('Usage: goal <student-email> <sessions|questions|corrections> <how many> [YYYY-MM-DD]\n         goal <student-email> custom <the goal in words>');
+    const student = await profileOf(email);
+    if (student.role !== 'student') die(`${email} is a ${student.role}, not a student.`);
+    const sunday = () => { const d = new Date(); d.setDate(d.getDate() + ((7 - d.getDay()) % 7 || 7)); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+    let row;
+    if (kind === 'custom') {
+      const title = rest.join(' ').trim();
+      if (!title || title.length > 140) die('Write the goal in words (up to 140 characters).');
+      row = { kind, title, target: null, due_on: sunday() };
+    } else {
+      const n = Number(rest[0]);
+      if (!Number.isInteger(n) || n < 1 || n > 500) die('How many? Give a whole number from 1 to 500.');
+      if (rest[1] && !/^\d{4}-\d{2}-\d{2}$/.test(rest[1])) die('Write the due date as YYYY-MM-DD.');
+      row = { kind, title: TITLES[kind](n), target: n, due_on: rest[1] || sunday() };
+    }
+    await api('POST', '/rest/v1/student_goals', { student_id: student.user_id, created_by: null, created_by_role: 'tutor', ...row }, { Prefer: 'return=minimal' });
+    console.log(`\n  Goal set for ${student.display_name}: "${row.title}", due ${row.due_on}.`);
+    console.log('  Progress counts from now. They see it on their dashboard and My Goals page.\n');
+  },
+
+  async goals(email) {
+    const student = await profileOf(email);
+    const rows = await api('GET', `/rest/v1/student_goals?student_id=eq.${student.user_id}&status=neq.archived&select=title,kind,target,due_on,status,created_by_role,created_at&order=created_at.desc`);
+    if (!rows.length) return console.log(`\n  ${student.display_name} has no goals.\n`);
+    console.log('');
+    for (const g of rows) console.log(`  ${g.status.padEnd(9)}  ${g.title}${g.due_on ? '  (due ' + g.due_on + ')' : ''}  [set by ${g.created_by_role}, ${g.created_at.slice(0, 10)}]`);
+    console.log(`\n  Progress is shown on the student's My Goals page (it is counted from their activity).\n`);
+  },
+
   async inquiries(which) {
     const filter = which === 'all' ? '' : '&handled=eq.false';
     const rows = await api('GET', `/rest/v1/inquiries?select=*&order=created_at.desc${filter}`);
@@ -287,7 +325,7 @@ async function main() {
   }
   if (!BASE || !KEY) die('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env (see .env.example).');
   const isEmail = v => !!v && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
-  if (['invite', 'create', 'grant', 'restore', 'revoke', 'reset', 'reset-link', 'role', 'name'].includes(cmd)) {
+  if (['invite', 'create', 'grant', 'restore', 'revoke', 'reset', 'reset-link', 'role', 'name', 'goal', 'goals'].includes(cmd)) {
     if (!isEmail(args[0])) die(`Usage: ${cmd} <email>${cmd === 'role' ? ' <' + ROLES.join('|') + '>' : cmd === 'name' ? ' <first name>' : ''}`);
     args[0] = args[0].trim().toLowerCase();
   }

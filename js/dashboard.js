@@ -99,7 +99,17 @@
       el('p', { class: 'row-side' }, S.fmtDate(s.started_at), s.completed ? ' · finished' : null));
   }
 
-  function render(d) {
+  function goalsSection(goals) {
+    var active = goals.filter(function (g) { return g.status === 'active'; });
+    var justDone = goals.filter(function (g) { return g.status === 'completed' && Date.now() - new Date(g.completed_at).getTime() < 7 * 86400000; });
+    if (!active.length && !justDone.length) return null;
+    var sec = section('goals-title', 'Goals', active.length ? S.plural(active.length, 'goal') + ' on the go' : 'All done');
+    sec.body.appendChild(el('ul', { class: 'skill-list' }, active.concat(justDone).slice(0, 4).map(function (g) { return S.goalRow(g); })));
+    sec.body.appendChild(el('p', { class: 'student-note' }, el('a', { href: 'goals.html' }, 'See all goals')));
+    return sec;
+  }
+
+  function render(d, goals) {
     var main = document.getElementById('student-main');
     var name = d.student && d.student.display_name ? d.student.display_name : 'Mathlete';
     document.getElementById('student-title').textContent = 'Welcome back, ' + name + '.';
@@ -113,6 +123,8 @@
     S.clear(main);
 
     main.appendChild(weekSection(d));
+    var gs = goalsSection(goals || []);
+    if (gs) main.appendChild(gs);
 
     var next = section('next-title', 'Next steps');
     next.body.appendChild(el('ul', { class: 'rec-list' }, d.recommendations.map(recCard)));
@@ -143,6 +155,8 @@
   }
 
   S.ready('dashboard').then(function (ctx) {
-    return S.loadDashboard(ctx.sb).then(render);
+    // Goals are a bonus on this page: if they can't be loaded, show the rest.
+    var goals = ctx.sb.rpc('student_goals').then(function (r) { return r.error ? [] : r.data; }, function () { return []; });
+    return Promise.all([S.loadDashboard(ctx.sb), goals]).then(function (r) { render(r[0], r[1]); });
   }).catch(S.fail);
 })();
