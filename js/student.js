@@ -1,6 +1,7 @@
-// Shared by the student pages (dashboard.html, my-progress.html,
-// review.html): checks who is signed in, draws the section tabs, and
-// provides the small helpers the three pages use.
+// Shared by the student pages - Learning (dashboard.html, my-progress.html,
+// review.html, goals.html) and Riding (coaching.html, riding-goals.html,
+// training.html): checks who is signed in, draws the section tabs, and
+// provides the small helpers the pages use.
 //
 // What this file does NOT do: decide what a student may see. Every row
 // these pages show comes from the database, whose row-level rules only
@@ -142,18 +143,28 @@
 
   // ---------- page shell ----------
 
-  var TABS = [
-    { id: 'dashboard', href: 'dashboard.html', label: 'Dashboard' },
-    { id: 'play', href: 'index.html#tools', label: 'Play' },
-    { id: 'progress', href: 'my-progress.html', label: 'My Progress' },
-    { id: 'review', href: 'review.html', label: 'Review My Mistakes' },
-    { id: 'goals', href: 'goals.html', label: 'My Goals' }
-  ];
+  // Two separate sets of pages share this shell: Learning (academics) and
+  // Riding (MTB Coaching). Their records are kept apart in the database.
+  var TABSETS = {
+    learning: [
+      { id: 'dashboard', href: 'dashboard.html', label: 'Dashboard' },
+      { id: 'play', href: 'index.html#tools', label: 'Play' },
+      { id: 'progress', href: 'my-progress.html', label: 'My Progress' },
+      { id: 'review', href: 'review.html', label: 'Review My Mistakes' },
+      { id: 'goals', href: 'goals.html', label: 'My Goals' }
+    ],
+    riding: [
+      { id: 'coaching', href: 'coaching.html', label: 'Coaching Dashboard' },
+      { id: 'riding-goals', href: 'riding-goals.html', label: 'My Goals' },
+      { id: 'training', href: 'training.html', label: 'My Training' }
+    ]
+  };
+  var tabSet = 'learning';
   function drawTabs(current, waiting) {
     var host = document.getElementById('student-tabs');
     if (!host) return;
     var ul = el('ul');
-    TABS.forEach(function (t) {
+    TABSETS[tabSet].forEach(function (t) {
       var a = el('a', { href: t.href, 'aria-current': t.id === current ? 'page' : null }, t.label);
       if (t.id === 'review' && waiting) a.appendChild(el('span', { class: 'tab-count', 'aria-label': waiting + ' waiting' }, String(waiting)));
       ul.appendChild(el('li', null, a));
@@ -177,7 +188,9 @@
 
   // Resolves with { sb, user } once a member is signed in; otherwise it
   // shows why not (or goes to the login page) and never resolves.
-  function ready(current) {
+  // `set` is 'learning' (default) or 'riding'.
+  function ready(current, set) {
+    if (set && TABSETS[set]) tabSet = set;
     drawTabs(current);
     var here = location.pathname.split('/').pop() || 'dashboard.html';
     return new Promise(function (resolve) {
@@ -204,15 +217,19 @@
   function fail(err) {
     if (window.console) console.warn('[Mathlete]', err && err.message ? err.message : err);
     var missing = err && (err.code === 'PGRST202' || err.code === '42883' || err.code === '42P01' || err.code === 'PGRST205');
+    // PT422 carries a message written for people (e.g. coaching is for rider accounts).
+    var told = err && err.code === 'PT422' && err.message;
     showState('Couldn’t load this page',
-      missing ? 'Progress pages aren’t switched on yet (the database is missing the latest update).' : 'Check your connection and try again.',
-      [{ href: location.href, label: 'Try again', primary: true }, { href: 'index.html#tools', label: 'Go and play' }]);
+      told ? err.message : missing ? 'This page isn’t switched on yet (the database is missing the latest update).' : 'Check your connection and try again.',
+      tabSet === 'riding'
+        ? [{ href: location.href, label: 'Try again', primary: true }, { href: 'index.html', label: 'Back to the Lab' }]
+        : [{ href: location.href, label: 'Try again', primary: true }, { href: 'index.html#tools', label: 'Go and play' }]);
   }
 
   window.MathleteStudent = {
     el: el, clear: clear, fmtDate: fmtDate, fmtDateTime: fmtDateTime, ago: ago, pct: pct, plural: plural,
     gameName: gameName, gameUrl: gameUrl, gameMinutes: gameMinutes,
     statusChip: statusChip, skillRow: skillRow, goalRow: goalRow, STATUS: STATUS,
-    drawTabs: drawTabs, showState: showState, ready: ready, loadDashboard: loadDashboard, fail: fail
+    TABSETS: TABSETS, drawTabs: drawTabs, showState: showState, ready: ready, loadDashboard: loadDashboard, fail: fail
   };
 })();

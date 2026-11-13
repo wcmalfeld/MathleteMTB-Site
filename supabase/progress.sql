@@ -36,7 +36,7 @@
 create table if not exists public.profiles (
   user_id      uuid primary key references auth.users (id) on delete cascade,
   role         text not null default 'student'
-                 check (role in ('student', 'tutor', 'parent', 'admin')),
+                 check (role in ('student', 'tutor', 'parent', 'admin', 'coach')),  -- 'coach': see coaching.sql
   -- First name or nickname only; the email lives in auth.users.
   display_name text not null check (char_length(btrim(display_name)) between 1 and 60),
   grade_level  text check (grade_level is null or char_length(grade_level) <= 20),

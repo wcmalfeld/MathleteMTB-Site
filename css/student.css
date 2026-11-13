@@ -1,5 +1,6 @@
 /* ============================================================
-   STUDENT PAGES (dashboard.html, my-progress.html, review.html)
+   STUDENT PAGES (Learning: dashboard, my-progress, review, goals;
+   Riding: coaching, riding-goals, training)
    Loaded after site.css and lab.css on body.lab pages, so it uses
    the Lab's dark tokens. Everything here is for signed-in students:
    the section tabs, this-week tiles, skill meters, activity lists
@@ -314,4 +315,75 @@ body.lab {
   .student-section { padding: 40px 0; }
   .stat-value { font-size: 28px; }
   .review-summary, .review-body { padding-left: 16px; padding-right: 16px; }
+}
+
+/* ============================================================
+   MTB COACHING (coaching.html, riding-goals.html, training.html)
+   Same tokens and status colors as the Learning pages.
+   ============================================================ */
+.ride-goal-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.ride-goal {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+  background: var(--cream);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--st-developing);
+}
+.ride-goal--done { border-left-color: var(--st-strong); }
+.ride-goal-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 10px 20px; }
+.ride-goal-title { margin: 6px 0 0; font-family: var(--f-body); font-weight: 600; font-size: 19px; line-height: 1.3; color: var(--ink); overflow-wrap: anywhere; }
+.ride-goal-parent { margin: 4px 0 0; font-size: 13.5px; color: var(--ink-soft); }
+.ride-goal .row-meta { margin: 0; }
+.ride-goal .meter { flex: none; max-width: 420px; }
+.ride-mini { margin: 0 0 8px; font-family: var(--f-mono); font-weight: 500; font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+
+.ride-notes { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 16px; margin: 0; font-size: 14.5px; line-height: 1.5; }
+.ride-notes dt { color: var(--ink-soft); font-size: 13px; padding-top: 1px; }
+.ride-notes dd { margin: 0; color: var(--text); overflow-wrap: anywhere; white-space: pre-line; }
+.ride-notes--log { grid-column: 1 / -1; margin-top: 6px; }
+
+.ride-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.ride-steps li { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ride-steps label { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; cursor: pointer; color: var(--ink); font-size: 15px; }
+.ride-steps input { margin-top: 3px; width: 17px; height: 17px; accent-color: var(--st-strong); flex: none; }
+.ride-steps input:checked + span { color: var(--ink-soft); text-decoration: line-through; text-decoration-color: var(--ink-soft); }
+.ride-x { background: none; border: 0; padding: 4px 8px; font-size: 18px; line-height: 1; color: var(--ink-soft); cursor: pointer; }
+.ride-x:hover, .ride-x:focus-visible { color: var(--blaze); }
+.ride-add-step { display: flex; flex-wrap: wrap; gap: 10px; }
+.ride-add-step input {
+  flex: 1 1 240px; min-width: 0; font: inherit; font-size: 15px; padding: 9px 12px;
+  color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 0;
+}
+.ride-add-step input:focus { outline: 2px solid var(--blaze); outline-offset: 1px; }
+.ride-add-step .button { padding: 9px 16px; }
+
+.ride-form textarea {
+  font: inherit; font-family: var(--f-body); font-size: 16px; line-height: 1.45; text-transform: none; letter-spacing: 0;
+  padding: 10px 12px; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 0; resize: vertical;
+}
+.ride-form textarea:focus { outline: 2px solid var(--blaze); outline-offset: 1px; }
+.ride-form textarea::placeholder, .ride-form input::placeholder, .ride-add-step input::placeholder { color: var(--ink-soft); opacity: 0.8; }
+.ride-form .format-hint { margin: -4px 0 0; }
+.ride-form-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.ride-form select:disabled { opacity: 0.6; }
+.ride-areas { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.ride-areas legend { padding: 0; margin-bottom: 10px; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+.goal-form .ride-areas label { flex-direction: row; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid var(--rule); cursor: pointer;
+  font-family: var(--f-body); font-size: 14px; letter-spacing: 0; text-transform: none; color: var(--ink); }
+.ride-areas label:has(input:checked) { border-color: var(--st-strong); background: var(--tint); }
+.ride-areas input { margin: 0; accent-color: var(--st-strong); }
+
+.plan-details { white-space: pre-line; color: var(--text); font-size: 14px; }
+.ride-log-actions { grid-column: 1 / -1; margin: 6px 0 0; }
+
+.coach-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 14px; }
+.coach { padding: 18px 20px; background: var(--cream); border: 1px solid var(--rule); }
+.coach-name { margin: 0 0 4px; font-weight: 600; font-size: 18px; color: var(--ink); }
+.coach-bio { margin: 10px 0 0; font-size: 14.5px; line-height: 1.5; color: var(--text); }
+
+@media (max-width: 640px) {
+  .ride-goal { padding: 16px; }
+  .ride-notes { grid-template-columns: 1fr; gap: 2px; }
+  .ride-notes dd { margin-bottom: 8px; }
 }

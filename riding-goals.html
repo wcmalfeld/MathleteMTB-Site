@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Goals — Mathlete MTB</title>
+<meta name="description" content="Your Mathlete MTB riding goals and the steps toward them.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css?v=13">
+<link rel="stylesheet" href="css/lab.css?v=6">
+<link rel="stylesheet" href="css/student.css?v=3">
+</head>
+<body class="lab" data-page="riding-goals">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main">
+  <div class="wrap">
+    <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
+    <ul class="nav-links">
+      <li><a href="index.html">The Lab</a></li>
+      <li><a href="ski/">Ski</a></li>
+      <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
+      <li><a href="about.html">About</a></li>
+      <li data-auth-show="member" hidden><a href="dashboard.html">My Learning</a></li>
+      <li data-auth-show="member" hidden><a href="coaching.html" class="active">My Riding</a></li>
+      <li data-auth-show="signed-in" hidden><a href="#" data-logout>Log out</a></li>
+      <li class="nav-login" data-auth-show="guest"><a href="login.html">Log in</a></li>
+    </ul>
+    <a class="nav-book" href="book.html" data-track="book_cta_nav">Book a Session</a>
+  </div>
+</nav>
+
+<!-- MTB Coaching (coaching.html, riding-goals.html, training.html) shares this
+     shell. Everything below the tabs is drawn by js/coaching.js from the
+     signed-in rider's own coaching records, which are kept separate from
+     their academic ones; see docs/COACHING.md. -->
+<main id="main">
+
+<header class="page-head lab-head student-head">
+  <div class="wrap">
+    <p class="eyebrow">My Riding</p>
+    <h1 class="page-title" id="student-title">My Goals</h1>
+    <p class="hero-lede" id="student-lede">Loading your goals…</p>
+  </div>
+</header>
+
+<nav class="student-tabs" id="student-tabs" aria-label="My Riding"></nav>
+
+<div id="student-main" aria-live="polite">
+  <section class="student-state"><div class="wrap"><p class="meta">Loading&hellip;</p></div></section>
+</div>
+<noscript><section class="student-state"><div class="wrap"><p>This page needs JavaScript to show your riding.</p></div></section></noscript>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <span>&copy; 2026 Mathlete MTB LLC. All rights reserved.</span>
+    <span class="footer-links">
+      <a href="account.html">Change password</a>
+      <a href="https://www.willmalfeld.com" target="_blank" rel="noopener">willmalfeld.com</a>
+    </span>
+  </div>
+</footer>
+
+<script src="js/tools-config.js?v=15" defer></script>
+<script src="js/supabase-config.js?v=7" defer></script>
+<script src="js/auth.js?v=7" defer></script>
+<script src="js/student.js?v=4" defer></script>
+<script src="js/coaching.js?v=2" defer></script>
+</body>
+</html>

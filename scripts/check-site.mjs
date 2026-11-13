@@ -107,6 +107,56 @@ for (const page of ['dashboard.html', 'my-progress.html', 'review.html', 'goals.
   check(`Every database function the pages call exists in supabase/progress.sql (${calls.join(', ')})`, calls.length >= 5 && missing.length === 0, missing.join(', '));
 }
 
+// ---- MTB Coaching pages (separate from the Learning pages) ----
+{
+  // While coaching is switched off, no page may link to it.
+  const off = /var COACHING_ENABLED = false;/.test(read('js/coaching.js'));
+  if (off) {
+    const linked = execSync("grep -rl 'href=\"coaching.html\"\\|riding-goals.html\\|training.html' --include='*.html' . || true", { cwd: root, encoding: 'utf8' })
+      .split('\n').filter(f => f && !/^\.\/(coaching|riding-goals|training)\.html$/.test(f));
+    check('MTB Coaching is switched off and no page links to it', linked.length === 0, linked.join(', '));
+  }
+}
+for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
+  const html = read(page);
+  const order = ['js/tools-config.js', 'js/supabase-config.js', 'js/auth.js', 'js/student.js', 'js/coaching.js'].map(x => html.indexOf('src="' + x));
+  check(`${page} loads config, Supabase config, auth, the student shell, then coaching.js`, order.every((v, i) => v > 0 && (i === 0 || v > order[i - 1])));
+  check(`${page} is kept out of search engines and names its page`, html.includes('<meta name="robots" content="noindex">') && html.includes(`data-page="${page.replace('.html', '')}"`));
+}
+{
+  const js = read('js/coaching.js');
+  check('Coaching pages never build HTML from data (text only)', !/\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write/.test(js));
+  const sql = read('supabase/coaching.sql');
+  const calls = [...new Set([...js.matchAll(/(?:\.rpc|\bact)\('([a-z]+_[a-z_]+)'/g)].map(m => m[1]))];
+  const missing = calls.filter(fn => !sql.includes(`function public.${fn}(`));
+  check(`Every database function the coaching pages call exists in supabase/coaching.sql (${calls.join(', ')})`, calls.length >= 8 && missing.length === 0, missing.join(', '));
+  // Separation: the Learning pages call no coaching functions, and the coaching pages no academic ones.
+  const coachingFns = [...sql.matchAll(/function public\.([a-z_]+)\(/g)].map(m => m[1]);
+  const learning = ['js/dashboard.js', 'js/my-progress.js', 'js/review.js', 'js/goals.js', 'js/progress.js'].map(read).join('\n');
+  const crossed = coachingFns.filter(fn => learning.includes(`'${fn}'`));
+  const academic = [...read('supabase/progress.sql').matchAll(/function public\.([a-z_]+)\(/g)].map(m => m[1]).filter(fn => js.includes(`'${fn}'`));
+  check('Learning and Coaching pages call only their own database functions', crossed.length === 0 && academic.length === 0, crossed.concat(academic).join(', '));
+}
+
+// ---- Slope & Linear Relationships Lab (standalone module; tests: scripts/test-slope-lab.mjs) ----
+{
+  const dir = 'learning-lab/slope-lab/';
+  const html = read(dir + 'index.html');
+  const css = read(dir + 'styles/slope-lab.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  const leaking = css.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@media') && !sel.startsWith('@')).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith('.slab'));
+  check('Slope lab styles are all scoped under .slab (nothing leaks into other pages)', leaking.length === 0, leaking.slice(0, 5).join(' | '));
+  check('Slope lab stands alone: no site login, nav or progress scripts', !/auth\.js|supabase|tools-config|progress\.js|site\.css|site-nav/.test(html));
+  const js = execSync(`find ${root + dir} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
+  const unsafe = js.filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(/.test(readFileSync(f, 'utf8')));
+  check('Slope lab never builds HTML from strings', unsafe.length === 0, unsafe.join(', '));
+  // Until it has a home, it stays unlisted: noindex, and nothing links to it.
+  const listed = tools.some(t => t.id === 'slope-lab' || /slope-lab/.test(t.url || ''));
+  if (!listed) {
+    const linking = execSync(`grep -rl 'slope-lab' --include='*.html' ${root} || true`, { encoding: 'utf8' }).split('\n').filter(f => f && !f.includes('/learning-lab/slope-lab/') && !f.includes('node_modules'));
+    check('Slope lab is unlisted for now: noindex, and no page links to it', html.includes('<meta name="robots" content="noindex">') && linking.length === 0, linking.join(', '));
+  }
+}
+
 // ---- home page (the Lab) ----
 const index = read('index.html');
 const cards = [...index.matchAll(/<article\b[^>]*\bdata-lab-tool="([^"]+)"/g)].map(m => m[1]);
@@ -229,8 +279,16 @@ for (const [p, h] of [['index.html', index], ['tutoring.html', tutoring], ['book
 }
 
 // ---- College & Beyond page ----
+// While it's hidden (redirects to tutoring.html), nothing may link to it.
+if (/http-equiv="refresh" content="0; url=tutoring\.html"/.test(read('college-beyond.html'))) {
+  const linksCb = siteHtml.filter(p => p !== 'college-beyond.html' && /href="college-beyond\.html/.test(read(p)));
+  check('College & Beyond is hidden and nothing links to it', linksCb.length === 0, linksCb.join(', '));
+}
 const cb = read('college-beyond.html');
-check('About page Services links to the College & Beyond page', /id="services"[\s\S]*href="college-beyond\.html"/.test(read('about.html')));
+// (Skipped while the About page says "coming soon"; it has no Services section then.)
+if (!/<h1 class="page-title">Coming soon\.<\/h1>/.test(read('about.html'))) {
+  check('About page Services links to the College & Beyond page', /id="services"[\s\S]*href="college-beyond\.html"/.test(read('about.html')));
+}
 check('College & Beyond page has exactly one <h1>', (cb.match(/<h1\b/g) || []).length === 1);
 check('College & Beyond page has its own canonical URL', cb.includes('<link rel="canonical" href="https://www.mathletemtb.com/college-beyond.html">'));
 const anchors = [...cb.matchAll(/href="#([^"]+)"/g)].map(m => m[1]).filter(id => id !== 'main');

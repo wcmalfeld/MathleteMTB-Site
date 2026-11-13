@@ -29,6 +29,21 @@
 //   node scripts/admin.mjs goal student@example.com custom Explain slope out loud
 //                                                      a goal in words (you mark it done in the Supabase table for now)
 //   node scripts/admin.mjs goals student@example.com   list a student's goals
+//
+// MTB Coaching: HIDDEN FOR NOW, these work only after supabase/coaching.sql is run
+// (see docs/COACHING.md). Coaching
+// is separate from tutoring: a tutor sees no riding records and a coach no
+// academic ones, unless you assign them both ways.
+//   node scripts/admin.mjs coach coach@example.com jumping tricks
+//                                                      make someone a coach, with their specialties
+//                                                      (fundamentals cornering technical jumping tricks downhill racing fitness mindset)
+//   node scripts/admin.mjs coach coach@example.com off  stop them coaching (their riders lose them at once)
+//   node scripts/admin.mjs coach-assign rider@example.com coach@example.com
+//                                                      let a coach see and add to a rider's goals, plan and log
+//   node scripts/admin.mjs coach-unassign rider@example.com coach@example.com
+//   node scripts/admin.mjs coaches                     every coach, their specialties and riders
+//   node scripts/admin.mjs plan rider@example.com 2 Two airbag sessions: 360 rotations
+//                                                      add something to a rider's training plan (how many sessions, then what)
 
 import { readFileSync, existsSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
@@ -120,7 +135,17 @@ async function profileOf(email) {
   return rows[0];
 }
 
-const ROLES = ['student', 'tutor', 'parent', 'admin'];
+const ROLES = ['student', 'tutor', 'parent', 'admin', 'coach'];
+const AREAS = ['fundamentals', 'cornering', 'technical', 'jumping', 'tricks', 'downhill', 'racing', 'fitness', 'mindset'];
+
+// GET that returns [] when coaching.sql hasn't been run yet (instead of failing).
+async function maybe(path) {
+  try { return await api('GET', path); } catch (e) { if (/^404|PGRST205|does not exist/.test(e.message)) return []; throw e; }
+}
+function needCoaching(e) {
+  if (/^404|PGRST205|does not exist/.test(e.message)) die('MTB Coaching isn\'t set up yet: run supabase/coaching.sql in the Supabase SQL Editor first.');
+  throw e;
+}
 
 const commands = {
   async invite(email) {
@@ -190,14 +215,23 @@ const commands = {
     if (role === 'student') {
       const links = await api('GET', `/rest/v1/student_tutors?tutor_id=eq.${p.user_id}&active=eq.true&select=student_id`);
       if (links.length) die(`${email} still tutors ${links.length} student(s). Run "unassign" for each first (see "roster").`);
+      const coached = await maybe(`/rest/v1/coaches?user_id=eq.${p.user_id}&select=user_id`);
+      if (coached.length) die(`${email} is set up as a coach. Run "coach ${email} off" and "coach-unassign" first (see "coaches").`);
     } else {
       const links = await api('GET', `/rest/v1/student_tutors?student_id=eq.${p.user_id}&active=eq.true&select=tutor_id`);
       if (links.length) die(`${email} is still a student of ${links.length} tutor(s). Run "unassign" for each first (see "roster").`);
+      const riding = await maybe(`/rest/v1/athlete_coaches?athlete_id=eq.${p.user_id}&active=eq.true&select=coach_id`);
+      if (riding.length) die(`${email} is still coached by ${riding.length} coach(es). Run "coach-unassign" for each first (see "coaches").`);
+      if (role !== 'coach' && role !== 'tutor' && role !== 'admin') {
+        const coached = await maybe(`/rest/v1/coaches?user_id=eq.${p.user_id}&active=eq.true&select=user_id`);
+        if (coached.length) die(`${email} is an active coach. Run "coach ${email} off" first.`);
+      }
     }
     await api('PATCH', `/rest/v1/profiles?user_id=eq.${p.user_id}`, { role }, { Prefer: 'return=minimal' });
     console.log(`\n  ${email} is now a${role === 'admin' ? 'n' : ''} ${role} (was ${p.role}).`);
     if (role === 'tutor') console.log('  They see no students until you run: node scripts/admin.mjs assign <student-email> ' + email);
-    if (role === 'admin') console.log('  Admins can see every student\'s progress.');
+    if (role === 'admin') console.log('  Admins can see every student\'s progress and riding records.');
+    if (role === 'coach') console.log('  Next, give them specialties: node scripts/admin.mjs coach ' + email + ' jumping tricks');
     console.log('');
   },
 
@@ -228,10 +262,11 @@ const commands = {
   },
 
   async roster() {
-    const [profiles, members, links] = await Promise.all([
+    const [profiles, members, links, coachLinks] = await Promise.all([
       api('GET', '/rest/v1/profiles?select=user_id,role,display_name&order=role.asc,display_name.asc'),
       api('GET', '/rest/v1/members?select=user_id,email,active'),
-      api('GET', '/rest/v1/student_tutors?select=student_id,tutor_id&active=eq.true')
+      api('GET', '/rest/v1/student_tutors?select=student_id,tutor_id&active=eq.true'),
+      maybe('/rest/v1/athlete_coaches?select=athlete_id,coach_id&active=eq.true')
     ]);
     if (!profiles.length) return console.log('\n  No profiles yet.\n');
     const email = id => (members.find(m => m.user_id === id) || {}).email || '(no access row)';
@@ -242,7 +277,11 @@ const commands = {
       const who = p.role === 'student'
         ? links.filter(l => l.student_id === p.user_id).map(l => label(l.tutor_id))
         : links.filter(l => l.tutor_id === p.user_id).map(l => label(l.student_id));
-      const rel = p.role === 'student' ? `tutor: ${who.join(', ') || 'none'}` : p.role === 'tutor' ? `students: ${who.join(', ') || 'none'}` : '';
+      let rel = p.role === 'student' ? `tutor: ${who.join(', ') || 'none'}` : p.role === 'tutor' ? `students: ${who.join(', ') || 'none'}` : '';
+      const coaches = coachLinks.filter(l => l.athlete_id === p.user_id).map(l => label(l.coach_id));
+      const riders = coachLinks.filter(l => l.coach_id === p.user_id).map(l => label(l.athlete_id));
+      if (coaches.length) rel += `  |  coach: ${coaches.join(', ')}`;
+      if (riders.length || p.role === 'coach') rel += `${rel ? '  |  ' : ''}riders: ${riders.join(', ') || 'none'}`;
       console.log(`  ${p.role.padEnd(7)}  ${p.display_name}  <${email(p.user_id)}>${m && !m.active ? '  REVOKED' : ''}${rel ? '  |  ' + rel : ''}`);
     }
     console.log('');
@@ -278,6 +317,73 @@ const commands = {
     console.log('');
     for (const g of rows) console.log(`  ${g.status.padEnd(9)}  ${g.title}${g.due_on ? '  (due ' + g.due_on + ')' : ''}  [set by ${g.created_by_role}, ${g.created_at.slice(0, 10)}]`);
     console.log(`\n  Progress is shown on the student's My Goals page (it is counted from their activity).\n`);
+  },
+
+  async coach(email, ...specialties) {
+    const p = await profileOf(email);
+    if (specialties[0] === 'off') {
+      const rows = await api('PATCH', `/rest/v1/coaches?user_id=eq.${p.user_id}`, { active: false }, { Prefer: 'return=representation' }).catch(needCoaching);
+      if (!rows.length) die(`${email} isn't a coach.`);
+      return console.log(`\n  ${p.display_name} no longer coaches. Their riders can't see them, and they can't see their riders. Nothing was deleted.\n`);
+    }
+    const bad = specialties.filter(x => !AREAS.includes(x));
+    if (bad.length) die(`Unknown specialty: ${bad.join(', ')}. Use any of: ${AREAS.join(' ')}`);
+    if (!['coach', 'tutor', 'admin'].includes(p.role)) die(`${email} is a ${p.role}. Make them a coach first: node scripts/admin.mjs role ${email} coach\n  (Someone who tutors as well keeps the tutor role.)`);
+    await api('POST', '/rest/v1/coaches?on_conflict=user_id', { user_id: p.user_id, specialties: [...new Set(specialties)], active: true },
+      { Prefer: 'resolution=merge-duplicates,return=minimal' }).catch(needCoaching);
+    console.log(`\n  ${p.display_name} is a coach${specialties.length ? ' (' + specialties.join(', ') + ')' : ''}.`);
+    console.log(`  Assign riders with: node scripts/admin.mjs coach-assign <rider-email> ${email}\n`);
+  },
+
+  async 'coach-assign'(riderEmail, coachEmail) {
+    const rider = await profileOf(riderEmail), coach = await profileOf(coachEmail);
+    if (rider.role !== 'student') die(`${riderEmail} is a ${rider.role}. Riders are student accounts.`);
+    const c = await maybe(`/rest/v1/coaches?user_id=eq.${coach.user_id}&active=eq.true&select=user_id`);
+    if (!c.length) die(`${coachEmail} isn't an active coach. Run: node scripts/admin.mjs coach ${coachEmail} <specialties>`);
+    await api('POST', '/rest/v1/athlete_coaches?on_conflict=athlete_id,coach_id',
+      { athlete_id: rider.user_id, coach_id: coach.user_id, active: true },
+      { Prefer: 'resolution=merge-duplicates,return=minimal' }).catch(needCoaching);
+    console.log(`\n  ${coach.display_name} now coaches ${rider.display_name}: they can see and add to their riding goals, plan and log.`);
+    console.log('  (This gives no access to their academic progress; that is "assign".)\n');
+  },
+
+  async 'coach-unassign'(riderEmail, coachEmail) {
+    const rider = await profileOf(riderEmail), coach = await profileOf(coachEmail);
+    const rows = await api('PATCH', `/rest/v1/athlete_coaches?athlete_id=eq.${rider.user_id}&coach_id=eq.${coach.user_id}`,
+      { active: false }, { Prefer: 'return=representation' }).catch(needCoaching);
+    if (!rows.length) die(`${coachEmail} wasn't coaching ${riderEmail}.`);
+    console.log(`\n  ${coach.display_name} no longer coaches ${rider.display_name}. Nothing was deleted.\n`);
+  },
+
+  async coaches() {
+    const [coaches, links, profiles, members] = await Promise.all([
+      api('GET', '/rest/v1/coaches?select=user_id,specialties,active').catch(needCoaching),
+      api('GET', '/rest/v1/athlete_coaches?select=athlete_id,coach_id&active=eq.true'),
+      api('GET', '/rest/v1/profiles?select=user_id,display_name'),
+      api('GET', '/rest/v1/members?select=user_id,email')
+    ]);
+    if (!coaches.length) return console.log('\n  No coaches yet. Add one with: node scripts/admin.mjs coach <email> <specialties>\n');
+    const name = id => (profiles.find(p => p.user_id === id) || {}).display_name || '?';
+    const email = id => (members.find(m => m.user_id === id) || {}).email || '';
+    console.log('');
+    for (const c of coaches) {
+      const riders = links.filter(l => l.coach_id === c.user_id).map(l => name(l.athlete_id));
+      console.log(`  ${c.active ? 'coach' : 'OFF  '}  ${name(c.user_id)} <${email(c.user_id)}>  [${c.specialties.join(', ') || 'no specialties'}]  |  riders: ${riders.join(', ') || 'none'}`);
+    }
+    console.log('');
+  },
+
+  async plan(email, sessions, ...words) {
+    const n = Number(sessions), title = words.join(' ').trim();
+    if (!Number.isInteger(n) || n < 1 || n > 14 || !title || title.length > 140) die('Usage: plan <rider-email> <sessions 1-14> <what to practise, up to 140 characters>');
+    const rider = await profileOf(email);
+    if (rider.role !== 'student') die(`${email} is a ${rider.role}. Riders are student accounts.`);
+    const d = new Date(); d.setDate(d.getDate() + ((7 - d.getDay()) % 7 || 7));
+    const due_on = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    await api('POST', '/rest/v1/training_items', { athlete_id: rider.user_id, title, sessions_target: n, due_on, created_by: null, created_by_role: 'coach' },
+      { Prefer: 'return=minimal' }).catch(needCoaching);
+    console.log(`\n  Added to ${rider.display_name}'s plan: "${title}" (${n} session${n === 1 ? '' : 's'}, by ${due_on}).`);
+    console.log('  They see it on My Training and their Coaching Dashboard, marked "From your coach".\n');
   },
 
   async inquiries(which) {
@@ -325,12 +431,12 @@ async function main() {
   }
   if (!BASE || !KEY) die('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env (see .env.example).');
   const isEmail = v => !!v && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
-  if (['invite', 'create', 'grant', 'restore', 'revoke', 'reset', 'reset-link', 'role', 'name', 'goal', 'goals'].includes(cmd)) {
-    if (!isEmail(args[0])) die(`Usage: ${cmd} <email>${cmd === 'role' ? ' <' + ROLES.join('|') + '>' : cmd === 'name' ? ' <first name>' : ''}`);
+  if (['invite', 'create', 'grant', 'restore', 'revoke', 'reset', 'reset-link', 'role', 'name', 'goal', 'goals', 'coach', 'plan'].includes(cmd)) {
+    if (!isEmail(args[0])) die(`Usage: ${cmd} <email>${cmd === 'role' ? ' <' + ROLES.join('|') + '>' : cmd === 'name' ? ' <first name>' : cmd === 'coach' ? ' <specialties...|off>' : cmd === 'plan' ? ' <sessions> <what to practise>' : ''}`);
     args[0] = args[0].trim().toLowerCase();
   }
-  if (['assign', 'unassign'].includes(cmd)) {
-    if (!isEmail(args[0]) || !isEmail(args[1])) die(`Usage: ${cmd} <student-email> <tutor-email>`);
+  if (['assign', 'unassign', 'coach-assign', 'coach-unassign'].includes(cmd)) {
+    if (!isEmail(args[0]) || !isEmail(args[1])) die(cmd.startsWith('coach') ? `Usage: ${cmd} <rider-email> <coach-email>` : `Usage: ${cmd} <student-email> <tutor-email>`);
     args[0] = args[0].trim().toLowerCase();
     args[1] = args[1].trim().toLowerCase();
   }
