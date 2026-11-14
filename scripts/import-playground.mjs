@@ -33,8 +33,8 @@ const inject = `    <meta name="description" content="Launch a rider off a jump,
     <!-- Added by scripts/import-playground.mjs: saves a signed-in student's
          answers to their Mathlete account. The app works the same without them. -->
     <script src="../../js/supabase-config.js"></script>
-    <script src="../../js/auth.js"></script>
-    <script src="../../js/progress.js"></script>
+    <script src="../../js/auth.js?v=8"></script>
+    <script src="../../js/progress.js?v=3"></script>
   </head>`;
 html = html.replace('</head>', inject.trimStart());
 

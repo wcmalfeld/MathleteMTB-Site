@@ -1,0 +1,129 @@
+/* ============================================================
+   ORGANIZATION PAGES
+   organization.html (dark Lab theme, after site.css, lab.css and
+   student.css) and join.html (light theme, after site.css).
+   Uses only the site's color tokens, so it follows whichever theme
+   the page is in. Status chips always carry a word, never color alone.
+   ============================================================ */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- invitation facts (join.html, settings) ---------- */
+.join-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 22px;
+  margin: 0 0 26px;
+  padding: 18px 20px;
+  border: 1px solid var(--rule);
+  background: var(--tint);
+}
+.join-facts dt { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); padding-top: 3px; }
+.join-facts dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
+.org-facts { margin-top: 32px; max-width: 34rem; }
+.form-panel .form-actions + .form-note { margin-top: 18px; }
+
+/* ---------- headline numbers ---------- */
+.stat-value--word { font-size: 24px; line-height: 1.2; }
+
+/* ---------- getting started ---------- */
+.org-checklist { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); max-width: 48rem; }
+.org-check {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 4px 16px;
+  align-items: start;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.org-check-mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; margin-top: 1px;
+  border: 1px solid var(--ink-soft); border-radius: 50%;
+  font-size: 14px; font-weight: 700; color: var(--bg);
+}
+.org-check.is-done .org-check-mark { background: var(--st-strong, #2E7D46); border-color: var(--st-strong, #2E7D46); }
+.org-check-title { margin: 0; font-weight: 600; color: var(--ink); }
+.org-check.is-done .org-check-title { color: var(--ink-soft); }
+.org-check-desc { margin: 4px 0 0; font-size: 14.5px; color: var(--ink-soft); }
+.org-check .read-link { white-space: nowrap; margin-top: 2px; }
+.org-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 22px; }
+.org-actions .meta { margin: 0; }
+
+/* ---------- people & activity lists ---------- */
+.org-people, .org-activity { list-style: none; margin: 0; padding: 0; max-width: 40rem; border-top: 1px solid var(--rule); }
+.org-people li, .org-activity li {
+  display: flex; justify-content: space-between; gap: 16px;
+  padding: 12px 0; border-bottom: 1px solid var(--rule); color: var(--ink);
+}
+.org-activity .meta { margin: 0; white-space: nowrap; }
+.org-role { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+
+/* ---------- forms ---------- */
+.org-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 16px 18px; }
+.org-invite, .org-settings { max-width: 56rem; }
+.org-settings { max-width: 36rem; }
+select.input { appearance: auto; }
+.input--small { width: auto; font-size: 14px; padding: 6px 8px; }
+textarea.input { resize: vertical; line-height: 1.5; }
+.org-csv { font-family: var(--f-mono); font-size: 14px; }
+.org-file { font: inherit; font-size: 15px; color: var(--ink); max-width: 100%; }
+.org-help { margin-bottom: 26px; }
+.link-button--danger:hover { color: var(--blaze); border-color: var(--blaze); }
+.link-button:disabled { opacity: 0.55; cursor: progress; }
+
+/* ---------- filters ---------- */
+.org-filters { display: flex; flex-wrap: wrap; gap: 10px 12px; margin-bottom: 16px; }
+.org-filters .input { width: auto; flex: 0 1 auto; font-size: 15px; padding: 9px 12px; }
+.org-filters input[type="search"] { flex: 1 1 220px; max-width: 320px; }
+
+/* ---------- tables ---------- */
+.org-table-wrap { overflow-x: auto; border: 1px solid var(--rule); }
+.org-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.org-table th {
+  text-align: left; padding: 11px 14px;
+  font-family: var(--f-mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-soft); background: var(--tint); border-bottom: 1px solid var(--rule);
+}
+.org-table td { padding: 11px 14px; border-bottom: 1px solid var(--rule-soft, var(--rule)); color: var(--ink); vertical-align: middle; }
+.org-table tr:last-child td { border-bottom: 0; }
+.org-table tr.is-muted td { color: var(--ink-soft); }
+.org-email { overflow-wrap: break-word; }
+@media (max-width: 720px) { .org-email { overflow-wrap: anywhere; } }
+.org-row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.org-count, .org-summary { margin: 12px 0 14px; }
+.org-summary { color: var(--ink); }
+.org-gap { margin-top: 22px; }
+
+.org-status {
+  display: inline-block; padding: 2px 9px;
+  border: 1px solid var(--rule); border-radius: 999px;
+  font-size: 13px; white-space: nowrap; color: var(--ink);
+}
+.org-status--active, .org-status--accepted, .org-status--ready, .org-status--trialing { border-color: var(--st-strong, #2E7D46); }
+.org-status--pending, .org-status--invited { border-color: var(--st-developing, var(--chalk)); }
+.org-status--suspended, .org-status--problem, .org-status--past_due { border-color: var(--blaze); }
+.org-status--problem { white-space: normal; }
+
+/* invitation link to copy */
+.org-linkbox { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; max-width: 44rem; }
+.org-link { flex: 1 1 260px; font-family: var(--f-mono); font-size: 13px; padding: 9px 10px; }
+.org-linkbox .button { padding: 9px 16px; }
+.org-table .org-linkbox { margin: 0; min-width: 240px; }
+
+/* Phones: each row becomes a small card with its labels. */
+@media (max-width: 720px) {
+  .org-table-wrap { border: 0; overflow: visible; }
+  .org-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .org-table, .org-table tbody, .org-table tr, .org-table td { display: block; width: 100%; }
+  .org-table tr { border: 1px solid var(--rule); margin-bottom: 12px; padding: 6px 0; }
+  .org-table td { display: grid; grid-template-columns: 7.5rem 1fr; gap: 10px; padding: 6px 14px; border: 0; }
+  .org-table td > * { justify-self: start; }
+  .org-table td::before { content: attr(data-label); font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); padding-top: 3px; }
+  .org-check { grid-template-columns: 28px 1fr; }
+  .org-check .read-link { grid-column: 2; justify-self: start; }
+  .join-facts { grid-template-columns: 1fr; gap: 2px; }
+  .join-facts dd { margin-bottom: 8px; }
+}

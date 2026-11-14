@@ -99,7 +99,7 @@ node scripts/admin.mjs name sam@example.com Sam
 node scripts/admin.mjs coach sam@example.com jumping tricks
 node scripts/admin.mjs coach-assign rider@example.com sam@example.com
 node scripts/admin.mjs coaches                         # every coach, specialties, riders
-node scripts/admin.mjs plan rider@example.com 2 Two airbag sessions: 360 rotations
+node scripts/admin.mjs ride-plan rider@example.com 2 Two airbag sessions: 360 rotations
 node scripts/admin.mjs coach-unassign rider@example.com sam@example.com
 node scripts/admin.mjs coach sam@example.com off
 ```

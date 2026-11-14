@@ -49,6 +49,12 @@
            h.slice(8, 10).join('') + '-' + h.slice(10).join('');
   }
 
+  // The organization picked in the switcher (js/org.js), if any.
+  var ORG_KEY = 'mathlete-org';
+  function currentOrg() {
+    try { var v = localStorage.getItem(ORG_KEY); return v && /^[0-9a-f-]{36}$/i.test(v) ? v : null; } catch (e) { return null; }
+  }
+
   // ---------- the waiting list ----------
 
   function readQueue() {
@@ -225,6 +231,10 @@
           p_question_key: a.questionKey ? String(a.questionKey).slice(0, 200) : null
         }
       };
+      // The organization the student chose to work in (the "Working in"
+      // switcher). Only sent when one is chosen; the server re-checks it.
+      var org = currentOrg();
+      if (org) item.params.p_organization_id = org;
       item.params.p_attempt_id = item.id;
 
       return currentUserId().then(function (uid) {

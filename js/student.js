@@ -199,10 +199,37 @@
       A.status().then(function (st) {
         if (st.error) return showState('Couldn’t load your account', 'Check your connection and try again.', [{ href: here, label: 'Try again', primary: true }]);
         if (!st.user) return location.replace('login.html?reason=' + (st.expired ? 'expired' : 'login') + '&next=' + encodeURIComponent(here + location.search));
-        if (!st.member) return showState('No access right now', 'Your account doesn’t have access at the moment. If you think that’s a mistake, get in touch.', [{ href: 'index.html#contact', label: 'Get in touch', primary: true }]);
-        A.client().then(function (sb) { resolve({ sb: sb, user: st.user }); });
+        if (!st.member) return noAccess();
+        A.client().then(function (sb) {
+          showOrgs(sb, st);
+          resolve({ sb: sb, user: st.user });
+        });
       });
     });
+  }
+
+  // Signed in but no learning access: say why, if it's about a school.
+  function noAccess() {
+    var plain = function () { showState('No access right now', 'Your account doesn’t have access at the moment. If you think that’s a mistake, get in touch.', [{ href: 'index.html#contact', label: 'Get in touch', primary: true }]); };
+    A.client().then(function (sb) { return sb.rpc('my_organizations'); }).then(function (r) {
+      var orgs = r && !r.error && Array.isArray(r.data) ? r.data : [];
+      var managed = orgs.filter(function (o) { return o.can_manage; });
+      if (managed.length) return showState('Manage ' + managed[0].name, 'Your account manages ' + managed.map(function (o) { return o.name; }).join(', ') + ' on Mathlete. Practice pages open for you once there’s an active licence and you’re also set up to learn.', [{ href: 'organization.html', label: 'Go to your organization', primary: true }]);
+      if (orgs.length) return showState('Not open yet', orgs.map(function (o) { return o.name; }).join(', ') + ' hasn’t switched on Mathlete for students yet. Your account is ready: ask your school’s Mathlete administrator when access starts.', [{ href: 'index.html', label: 'Back to the Lab' }]);
+      plain();
+    }).catch(plain);
+  }
+
+  // "Working in" switcher for people in one or more organizations (js/org.js).
+  // Changing it reloads the page so everything follows the new choice.
+  function showOrgs(sb, st) {
+    if (!window.MathleteOrg) return;
+    var head = document.querySelector('.student-head .wrap');
+    if (!head) return;
+    var host = document.getElementById('student-org') || head.appendChild(el('div', { id: 'student-org', class: 'student-org', hidden: true }));
+    window.MathleteOrg.load(sb, st).then(function (state) {
+      window.MathleteOrg.draw(host, state, function () { location.reload(); });
+    }).catch(function () { /* the switcher is optional */ });
   }
 
   // The dashboard document for the signed-in student (one request).

@@ -387,3 +387,13 @@ body.lab {
   .ride-notes { grid-template-columns: 1fr; gap: 2px; }
   .ride-notes dd { margin-bottom: 8px; }
 }
+
+/* ---------- "Working in" (organizations) ---------- */
+.student-org { margin-top: 18px; }
+.org-switch-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; font-size: 15px; color: var(--ink-soft); }
+.org-switch-row--one { font-family: var(--f-mono); font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; }
+.org-switch-label { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+.org-switch { font: inherit; font-size: 15px; padding: 8px 12px; color: var(--ink); background: var(--cream); border: 1px solid var(--rule); border-radius: 0; max-width: 100%; }
+.org-switch:focus { outline: 2px solid var(--blaze); outline-offset: 1px; }
+.org-note { margin: 10px 0 0; padding: 10px 14px; border-left: 3px solid var(--blaze); background: var(--tint); color: var(--ink); font-size: 14.5px; max-width: 44rem; }
+.org-manage { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 12px 0 0; font-size: 15px; }

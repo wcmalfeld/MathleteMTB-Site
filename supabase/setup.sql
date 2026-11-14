@@ -4,11 +4,11 @@
 --
 -- Who gets in is decided HERE, on the server:
 --   * public.members        - one row per person you have given access.
---   * has_tool_access()     - true only for a signed-in user with an
---                             active, unexpired members row, who is not
---                             banned, and whose session still exists
---                             (so logging out or revoking takes effect
---                             immediately, not when the token expires).
+--   * has_tool_access()     - true for a signed-in user with a live
+--                             session and either an active, unexpired
+--                             members row (a direct account) or, once
+--                             organizations.sql is run, an active
+--                             membership in a licensed organization.
 --   * private-tools bucket  - private Storage bucket holding the private
 --                             tools; files are served only when
 --                             has_tool_access() is true.
@@ -40,8 +40,17 @@ revoke all on public.members from anon;
 revoke insert, update, delete, truncate on public.members from authenticated;
 grant select on public.members to authenticated;
 
--- 2. The access check --------------------------------------------
-create or replace function public.has_tool_access()
+-- 2. The access checks -------------------------------------------
+-- has_live_session():      signed in, not banned, and the session still
+--                          exists (logging out or revoking takes effect at
+--                          once, not when the token expires).
+-- has_individual_access(): a live session AND an active, unexpired
+--                          members row (a direct Mathlete account).
+-- has_tool_access():       a live session AND either individual access or
+--                          an active membership in an organization whose
+--                          licence is current (see organizations.sql; that
+--                          part only applies once that file has been run).
+create or replace function public.has_live_session()
 returns boolean
 language sql
 stable
@@ -50,12 +59,6 @@ set search_path = ''
 as $$
   select
     auth.uid() is not null
-    and exists (
-      select 1 from public.members m
-      where m.user_id = auth.uid()
-        and m.active
-        and (m.expires_at is null or m.expires_at > now())
-    )
     and not exists (
       select 1 from auth.users u
       where u.id = auth.uid()
@@ -70,8 +73,42 @@ as $$
     );
 $$;
 
-revoke all on function public.has_tool_access() from public;
-revoke all on function public.has_tool_access() from anon;
+create or replace function public.has_individual_access()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select public.has_live_session()
+    and exists (
+      select 1 from public.members m
+      where m.user_id = auth.uid()
+        and m.active
+        and (m.expires_at is null or m.expires_at > now())
+    );
+$$;
+
+create or replace function public.has_tool_access()
+returns boolean
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+begin
+  if public.has_individual_access() then return true; end if;
+  -- Organization access exists only once organizations.sql has been run.
+  if to_regprocedure('public.has_org_learning_access()') is null then return false; end if;
+  return public.has_org_learning_access();
+end;
+$$;
+
+revoke all on function public.has_live_session() from public, anon;
+revoke all on function public.has_individual_access() from public, anon;
+revoke all on function public.has_tool_access() from public, anon;
+grant execute on function public.has_live_session() to authenticated;
+grant execute on function public.has_individual_access() to authenticated;
 grant execute on function public.has_tool_access() to authenticated;
 
 -- 3. Private tools bucket ----------------------------------------
@@ -79,11 +116,13 @@ insert into storage.buckets (id, name, public)
 values ('private-tools', 'private-tools', false)
 on conflict (id) do update set public = false;
 
+-- Private tools are for direct (individual) accounts for now. Organizations
+-- get them through resource licensing (Multi-org PRD 3), not by default.
 drop policy if exists "Members can read private tools" on storage.objects;
 create policy "Members can read private tools"
   on storage.objects for select
   to authenticated
-  using (bucket_id = 'private-tools' and public.has_tool_access());
+  using (bucket_id = 'private-tools' and public.has_individual_access());
 
 -- No insert/update/delete policies on this bucket: only you can upload,
 -- via the dashboard or `node scripts/admin.mjs upload`.

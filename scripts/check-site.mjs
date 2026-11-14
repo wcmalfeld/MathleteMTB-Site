@@ -62,7 +62,7 @@ const hosted = pub.filter(t => (t.url || '').startsWith(SITE_ORIGIN)).map(t => (
 check('Tools on mathletemtb.com live at learning-lab/<id>/ in this repo', hosted.every(t => t.page === `learning-lab/${t.id}/index.html` && existsSync(root + t.page)), hosted.map(t => t.page).join(', '));
 for (const t of hosted) {
   const html = read(t.page);
-  const order = ['../../js/supabase-config.js', '../../js/auth.js', '../../js/progress.js'].map(s => html.indexOf(`src="${s}"`));
+  const order = ['../../js/supabase-config.js', '../../js/auth.js', '../../js/progress.js'].map(s => Math.max(html.indexOf(`src="${s}"`), html.indexOf(`src="${s}?`)));
   check(`${t.page} loads Supabase config, auth, then progress tracking`, order.every(i => i > 0) && order[0] < order[1] && order[1] < order[2]);
   if (t.id === 'physics-playground') {
     const asset = (html.match(/assets\/(index-[^"]+\.js)/) || [])[1];
@@ -99,12 +99,12 @@ for (const page of ['dashboard.html', 'my-progress.html', 'review.html', 'goals.
 }
 {
   // Text from the database must never be inserted as HTML on these pages.
-  const unsafe = ['js/student.js', 'js/dashboard.js', 'js/my-progress.js', 'js/review.js', 'js/goals.js'].filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write/.test(read(f)));
+  const unsafe = ['js/student.js', 'js/dashboard.js', 'js/my-progress.js', 'js/review.js', 'js/goals.js', 'js/org.js', 'js/organization.js', 'js/join.js', 'js/login.js'].filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write/.test(read(f)));
   check('Student pages never build HTML from data (text only)', unsafe.length === 0, unsafe.join(', '));
-  const sql = read('supabase/progress.sql');
-  const calls = [...new Set(['js/student.js', 'js/dashboard.js', 'js/my-progress.js', 'js/review.js', 'js/goals.js', 'js/progress.js'].flatMap(f => [...read(f).matchAll(/\.rpc\(([^,)]+)[,)]/g)].flatMap(m => [...m[1].matchAll(/'([a-z]+_[a-z_]+)'/g)].map(x => x[1]))))];
+  const sql = ['setup', 'progress', 'organizations'].map(f => read(`supabase/${f}.sql`)).join('\n');
+  const calls = [...new Set(['js/student.js', 'js/dashboard.js', 'js/my-progress.js', 'js/review.js', 'js/goals.js', 'js/progress.js', 'js/org.js', 'js/auth.js', 'js/organization.js', 'js/join.js', 'js/login.js', 'supabase/functions/invite/index.ts', 'supabase/functions/join/index.ts'].flatMap(f => [...read(f).matchAll(/\.rpc\(([^,)]+)[,)]/g)].flatMap(m => [...m[1].matchAll(/'([a-z]+_[a-z_]+)'/g)].map(x => x[1]))))];
   const missing = calls.filter(fn => !sql.includes(`function public.${fn}(`));
-  check(`Every database function the pages call exists in supabase/progress.sql (${calls.join(', ')})`, calls.length >= 5 && missing.length === 0, missing.join(', '));
+  check(`Every database function the pages call exists in supabase/ (${calls.join(', ')})`, calls.length >= 7 && missing.length === 0, missing.join(', '));
 }
 
 // ---- MTB Coaching pages (separate from the Learning pages) ----
@@ -156,6 +156,23 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
     existsSync(root + 'classes/algebra-1/slope-and-rate-of-change/index.html') && read('classes/algebra-1/slope-and-rate-of-change/index.html').includes('href="learning-lab/slope-lab/?from='));
 }
 
+// ---- Jump Trajectory Lab (standalone module; tests: scripts/test-jump-lab.mjs) ----
+{
+  const dir = 'learning-lab/jump-trajectory-lab/';
+  const html = read(dir + 'index.html');
+  const css = read(dir + 'styles/jump-lab.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  const leaking = css.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@')).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith('.jlab'));
+  check('Jump lab styles are all scoped under .jlab', leaking.length === 0, leaking.slice(0, 5).join(' | '));
+  const js = execSync(`find ${root + dir} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
+  const coupled = js.filter(f => !f.endsWith('/main.js') && /MathleteProgress|MathleteAuth|supabase|tools-config/.test(readFileSync(f, 'utf8')));
+  check('Jump lab module doesn’t depend on the site (only its page connects it)', coupled.length === 0 && !/site\.css|site-nav|site\.js/.test(html), coupled.join(', '));
+  check('Jump lab page loads progress tracking in order, then the module', ['js/supabase-config.js', 'js/auth.js', 'js/progress.js', 'src="main.js'].map(x => html.indexOf(x)).every((v, i, a) => v > 0 && (i === 0 || v > a[i - 1])));
+  const unsafe = js.filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(/.test(readFileSync(f, 'utf8')));
+  check('Jump lab never builds HTML from strings', unsafe.length === 0, unsafe.join(', '));
+  check('Jump lab is linked from Algebra 1 → Graphing Quadratics', read('classes/algebra-1/graphing-quadratics/index.html').includes('href="learning-lab/jump-trajectory-lab/?from='));
+  check('The Lab’s original Jump Lab game is untouched and still listed', existsSync(root + 'learning-lab/jump-lab/index.html') && tools.some(t => t.id === 'jump-lab' && t.status === 'live'));
+}
+
 // ---- Classes (generated from content/classes/ by scripts/build-classes.mjs) ----
 {
   const { loadClasses } = await import('../content/classes/model.mjs');
@@ -184,6 +201,32 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   const navless = execSync(`grep -rL 'href="classes/"' --include='*.html' ${root} || true`, { encoding: 'utf8' }).split('\n')
     .filter(f => f && /<nav class="site-nav"/.test(readFileSync(f, 'utf8')) && !f.includes('node_modules')).map(f => f.replace(root, ''));
   check('Every page with the site nav links to Classes', navless.length === 0, navless.slice(0, 5).join(', '));
+}
+
+// ---- Organizations (supabase/organizations.sql) ----
+{
+  const sqlO = read('supabase/organizations.sql');
+  check('Student pages load the organization switcher (js/org.js) before student.js', ['dashboard.html', 'my-progress.html', 'review.html', 'goals.html'].every(p => { const h = read(p); const a = h.indexOf('src="js/org.js'), b = h.indexOf('src="js/student.js'); return a > 0 && b > a; }));
+  check('Organization tables are read-only from the browser (no insert/update/delete grants)', !/grant (insert|update|delete|all)[^;]*on public\.(organizations|organization_memberships|subscriptions|plans|invitations|audit_events)/i.test(sqlO));
+  check('Every organization role check treats "no role" as a refusal (no bare org_role(...) in ...)', !/public\.org_role\(p_org\) in \(/.test(sqlO));
+  check('Private tools need a direct account (not organization access) for now', /bucket_id = 'private-tools' and public\.has_individual_access\(\)/.test(read('supabase/setup.sql')) && /st\.individual === false/.test(read('js/tool-player.js')));
+  // Invitations and the organization page (Step 2)
+  for (const page of ['organization.html', 'join.html']) {
+    const h = read(page), js = page === 'join.html' ? 'js/join.js' : 'js/organization.js';
+    check(`${page} is kept out of search engines and loads auth before ${js}`, h.includes('<meta name="robots" content="noindex">') && h.indexOf('src="js/auth.js') > 0 && h.indexOf(`src="${js}`) > h.indexOf('src="js/auth.js'));
+  }
+  check('Invitation tokens are stored only as a hash (no plain token column)', /token_hash\s+text not null unique/.test(sqlO) && !/^\s*token\s+text/m.test(sqlO));
+  check('Only the server (service role) can accept on behalf of a new account', /grant execute on function public\.accept_invitation_new_user\(text, uuid\) to service_role;/.test(sqlO) && !/accept_invitation_new_user\(text, uuid\)[^;]*to [^;]*(anon|authenticated)/.test(sqlO.replace(/revoke[^;]*;/g, '')));
+  const fnInvite = read('supabase/functions/invite/index.ts'), fnJoin = read('supabase/functions/join/index.ts');
+  const edgeRpc = [...(fnInvite + fnJoin).matchAll(/rpc\/([a-z_]+)|\$\{rest\}\/([a-z_]+)|rpc\('([a-z_]+)'/g)].map(m => m[1] || m[2] || m[3]);
+  check(`Server functions only call database functions that exist (${[...new Set(edgeRpc)].join(', ')})`, edgeRpc.length >= 4 && edgeRpc.every(fn => sqlO.includes(`function public.${fn}(`)));
+  check('The invite function acts as the signed-in person (forwards their sign-in, never the service key)', /Authorization: auth/.test(fnInvite) && !/SERVICE_ROLE/.test(fnInvite));
+  check('Server keys come only from the function environment, never typed in', ![fnInvite, fnJoin].some(f => /eyJ[A-Za-z0-9_-]{20,}|sb_secret_|re_[A-Za-z0-9]{20,}/.test(f)) && /env\.SUPABASE_SERVICE_ROLE_KEY/.test(fnJoin));
+  const browserFiles = execSync("grep -rlE 'SERVICE_ROLE|service_role_key' js *.html || true", { cwd: root, encoding: 'utf8' }).trim();
+  check('No page or browser script mentions the service role key', browserFiles === '', browserFiles);
+  check('The invitation page takes the token out of the address bar', /history\.replaceState/.test(read('js/join.js')));
+  check('Login lets an invitation through and sends managers to their organization', /joining = \/\^join\\\.html\//.test(read('js/login.js')) && /'organization\.html'/.test(read('js/login.js')));
+  check('Run order is documented: setup → progress → organizations → curriculum', /AFTER\s+setup\.sql and progress\.sql \(and before curriculum\.sql\)/.test(sqlO.replace(/--\s*/g, '')));
 }
 
 // ---- home page (the Lab) ----
@@ -286,7 +329,7 @@ const booking = bookingBox.window.MATHLETE_BOOKING || {};
 const subjectIds = (booking.subjects || []).map(x => x.id);
 const tutoring = read('tutoring.html');
 const book = read('book.html');
-const navPages = ['index.html', 'ski/index.html', 'about.html', 'login.html', 'account.html', 'college-beyond.html', 'tutoring.html', 'book.html'];
+const navPages = ['index.html', 'ski/index.html', 'about.html', 'login.html', 'account.html', 'college-beyond.html', 'tutoring.html', 'book.html', 'join.html', 'organization.html'];
 const noBook = navPages.filter(p => !/<a class="nav-book[^"]*" href="book\.html"/.test(read(p)))
   .concat(labContent.filter(p => !labPages[p].includes('<a class="nav-book" href="book.html"')));
 check('Every page has "Book a Session" in the nav', noBook.length === 0, noBook.join(', '));

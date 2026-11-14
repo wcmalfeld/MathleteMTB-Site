@@ -4,6 +4,9 @@
   var A = window.MathleteAuth;
   var params = new URLSearchParams(location.search);
   var next = A.safeNext(params.get('next')) || 'dashboard.html';   // students land on their dashboard
+  // Accepting an invitation is how someone gets access, so that page opens
+  // for any signed-in account (join.html checks the invitation itself).
+  var joining = /^join\.html/.test(next);
 
   var notice = document.getElementById('notice');
   var form = document.getElementById('login-form');
@@ -16,6 +19,7 @@
     login:        ['info', 'Please log in to open that tool.'],
     expired:      ['info', 'Your session has ended. Please log in again.'],
     unauthorized: ['error', 'That account doesn’t have access to member tools right now. If you think that’s a mistake, get in touch.'],
+    invite:       ['info', 'Log in with the email address your invitation was sent to, and you’ll go straight back to accept it.'],
     signedout:    ['success', 'You’ve been logged out.'],
     password:     ['success', 'Your password is set. Log in with your new password.']
   };
@@ -37,9 +41,22 @@
     return;
   }
 
+  // Where a signed-in account may go: members to `next`; anyone to an
+  // invitation; school owners and admins without learning access to their
+  // organization's page. Resolves with the address, or null for no access.
+  // (Only a convenience: every page re-checks with the database.)
+  function destination(st) {
+    if (st.member || (joining && st.user)) return Promise.resolve(next);
+    if (!st.user) return Promise.resolve(null);
+    return A.client().then(function (sb) { return sb.rpc('my_organizations'); }).then(function (r) {
+      var orgs = r && !r.error && Array.isArray(r.data) ? r.data : [];
+      return orgs.some(function (o) { return o.can_manage; }) ? 'organization.html' : null;
+    }).catch(function () { return null; });
+  }
+
   // Already signed in with access? Go straight on.
   if (A.hasStoredSession() && reason !== 'unauthorized') {
-    A.status().then(function (st) { if (st.member) location.replace(next); });
+    A.status().then(destination).then(function (to) { if (to) location.replace(to); });
   }
 
   form.addEventListener('submit', function (e) {
@@ -60,9 +77,11 @@
       }
       // Signed in. Now ask the server whether this account has access.
       return A.status({ force: true }).then(function (st) {
-        if (st.member) { location.replace(next); return; }
         if (st.error) { show('error', 'Couldn\u2019t check your access just now. Try again in a moment.'); return A.signOut(); }
-        return A.signOut().then(function () { show(MESSAGES.unauthorized[0], MESSAGES.unauthorized[1]); });
+        return destination(st).then(function (to) {
+          if (to) { location.replace(to); return; }
+          return A.signOut().then(function () { show(MESSAGES.unauthorized[0], MESSAGES.unauthorized[1]); });
+        });
       });
     }).catch(function () {
       show('error', 'Couldn’t reach the login service. Check your connection and try again.');

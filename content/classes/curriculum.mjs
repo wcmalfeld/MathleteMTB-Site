@@ -152,7 +152,7 @@ export const COURSES = [
       { slug: 'quadratic-equations-and-functions', title: 'Quadratic Equations and Functions', topics: [
         T('graphing-quadratics', 'Graphing Quadratics', 'Graph y = ax² + bx + c and describe its parabola: opening direction, width, intercepts.',
           'A rider’s path through the air off a jump is (very nearly) a parabola.',
-          ['graph-parabola: Graph a quadratic function', 'effect-of-a: Describe how a changes the parabola', 'read-features: Read intercepts and the maximum or minimum from a graph']),
+          ['graph-parabola: Graph a quadratic function', 'effect-of-a: Describe how a changes the parabola', 'read-features: Read intercepts and the maximum or minimum from a graph', 'recognize-parabola: Recognize a quadratic function and its parabola', 'equation-forms: Connect vertex, standard and factored form to the same graph']),
         T('vertex-and-axis-of-symmetry', 'Vertex and Axis of Symmetry', 'Find the vertex and axis of symmetry of a parabola, and interpret the vertex as a maximum or minimum.',
           'The vertex of a jump’s flight path is the highest point of the air.',
           ['find-vertex: Find the vertex using x = −b / 2a', 'axis-of-symmetry: Find and use the axis of symmetry', 'interpret-vertex: Interpret the vertex in context']),

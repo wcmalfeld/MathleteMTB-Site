@@ -61,7 +61,9 @@
   }
 
   // Ask the server who this is and whether they currently have access.
-  // Returns { configured, user, member, expired }.
+  // Returns { configured, user, member, individual, expired }.
+  //   member:     may use the site (direct account or a licensed organization)
+  //   individual: has a direct account (needed for private tools)
   function status(opts) {
     opts = opts || {};
     if (!configured) return Promise.resolve({ configured: false, user: null, member: false });
@@ -75,7 +77,14 @@
         if (!user) return { configured: true, user: null, member: false, expired: hadSession };
         return sb.rpc('has_tool_access').then(function (r) {
           if (r.error) return { configured: true, user: user, member: false, error: true };
-          return { configured: true, user: user, member: r.data === true };
+          var member = r.data === true;
+          if (!member) return { configured: true, user: user, member: false, individual: false };
+          // Members through an organization use the site but not (yet) the
+          // private tools, which are for direct accounts. Before
+          // organizations.sql is run, every member is a direct account.
+          return sb.rpc('has_individual_access').then(function (i) {
+            return { configured: true, user: user, member: true, individual: i.error ? true : i.data === true };
+          });
         });
       });
     }).catch(function () {
@@ -179,7 +188,7 @@
     applyToolAccess(false);
     applyNav({ user: null, member: false });
     status().then(function (st) {
-      applyToolAccess(st.member);
+      applyToolAccess(st.individual);
       applyNav(st);
     });
   }

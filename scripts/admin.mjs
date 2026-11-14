@@ -30,6 +30,24 @@
 //                                                      a goal in words (you mark it done in the Supabase table for now)
 //   node scripts/admin.mjs goals student@example.com   list a student's goals
 //
+// Organizations and licences (needs supabase/organizations.sql; see docs/ORGANIZATIONS.md):
+//   node scripts/admin.mjs org create world-class-academy sports_academy World Class Academy
+//                                                      types: school sports_academy tutoring educational other (starts pending)
+//   node scripts/admin.mjs orgs                        every organization: status, licence, seats
+//   node scripts/admin.mjs org show world-class-academy    overview, members, licence history, recent activity
+//   node scripts/admin.mjs org status world-class-academy active      pending | active | suspended | archived
+//   node scripts/admin.mjs plan pilot 50 term Organization Pilot      id, student seat limit, interval (month year term one_time custom), name
+//   node scripts/admin.mjs plans
+//   node scripts/admin.mjs license world-class-academy pilot 30 2026-12-01 2027-06-30
+//                                                      plan, seats, start, end (or "none"); add "trial" to start as trialing
+//   node scripts/admin.mjs license-status world-class-academy suspended Unpaid invoice
+//                                                      active | past_due | suspended | canceled | expired (of the current licence)
+//   node scripts/admin.mjs org add world-class-academy someone@example.com student
+//                                                      owner | admin | instructor | student; makes an account (invite email) if needed
+//   node scripts/admin.mjs org member world-class-academy someone@example.com removed
+//                                                      a role, or active | suspended | removed (records are kept)
+//   node scripts/admin.mjs superadmin you@example.com  make someone a Mathlete platform admin
+//
 // MTB Coaching: HIDDEN FOR NOW, these work only after supabase/coaching.sql is run
 // (see docs/COACHING.md). Coaching
 // is separate from tutoring: a tutor sees no riding records and a coach no
@@ -42,7 +60,7 @@
 //                                                      let a coach see and add to a rider's goals, plan and log
 //   node scripts/admin.mjs coach-unassign rider@example.com coach@example.com
 //   node scripts/admin.mjs coaches                     every coach, their specialties and riders
-//   node scripts/admin.mjs plan rider@example.com 2 Two airbag sessions: 360 rotations
+//   node scripts/admin.mjs ride-plan rider@example.com 2 Two airbag sessions: 360 rotations
 //                                                      add something to a rider's training plan (how many sessions, then what)
 
 import { readFileSync, existsSync } from 'node:fs';
@@ -145,6 +163,80 @@ async function maybe(path) {
 function needCoaching(e) {
   if (/^404|PGRST205|does not exist/.test(e.message)) die('MTB Coaching isn\'t set up yet: run supabase/coaching.sql in the Supabase SQL Editor first.');
   throw e;
+}
+
+// Call a database function (as the service role, which counts as a
+// Mathlete platform operator in organizations.sql).
+async function rpc(fn, body) {
+  try { return await api('POST', `/rest/v1/rpc/${fn}`, body); }
+  catch (e) {
+    if (/PGRST202|Could not find the function/.test(e.message)) die('Organizations aren\'t set up yet: run supabase/organizations.sql in the Supabase SQL Editor first.');
+    throw e;
+  }
+}
+async function orgBySlug(slug) {
+  const rows = await api('GET', `/rest/v1/organizations?slug=eq.${encodeURIComponent(slug || '')}&select=id,name,slug,org_type,status`).catch(e => {
+    if (/^404|PGRST205/.test(e.message)) die('Organizations aren\'t set up yet: run supabase/organizations.sql in the Supabase SQL Editor first.');
+    throw e;
+  });
+  if (!rows.length) die(`No organization with the slug "${slug}". See: node scripts/admin.mjs orgs`);
+  return rows[0];
+}
+const ymd = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
+const ORG_ROLES = ['owner', 'admin', 'instructor', 'student'];
+
+// The organization commands: org create | show | status | add | member
+async function orgCommand(sub, ...a) {
+  if (sub === 'create') {
+    const [slug, type, ...name] = a;
+    if (!slug || !type || !name.length) die('Usage: org create <slug> <school|sports_academy|tutoring|educational|other> <name>');
+    const id = await rpc('create_organization', { p_name: name.join(' '), p_slug: slug, p_type: type, p_status: 'pending' });
+    console.log(`\n  Created "${name.join(' ')}" (${slug}), status pending.`);
+    console.log(`  Next: a licence (license ${slug} <plan> <seats> <start> <end>), an owner (org add ${slug} <email> owner), then org status ${slug} active.\n`);
+    return id;
+  }
+  const org = await orgBySlug(a[0]);
+  if (sub === 'status') {
+    const [, status, ...why] = a;
+    await rpc('set_organization_status', { p_org: org.id, p_status: status, p_reason: why.join(' ') || null });
+    console.log(`\n  ${org.name} is now ${status}.${status === 'suspended' ? ' Students and instructors lose access at once; owners and admins can still see it. Nothing is deleted.' : ''}\n`);
+  } else if (sub === 'add') {
+    const [, email, role] = a;
+    if (!email || !ORG_ROLES.includes(role)) die(`Usage: org add <slug> <email> <${ORG_ROLES.join('|')}>`);
+    let user = await findUser(email.toLowerCase());
+    if (!user) {
+      // A new person: an account (invite email to choose a password) but NOT a direct
+      // Mathlete membership; their access comes through the organization.
+      user = await api('POST', `/auth/v1/invite?redirect_to=${encodeURIComponent(ACCOUNT_URL)}`, { email: email.toLowerCase() });
+      console.log(`\n  Sent ${email} an email to set up their account.`);
+    }
+    await ensureProfile(user);
+    await rpc('add_member', { p_org: org.id, p_user: user.id, p_role: role });
+    const seats = await rpc('seat_usage', { p_org: org.id });
+    console.log(`\n  ${email} is now ${role === 'admin' || role === 'owner' || role === 'instructor' ? 'an ' : 'a '}${role} at ${org.name}.`);
+    console.log(`  Student seats: ${seats.active_students} used, ${seats.pending_invitations} reserved, ${seats.available} available of ${seats.licensed}.\n`);
+  } else if (sub === 'member') {
+    const [, email, change] = a;
+    const user = await requireUser((email || '').toLowerCase());
+    const isRole = ORG_ROLES.includes(change), isStatus = ['active', 'suspended', 'removed'].includes(change);
+    if (!isRole && !isStatus) die(`Usage: org member <slug> <email> <${ORG_ROLES.join('|')}|active|suspended|removed>`);
+    await rpc('update_member', { p_org: org.id, p_user: user.id, p_role: isRole ? change : null, p_status: isStatus ? change : null });
+    console.log(`\n  ${email} at ${org.name}: ${change}.${change === 'removed' ? ' Their access to the organization ends now; their account and learning history are kept.' : ''}\n`);
+  } else if (sub === 'show') {
+    const o = await rpc('organization_overview', { p_org: org.id });
+    const subs = await api('GET', `/rest/v1/subscriptions?organization_id=eq.${org.id}&select=plan_id,status,starts_on,ends_on,seat_allowance,created_at,replaced_by,cancel_reason&order=created_at.desc`);
+    const members = await api('GET', `/rest/v1/organization_memberships?organization_id=eq.${org.id}&select=user_id,role,status&order=role.asc`);
+    const people = await api('GET', `/rest/v1/members?select=user_id,email`).catch(() => []);
+    const emailOf = id => (people.find(p => p.user_id === id) || {}).email || id;
+    const users = []; for (const m of members) { const u = await api('GET', `/auth/v1/admin/users/${m.user_id}`).catch(() => null); users.push({ ...m, email: u ? u.email : emailOf(m.user_id) }); }
+    console.log(`\n  ${org.name}  (${org.slug}, ${org.org_type})  status: ${org.status}`);
+    console.log(`  Licence: ${o.license.state}${o.license.plan ? ` — plan ${o.license.plan}, ${o.license.starts_on} to ${o.license.ends_on || 'open-ended'}` : ''}`);
+    console.log(`  Seats: ${o.seats.active_students} students active, ${o.seats.pending_invitations} invitations reserved, ${o.seats.available} available of ${o.seats.licensed}`);
+    console.log('\n  Members:'); users.forEach(m => console.log(`    ${m.role.padEnd(10)} ${m.status.padEnd(9)} ${m.email}`));
+    console.log('\n  Licence history (newest first):'); subs.forEach(x => console.log(`    ${x.created_at.slice(0, 10)}  ${x.plan_id}  ${x.status}  ${x.starts_on} → ${x.ends_on || 'open'}  ${x.seat_allowance} seats${x.cancel_reason ? '  (' + x.cancel_reason + ')' : ''}`));
+    console.log('\n  Recent activity:'); (o.recent || []).forEach(r => console.log(`    ${r.at.slice(0, 16).replace('T', ' ')}  ${r.action}  (${r.actor})`));
+    console.log('');
+  } else die('Usage: org <create|show|status|add|member> ...');
 }
 
 const commands = {
@@ -373,9 +465,9 @@ const commands = {
     console.log('');
   },
 
-  async plan(email, sessions, ...words) {
+  async 'ride-plan'(email, sessions, ...words) {
     const n = Number(sessions), title = words.join(' ').trim();
-    if (!Number.isInteger(n) || n < 1 || n > 14 || !title || title.length > 140) die('Usage: plan <rider-email> <sessions 1-14> <what to practise, up to 140 characters>');
+    if (!Number.isInteger(n) || n < 1 || n > 14 || !title || title.length > 140) die('Usage: ride-plan <rider-email> <sessions 1-14> <what to practise, up to 140 characters>');
     const rider = await profileOf(email);
     if (rider.role !== 'student') die(`${email} is a ${rider.role}. Riders are student accounts.`);
     const d = new Date(); d.setDate(d.getDate() + ((7 - d.getDay()) % 7 || 7));
@@ -384,6 +476,55 @@ const commands = {
       { Prefer: 'return=minimal' }).catch(needCoaching);
     console.log(`\n  Added to ${rider.display_name}'s plan: "${title}" (${n} session${n === 1 ? '' : 's'}, by ${due_on}).`);
     console.log('  They see it on My Training and their Coaching Dashboard, marked "From your coach".\n');
+  },
+
+  async org(sub, ...a) { return orgCommand(sub, ...a); },
+
+  async orgs() {
+    const rows = await api('GET', '/rest/v1/organizations?select=id,name,slug,status&order=name.asc').catch(e => { if (/^404|PGRST205/.test(e.message)) die('Organizations aren\'t set up yet: run supabase/organizations.sql first.'); throw e; });
+    if (!rows.length) return console.log('\n  No organizations yet. Create one with: node scripts/admin.mjs org create <slug> <type> <name>\n');
+    console.log('');
+    for (const o of rows) {
+      const ov = await rpc('organization_overview', { p_org: o.id });
+      console.log(`  ${o.status.padEnd(9)}  ${o.name} (${o.slug})  |  licence: ${ov.license.state}${ov.license.plan ? ' (' + ov.license.plan + ')' : ''}  |  seats ${ov.seats.active_students}+${ov.seats.pending_invitations}/${ov.seats.licensed}`);
+    }
+    console.log('');
+  },
+
+  async plan(id, seats, interval, ...name) {
+    if (!id || !name.length || !/^\d+$/.test(seats || '')) die('Usage: plan <id> <student seat limit> <month|year|term|one_time|custom> <name>   (prices are set later; none are invented)');
+    await rpc('save_plan', { p_id: id, p_name: name.join(' '), p_seat_limit: Number(seats), p_interval: interval });
+    console.log(`\n  Plan "${name.join(' ')}" (${id}) saved: up to ${seats} student seats, billed per ${interval}. No price set.\n`);
+  },
+
+  async plans() {
+    const rows = await api('GET', '/rest/v1/plans?select=id,name,billing_interval,student_seat_limit,status,version&order=id.asc').catch(() => die('Run supabase/organizations.sql first.'));
+    if (!rows.length) return console.log('\n  No plans yet. Add one with: node scripts/admin.mjs plan <id> <seats> <interval> <name>\n');
+    console.log(''); rows.forEach(p => console.log(`  ${p.status.padEnd(8)} ${p.id.padEnd(14)} ${p.name}  (≤ ${p.student_seat_limit ?? '∞'} seats, per ${p.billing_interval}, v${p.version})`)); console.log('');
+  },
+
+  async license(slug, plan, seats, start, end, trial) {
+    if (!slug || !plan || !/^\d+$/.test(seats || '') || !ymd(start) || !(end === 'none' || ymd(end))) die('Usage: license <org slug> <plan id> <seats> <start YYYY-MM-DD> <end YYYY-MM-DD | none> [trial]');
+    const org = await orgBySlug(slug);
+    await rpc('activate_license', { p_org: org.id, p_plan: plan, p_seats: Number(seats), p_starts: start, p_ends: end === 'none' ? null : end, p_status: trial === 'trial' ? 'trialing' : 'active', p_note: 'manual activation (admin.mjs)' });
+    console.log(`\n  ${org.name}: ${trial === 'trial' ? 'trial' : 'licence'} on plan ${plan}, ${seats} student seats, ${start} to ${end === 'none' ? 'open-ended' : end}.`);
+    console.log('  Any earlier licence is kept in the history (see org show).' + (org.status !== 'active' ? `\n  The organization is still ${org.status}: run  org status ${slug} active  when it's ready.` : '') + '\n');
+  },
+
+  async 'license-status'(slug, status, ...why) {
+    if (!slug || !status) die('Usage: license-status <org slug> <active|past_due|suspended|canceled|expired> [reason]');
+    const org = await orgBySlug(slug);
+    const cur = await api('GET', `/rest/v1/subscriptions?organization_id=eq.${org.id}&replaced_by=is.null&order=created_at.desc&limit=1&select=id,status`);
+    if (!cur.length) die(`${org.name} has no licence yet.`);
+    await rpc('set_subscription_status', { p_subscription: cur[0].id, p_status: status, p_reason: why.join(' ') || null });
+    console.log(`\n  ${org.name}'s licence: ${cur[0].status} → ${status}.\n`);
+  },
+
+  async superadmin(email) {
+    const user = await requireUser(email);
+    await api('POST', '/rest/v1/platform_admins?on_conflict=user_id', { user_id: user.id, note: 'admin.mjs superadmin' }, { Prefer: 'resolution=merge-duplicates,return=minimal' })
+      .catch(e => { if (/^404|PGRST205/.test(e.message)) die('Run supabase/organizations.sql first.'); throw e; });
+    console.log(`\n  ${email} is a Mathlete platform admin (can manage every organization). Only you can grant this.\n`);
   },
 
   async inquiries(which) {
@@ -431,8 +572,8 @@ async function main() {
   }
   if (!BASE || !KEY) die('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env (see .env.example).');
   const isEmail = v => !!v && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
-  if (['invite', 'create', 'grant', 'restore', 'revoke', 'reset', 'reset-link', 'role', 'name', 'goal', 'goals', 'coach', 'plan'].includes(cmd)) {
-    if (!isEmail(args[0])) die(`Usage: ${cmd} <email>${cmd === 'role' ? ' <' + ROLES.join('|') + '>' : cmd === 'name' ? ' <first name>' : cmd === 'coach' ? ' <specialties...|off>' : cmd === 'plan' ? ' <sessions> <what to practise>' : ''}`);
+  if (['invite', 'create', 'grant', 'restore', 'revoke', 'reset', 'reset-link', 'role', 'name', 'goal', 'goals', 'coach', 'ride-plan', 'superadmin'].includes(cmd)) {
+    if (!isEmail(args[0])) die(`Usage: ${cmd} <email>${cmd === 'role' ? ' <' + ROLES.join('|') + '>' : cmd === 'name' ? ' <first name>' : cmd === 'coach' ? ' <specialties...|off>' : cmd === 'ride-plan' ? ' <sessions> <what to practise>' : ''}`);
     args[0] = args[0].trim().toLowerCase();
   }
   if (['assign', 'unassign', 'coach-assign', 'coach-unassign'].includes(cmd)) {

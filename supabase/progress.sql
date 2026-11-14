@@ -550,6 +550,11 @@ create table if not exists public.question_attempts (
 -- The game's own name for a fixed question (e.g. a mission id), when it
 -- sent one. Kept so a review attempt can be matched to the same question.
 alter table public.question_attempts add column if not exists question_key text;
+-- The organization the work was done in (null = a direct/personal account).
+-- Foreign keys to organizations are added by organizations.sql.
+alter table public.question_attempts add column if not exists organization_id uuid;
+alter table public.game_sessions add column if not exists organization_id uuid;
+create index if not exists question_attempts_org_idx on public.question_attempts (organization_id, occurred_at desc) where organization_id is not null;
 create index if not exists question_attempts_student_time_idx on public.question_attempts (student_id, occurred_at desc);
 create index if not exists question_attempts_student_created_idx on public.question_attempts (student_id, created_at desc);
 create index if not exists question_attempts_question_idx on public.question_attempts (question_id);
@@ -575,6 +580,7 @@ create table if not exists public.review_items (
   -- they miss it.
   unique (student_id, question_id, question_hash)
 );
+alter table public.review_items add column if not exists organization_id uuid;
 create index if not exists review_items_student_idx on public.review_items (student_id, status, last_activity_at desc);
 
 -- Every status change, who made it and why. Never edited.
@@ -638,8 +644,13 @@ grant select on public.game_sessions, public.question_attempts,
 --     if it came from the review page or from a later game session than
 --     the last miss (typing in the answer the game just revealed doesn't
 --     count). Nothing is ever marked "mastered" automatically.
+--   * p_organization_id is the organization the student is working in.
+--     It is re-checked here (active membership, active organization,
+--     current licence); a student who only has access through one
+--     organization doesn't need to send it.
 -- Errors use PostgREST's PTxxx codes so the browser gets a real HTTP
 -- status: 403 not allowed, 409 id clash, 422 bad input, 429 slow down.
+drop function if exists public.record_attempt(uuid, text, text, jsonb, boolean, text, text, integer, integer, uuid, text, timestamptz, text);
 create or replace function public.record_attempt(
   p_attempt_id     uuid,
   p_game_id        text,
@@ -653,7 +664,8 @@ create or replace function public.record_attempt(
   p_session_id     uuid default null,
   p_context        text default 'game',
   p_client_time    timestamptz default null,
-  p_question_key   text default null
+  p_question_key   text default null,
+  p_organization_id uuid default null
 )
 returns jsonb
 language plpgsql
@@ -671,9 +683,21 @@ declare
   v_status   text;
   v_context  text := coalesce(p_context, 'game');
   v_has_item boolean;
+  v_org      uuid := p_organization_id;
 begin
   if v_uid is null or not public.has_tool_access() then
     raise sqlstate 'PT403' using message = 'Sign in with an active account to save progress.';
+  end if;
+  -- Which organization (if any) this work belongs to, checked on the server.
+  if v_org is not null then
+    if to_regprocedure('public.org_can_learn(uuid)') is null or not public.org_can_learn(v_org) then
+      raise sqlstate 'PT403' using message = 'You can''t save work in that organization right now (not a member, or its access isn''t active).';
+    end if;
+  elsif not public.has_individual_access() then
+    if to_regprocedure('public.my_default_org()') is not null then v_org := public.my_default_org(); end if;
+    if v_org is null then
+      raise sqlstate 'PT422' using message = 'Choose which organization you''re working in.';
+    end if;
   end if;
   if not exists (select 1 from public.profiles p where p.user_id = v_uid) then
     raise sqlstate 'PT403' using message = 'This account has no profile yet.';
@@ -722,8 +746,8 @@ begin
   perform pg_advisory_xact_lock(hashtextextended(v_uid::text || ':' || v_hash, 0));
 
   if p_session_id is not null then
-    insert into public.game_sessions (id, student_id, game_id, started_at, last_activity_at)
-    values (p_session_id, v_uid, p_game_id, v_when, v_when)
+    insert into public.game_sessions (id, student_id, game_id, started_at, last_activity_at, organization_id)
+    values (p_session_id, v_uid, p_game_id, v_when, v_when, v_org)
     on conflict (id) do nothing;
     select * into v_session from public.game_sessions s where s.id = p_session_id for update;
     if v_session.student_id <> v_uid or v_session.game_id <> p_game_id then
@@ -743,13 +767,13 @@ begin
   begin
     insert into public.question_attempts
       (id, student_id, game_id, question_id, question_hash, question_key, game_session_id, context, snapshot,
-       student_answer, correct_answer, is_correct, attempt_number, hints_used, time_to_answer_ms, occurred_at)
+       student_answer, correct_answer, is_correct, attempt_number, hints_used, time_to_answer_ms, occurred_at, organization_id)
     values
       (p_attempt_id, v_uid, p_game_id, p_question_id, v_hash, nullif(btrim(p_question_key), ''), p_session_id, v_context, p_snapshot,
        p_student_answer, p_correct_answer, p_is_correct, v_n,
        least(greatest(coalesce(p_hints_used, 0), 0), 100),
        case when p_time_ms between 0 and 86400000 then p_time_ms end,
-       v_when);
+       v_when, v_org);
   exception when unique_violation then
     -- The same submission arrived twice at the same moment.
     select * into v_existing from public.question_attempts a where a.id = p_attempt_id and a.student_id = v_uid;
@@ -769,10 +793,10 @@ begin
     if not v_has_item then
       insert into public.review_items
         (student_id, game_id, question_id, question_hash, status, first_attempt_id, latest_attempt_id,
-         last_incorrect_session_id, incorrect_count, attempt_count, first_incorrect_at, last_activity_at)
+         last_incorrect_session_id, incorrect_count, attempt_count, first_incorrect_at, last_activity_at, organization_id)
       values
         (v_uid, p_game_id, p_question_id, v_hash, 'needs_review', p_attempt_id, p_attempt_id,
-         p_session_id, 1, v_n, v_when, v_when)
+         p_session_id, 1, v_n, v_when, v_when, v_org)
       returning * into v_review;
       insert into public.review_events (review_item_id, student_id, from_status, to_status, actor_id, actor_role, attempt_id, note)
       values (v_review.id, v_uid, null, 'needs_review', v_uid, 'student', p_attempt_id, 'Answered incorrectly');
@@ -844,9 +868,9 @@ begin
 end;
 $$;
 
-revoke all on function public.record_attempt(uuid, text, text, jsonb, boolean, text, text, integer, integer, uuid, text, timestamptz, text) from public, anon;
+revoke all on function public.record_attempt(uuid, text, text, jsonb, boolean, text, text, integer, integer, uuid, text, timestamptz, text, uuid) from public, anon;
 revoke all on function public.end_game_session(uuid, boolean, jsonb) from public, anon;
-grant execute on function public.record_attempt(uuid, text, text, jsonb, boolean, text, text, integer, integer, uuid, text, timestamptz, text) to authenticated;
+grant execute on function public.record_attempt(uuid, text, text, jsonb, boolean, text, text, integer, integer, uuid, text, timestamptz, text, uuid) to authenticated;
 grant execute on function public.end_game_session(uuid, boolean, jsonb) to authenticated;
 
 -- ============================================================
@@ -1164,6 +1188,7 @@ as $$
 declare
   v_uid   uuid := auth.uid();
   v_first public.question_attempts%rowtype;
+  v_org   uuid;
 begin
   if v_uid is null or not public.has_tool_access() then
     raise sqlstate 'PT403' using message = 'Sign in with an active account to save progress.';
@@ -1174,10 +1199,17 @@ begin
   if not found then
     raise sqlstate 'PT404' using message = 'No such review item.';
   end if;
+  -- A retry counts in the organization the mistake was made in, if the
+  -- student can still work there; otherwise record_attempt picks the context.
+  -- (Separate statements, so a database without organizations.sql never
+  -- has to resolve org_can_learn.)
+  if v_first.organization_id is not null and to_regprocedure('public.org_can_learn(uuid)') is not null then
+    if public.org_can_learn(v_first.organization_id) then v_org := v_first.organization_id; end if;
+  end if;
   return public.record_attempt(
     p_attempt_id, v_first.game_id, v_first.question_id, v_first.snapshot, p_is_correct,
     p_student_answer, v_first.correct_answer, p_hints_used, p_time_ms,
-    null, 'review', now(), v_first.question_key);
+    null, 'review', now(), v_first.question_key, v_org);
 end;
 $$;
 

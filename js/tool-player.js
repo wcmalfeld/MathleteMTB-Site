@@ -71,7 +71,8 @@
     return A.status().then(function (st) {
       if (st.error) return null;
       if (!st.user) { toLogin(st.expired ? 'expired' : 'login'); return false; }
-      if (!st.member) { denied(); return false; }
+      // Private tools are for direct accounts (organization access to them comes with resource licensing).
+      if (!st.member || st.individual === false) { denied(); return false; }
       return true;
     });
   }

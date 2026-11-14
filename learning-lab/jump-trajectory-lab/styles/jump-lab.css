@@ -1,0 +1,278 @@
+/* ============================================================
+   Jump Trajectory Lab
+   Every rule is scoped under .jlab, so the lab can sit inside another page
+   without changing anything around it. Dark, technical ground in the
+   Mathlete Lab palette. Each maths feature has one colour AND one shape:
+     trajectory  orange solid line      vertex  gold diamond
+     zeros       blue squares           axis    dashed light line
+   ============================================================ */
+.jlab {
+  --bg: #111613; --panel: #171E1A; --card: #1C2420; --deep: #0C100E;
+  --ink: #ECEFE7; --soft: #A8B4AA; --text: #D3DACF;
+  --rule: rgba(236, 239, 231, 0.14); --rule-soft: rgba(236, 239, 231, 0.07); --tint: rgba(236, 239, 231, 0.05);
+  --blaze: #E36A40; --traj: #F07A4C; --vertex: #E8BC4E; --zero: #74B9E8; --axis: #C9D2CB; --ghost: rgba(236, 239, 231, 0.32);
+  --right: #6CC37A; --wrong: #F07A4C; --info: #74B9E8; --pick: #8DBA74;
+  --dirt: #5A4634; --dirt-dark: #3E3024; --sky: #18211D; --ridge: #1F2B25;
+  --f-display: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
+  --f-body: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  background: var(--bg); color: var(--text); font-family: var(--f-body); font-size: 16px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased; min-height: 100vh; color-scheme: dark;
+}
+.jlab *, .jlab *::before, .jlab *::after { box-sizing: border-box; }
+.jlab [hidden] { display: none !important; }
+.jlab a { color: var(--ink); }
+.jlab :focus-visible { outline: 3px solid var(--vertex); outline-offset: 2px; }
+.jlab h1[tabindex="-1"]:focus, .jlab h2[tabindex="-1"]:focus, .jlab .jl-main:focus { outline: none; }
+.jlab p { max-width: 50rem; }
+.jlab .jl-wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+.jlab .jl-sr { position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; margin: -1px; }
+.jlab .jl-skip { position: absolute; left: -9999px; top: 8px; z-index: 10; background: var(--ink); color: var(--bg); padding: 8px 14px; }
+.jlab .jl-skip:focus { left: 12px; }
+
+/* ---------- top bar, section nav ---------- */
+.jlab .jl-top { background: var(--deep); border-bottom: 1px solid var(--rule); }
+.jlab .jl-top-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; min-height: 58px; padding-top: 8px; padding-bottom: 8px; }
+.jlab .jl-top-left, .jlab .jl-top-right { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; }
+.jlab .jl-logo { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 20px; text-transform: uppercase; color: var(--ink); }
+.jlab .jl-logo span { color: var(--blaze); }
+.jlab .jl-back { font-family: var(--f-mono); font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--soft); text-decoration: none; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.jlab .jl-back:hover { color: var(--blaze); border-color: var(--blaze); }
+.jlab .jl-activity { margin: 0; font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); }
+.jlab .jl-status { margin: 0; font-family: var(--f-mono); font-size: 12px; color: var(--soft); }
+.jlab .jl-navbar { background: var(--panel); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 5; }
+.jlab .jl-nav ol { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; overflow-x: auto; scrollbar-width: none; }
+.jlab .jl-nav ol::-webkit-scrollbar { display: none; }
+.jlab .jl-nav-link { position: relative; display: flex; align-items: baseline; gap: 8px; padding: 14px 12px 12px; white-space: nowrap; text-decoration: none; border-bottom: 3px solid transparent;
+  font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); }
+.jlab .jl-nav-link:hover { color: var(--ink); }
+.jlab .jl-nav-link[aria-current="page"] { color: var(--ink); border-color: var(--blaze); }
+.jlab .jl-nav-mark { font-size: 11px; letter-spacing: 0; padding: 1px 6px; border: 1px solid var(--rule); border-radius: 999px; color: var(--ink); }
+.jlab .jl-main { padding: 34px 0 80px; outline: none; }
+
+/* ---------- type ---------- */
+.jlab .jl-kicker { margin: 0 0 8px; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blaze); }
+.jlab .jl-h1 { margin: 0 0 12px; font-family: var(--f-display); font-weight: 800; font-size: clamp(46px, 7.5vw, 92px); line-height: 0.92; text-transform: uppercase; color: var(--ink); }
+.jlab .jl-h2 { margin: 0 0 12px; font-family: var(--f-display); font-weight: 800; font-size: clamp(30px, 4.4vw, 46px); line-height: 1; text-transform: uppercase; color: var(--ink); }
+.jlab .jl-h3 { margin: 30px 0 12px; font-size: 20px; font-weight: 700; color: var(--ink); }
+.jlab .jl-lede { margin: 0 0 16px; font-size: 18.5px; color: var(--text); }
+.jlab .jl-note { font-size: 14px; color: var(--soft); }
+.jlab .jl-mini { margin: 0 0 4px; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); }
+.jlab .jl-mono { font-family: var(--f-mono); }
+.jlab .jl-section-head { margin-bottom: 22px; }
+.jlab .jl-block { margin-top: 40px; }
+.jlab .jl-points { margin: 8px 0 14px; padding-left: 20px; }
+.jlab .jl-points li { margin: 5px 0; }
+.jlab .jl-c-vertex { color: var(--vertex); }
+.jlab .jl-c-zero { color: var(--zero); }
+.jlab .jl-c-axis { color: var(--axis); }
+.jlab .jl-hl { color: var(--blaze); }
+
+/* ---------- buttons and inputs ---------- */
+.jlab .jl-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 10px 18px; border: 1px solid var(--ink); border-radius: 0;
+  font: inherit; font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; cursor: pointer; background: transparent; color: var(--ink); }
+.jlab .jl-btn:hover { background: var(--tint); }
+.jlab .jl-btn--primary { background: var(--ink); color: var(--deep); }
+.jlab .jl-btn--primary:hover { background: var(--blaze); border-color: var(--blaze); color: var(--deep); }
+.jlab .jl-btn--quiet { border-color: var(--rule); }
+.jlab .jl-btn--ghost { min-height: 34px; padding: 5px 12px; font-size: 11.5px; border-color: var(--rule); color: var(--soft); }
+.jlab .jl-btn--big { min-height: 54px; padding: 14px 26px; font-size: 14px; }
+.jlab .jl-btn:disabled { opacity: 0.45; cursor: default; }
+.jlab .jl-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin: 12px 0; }
+.jlab .jl-input { font: inherit; font-size: 17px; min-height: 46px; padding: 10px 12px; width: 100%; color: var(--ink); background: var(--deep); border: 1px solid var(--rule); border-radius: 0; }
+.jlab .jl-input:focus { outline: 3px solid var(--vertex); outline-offset: 0; }
+.jlab .jl-input[aria-invalid="true"] { border-color: var(--wrong); }
+.jlab .jl-input[readonly] { opacity: 0.8; }
+.jlab .jl-input--num { width: 6.5em; font-variant-numeric: tabular-nums; }
+.jlab .jl-textarea { min-height: 110px; resize: vertical; line-height: 1.5; }
+.jlab .jl-input-unit { display: inline-flex; align-items: center; gap: 8px; width: 100%; }
+.jlab .jl-unit { color: var(--soft); white-space: nowrap; }
+.jlab .jl-range { width: 100%; min-height: 32px; accent-color: var(--blaze); }
+.jlab .jl-check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.jlab .jl-check input { width: 18px; height: 18px; accent-color: var(--blaze); }
+.jlab .jl-inline { display: inline-flex; align-items: center; gap: 8px; font-family: var(--f-mono); font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--soft); }
+.jlab select { font: inherit; font-size: 15px; min-height: 40px; padding: 6px 10px; color: var(--ink); background: var(--deep); border: 1px solid var(--rule); }
+
+/* ---------- equations ---------- */
+.jlab .jl-equation { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0; font-family: var(--f-mono); font-size: 17px; color: var(--ink); }
+.jlab .jl-equation > span { white-space: pre; }
+.jlab .jl-equation--big { font-size: clamp(18px, 2.4vw, 24px); }
+.jlab .jl-frac { display: inline-flex; flex-direction: column; align-items: center; margin: 0 3px; line-height: 1.1; font-size: 0.78em; vertical-align: middle; }
+.jlab .jl-frac-bar { align-self: stretch; border-top: 1.5px solid currentColor; margin: 1px 0; }
+.jlab .jl-rule { display: inline-block; margin: 6px 0 14px; padding: 10px 20px; background: var(--card); border: 1px solid var(--rule); border-left: 4px solid var(--blaze); }
+.jlab .jl-equation--vertex [data-role="h"], .jlab .jl-equation--vertex [data-role="k"] { color: var(--vertex); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.jlab .jl-equation--factored [data-role="r1"], .jlab .jl-equation--factored [data-role="r2"] { color: var(--zero); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.jlab .jl-equation--standard [data-role="a"], .jlab .jl-equation--standard [data-role="b"], .jlab .jl-equation--standard [data-role="c"] { color: var(--blaze); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.jlab .jl-template { margin: 0 0 10px; font-size: 18px; color: var(--ink); }
+
+/* ---------- graph and scene ---------- */
+.jlab .jl-graph-wrap, .jlab .jl-scene-wrap { margin: 0; }
+.jlab .jl-graph, .jlab .jl-scene { display: block; width: 100%; height: auto; border: 1px solid var(--rule); touch-action: manipulation; }
+.jlab .jl-graph { background: var(--deep); }
+.jlab .jl-graph[role="application"] { cursor: crosshair; }
+.jlab .jl-grid { stroke: var(--rule-soft); stroke-width: 1; }
+.jlab .jl-grid--minor { stroke: rgba(236, 239, 231, 0.035); }
+.jlab .jl-tick { font-family: var(--f-mono); font-size: 13px; fill: var(--soft); }
+.jlab .jl-axis-label { font-family: var(--f-body); font-size: 13px; font-weight: 600; fill: var(--soft); }
+.jlab .jl-ground { stroke: var(--ink); stroke-width: 2; }
+.jlab .jl-axis { stroke: var(--ink); stroke-width: 1.5; opacity: 0.6; }
+.jlab .jl-traj { stroke: var(--traj); stroke-width: 3.5; fill: none; stroke-linecap: round; }
+.jlab .jl-ghost { stroke: var(--ghost); stroke-width: 2; stroke-dasharray: 3 6; fill: none; }
+.jlab .jl-axisline { stroke: var(--axis); stroke-width: 2; stroke-dasharray: 9 7; }
+.jlab .jl-vertex { fill: var(--vertex); stroke: var(--deep); stroke-width: 2; }
+.jlab .jl-zero { fill: var(--zero); stroke: var(--deep); stroke-width: 2; }
+.jlab .jl-rider { fill: none; stroke: #fff; stroke-width: 3; }
+.jlab .jl-drop { stroke: rgba(255, 255, 255, 0.4); stroke-width: 1.5; stroke-dasharray: 2 4; }
+.jlab .jl-extra { fill: var(--deep); stroke: var(--ink); stroke-width: 2.5; }
+.jlab .jl-extra--answer { stroke: var(--right); }
+.jlab .jl-extra--pick { stroke: var(--pick); fill: var(--pick); }
+.jlab .jl-picked { fill: none; stroke: var(--pick); stroke-width: 3; }
+.jlab .jl-cursor { fill: none; stroke: var(--vertex); stroke-width: 2.5; stroke-dasharray: 3 3; }
+.jlab .jl-hit { fill: transparent; cursor: crosshair; }
+.jlab .jl-feature { font-family: var(--f-mono); font-size: 13.5px; font-weight: 500; fill: var(--ink); paint-order: stroke; stroke: var(--deep); stroke-width: 4px; }
+.jlab .jl-feature--vertex { fill: var(--vertex); }
+.jlab .jl-feature--zero { fill: var(--zero); }
+.jlab .jl-feature--axis { fill: var(--axis); }
+.jlab .jl-sky { fill: var(--sky); }
+.jlab .jl-ridge { fill: var(--ridge); }
+.jlab .jl-dirt { fill: var(--dirt); }
+.jlab .jl-gap { fill: var(--dirt-dark); }
+.jlab .jl-ref { stroke: rgba(236, 239, 231, 0.35); stroke-width: 1.5; stroke-dasharray: 4 5; }
+.jlab .jl-scene-grid { stroke: rgba(236, 239, 231, 0.06); stroke-width: 1; }
+.jlab .jl-scene-traj { stroke: var(--traj); stroke-width: 2.5; stroke-dasharray: 6 6; fill: none; }
+.jlab .jl-dim { stroke: var(--soft); stroke-width: 1.5; }
+.jlab .jl-dim-label { font-family: var(--f-mono); font-size: 13px; fill: var(--ink); paint-order: stroke; stroke: var(--sky); stroke-width: 4px; }
+.jlab .jl-bike { fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.jlab .jl-bike-head { fill: var(--blaze); stroke: none; }
+.jlab .jl-legend { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--soft); }
+.jlab .jl-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.jlab .jl-key { display: inline-block; width: 22px; height: 0; }
+.jlab .jl-key--traj { border-top: 3.5px solid var(--traj); }
+.jlab .jl-key--vertex { width: 11px; height: 11px; background: var(--vertex); transform: rotate(45deg); }
+.jlab .jl-key--zero { width: 11px; height: 11px; background: var(--zero); }
+.jlab .jl-key--axis { border-top: 2px dashed var(--axis); }
+.jlab .jl-key--ghost { border-top: 2px dotted var(--ghost); }
+
+/* ---------- simulator ---------- */
+.jlab .jl-sim { display: grid; gap: 22px; align-items: start; }
+@media (min-width: 1000px) { .jlab .jl-sim { grid-template-columns: minmax(0, 1.75fr) minmax(300px, 1fr); } }
+.jlab .jl-sim > * { min-width: 0; }
+.jlab .jl-sim-views { display: grid; gap: 12px; }
+.jlab .jl-sim-panel { display: grid; gap: 14px; }
+.jlab .jl-sim--compact .jl-scene-wrap { display: none; }
+.jlab .jl-panel-block { padding: 16px 18px; background: var(--card); border: 1px solid var(--rule); }
+.jlab .jl-control { margin: 0 0 12px; }
+.jlab .jl-control label { display: block; margin-bottom: 4px; font-weight: 600; color: var(--ink); }
+.jlab .jl-control-sym { font-family: var(--f-mono); font-weight: 400; color: var(--soft); }
+.jlab .jl-control-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+.jlab .jl-control-row .jl-input-unit { width: auto; }
+.jlab .jl-control-range { margin: 2px 0 0; font-family: var(--f-mono); font-size: 11.5px; color: var(--soft); }
+.jlab .jl-change { margin: 6px 0 0; min-height: 1.4em; font-size: 14.5px; color: var(--ink); }
+.jlab .jl-telemetry { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; margin: 12px 0 0; font-size: 14px; }
+.jlab .jl-telemetry dt { color: var(--soft); }
+.jlab .jl-telemetry dd { margin: 0; font-family: var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.jlab .jl-live-eq { padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
+.jlab .jl-live { font-family: var(--f-mono); color: var(--ink); }
+
+/* ---------- overview ---------- */
+.jlab .jl-hero { display: grid; gap: 24px; align-items: center; }
+@media (min-width: 900px) { .jlab .jl-hero { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr); } }
+.jlab .jl-hero > * { min-width: 0; }
+.jlab .jl-hook { margin: 30px 0 10px; padding: 18px 22px; background: var(--card); border-left: 4px solid var(--blaze); }
+.jlab .jl-hook p { margin: 0 0 8px; }
+.jlab .jl-question { font-size: 19px; font-weight: 600; color: var(--ink); }
+.jlab .jl-enter { margin: 20px 0 30px; }
+.jlab .jl-stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.jlab .jl-stages a { display: grid; gap: 4px; height: 100%; padding: 16px 18px; background: var(--card); border: 1px solid var(--rule); text-decoration: none; color: var(--text); }
+.jlab .jl-stages a:hover { border-color: var(--ink); }
+.jlab .jl-stages b { color: var(--ink); font-size: 17px; }
+.jlab .jl-num { display: inline-grid; place-items: center; width: 24px; height: 24px; border: 1.5px solid var(--rule); border-radius: 50%; font-family: var(--f-mono); font-size: 11.5px; color: var(--ink); flex: none; }
+
+/* ---------- learn ---------- */
+.jlab .jl-learn { display: grid; gap: 26px; }
+@media (min-width: 980px) { .jlab .jl-learn { grid-template-columns: 220px minmax(0, 1fr); } .jlab .jl-subnav { position: sticky; top: 64px; align-self: start; } }
+.jlab .jl-learn > * { min-width: 0; }
+.jlab .jl-subnav ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+@media (max-width: 979px) { .jlab .jl-subnav ol { display: flex; overflow-x: auto; gap: 6px; } .jlab .jl-subnav a { white-space: nowrap; } }
+.jlab .jl-subnav a { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border: 1px solid transparent; text-decoration: none; color: var(--soft); }
+.jlab .jl-subnav a[aria-current="page"] { color: var(--ink); background: var(--card); border-color: var(--rule); font-weight: 600; }
+.jlab .jl-subnav .is-done .jl-num { border-color: var(--right); color: var(--right); }
+.jlab .jl-step-h { display: flex; align-items: center; gap: 10px; margin: 28px 0 10px; font-size: 18px; color: var(--ink); }
+.jlab .jl-step-n { display: inline-grid; place-items: center; width: 26px; height: 26px; background: var(--blaze); color: var(--deep); font-family: var(--f-mono); font-size: 13px; font-weight: 600; }
+.jlab .jl-demo { display: grid; gap: 20px; align-items: start; margin: 10px 0; }
+@media (min-width: 820px) { .jlab .jl-demo { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); } }
+.jlab .jl-demo > * { min-width: 0; }
+.jlab .jl-callout { margin: 18px 0; padding: 16px 20px; background: var(--card); border: 1px solid var(--rule); border-left: 4px solid var(--vertex); }
+.jlab .jl-callout-h { margin: 0 0 6px; font-weight: 700; color: var(--ink); }
+.jlab .jl-pager { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 34px; padding-top: 20px; border-top: 1px solid var(--rule); }
+
+/* ---------- questions ---------- */
+.jlab .jl-ask { margin: 16px 0; padding: 20px 22px; background: var(--card); border: 1px solid var(--rule); }
+.jlab .jl-prompt { margin: 0 0 14px; font-size: 18px; font-weight: 600; color: var(--ink); }
+.jlab .jl-answer { margin-bottom: 12px; }
+.jlab .jl-choices { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; max-width: 48rem; }
+.jlab .jl-choice { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--rule); background: var(--deep); cursor: pointer; color: var(--ink); }
+.jlab .jl-choice:has(input:checked) { border-color: var(--ink); background: var(--tint); }
+.jlab .jl-choice input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--blaze); flex: none; }
+.jlab .jl-fields { display: grid; gap: 12px 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); max-width: 48rem; }
+.jlab .jl-fields--many { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); max-width: 60rem; }
+.jlab .jl-field label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 14.5px; color: var(--ink); }
+.jlab .jl-mark { display: block; min-height: 1.3em; margin-top: 3px; font-family: var(--f-mono); font-size: 12.5px; }
+.jlab .jl-mark.is-right { color: var(--right); }
+.jlab .jl-mark.is-wrong { color: var(--wrong); }
+.jlab .jl-format { margin: 8px 0 0; font-size: 13.5px; color: var(--soft); }
+.jlab .jl-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.jlab .jl-hints { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; max-width: 50rem; }
+.jlab .jl-hints li { padding: 10px 14px; background: rgba(116, 185, 232, 0.08); border-left: 3px solid var(--info); color: var(--ink); }
+.jlab .jl-fb { margin: 12px 0 0; max-width: 50rem; }
+.jlab .jl-fb:empty { display: none; }
+.jlab .jl-fb--right, .jlab .jl-fb--wrong, .jlab .jl-fb--info { padding: 12px 16px; background: var(--deep); border: 1px solid var(--rule); border-left-width: 4px; }
+.jlab .jl-fb--right { border-left-color: var(--right); }
+.jlab .jl-fb--right > p:first-child::before { content: '✓ '; color: var(--right); font-weight: 700; }
+.jlab .jl-fb--wrong { border-left-color: var(--wrong); }
+.jlab .jl-fb--wrong > p:first-child::before { content: '✗ '; color: var(--wrong); font-weight: 700; }
+.jlab .jl-fb--info { border-left-color: var(--info); }
+.jlab .jl-fb p { margin: 0 0 6px; }
+.jlab .jl-fb p:last-child { margin: 0; }
+.jlab .jl-solution { margin-top: 12px; padding: 12px 16px; background: var(--panel); max-width: 50rem; }
+.jlab .jl-solution p { margin: 0; color: var(--ink); }
+.jlab .jl-solution .jl-solution-h { margin: 0 0 6px; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); }
+
+/* ---------- decoder ---------- */
+.jlab .jl-decoder-main { display: grid; gap: 22px; align-items: start; }
+@media (min-width: 900px) { .jlab .jl-decoder-main { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+.jlab .jl-decoder-main > * { min-width: 0; }
+.jlab .jl-tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--rule); }
+.jlab .jl-tab { min-height: 44px; padding: 10px 14px; background: none; border: 0; border-bottom: 3px solid transparent; font: inherit; font-family: var(--f-mono); font-size: 12.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); cursor: pointer; }
+.jlab .jl-tab[aria-selected="true"] { color: var(--ink); border-color: var(--blaze); }
+.jlab .jl-tabpanel { padding: 16px 0 0; }
+.jlab .jl-tabpanel .jl-note { overflow-wrap: anywhere; }
+
+/* ---------- missions ---------- */
+.jlab .jl-score { font-family: var(--f-mono); font-size: 15px; color: var(--ink); }
+.jlab .jl-mission-list { list-style: none; margin: 0 0 26px; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); }
+.jlab .jl-mission { display: grid; gap: 3px; height: 100%; padding: 14px 16px; background: var(--card); border: 1px solid var(--rule); text-decoration: none; color: var(--text); }
+.jlab a.jl-mission:hover { border-color: var(--ink); }
+.jlab .jl-mission.is-current { border-color: var(--ink); box-shadow: inset 0 -3px 0 var(--blaze); }
+.jlab .jl-mission.is-done { border-left: 3px solid var(--right); }
+.jlab .jl-mission.is-locked { opacity: 0.55; }
+.jlab .jl-mission-n { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--blaze); }
+.jlab .jl-mission-title { font-weight: 700; color: var(--ink); }
+.jlab .jl-mission-meta { font-size: 13px; color: var(--soft); }
+.jlab .jl-stars { color: var(--vertex); letter-spacing: 2px; }
+.jlab .jl-mission-run { padding-top: 6px; }
+.jlab .jl-brief { margin: 12px 0; padding: 14px 18px; background: var(--card); border-left: 4px solid var(--vertex); }
+.jlab .jl-brief p { margin: 0 0 6px; }
+.jlab .jl-mission-graph { max-width: 760px; margin: 12px 0; }
+.jlab .jl-summary { margin-top: 10px; }
+
+@media (max-width: 640px) {
+  .jlab .jl-main { padding-top: 22px; }
+  .jlab .jl-ask, .jlab .jl-panel-block { padding: 14px; }
+  .jlab .jl-activity { display: none; }
+  .jlab .jl-telemetry { grid-template-columns: 1fr; gap: 0 0; }
+  .jlab .jl-telemetry dd { margin-bottom: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jlab *, .jlab *::before, .jlab *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
