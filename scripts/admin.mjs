@@ -48,6 +48,16 @@
 //                                                      a role, or active | suspended | removed (records are kept)
 //   node scripts/admin.mjs superadmin you@example.com  make someone a Mathlete platform admin
 //
+// What licences include (needs supabase/resources.sql + catalog.sql; see docs/ORGANIZATIONS.md):
+//   node scripts/admin.mjs catalog                     every resource: id, type, status
+//   node scripts/admin.mjs plan-resources pilot        what a plan includes
+//   node scripts/admin.mjs plan-resources pilot add trail-builder slope-lab course.alg1
+//   node scripts/admin.mjs plan-resources pilot remove jump-lab
+//   node scripts/admin.mjs plan-resources pilot all    everything, now and in future (or: none)
+//                                                      a new plan includes nothing until you add to it
+//   node scripts/admin.mjs entitle world-class-academy grant sport.ski     one organization: grant | exclude | clear
+//   node scripts/admin.mjs org resources world-class-academy             what it includes and has switched on
+//
 // MTB Coaching: HIDDEN FOR NOW, these work only after supabase/coaching.sql is run
 // (see docs/COACHING.md). Coaching
 // is separate from tutoring: a tutor sees no riding records and a coach no
@@ -185,7 +195,7 @@ async function orgBySlug(slug) {
 const ymd = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
 const ORG_ROLES = ['owner', 'admin', 'instructor', 'student'];
 
-// The organization commands: org create | show | status | add | member
+// The organization commands: org create | show | status | add | member | resources
 async function orgCommand(sub, ...a) {
   if (sub === 'create') {
     const [slug, type, ...name] = a;
@@ -236,7 +246,13 @@ async function orgCommand(sub, ...a) {
     console.log('\n  Licence history (newest first):'); subs.forEach(x => console.log(`    ${x.created_at.slice(0, 10)}  ${x.plan_id}  ${x.status}  ${x.starts_on} → ${x.ends_on || 'open'}  ${x.seat_allowance} seats${x.cancel_reason ? '  (' + x.cancel_reason + ')' : ''}`));
     console.log('\n  Recent activity:'); (o.recent || []).forEach(r => console.log(`    ${r.at.slice(0, 16).replace('T', ' ')}  ${r.action}  (${r.actor})`));
     console.log('');
-  } else die('Usage: org <create|show|status|add|member> ...');
+  } else if (sub === 'resources') {
+    const r = await rpc('org_resources', { p_org: org.id });
+    const WORD = { enabled: 'on', disabled: 'off', not_included: 'not included', unavailable: 'unavailable', needs_context: 'on, but its sport is off' };
+    console.log(`\n  ${org.name}: what its licence includes and what it has switched on`);
+    r.resources.forEach(x => console.log(`    ${(WORD[x.state] || x.state).padEnd(24)} ${x.type.padEnd(8)} ${x.id}`));
+    console.log(`\n  Newly included resources start ${r.new_resources_enabled ? 'on' : 'off'}. The school changes on/off on its organization page; you change what's included with plan-resources or entitle.\n`);
+  } else die('Usage: org <create|show|status|add|member|resources> ...');
 }
 
 const commands = {
@@ -494,7 +510,38 @@ const commands = {
   async plan(id, seats, interval, ...name) {
     if (!id || !name.length || !/^\d+$/.test(seats || '')) die('Usage: plan <id> <student seat limit> <month|year|term|one_time|custom> <name>   (prices are set later; none are invented)');
     await rpc('save_plan', { p_id: id, p_name: name.join(' '), p_seat_limit: Number(seats), p_interval: interval });
-    console.log(`\n  Plan "${name.join(' ')}" (${id}) saved: up to ${seats} student seats, billed per ${interval}. No price set.\n`);
+    console.log(`\n  Plan "${name.join(' ')}" (${id}) saved: up to ${seats} student seats, billed per ${interval}. No price set.`);
+    console.log(`  Choose what it includes: node scripts/admin.mjs plan-resources ${id} all   (or add <resource ids>; see: catalog)\n`);
+  },
+
+  async catalog() {
+    const rows = await api('GET', '/rest/v1/resources?select=id,name,type,status,sport,course_id&status=neq.retired&order=sort_order.asc,name.asc')
+      .catch(e => { if (/^404|PGRST205/.test(e.message)) die('Run supabase/resources.sql and supabase/catalog.sql first.'); throw e; });
+    console.log('');
+    rows.forEach(r => console.log(`  ${r.type.padEnd(8)} ${r.id.padEnd(26)} ${r.name}${r.status === 'available' ? '' : '  (' + r.status.replace('_', ' ') + ')'}`));
+    console.log(`\n  ${rows.length} resources. Plans and organizations refer to them by id.\n`);
+  },
+
+  async 'plan-resources'(plan, action, ...ids) {
+    if (!plan) die('Usage: plan-resources <plan> [add|remove <resource ids...> | all | none]');
+    let out;
+    if (!action) out = await rpc('set_plan_resources', { p_plan: plan });
+    else if (action === 'all' || action === 'none') out = await rpc('set_plan_resources', { p_plan: plan, p_all: action === 'all' });
+    else if ((action === 'add' || action === 'remove') && ids.length) out = await rpc('set_plan_resources', { p_plan: plan, [action === 'add' ? 'p_add' : 'p_remove']: ids });
+    else die('Usage: plan-resources <plan> [add|remove <resource ids...> | all | none]');
+    console.log(`\n  Plan ${plan} includes: ${out.all_resources ? 'EVERYTHING in the catalog (now and in future)' + (out.resources.length ? ' (also listed: ' + out.resources.join(', ') + ')' : '') : out.resources.length ? out.resources.join(', ') : 'nothing yet'}.`);
+    if (!out.all_resources && !out.resources.includes('feature.practice-engine')) console.log('  Note: without feature.practice-engine, students\' work isn\'t saved.');
+    console.log('');
+  },
+
+  async entitle(slug, kind, ...ids) {
+    if (!slug || !['grant', 'exclude', 'clear'].includes(kind) || !ids.length) die('Usage: entitle <org slug> <grant|exclude|clear> <resource ids...>');
+    const org = await orgBySlug(slug);
+    for (const id of ids) {
+      const state = await rpc('set_org_entitlement', { p_org: org.id, p_resource: id, p_kind: kind === 'clear' ? null : kind, p_note: 'admin.mjs' });
+      console.log(`  ${org.name}: ${id} ${kind === 'clear' ? 'back to what the plan says' : kind === 'grant' ? 'added' : 'excluded'} → ${state.replace('_', ' ')}`);
+    }
+    console.log('');
   },
 
   async plans() {

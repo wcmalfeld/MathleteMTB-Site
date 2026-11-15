@@ -123,3 +123,9 @@
   .cls-pager a:last-child { text-align: left; }
   .cls-course-body, .cls-activity { padding: 18px; }
 }
+
+/* The student's school (js/classes.js): courses outside its plan, recommended topics. */
+.cls-course--off .cls-course-name a { color: var(--ink-soft); }
+.cls-school-note { margin: 10px 0 0; font-size: 14px; color: var(--ink-soft); border-left: 3px solid var(--rule); padding-left: 10px; }
+.cls-school-badge { display: inline-block; margin-left: 10px; padding: 1px 9px; border: 1px solid var(--moss, var(--blaze)); border-radius: 999px; font-family: var(--f-body); font-size: 12.5px; font-weight: 500; letter-spacing: 0; text-transform: none; vertical-align: middle; color: var(--ink); }
+.cls-head .cls-school-badge { margin: 4px 0 14px; font-size: 14px; }

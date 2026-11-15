@@ -157,6 +157,10 @@
   S.ready('dashboard').then(function (ctx) {
     // Goals are a bonus on this page: if they can't be loaded, show the rest.
     var goals = ctx.sb.rpc('student_goals').then(function (r) { return r.error ? [] : r.data; }, function () { return []; });
-    return Promise.all([S.loadDashboard(ctx.sb), goals]).then(function (r) { render(r[0], r[1]); });
+    return Promise.all([S.loadDashboard(ctx.sb), goals]).then(function (r) {
+      render(r[0], r[1]);
+      // The school the student is working in (branding, what it has switched on).
+      if (window.MathleteOrg && window.MathleteOrg.mountSchool) window.MathleteOrg.mountSchool(ctx.sb, document.getElementById('student-main'));
+    });
   }).catch(S.fail);
 })();

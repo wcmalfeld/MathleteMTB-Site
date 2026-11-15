@@ -101,8 +101,8 @@ for (const page of ['dashboard.html', 'my-progress.html', 'review.html', 'goals.
   // Text from the database must never be inserted as HTML on these pages.
   const unsafe = ['js/student.js', 'js/dashboard.js', 'js/my-progress.js', 'js/review.js', 'js/goals.js', 'js/org.js', 'js/organization.js', 'js/join.js', 'js/login.js'].filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write/.test(read(f)));
   check('Student pages never build HTML from data (text only)', unsafe.length === 0, unsafe.join(', '));
-  const sql = ['setup', 'progress', 'organizations'].map(f => read(`supabase/${f}.sql`)).join('\n');
-  const calls = [...new Set(['js/student.js', 'js/dashboard.js', 'js/my-progress.js', 'js/review.js', 'js/goals.js', 'js/progress.js', 'js/org.js', 'js/auth.js', 'js/organization.js', 'js/join.js', 'js/login.js', 'supabase/functions/invite/index.ts', 'supabase/functions/join/index.ts'].flatMap(f => [...read(f).matchAll(/\.rpc\(([^,)]+)[,)]/g)].flatMap(m => [...m[1].matchAll(/'([a-z]+_[a-z_]+)'/g)].map(x => x[1]))))];
+  const sql = ['setup', 'progress', 'organizations', 'resources', 'curriculum'].map(f => read(`supabase/${f}.sql`)).join('\n');
+  const calls = [...new Set(['js/student.js', 'js/dashboard.js', 'js/my-progress.js', 'js/review.js', 'js/goals.js', 'js/progress.js', 'js/org.js', 'js/auth.js', 'js/organization.js', 'js/join.js', 'js/login.js', 'js/classes.js', 'supabase/functions/invite/index.ts', 'supabase/functions/join/index.ts'].flatMap(f => [...read(f).matchAll(/\.rpc\(([^,)]+)[,)]/g)].flatMap(m => [...m[1].matchAll(/'([a-z]+_[a-z_]+)'/g)].map(x => x[1]))))];
   const missing = calls.filter(fn => !sql.includes(`function public.${fn}(`));
   check(`Every database function the pages call exists in supabase/ (${calls.join(', ')})`, calls.length >= 7 && missing.length === 0, missing.join(', '));
 }
@@ -226,6 +226,23 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   check('No page or browser script mentions the service role key', browserFiles === '', browserFiles);
   check('The invitation page takes the token out of the address bar', /history\.replaceState/.test(read('js/join.js')));
   check('Login lets an invitation through and sends managers to their organization', /joining = \/\^join\\\.html\//.test(read('js/login.js')) && /'organization\.html'/.test(read('js/login.js')));
+  // Resource catalog and entitlements (Step 3)
+  const sqlR = read('supabase/resources.sql');
+  let catalogFresh = true;
+  try { execSync('node scripts/build-catalog.mjs --check', { cwd: root, stdio: 'pipe' }); } catch { catalogFresh = false; }
+  check('supabase/catalog.sql and js/course-topics.js are up to date (node scripts/build-catalog.mjs)', catalogFresh);
+  const catalogSqlText = read('supabase/catalog.sql');
+  const progressGames = [...new Set([...read('supabase/progress.sql').matchAll(/\('([a-z0-9-]+):[a-z0-9-]+',\s*'\1'/g)].map(m => m[1]))];
+  const privateIds = tools.filter(t => t.access === 'private').map(t => t.id);
+  const unmapped = progressGames.filter(g => !privateIds.includes(g) && !new RegExp(`array\\[[^\\]]*'${g}'[^\\]]*\\]::text\\[\\]`).test(catalogSqlText));
+  check(`Every game that saves progress is in the catalog, so schools' settings apply to it (${progressGames.length} games)`, progressGames.length >= 5 && unmapped.length === 0, unmapped.join(', '));
+  check('record_attempt checks the school has the activity switched on (org_game_allowed)', /org_game_allowed\(v_org, p_game_id\)/.test(read('supabase/progress.sql')));
+  check('Schools can only switch on what their licence includes (set_resource_enabled checks org_entitled)', /if not public\.org_entitled\(p_org, p_resource\) then\s+raise sqlstate 'PT403'/.test(sqlR));
+  check('Resource tables are read-only from the browser (no insert/update/delete grants)', !/grant (insert|update|delete|all)[^;]*on public\.(resources|plan_resources|organization_entitlements|organization_resource_settings|organization_collections)/i.test(sqlR));
+  check('Every resource role check treats "no role" as a refusal', !/public\.org_role\([a-z_]+\) in \(/.test(sqlR));
+  check('Logos: images only (no SVG), only into the organization’s own folder', /allowed_mime_types = array\['image\/png', 'image\/jpeg', 'image\/webp'\]/.test(sqlR) && /public\.org_manages_branding_path\(name\)/.test(sqlR) && !/svg\)\$/.test(sqlR));
+  check('The student view and the admin preview are drawn by the same code (MathleteOrg.drawSchool)', /MathleteOrg\.drawSchool\(frame/.test(read('js/organization.js')) && /drawSchool\(wrap, view\)/.test(read('js/org.js')));
+  check('Dashboard and organization page load course outlines and org.js', ['dashboard.html', 'organization.html'].every(p => { const h = read(p); return h.includes('src="js/course-topics.js') && h.indexOf('src="js/org.js') > h.indexOf('src="js/course-topics.js'); }));
   check('Run order is documented: setup → progress → organizations → curriculum', /AFTER\s+setup\.sql and progress\.sql \(and before curriculum\.sql\)/.test(sqlO.replace(/--\s*/g, '')));
 }
 

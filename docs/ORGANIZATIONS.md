@@ -3,8 +3,10 @@
 How schools and academies use Mathlete: one shared platform, a private
 workspace per organization, access controlled by a licence. Plan and audit:
 [MULTI-ORG-PLAN.md](MULTI-ORG-PLAN.md). This page covers **Step 1** (the
-foundation: organizations, memberships, licences, seats, isolation) and
-**Step 2** (invitations, the organization page, CSV import).
+foundation: organizations, memberships, licences, seats, isolation),
+**Step 2** (invitations, the organization page, CSV import) and **Step 3**
+(the resource catalog, what licences include, what schools switch on,
+branding).
 
 ## Setting up the database
 
@@ -14,7 +16,13 @@ re-run, and re-running any of them later is fine):
 1. `supabase/setup.sql`
 2. `supabase/progress.sql`
 3. `supabase/organizations.sql`
-4. `supabase/curriculum.sql`
+4. `supabase/resources.sql`
+5. `supabase/curriculum.sql`
+6. `supabase/catalog.sql`
+
+`catalog.sql` and `curriculum.sql` are generated (`node scripts/build-catalog.mjs`,
+`node scripts/build-classes.mjs`); re-run them in the SQL Editor whenever labs
+or Classes change.
 
 Then, in the terminal: `nvm use 20`, `node scripts/test-organizations.mjs`
 (throwaway organizations and people, deleted afterwards) and
@@ -139,7 +147,10 @@ organization). Tabs:
   addresses, duplicates, existing members, people already invited, roles
   the inviter can't give and students beyond the free seats. Results can be
   downloaded, including any links to send by hand.
-- **Settings:** name and welcome message.
+- **Resources:** switch licensed labs, courses, sports and features on or
+  off; recommended topics; collections (Step 3, below).
+- **Settings:** name, welcome message, logo and accent colour.
+- **Student preview:** exactly what students see on their dashboard.
 - **Subscription:** owners and platform admins only; licence and history.
 
 Someone who manages an organization but has no learning access of their own
@@ -167,6 +178,78 @@ people can't create their account until `join` is deployed.
 Then run `node scripts/test-organizations.mjs` again: it also tests `join`
 once it's deployed.
 
+## Resources and entitlements (Step 3)
+
+### The catalog
+
+One global list of what Mathlete offers (`resources`), generated from the
+site's own configuration by `node scripts/build-catalog.mjs`, which writes
+`supabase/catalog.sql` (and `js/course-topics.js`, course outlines for the
+browser):
+
+| Type | From | Examples |
+|---|---|---|
+| feature | the script | `feature.practice-engine` (saving answers, dashboard, review, goals) |
+| sport | the script | `sport.mtb`, `sport.ski` (surfing, climbing: coming soon) |
+| course | `content/classes/` | `course.alg1` … `course.precalc` |
+| lab | `js/tools-config.js` (live, public) and Classes activities | `trail-builder`, `slope-lab`, `jump-trajectory-lab` |
+| lab, coming soon | `upcoming` in `js/lab-categories.js` | `suspension-setup-studio`, `berm-lab` |
+
+Every organization uses the same resources; nothing is copied. Ids are
+permanent: something removed from the site is marked retired, never
+deleted. Labs **require** their sport (switch Mountain Biking off and its labs
+pause) and Classes labs are **part of** their course (shown together). The
+private Summit Expedition isn't listed: it stays direct-accounts-only.
+
+### Included vs switched on
+
+- **What a licence includes** is Mathlete's call: each plan includes a list
+  of resources, or everything (`plans.all_resources`). Per organization,
+  Mathlete can **grant** an extra or **exclude** one. Plans that existed before
+  Step 3 include everything, so nothing changed for schools already set up.
+  **A new plan includes nothing until you add to it.**
+- **What's switched on** is the school's call, on its **Resources** tab:
+  anything included can be switched on or off. Something not included shows
+  "Not in your plan" with no switch; the database refuses it either way.
+  Whether resources added to the licence later start on is the school's
+  choice too.
+
+Students can use a resource when (all checked on the server): their
+membership, the organization and its licence are active; the licence includes
+it; the school has it on; its sport is on; Mathlete hasn't marked it coming
+soon or paused; their role may use it. `record_attempt()` refuses to save work
+done in an organization in any lab that fails this, so a school's settings
+decide what counts for its students. The public lab pages themselves stay
+public (we license the platform, not the files).
+
+### Courses, collections, branding
+
+- **Recommended topics:** chosen from the courses the licence includes;
+  students see them on their dashboard and as a "Recommended by …" badge in
+  Classes. Courses outside the plan get a note in Classes. Mathlete's
+  curriculum itself can't be changed.
+- **Collections:** named lists of resources ("Start here", "Quadratics
+  week"). Students see only the switched-on items.
+- **Branding:** logo (PNG, JPEG or WebP, under 512 KB, 64–2000 px; stored in
+  the public `org-branding` Storage bucket, only writable by that school's
+  owners and admins) and an accent colour, which must reach 3:1 contrast on
+  the dark student pages. Mathlete's own branding stays.
+- **Student preview** and the student dashboard's "Your school" section are
+  drawn by the same code from the same database function
+  (`org_student_view`), so the preview is exactly what students see.
+
+### Commands (terminal)
+
+```
+node scripts/admin.mjs catalog                          every resource id
+node scripts/admin.mjs plan-resources pilot             what a plan includes
+node scripts/admin.mjs plan-resources pilot all         everything, now and later (or: none)
+node scripts/admin.mjs plan-resources pilot add slope-lab course.alg1 sport.mtb feature.practice-engine
+node scripts/admin.mjs plan-resources pilot remove jump-lab
+node scripts/admin.mjs entitle world-class-academy grant sport.ski       (or exclude, clear)
+node scripts/admin.mjs org resources world-class-academy  what it includes and has on
+```
+
 ## What's recorded
 
 `audit_events` keeps who did what: organizations created and status
@@ -175,7 +258,7 @@ their status changes, invitations sent, re-sent, withdrawn and accepted,
 settings changes and setup completion. No passwords, tokens or payment details. Owners and
 admins can read their own organization's log; platform admins all of them.
 
-## Tables and functions (`supabase/organizations.sql`)
+## Tables and functions (`supabase/organizations.sql`, `supabase/resources.sql`)
 
 Tables: `organizations`, `organization_memberships`, `platform_admins`,
 `plans`, `subscriptions`, `platform_settings`, `invitations`,
@@ -197,3 +280,13 @@ Server functions: `supabase/functions/invite` and `supabase/functions/join`.
 Called by admins (and `admin.mjs` via the service role):
 `create_organization`, `set_organization_status`, `add_member`,
 `update_member`, `save_plan`, `activate_license`, `set_subscription_status`.
+
+Step 3 (`resources.sql`): tables `resources`, `resource_relations`,
+`plan_resources`, `organization_entitlements`, `organization_resource_settings`,
+`organization_recommended_topics`, `organization_collections` (+ items).
+Checks: `org_entitled`, `org_resource_enabled`, `org_resource_state`,
+`can_use_resource`, `org_game_allowed`. Pages: `org_student_view(org, preview)`,
+`org_resources(org)`, `set_resource_enabled`, `set_new_resources_enabled`,
+`set_recommended_topics`, `save_collection`, `delete_collection`,
+`set_organization_branding`. Mathlete only: `set_plan_resources`,
+`set_org_entitlement`.

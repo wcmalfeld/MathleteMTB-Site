@@ -4,7 +4,10 @@
 //   Members       — invite one person; members (role, suspend, remove);
 //                   invitations (re-send, revoke)
 //   Import        — invite many from a CSV, with a preview before sending
-//   Settings      — name and welcome message
+//   Resources     — switch licensed labs, courses and sports on or off;
+//                   recommended topics; curated collections (PRD 3)
+//   Settings      — name, welcome message, logo and accent colour
+//   Student preview — exactly what students see (js/org.js drawSchool)
 //   Subscription  — the licence and its history (owner and Mathlete only)
 //
 // What this file does NOT do: decide who may do what. Every call below is a
@@ -94,7 +97,9 @@
     { id: 'overview', label: 'Overview' },
     { id: 'members', label: 'Members' },
     { id: 'import', label: 'Import' },
+    { id: 'resources', label: 'Resources' },
     { id: 'settings', label: 'Settings' },
+    { id: 'preview', label: 'Student preview' },
     { id: 'subscription', label: 'Subscription', owner: true }
   ];
   function drawTabs() {
@@ -171,7 +176,7 @@
     S.tab = TABS.some(function (t) { return t.id === h && (!t.owner || isOwner()); }) ? h : 'overview';
     drawTabs();
     clear(main);
-    ({ overview: drawOverview, members: drawMembers, import: drawImport, settings: drawSettings, subscription: drawSubscription })[S.tab]();
+    ({ overview: drawOverview, members: drawMembers, import: drawImport, resources: drawResources, settings: drawSettings, preview: drawPreview, subscription: drawSubscription })[S.tab]();
   }
   function refresh() { return loadOverview().then(function () { S.members = null; route(); }); }
 
@@ -628,7 +633,292 @@
       el('dt', { text: 'Web address name' }), el('dd', { text: o.slug }),
       el('dt', { text: 'Type' }), el('dd', { text: cap(o.type) }),
       el('dt', { text: 'Status' }), el('dd', { text: cap(o.status) })));
-    w.appendChild(el('p', { class: 'student-note', text: 'Your logo and colours arrive in a later update. To change the web address name or type, contact Mathlete.' }));
+    w.appendChild(el('p', { class: 'student-note', text: 'To change the web address name or type, contact Mathlete.' }));
+    drawBranding();
+  }
+
+  // ---------- Branding (in Settings) ----------
+  // WCAG contrast of a colour on the dark student pages (#131815); the
+  // database checks the same rule (color_contrast_on_dark).
+  function contrastOnDark(hex) {
+    var lum = function (r, g, b) { return [r, g, b].map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (a, v, i) { return a + v * [0.2126, 0.7152, 0.0722][i]; }, 0); };
+    var n = parseInt(hex.slice(1), 16);
+    return (lum(n >> 16 & 255, n >> 8 & 255, n & 255) + 0.05) / (lum(19, 24, 21) + 0.05);
+  }
+  function drawBranding() {
+    var w = section('Logo and colour', 'Shown with your name on your members’ pages. Mathlete’s own branding stays.');
+    var hold = el('p', { class: 'meta', text: 'Loading…' });
+    w.appendChild(hold);
+    S.sb.rpc('org_student_view', { p_org: S.orgId, p_preview: true }).then(function (r) {
+      if (r.error) throw r.error;
+      hold.remove();
+      var o = r.data.organization, msg = el('div', { 'aria-live': 'polite' });
+      var say = function (k, t) { clear(msg).appendChild(notice(k, t)); };
+      var save = function (args, done) {
+        return S.sb.rpc('set_organization_branding', Object.assign({ p_org: S.orgId }, args)).then(function (x) {
+          if (x.error) { say('error', errText(x.error)); return null; }
+          o.logo_path = x.data.logo_path; o.accent_color = x.data.accent_color; o.updated_at = new Date().toISOString();
+          say('success', done); paint(); return x.data;
+        });
+      };
+      // Logo
+      var img = el('img', { class: 'org-logo-preview', alt: '', width: '96', height: '96' });
+      img.addEventListener('error', function () { img.hidden = true; });
+      var file = el('input', { type: 'file', id: 'logo-file', accept: 'image/png,image/jpeg,image/webp', class: 'org-file' });
+      var removeLogo = el('button', { class: 'link-button link-button--danger', type: 'button', text: 'Remove logo' });
+      // Colour
+      var picker = el('input', { type: 'color', id: 'accent-pick', class: 'org-color', 'aria-label': 'Pick a colour' });
+      var hex = el('input', { type: 'text', id: 'accent-hex', class: 'input input--small org-hex', maxlength: '7', placeholder: '#86B6D4', 'aria-label': 'Colour code' });
+      var check = el('p', { class: 'field-hint', 'aria-live': 'polite' });
+      var saveColor = el('button', { class: 'button', type: 'button', text: 'Save colour' });
+      var removeColor = el('button', { class: 'link-button link-button--danger', type: 'button', text: 'Remove colour' });
+      var swatch = el('span', { class: 'org-swatch', 'aria-hidden': 'true' });
+      function paint() {
+        var url = window.MathleteOrg ? window.MathleteOrg.logoUrl(o.logo_path, o.updated_at) : null;
+        if (url) { img.src = url; img.alt = o.name + ' logo'; img.hidden = false; removeLogo.hidden = false; } else { img.hidden = true; removeLogo.hidden = true; }
+        if (o.accent_color) { picker.value = o.accent_color; hex.value = o.accent_color; }
+        removeColor.hidden = !o.accent_color;
+        rate();
+      }
+      function rate() {
+        var v = hex.value.trim();
+        if (!/^#[0-9a-f]{6}$/i.test(v)) { check.textContent = 'Use a colour code like #86B6D4.'; saveColor.disabled = true; swatch.style.background = 'transparent'; return; }
+        var c = contrastOnDark(v);
+        swatch.style.background = v;
+        saveColor.disabled = c < 3;
+        check.textContent = c < 3 ? 'Too dark to read on Mathlete’s dark pages (contrast ' + c.toFixed(1) + ':1, needs 3:1). Choose a lighter shade.' : 'Readable (contrast ' + c.toFixed(1) + ':1).';
+      }
+      picker.addEventListener('input', function () { hex.value = picker.value; rate(); });
+      hex.addEventListener('input', function () { if (/^#[0-9a-f]{6}$/i.test(hex.value.trim())) picker.value = hex.value.trim(); rate(); });
+      saveColor.addEventListener('click', function () { saveColor.disabled = true; save({ p_accent: hex.value.trim() }, 'Colour saved.').then(rate); });
+      removeColor.addEventListener('click', function () { save({ p_accent: '' }, 'Colour removed.'); hex.value = ''; });
+      file.addEventListener('change', function () {
+        var f = file.files && file.files[0];
+        if (!f) return;
+        var ext = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }[f.type];
+        if (!ext) return say('error', 'Use a PNG, JPEG or WebP image.');
+        if (f.size > 524288) return say('error', 'That image is ' + Math.round(f.size / 1024) + ' KB. Keep it under 512 KB.');
+        var probe = new Image(), url = URL.createObjectURL(f);
+        probe.onload = function () {
+          URL.revokeObjectURL(url);
+          if (probe.naturalWidth < 64 || probe.naturalHeight < 64) return say('error', 'That image is too small. Use at least 64 × 64 pixels.');
+          if (probe.naturalWidth > 2000 || probe.naturalHeight > 2000) return say('error', 'That image is too large. Keep it under 2000 × 2000 pixels.');
+          var old = o.logo_path, path = S.orgId + '/logo-' + Date.now().toString(36) + '.' + ext;
+          say('info', 'Uploading…');
+          S.sb.storage.from('org-branding').upload(path, f, { contentType: f.type, upsert: false }).then(function (u) {
+            if (u.error) return say('error', 'Couldn’t upload the logo: ' + (u.error.message || 'try again.'));
+            return save({ p_logo_path: path }, 'Logo saved.').then(function (ok) {
+              if (ok && old && old !== path) S.sb.storage.from('org-branding').remove([old]).catch(function () {});
+              file.value = '';
+            });
+          });
+        };
+        probe.onerror = function () { URL.revokeObjectURL(url); say('error', 'That file isn’t an image we can read.'); };
+        probe.src = url;
+      });
+      removeLogo.addEventListener('click', function () {
+        var old = o.logo_path;
+        save({ p_logo_path: '' }, 'Logo removed.').then(function (ok) { if (ok && old) S.sb.storage.from('org-branding').remove([old]).catch(function () {}); });
+      });
+      w.appendChild(msg);
+      w.appendChild(el('div', { class: 'org-brand' },
+        el('div', { class: 'field' }, el('label', { for: 'logo-file', text: 'Logo' }), el('div', { class: 'org-logo-row' }, img, el('div', null, file,
+          el('p', { class: 'field-hint', text: 'PNG, JPEG or WebP, under 512 KB, 64 to 2000 pixels on each side. A square logo looks best.' }), removeLogo))),
+        el('div', { class: 'field' }, el('label', { for: 'accent-hex', text: 'Accent colour' }),
+          el('div', { class: 'org-color-row' }, picker, hex, swatch, saveColor, removeColor), check)));
+      paint();
+    }).catch(function (err) { hold.textContent = ''; w.appendChild(notice('error', errText(err))); });
+  }
+
+  // ---------- Resources (PRD 3) ----------
+  var TYPE_GROUPS = [['feature', 'Platform features'], ['sport', 'Sports'], ['course', 'Courses'], ['lab', 'Learning labs'], ['module', 'Learning modules']];
+  var STATE_WORDS = { enabled: 'On', disabled: 'Off', not_included: 'Not in your plan', unavailable: 'Unavailable', needs_context: 'On, but paused' };
+  function drawResources() {
+    var w = section('Learning resources', 'Choose what your students see. You can switch on anything your licence includes; to add more, contact Mathlete.');
+    var hold = el('p', { class: 'meta', text: 'Loading…' });
+    w.appendChild(hold);
+    var msg = el('div', { 'aria-live': 'polite' });
+    S.sb.rpc('org_resources', { p_org: S.orgId }).then(function (r) {
+      if (r.error) throw r.error;
+      hold.remove();
+      w.appendChild(msg);
+      var data = r.data, body = el('div');
+      w.appendChild(body);
+      function reload(note) {
+        return S.sb.rpc('org_resources', { p_org: S.orgId }).then(function (x) { if (x.error) throw x.error; data = x.data; draw(); if (note) clear(msg).appendChild(notice('success', note)); });
+      }
+      function draw() {
+        clear(body);
+        var def = el('input', { type: 'checkbox', id: 'res-default', checked: data.new_resources_enabled ? true : null });
+        def.addEventListener('change', function () {
+          def.disabled = true;
+          S.sb.rpc('set_new_resources_enabled', { p_org: S.orgId, p_enabled: def.checked }).then(function (x) {
+            def.disabled = false;
+            if (x.error) { def.checked = !def.checked; return clear(msg).appendChild(notice('error', errText(x.error))); }
+            clear(msg).appendChild(notice('success', def.checked ? 'Resources added to your licence later will start switched on.' : 'Resources added to your licence later will start switched off.'));
+          });
+        });
+        body.appendChild(el('p', { class: 'org-check-line' }, def, el('label', { for: 'res-default', text: ' Resources added to our licence later start switched on' })));
+        var byName = {}; data.resources.forEach(function (x) { byName[x.id] = x.name; });
+        var out = [];
+        TYPE_GROUPS.forEach(function (g) {
+          var list = data.resources.filter(function (x) { return x.type === g[0]; });
+          var mine = list.filter(function (x) { return x.state !== 'not_included'; }), other = list.filter(function (x) { return x.state === 'not_included'; });
+          if (!list.length) return;
+          var ul = el('ul', { class: 'org-res-list' }, mine.map(row));
+          var grp = el('div', { class: 'org-res-group' }, el('h3', { class: 'org-res-title', text: g[1] }), mine.length ? ul : el('p', { class: 'meta', text: 'None in your plan.' }));
+          if (other.length) grp.appendChild(el('details', { class: 'org-res-more' }, el('summary', { text: 'Not in your plan (' + other.length + ')' }), el('ul', { class: 'org-res-list' }, other.map(row))));
+          out.push(grp);
+        });
+        out.forEach(function (n) { body.appendChild(n); });
+        function row(x) {
+          var chip = el('span', { class: 'org-status org-status--' + (x.state === 'enabled' ? 'active' : x.state === 'disabled' ? 'pending' : x.state === 'not_included' ? 'revoked' : 'suspended'),
+            text: x.state === 'unavailable' && x.status === 'coming_soon' ? 'Coming soon' : STATE_WORDS[x.state] || x.state });
+          var control = null;
+          if (x.entitled && x.status === 'available') {
+            control = el('button', { class: 'org-switch-btn', type: 'button', role: 'switch', 'aria-checked': x.enabled ? 'true' : 'false', 'aria-label': (x.enabled ? 'Switch off ' : 'Switch on ') + x.name, text: x.enabled ? 'On' : 'Off' });
+            control.addEventListener('click', function () {
+              control.disabled = true;
+              S.sb.rpc('set_resource_enabled', { p_org: S.orgId, p_resource: x.id, p_enabled: !x.enabled }).then(function (y) {
+                if (y.error) { control.disabled = false; return clear(msg).appendChild(notice('error', errText(y.error))); }
+                return reload(x.name + (x.enabled ? ' switched off.' : ' switched on.'));
+              }).catch(function (e) { control.disabled = false; clear(msg).appendChild(notice('error', errText(e))); });
+            });
+          }
+          var why = x.state === 'needs_context' ? 'Paused until ' + x.requires.map(function (q) { return q.name; }).join(' and ') + ' is switched on.'
+            : x.state === 'not_included' ? 'Not included in your licence. Contact Mathlete to add it.'
+            : x.state === 'unavailable' ? (x.status === 'coming_soon' ? 'Being built. It can be switched on once it’s ready.' : 'Temporarily unavailable from Mathlete.')
+            : x.audience === 'staff' ? 'Staff only.' : null;
+          var safe = window.MathleteOrg && window.MathleteOrg.safeHref(x.url);
+          return el('li', { class: 'org-res' + (x.state === 'not_included' || x.state === 'unavailable' ? ' is-muted' : '') },
+            el('div', { class: 'org-res-main' },
+              el('p', { class: 'org-res-name' }, safe ? el('a', { href: safe, text: x.name }) : x.name, ' ', chip),
+              x.description ? el('p', { class: 'org-res-desc', text: x.description }) : null,
+              why ? el('p', { class: 'org-res-why', text: why }) : null),
+            control);
+        }
+      }
+      draw();
+      drawTopics(data, reload);
+      drawCollections(data, reload);
+    }).catch(function (err) { hold.textContent = ''; w.appendChild(notice('error', errText(err))); });
+  }
+
+  // Recommended topics: pick topics from the courses your licence includes.
+  function drawTopics(data) {
+    var w = section('Recommended topics', 'Highlighted for your students on their dashboard and in Classes. Mathlete’s curriculum itself stays the same.');
+    var courses = (window.MATHLETE_COURSE_TOPICS || []).filter(function (c) {
+      var r = data.resources.filter(function (x) { return x.id === 'course.' + c.id; })[0];
+      return r && r.entitled;
+    });
+    if (!courses.length) return w.appendChild(el('p', { class: 'meta', text: 'Your licence doesn’t include a course yet.' }));
+    var chosen = {}; (data.recommended_topics || []).forEach(function (t) { chosen[t] = true; });
+    var count = el('p', { class: 'meta org-count' });
+    var upd = function () { count.textContent = Object.keys(chosen).filter(function (k) { return chosen[k]; }).length + ' chosen (up to 60).'; };
+    courses.forEach(function (c) {
+      var n = 0;
+      var d = el('details', { class: 'org-topic-course' }, el('summary', { text: c.name }));
+      c.units.forEach(function (u) {
+        var ul = el('ul', { class: 'org-topic-list' });
+        u.topics.forEach(function (t) {
+          var id = 'rt-' + t[0].replace(/\./g, '-');
+          var cb = el('input', { type: 'checkbox', id: id, value: t[0], checked: chosen[t[0]] ? true : null });
+          if (chosen[t[0]]) n++;
+          cb.addEventListener('change', function () { chosen[t[0]] = cb.checked; upd(); });
+          ul.appendChild(el('li', null, cb, el('label', { for: id, text: ' ' + t[2] })));
+        });
+        d.appendChild(el('div', { class: 'org-topic-unit' }, el('p', { class: 'org-topic-unit-title', text: u.title }), ul));
+      });
+      if (n) d.querySelector('summary').textContent = c.name + ' (' + n + ' chosen)';
+      w.appendChild(d);
+    });
+    var msg = el('div', { 'aria-live': 'polite' });
+    var btn = el('button', { class: 'button', type: 'button', text: 'Save recommended topics' });
+    btn.addEventListener('click', function () {
+      // Keep the curriculum's order.
+      var list = [];
+      courses.forEach(function (c) { c.units.forEach(function (u) { u.topics.forEach(function (t) { if (chosen[t[0]]) list.push(t[0]); }); }); });
+      btn.disabled = true;
+      S.sb.rpc('set_recommended_topics', { p_org: S.orgId, p_topics: list }).then(function (r) {
+        btn.disabled = false;
+        clear(msg).appendChild(r.error ? notice('error', errText(r.error)) : notice('success', 'Saved: ' + plural(list.length, 'recommended topic') + '.'));
+      });
+    });
+    w.appendChild(el('div', { class: 'org-actions' }, btn, count));
+    w.appendChild(msg);
+    upd();
+  }
+
+  // Collections: named lists of resources ("Quadratics week").
+  function drawCollections(data, reload) {
+    var w = section('Collections', 'Group resources for your students, like “Start here” or “Quadratics week”. Only switched-on resources show to students.');
+    var choices = data.resources.filter(function (x) { return x.entitled && ['lab', 'module', 'course'].indexOf(x.type) !== -1; });
+    var byId = {}; data.resources.forEach(function (x) { byId[x.id] = x; });
+    var msg = el('div', { 'aria-live': 'polite' });
+    w.appendChild(msg);
+    var list = el('ul', { class: 'org-people' });
+    (data.collections || []).forEach(function (c) {
+      var names = c.items.map(function (i) { return byId[i] ? byId[i].name : i; }).join(', ');
+      var edit = el('button', { class: 'link-button', type: 'button', text: 'Edit' });
+      var del = el('button', { class: 'link-button link-button--danger', type: 'button', text: 'Delete' });
+      edit.addEventListener('click', function () { form(c); });
+      del.addEventListener('click', function () {
+        if (!window.confirm('Delete the collection “' + c.title + '”? The resources themselves stay.')) return;
+        S.sb.rpc('delete_collection', { p_org: S.orgId, p_id: c.id }).then(function (r) {
+          if (r.error) return clear(msg).appendChild(notice('error', errText(r.error)));
+          route();
+        });
+      });
+      list.appendChild(el('li', null, el('span', null, el('strong', { text: c.title }), el('span', { class: 'org-res-desc', text: ' ' + (names || 'empty') })), el('span', { class: 'org-row-actions' }, edit, del)));
+    });
+    if ((data.collections || []).length) w.appendChild(list); else w.appendChild(el('p', { class: 'meta', text: 'No collections yet.' }));
+    var formHost = el('div');
+    var add = el('button', { class: 'button button--quiet', type: 'button', text: 'New collection' });
+    add.addEventListener('click', function () { form(null); });
+    w.appendChild(el('div', { class: 'org-actions' }, add));
+    w.appendChild(formHost);
+    function form(c) {
+      clear(formHost);
+      var picked = {}; (c ? c.items : []).forEach(function (i) { picked[i] = true; });
+      var f = el('form', { class: 'form org-settings', novalidate: true },
+        el('div', { class: 'field' }, el('label', { for: 'col-title', text: 'Title' }), el('input', { class: 'input', id: 'col-title', name: 'title', maxlength: '80', value: c ? c.title : '' })),
+        el('div', { class: 'field' }, el('label', { for: 'col-desc', text: 'Description (optional)' }), el('input', { class: 'input', id: 'col-desc', name: 'desc', maxlength: '300', value: c && c.description ? c.description : '' })),
+        el('fieldset', { class: 'org-col-items' }, el('legend', { text: 'Resources' }), choices.map(function (x) {
+          var id = 'col-' + x.id.replace(/\./g, '-');
+          var cb = el('input', { type: 'checkbox', id: id, checked: picked[x.id] ? true : null });
+          cb.addEventListener('change', function () { picked[x.id] = cb.checked; });
+          return el('p', { class: 'org-check-line' }, cb, el('label', { for: id, text: ' ' + x.name + (x.state === 'enabled' ? '' : ' (' + (STATE_WORDS[x.state] || x.state).toLowerCase() + ')') }));
+        })),
+        el('div', { class: 'form-actions' }, el('button', { class: 'button', type: 'submit', text: c ? 'Save collection' : 'Create collection' }),
+          el('button', { class: 'link-button', type: 'button', text: 'Cancel', onclick: function () { clear(formHost); } })));
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var items = choices.filter(function (x) { return picked[x.id]; }).map(function (x) { return x.id; });
+        if (!f.title.value.trim()) return clear(msg).appendChild(notice('error', 'Give the collection a title.'));
+        S.sb.rpc('save_collection', { p_org: S.orgId, p_id: c ? c.id : null, p_title: f.title.value.trim(), p_description: f.desc.value.trim() || null, p_items: items }).then(function (r) {
+          if (r.error) return clear(msg).appendChild(notice('error', errText(r.error)));
+          route();
+        });
+      });
+      formHost.appendChild(f);
+      f.title.focus();
+    }
+  }
+
+  // ---------- Student preview ----------
+  function drawPreview() {
+    var w = section('Student preview', 'What your students see on their dashboard: your branding, welcome message and everything switched on.');
+    var hold = el('p', { class: 'meta', text: 'Loading…' });
+    w.appendChild(hold);
+    S.sb.rpc('org_student_view', { p_org: S.orgId, p_preview: true }).then(function (r) {
+      if (r.error) throw r.error;
+      hold.remove();
+      if (!r.data.open) w.appendChild(notice('info', 'Students can’t use Mathlete here yet (the organization or its licence isn’t active). This is what they’ll see once it is.'));
+      var frame = el('div', { class: 'org-preview' });
+      w.appendChild(frame);
+      if (window.MathleteOrg && window.MathleteOrg.drawSchool) window.MathleteOrg.drawSchool(frame, r.data, { preview: true });
+      w.appendChild(el('p', { class: 'student-note' }, 'Change what’s here under ', el('a', { href: '#resources', text: 'Resources' }), ' and ', el('a', { href: '#settings', text: 'Settings' }), '.'));
+    }).catch(function (err) { hold.textContent = ''; w.appendChild(notice('error', errText(err))); });
   }
 
   // ---------- Subscription ----------

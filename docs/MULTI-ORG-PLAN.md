@@ -321,3 +321,21 @@ checks, 47/47 page checks in Chrome, all earlier suites, check-site 141/141.
 Needs: the SQL files run again in order, Resend + the two functions
 deployed, the live test, deploy.
 Next: Step 3 (resource catalog and entitlements).
+
+**2026-11-14: Step 3 built** (see [ORGANIZATIONS.md](ORGANIZATIONS.md#resources-and-entitlements-step-3)).
+Global catalog generated from the site's config (`scripts/build-catalog.mjs` →
+`supabase/catalog.sql`, 29 resources: feature, sports, courses, labs, coming-soon
+labs); `supabase/resources.sql` (plan entitlements + per-organization grant/exclude,
+organization on/off settings with a default for new resources, required sport
+context, recommended topics, collections, branding with a logo bucket and a
+contrast rule, `org_student_view` for students and the preview); `record_attempt`
+refuses work in labs the school hasn't licensed or switched on. Organization
+page: Resources and Student preview tabs, logo and colour in Settings; "Your
+school" on the student dashboard; Classes notes and badges. admin.mjs `catalog`,
+`plan-resources`, `entitle`, `org resources`. Existing plans were set to include
+everything, so WCA is unaffected until a plan is narrowed. Local tests: 45/45
+database (+ all earlier suites), 26/26 pages in Chrome, check-site 150/150; the
+live test gains resource and real-Storage logo checks.
+Needs: run resources.sql, curriculum.sql, catalog.sql (and progress.sql again);
+the live test; deploy.
+Next: Step 4 (platform admin screens; expiry and grace enforcement).

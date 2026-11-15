@@ -40,7 +40,7 @@ function record(name, pass, detail) { results.push(pass); console.log(`${pass ? 
 const tag = randomBytes(4).toString('hex');
 const GAME = 'zz-orgtest-' + tag, QUESTION = GAME + ':probe', PLAN = 'zz-plan-' + tag;
 const people = { WO: {}, WI: {}, WS: {}, WS2: {}, BA: {}, BS: {}, X: {}, D: { direct: true } };
-const orgs = {};
+const orgs = {}, plansMade = [];
 const rpc = (who, fn, body = {}) => call('POST', `/rest/v1/rpc/${fn}`, { token: people[who].token, body });
 const read = (who, q) => call('GET', `/rest/v1/${q}`, { token: people[who].token });
 const rows = r => (Array.isArray(r.data) ? r.data : []);
@@ -73,6 +73,7 @@ async function main() {
   r = await rpc('WO', 'create_organization', { p_name: 'Sneaky', p_slug: 'zz-sneaky-' + tag });
   record('   a regular account can’t create organizations', code(r) === 'PT403', r.text);
   await svc('save_plan', { p_id: PLAN, p_name: 'Test plan', p_seat_limit: 10, p_interval: 'term' });
+  await svc('set_plan_resources', { p_plan: PLAN, p_all: true });   // after resources.sql, new plans include nothing until told
   r = await svc('activate_license', { p_org: orgs.A, p_plan: PLAN, p_seats: 2, p_starts: today, p_ends: inDays(30) });
   record('manual licence activation (2 seats)', r.ok, r.text);
   for (const [who, role] of [['WO', 'owner'], ['WI', 'instructor'], ['X', 'instructor'], ['WS', 'student']]) await svc('add_member', { p_org: orgs.A, p_user: people[who].id, p_role: role });
@@ -199,6 +200,41 @@ async function main() {
   r = await admin('GET', `/rest/v1/audit_events?select=action,metadata&organization_id=eq.${orgs.A}&action=like.member.*`);
   record('   invitations are in the audit log, without tokens or addresses', ['member.invited', 'member.reinvited', 'member.invitation_revoked', 'member.joined'].every(a => rows(r).some(x => x.action === a)) && !JSON.stringify(rows(r)).includes(inv1.token) && !JSON.stringify(rows(r).filter(x => x.action !== 'member.joined')).includes(newEmail));
 
+  // --- PRD 3: resources, entitlements, branding (needs resources.sql + catalog.sql) ---
+  if (!(await admin('GET', '/rest/v1/resources?select=id&limit=1')).ok) console.log('SKIP  resources.sql / catalog.sql not run yet');
+  else {
+    const PLAN2 = 'zz-plan2-' + tag;
+    await svc('save_plan', { p_id: PLAN2, p_name: 'Test plan 2', p_seat_limit: 10, p_interval: 'year' });
+    plansMade.push(PLAN2);
+    await svc('set_plan_resources', { p_plan: PLAN2, p_add: ['feature.practice-engine', 'sport.mtb', 'slope-lab'] });
+    await svc('activate_license', { p_org: orgs.B, p_plan: PLAN2, p_seats: 5, p_starts: today, p_ends: null });
+    const stB = async () => Object.fromEntries((rows({ data: (await rpc('BA', 'org_resources', { p_org: orgs.B })).data?.resources })).map(x => [x.id, x.state]));
+    let sB = await stB();
+    record('PRD3 a plan grants entitlements: included labs are on, others "not included"', sB['slope-lab'] === 'enabled' && sB['jump-trajectory-lab'] === 'not_included', sB);
+    r = await rpc('BS', 'record_attempt', { p_attempt_id: randomUUID(), p_game_id: 'jump-trajectory-lab', p_question_id: 'jump-trajectory-lab:m1-vertex', p_snapshot: { p: 1 }, p_is_correct: true, p_organization_id: orgs.B });
+    const r16 = await rpc('BS', 'record_attempt', { p_attempt_id: randomUUID(), p_game_id: 'slope-lab', p_question_id: 'slope-lab:f3', p_snapshot: { p: 1 }, p_is_correct: true, p_organization_id: orgs.B });
+    record('   work saves only in licensed, switched-on labs (server-side)', code(r) === 'PT403' && r16.ok, [r.text, r16.text]);
+    r = await rpc('BA', 'set_resource_enabled', { p_org: orgs.B, p_resource: 'jump-trajectory-lab', p_enabled: true });
+    const r17 = await rpc('WO', 'set_resource_enabled', { p_org: orgs.B, p_resource: 'slope-lab', p_enabled: false });
+    record('   an admin can’t switch on what isn’t licensed; another organization can’t touch it', code(r) === 'PT403' && code(r17) === 'PT403', [r.text, r17.text]);
+    await rpc('BA', 'set_resource_enabled', { p_org: orgs.B, p_resource: 'slope-lab', p_enabled: false });
+    const v = (await rpc('BS', 'org_student_view', { p_org: orgs.B })).data || {};
+    const r18 = await rpc('BS', 'record_attempt', { p_attempt_id: randomUUID(), p_game_id: 'slope-lab', p_question_id: 'slope-lab:f3', p_snapshot: { p: 2 }, p_is_correct: true, p_organization_id: orgs.B });
+    record('   switched off: gone from the student view and work isn’t saved; A is unaffected', !(v.resources || []).some(x => x.id === 'slope-lab') && code(r18) === 'PT403' &&
+      (await rpc('WO', 'org_resources', { p_org: orgs.A })).data.resources.find(x => x.id === 'slope-lab').state === 'enabled', [r18.text]);
+    // Logos in real Storage
+    const PNG = Buffer.from('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d49444154789c6360000002000154a24f5c0000000049454e44ae426082', 'hex');
+    const upload = (who, path, type = 'image/png', body = PNG) => fetch(`${BASE}/storage/v1/object/org-branding/${path}`, { method: 'POST', headers: { apikey: ANON, Authorization: 'Bearer ' + people[who].token, 'Content-Type': type }, body });
+    const u1 = await upload('BA', `${orgs.B}/logo-${tag}.png`), u2 = await upload('BA', `${orgs.A}/logo-${tag}.png`), u3 = await upload('BS', `${orgs.B}/logo-s${tag}.png`);
+    const u4 = await upload('BA', `${orgs.B}/logo-x${tag}.png`, 'image/svg+xml', '<svg xmlns="http://www.w3.org/2000/svg"/>');
+    record('PRD3 logos: an admin uploads into their own folder; not another organization’s, not as a student, not SVG', u1.ok && !u2.ok && !u3.ok && !u4.ok, [u1.status, u2.status, u3.status, u4.status]);
+    r = await rpc('BA', 'set_organization_branding', { p_org: orgs.B, p_logo_path: `${orgs.B}/logo-${tag}.png`, p_accent: '#86B6D4' });
+    const r19 = await rpc('BA', 'set_organization_branding', { p_org: orgs.B, p_accent: '#111111' });
+    const pub = await fetch(`${BASE}/storage/v1/object/public/org-branding/${orgs.B}/logo-${tag}.png`);
+    record('   branding saves (readable colours only) and the logo is publicly viewable', r.ok && code(r19) === 'PT422' && pub.ok, [r.text, r19.text, pub.status]);
+    await admin('DELETE', `/storage/v1/object/org-branding/${orgs.B}/logo-${tag}.png`);
+  }
+
   // The join server function, if it's deployed
   const i5 = (await rpc('WO', 'create_invitation', { p_org: orgs.A, p_email: new2, p_role: 'instructor', p_first: 'Ivo' })).data || {};
   const pw = randomBytes(10).toString('base64url') + 'aA1!';
@@ -225,7 +261,14 @@ async function cleanup() {
     await admin('DELETE', `/rest/v1/organizations?id=eq.${id}`);
   }
   await admin('DELETE', `/rest/v1/audit_events?target_id=eq.${PLAN}`);
-  await admin('DELETE', `/rest/v1/plans?id=eq.${PLAN}`);
+  for (const id of Object.values(orgs)) if (id) {
+    await admin('DELETE', `/rest/v1/organization_resource_settings?organization_id=eq.${id}`);
+  }
+  for (const pl of [PLAN, ...plansMade]) {
+    await admin('DELETE', `/rest/v1/subscriptions?plan_id=eq.${pl}`);
+    await admin('DELETE', `/rest/v1/audit_events?target_id=eq.${pl}`);
+    await admin('DELETE', `/rest/v1/plans?id=eq.${pl}`);
+  }
   await admin('DELETE', `/rest/v1/questions?id=eq.${encodeURIComponent(QUESTION)}`);
   const left = await admin('GET', `/rest/v1/organizations?select=id&slug=like.*${tag}`);
   return left.ok && rows(left).length === 0;

@@ -397,3 +397,20 @@ body.lab {
 .org-switch:focus { outline: 2px solid var(--blaze); outline-offset: 1px; }
 .org-note { margin: 10px 0 0; padding: 10px 14px; border-left: 3px solid var(--blaze); background: var(--tint); color: var(--ink); font-size: 14.5px; max-width: 44rem; }
 .org-manage { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 12px 0 0; font-size: 15px; }
+
+/* ---------- "Your school" (js/org.js drawSchool): dashboard + admin preview ---------- */
+.school { --org-accent: var(--moss); border-left: 4px solid var(--org-accent); padding: 4px 0 4px 22px; max-width: 60rem; }
+.school-head { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+.school-logo { width: 64px; height: 64px; object-fit: contain; background: var(--cream); border: 1px solid var(--rule); padding: 4px; }
+.school-eyebrow { margin: 0 0 4px; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--org-accent); }
+.school-name { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: clamp(26px, 4vw, 38px); line-height: 1.05; text-transform: uppercase; color: var(--ink); }
+.school-welcome { margin: 0 0 18px; max-width: 44rem; color: var(--text); font-size: 17px; white-space: pre-line; }
+.school-group { margin-top: 18px; }
+.school-group-title { margin: 0 0 8px; font-family: var(--f-mono); font-size: 12.5px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+.school-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 8px 22px; }
+.school-list li { display: flex; flex-direction: column; gap: 2px; padding: 8px 0; border-bottom: 1px solid var(--rule-soft); }
+.school-list a { color: var(--ink); font-weight: 600; text-decoration-color: var(--org-accent); text-underline-offset: 3px; }
+.school-list a:hover { color: var(--org-accent); }
+.school-desc { font-size: 14px; color: var(--ink-soft); }
+.school-empty { margin: 8px 0 0; color: var(--ink-soft); }
+.school-section { padding-bottom: 40px; }

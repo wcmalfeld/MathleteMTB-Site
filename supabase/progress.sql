@@ -699,6 +699,13 @@ begin
       raise sqlstate 'PT422' using message = 'Choose which organization you''re working in.';
     end if;
   end if;
+  -- Work in an organization only counts in activities it has licensed and
+  -- switched on (resources.sql). Nested so this file still runs without it.
+  if v_org is not null and to_regprocedure('public.org_game_allowed(uuid,text)') is not null then
+    if not public.org_game_allowed(v_org, p_game_id) then
+      raise sqlstate 'PT403' using message = 'Your school hasn''t switched on this activity, so this answer wasn''t saved.';
+    end if;
+  end if;
   if not exists (select 1 from public.profiles p where p.user_id = v_uid) then
     raise sqlstate 'PT403' using message = 'This account has no profile yet.';
   end if;

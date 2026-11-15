@@ -5,6 +5,8 @@
 //    the database function curriculum_progress() (supabase/curriculum.sql).
 //    Progress counts questions answered in activities, tagged with the
 //    curriculum skills they practise. It never claims mastery.
+//  - For a student working in a school: which courses its plan leaves out,
+//    and which topics it recommends.
 // Guests see the pages exactly as generated. Text is set as text only.
 (function () {
   'use strict';
@@ -85,12 +87,46 @@
     });
   }
 
+  // ---------- the student's school (if they're working in one) ----------
+  // Courses outside the school's plan get a note; topics it recommends get a
+  // badge. The list comes from org_student_view (supabase/resources.sql).
+  function school(sb) {
+    var id = null;
+    try { id = localStorage.getItem('mathlete-org'); } catch (e) { /* private mode */ }
+    if (!id || !/^[0-9a-f-]{36}$/i.test(id)) return;
+    sb.rpc('org_student_view', { p_org: id }).then(function (r) {
+      if (r.error || !r.data || !r.data.open) return;
+      var v = r.data, on = {}, rec = {}, name = v.organization.name;
+      (v.resources || []).forEach(function (x) { on[x.id] = true; });
+      (v.recommended_topics || []).forEach(function (t) { rec[t] = true; });
+      document.querySelectorAll('[data-course-progress]').forEach(function (p) {
+        if (on['course.' + p.getAttribute('data-course-progress')]) return;
+        var n = document.createElement('p');
+        n.className = 'cls-school-note';
+        n.textContent = 'Not part of ' + name + '’s Mathlete plan.';
+        p.parentNode.insertBefore(n, p);
+        var card = p.closest('.cls-course');
+        if (card) card.classList.add('cls-course--off');
+      });
+      var badge = function () { var b = document.createElement('span'); b.className = 'cls-school-badge'; b.textContent = 'Recommended by ' + name; return b; };
+      document.querySelectorAll('.cls-topic[data-topic]').forEach(function (li) {
+        var t = li.querySelector('.cls-topic-title');
+        if (rec[li.getAttribute('data-topic')] && t) t.appendChild(badge());
+      });
+      if (topicHead && rec[topicHead.getAttribute('data-topic')]) {
+        var h = topicHead.querySelector('.page-title');
+        if (h) h.parentNode.insertBefore(badge(), h.nextSibling);
+      }
+    }).catch(function () { /* optional */ });
+  }
+
   function start() {
     if (!A || !A.configured) return;
     if (!A.hasStoredSession()) return guest();
     A.status().then(function (st) {
       if (!st || !st.user || !st.member) return guest();
       return A.client().then(function (sb) {
+        school(sb);
         // One course's skills on course and topic pages; everything on the landing page.
         var head = document.querySelector('[data-course-progress]');
         var prefix = topicHead ? topicHead.getAttribute('data-topic').split('.')[0] + '.' : (document.querySelectorAll('[data-course-progress]').length === 1 && head ? head.getAttribute('data-course-progress') + '.' : null);
