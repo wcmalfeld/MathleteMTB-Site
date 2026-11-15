@@ -374,10 +374,21 @@ if (/http-equiv="refresh" content="0; url=tutoring\.html"/.test(read('college-be
   check('College & Beyond is hidden and nothing links to it', linksCb.length === 0, linksCb.join(', '));
 }
 const cb = read('college-beyond.html');
-// (Skipped while the About page says "coming soon"; it has no Services section then.)
-if (!/<h1 class="page-title">Coming soon\.<\/h1>/.test(read('about.html'))) {
-  check('About page Services links to the College & Beyond page', /id="services"[\s\S]*href="college-beyond\.html"/.test(read('about.html')));
-}
+// ---- About page (PRDs/aboutpage.md) ----
+const about = read('about.html');
+check('About page has exactly one <h1>, its canonical URL, and is indexable',
+  (about.match(/<h1\b/g) || []).length === 1 &&
+  about.includes('<link rel="canonical" href="https://www.mathletemtb.com/about.html">') &&
+  !/name="robots" content="noindex/.test(about));
+check('About page has Open Graph title, description and image',
+  ['og:title', 'og:description', 'og:image'].every(k => about.includes(`property="${k}"`)));
+const aboutIcons = [...about.matchAll(/<use href="#([^"]+)"/g)].map(m => m[1]);
+check('Every About page icon has a symbol', aboutIcons.every(id => about.includes(`<symbol id="${id}"`)), aboutIcons.filter(id => !about.includes(`<symbol id="${id}"`)).join(', '));
+const aboutImgs = [...about.matchAll(/<img[^>]*src="([^"]+)"/g)].map(m => m[1]);
+check('Every About page image exists', aboutImgs.every(src => existsSync(root + src)), aboutImgs.filter(src => !existsSync(root + src)).join(', '));
+const aboutLinks = [...about.matchAll(/href="([^"#:?]+\/?)(?:#[^"]*)?"/g)].map(m => m[1]).filter(h => !h.startsWith('http') && !h.startsWith('css/'));
+const deadAbout = aboutLinks.filter(h => !existsSync(root + (h.endsWith('/') ? h + 'index.html' : h)));
+check('Every internal link on the About page points at a real page', deadAbout.length === 0, deadAbout.join(', '));
 check('College & Beyond page has exactly one <h1>', (cb.match(/<h1\b/g) || []).length === 1);
 check('College & Beyond page has its own canonical URL', cb.includes('<link rel="canonical" href="https://www.mathletemtb.com/college-beyond.html">'));
 const anchors = [...cb.matchAll(/href="#([^"]+)"/g)].map(m => m[1]).filter(id => id !== 'main');

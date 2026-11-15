@@ -3,17 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About Will — Mathlete MTB</title>
-<meta name="description" content="About Mathlete MTB: coming soon.">
-<!-- About is being rewritten. While it says "coming soon", keep it out of search
-     results; remove this line when the real page is back (git history has the
-     previous version: git show 9ab73d6:about.html). -->
-<meta name="robots" content="noindex">
+<title>About Mathlete | Interest-Driven Math and Science Learning</title>
+<meta name="description" content="Discover Mathlete, an interest-driven learning platform that connects math and science to students' passions through interactive experiences, personalized learning, and human guidance.">
 <link rel="canonical" href="https://www.mathletemtb.com/about.html">
 <meta property="og:site_name" content="Mathlete MTB">
 <meta property="og:type" content="website">
-<meta property="og:title" content="About Will — Mathlete MTB">
-<meta property="og:description" content="Meet Will, the math and physics tutor behind Mathlete MTB.">
+<meta property="og:title" content="About Mathlete | Interest-Driven Math and Science Learning">
+<meta property="og:description" content="Learning that starts with what they're passionate about. Built around how they learn. Guided by people who care.">
 <meta property="og:url" content="https://www.mathletemtb.com/about.html">
 <meta property="og:image" content="https://www.mathletemtb.com/assets/photos/tutoring-1.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -21,6 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/site.css?v=13">
+<link rel="stylesheet" href="css/about.css?v=1">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -42,24 +39,428 @@
   </div>
 </nav>
 
+<!-- Icon set for this page. Icons are drawn with an svg use element pointing at a symbol id;
+     stroke and fill come from .ab-icon in css/about.css. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5.2 8.7A2.2 2.2 0 0 0 6.7 21h10.6a2.2 2.2 0 0 0 1.9-3.3L14 9V3"/><path d="M7.5 15h9"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="5" cy="19" r="2"/><circle cx="19" cy="5" r="2"/><path d="M7 19h7a3.5 3.5 0 0 0 0-7h-4a3.5 3.5 0 0 1 0-7h7"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z"/></symbol>
+  <symbol id="i-arc" viewBox="0 0 24 24"><path d="M3 21h18M3 21V3"/><path d="M5 19C8 5 15 5 19 19" stroke-dasharray="2 2.5"/><circle cx="12" cy="8.6" r="1.4"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+  <symbol id="i-bars" viewBox="0 0 24 24"><path d="M3 21h18M6 21v-6M11 21v-9M16 21V8M20 4l-4 4-3-2-6 5"/></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24"><circle cx="8.5" cy="8" r="3.2"/><circle cx="17" cy="9.5" r="2.5"/><path d="M2.5 20a6 6 0 0 1 12 0M15 14.3a4.5 4.5 0 0 1 6.5 4"/></symbol>
+  <symbol id="i-mountain" viewBox="0 0 24 24"><circle cx="18" cy="6" r="2"/><path d="M2 20l7-11 4 6 2.5-3L22 20z"/></symbol>
+  <symbol id="i-question" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.7"/><circle cx="12" cy="17" r=".6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></symbol>
+</svg>
+
 <main id="main">
 
-<header class="page-head">
+<!-- ============================================================
+     ABOUT: the Mathlete brand and educational philosophy
+     (PRDs/aboutpage.md). Hand-edited; styles in css/about.css.
+     Keep the wording honest about what's built: anything not yet
+     working is labelled "In development".
+     ============================================================ -->
+
+<!-- 1. Hero -->
+<header class="ab-hero ab-dark" aria-labelledby="about-title">
   <svg class="contour-field" viewBox="0 0 1100 420" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M-20,90 C 180,50 320,130 500,90 C 680,50 820,120 1120,80" fill="none" stroke="#1F2B24" stroke-opacity="0.10" stroke-width="1"/>
-    <path d="M-20,200 C 220,160 340,230 540,190 C 720,155 880,220 1120,185" fill="none" stroke="#C1502E" stroke-opacity="0.12" stroke-width="1"/>
-    <path d="M-20,310 C 240,275 360,340 560,300 C 740,265 900,325 1120,290" fill="none" stroke="#1F2B24" stroke-opacity="0.08" stroke-width="1"/>
+    <path d="M-20,70 C 180,30 320,110 500,70 C 680,30 820,100 1120,60" fill="none" stroke-opacity="0.07" stroke-width="1"/>
+    <path d="M-20,200 C 220,160 340,230 540,190 C 720,155 880,220 1120,185" fill="none" stroke-opacity="0.18" stroke-width="1"/>
+    <path d="M-20,340 C 260,310 380,370 580,335 C 760,305 920,355 1120,320" fill="none" stroke-opacity="0.06" stroke-width="1"/>
   </svg>
-  <div class="wrap">
-    <p class="eyebrow">About</p>
-    <h1 class="page-title">Coming soon.</h1>
-    <p class="hero-lede">This page is being rewritten. Check back shortly.</p>
-    <div class="hero-actions step-actions">
-      <a class="button" href="book.html" data-track="book_cta_about_hero">Book a Session</a>
-      <a class="read-link" href="tutoring.html">Private tutoring <span aria-hidden="true">&rarr;</span></a>
+  <div class="wrap ab-hero-grid">
+    <div>
+      <p class="eyebrow">About Mathlete</p>
+      <h1 class="ab-hero-title" id="about-title">Learning that starts with what they&rsquo;re <span>passionate about.</span></h1>
+      <p class="ab-hero-sub">Not every kid learns from a worksheet. Sometimes, you just have to start with something they love.</p>
+      <p class="ab-hero-body">Mathlete connects math and science to the activities, interests, and experiences that make students curious. Through interactive challenges, real-world applications, and personalized learning experiences, we help students develop a deeper understanding of the world around them.</p>
+      <div class="hero-actions">
+        <a class="button" href="index.html" data-track="about_cta_hero_explore">Explore Mathlete</a>
+        <a class="read-link" href="#approach" data-track="about_cta_hero_approach">Explore our learning approach <span aria-hidden="true">&darr;</span></a>
+      </div>
     </div>
+
+    <figure class="ab-term">
+      <div class="ab-term-bar" aria-hidden="true"><i></i><i></i><i></i><span>jump_01.lab</span></div>
+      <svg viewBox="0 0 480 300" role="img" aria-labelledby="jump-svg-title">
+        <title id="jump-svg-title">A mountain bike jump drawn as a math problem: the rider leaves a 2-foot lip, follows the parabola y = &minus;0.1x&sup2; + x + 2, peaks at 4.5 feet, and lands about 11.7 feet out, inside the landing zone.</title>
+        <g stroke="#ECEFE7" stroke-opacity="0.06" stroke-width="1">
+          <path d="M90 20V280M168 20V280M246 20V280M324 20V280M402 20V280"/>
+          <path d="M20 250H470M20 190H470M20 130H470M20 70H470"/>
+        </g>
+        <text x="28" y="44" fill="#C9A764" font-family="JetBrains Mono, monospace" font-size="13">y = &minus;0.1x&sup2; + x + 2</text>
+        <!-- takeoff, pit, landing deck -->
+        <path d="M0 300V250H40C66 248 82 214 90 190H98V300Z" fill="#6B4A2E"/>
+        <path d="M98 300V274H322V300Z" fill="#3A2A1C"/>
+        <path d="M322 300V250H480V300Z" fill="#6B4A2E"/>
+        <rect x="352" y="244" width="104" height="6" fill="#8DBA74" fill-opacity="0.35" stroke="#8DBA74"/>
+        <text x="352" y="268" fill="#8DBA74" font-family="JetBrains Mono, monospace" font-size="11">LANDING ZONE</text>
+        <!-- peak marker -->
+        <path d="M220 115V250" stroke="#ECEFE7" stroke-opacity="0.25" stroke-dasharray="3 4"/>
+        <text x="228" y="104" fill="#ECEFE7" font-family="JetBrains Mono, monospace" font-size="12">peak (5, 4.5)</text>
+        <!-- the flight path: exact parabola as a quadratic Bezier -->
+        <path class="ab-arc" d="M90 190Q242.2 14.4 394.5 250" fill="none" stroke="#E36A40" stroke-width="2.5" stroke-dasharray="5 5"/>
+        <circle cx="220" cy="115" r="4" fill="#E36A40"/>
+        <circle cx="394.5" cy="250" r="5" fill="#8DBA74"/>
+        <!-- rider at the lip -->
+        <g fill="none" stroke="#ECEFE7" stroke-width="2">
+          <circle cx="76" cy="176" r="9"/><circle cx="102" cy="176" r="9"/>
+          <path d="M76 176l10-12h12l4 12M86 164l-4-8"/>
+        </g>
+        <circle cx="84" cy="146" r="5" fill="#ECEFE7"/>
+        <path d="M84 151l4 12" stroke="#ECEFE7" stroke-width="2"/>
+        <text x="300" y="232" fill="#ECEFE7" font-family="JetBrains Mono, monospace" font-size="12">x &asymp; 11.7 ft</text>
+      </svg>
+      <figcaption><b>&check; in the zone.</b> Every jump is a quadratic. Students predict the landing, then ride it in the Jump Lab.</figcaption>
+    </figure>
   </div>
 </header>
+
+<!-- 2. More than one way to learn -->
+<section class="section" id="why" aria-labelledby="why-title">
+  <div class="wrap ab-split">
+    <div>
+      <p class="eyebrow">Why Mathlete</p>
+      <h2 class="ab-h2" id="why-title">There&rsquo;s more than one way <span>to learn.</span></h2>
+      <div class="prose">
+        <p>Traditional education often introduces academic concepts in isolation, asking students to understand abstract ideas before they&rsquo;ve had an opportunity to see why they matter.</p>
+        <p>But not every student connects with learning in the same way. Some students learn through textbooks and lectures. Others learn by building, experimenting, exploring, moving, and solving problems in the world around them.</p>
+        <p>A student who struggles to stay engaged with a traditional math lesson might spend hours learning how to build a mountain bike, master a new trick, create something, or understand how a video game works.</p>
+        <p class="ab-question">What if we started there?</p>
+        <p>We believe students shouldn&rsquo;t have to fit into a single approach to education to reach their potential.</p>
+      </div>
+      <blockquote class="ab-statement">
+        <p>We don&rsquo;t believe students need to be passionate about every subject. We believe passion can be a powerful place to start.</p>
+      </blockquote>
+    </div>
+    <figure class="ab-photo">
+      <img src="assets/photos/tutoring-1.jpg" alt="Five students working through graph-paper math problems at a long table on an open-air deck, with mountains in the background" width="800" height="1065" loading="lazy" decoding="async">
+      <figcaption class="meta">Math class, outdoors. Same problems, different classroom.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 3. Three pillars -->
+<section class="section section--panel" id="approach" aria-labelledby="approach-title">
+  <div class="wrap">
+    <div class="ab-head">
+      <p class="eyebrow">Our approach</p>
+      <h2 class="ab-h2" id="approach-title">A different way to approach <span>education.</span></h2>
+      <p class="ab-intro">Our approach is built around three principles that help connect students to meaningful academic learning.</p>
+    </div>
+    <ol class="ab-pillars">
+      <li class="ab-pillar">
+        <div class="ab-pillar-top"><svg class="ab-icon" aria-hidden="true"><use href="#i-compass"/></svg><span class="ab-pillar-num">01</span></div>
+        <p class="kicker">Interest-driven education</p>
+        <h3 class="ab-pillar-title">Start with what makes them curious.</h3>
+        <p>Every student has something they&rsquo;re passionate about. It might be mountain biking, skiing, soccer, skateboarding, gaming, music, art, or building things.</p>
+        <p>We use those interests as an entry point into academic learning, connecting the familiar to the unfamiliar and helping students discover the mathematics and science behind the things they enjoy.</p>
+        <p class="ab-pillar-key">Interest is the starting point.</p>
+      </li>
+      <li class="ab-pillar">
+        <div class="ab-pillar-top"><svg class="ab-icon" aria-hidden="true"><use href="#i-flask"/></svg><span class="ab-pillar-num">02</span></div>
+        <p class="kicker">Experiential learning</p>
+        <h3 class="ab-pillar-title">Learn by doing, not just by listening.</h3>
+        <p>Instead of relying only on lectures, videos, and worksheets, Mathlete creates opportunities for students to experiment, investigate, build, and solve problems.</p>
+        <p>Students might explore quadratic functions by modeling a mountain bike jump, study geometry by designing a trail, or understand physics by experimenting with speed and momentum. We want students to experience concepts, not simply memorize definitions.</p>
+        <p class="ab-pillar-key">Experience is the teaching method.</p>
+      </li>
+      <li class="ab-pillar">
+        <div class="ab-pillar-top"><svg class="ab-icon" aria-hidden="true"><use href="#i-route"/></svg><span class="ab-pillar-num">03</span></div>
+        <p class="kicker">Personalized instruction</p>
+        <h3 class="ab-pillar-title">Every student has a different path.</h3>
+        <p>Every student has a different starting point, pace, and way of approaching a problem. Mathlete supports learning that adapts to individual interests, academic needs, and progress.</p>
+        <p>Students can work through challenges at their own pace, revisit concepts they find difficult, explore ideas in greater depth, and get guidance that helps them move forward.</p>
+        <p class="ab-pillar-key">Personalization is how we support each learner.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- 4. Students who don't always fit the traditional classroom -->
+<section class="section" id="every-learner" aria-labelledby="learners-title">
+  <div class="wrap ab-split ab-split--even">
+    <div>
+      <p class="eyebrow">Every kind of learner</p>
+      <h2 class="ab-h2" id="learners-title">For the students who don&rsquo;t always fit <span>the traditional classroom.</span></h2>
+      <div class="prose">
+        <p>Not every student connects with conventional education.</p>
+        <p>Some need to move. Some need to see a concept before they understand it. Some learn best by experimenting, asking questions, and discovering things for themselves. Others need more time, more individual attention, or a reason to care about what they&rsquo;re being asked to learn.</p>
+        <p>Students with ADHD, short attention spans, different learning preferences, or simply a disconnect with traditional instruction may particularly appreciate having another way to approach academic subjects.</p>
+        <p>We don&rsquo;t believe those students need to be made to learn like everyone else. We believe education should make room for different ways of thinking, exploring, and understanding.</p>
+      </div>
+    </div>
+    <div>
+      <h3 class="kicker" id="principles-title">How we design every activity</h3>
+      <ol class="ab-principles" aria-labelledby="principles-title">
+        <li><span>01</span><div><strong>Engaging</strong><p>Built around meaningful interests and real-world applications.</p></div></li>
+        <li><span>02</span><div><strong>Interactive</strong><p>Students participate, experiment, and make their own discoveries.</p></div></li>
+        <li><span>03</span><div><strong>Manageable</strong><p>Challenging concepts broken into smaller, achievable steps.</p></div></li>
+        <li><span>04</span><div><strong>Flexible</strong><p>A pace and an approach that work for the student.</p></div></li>
+        <li><span>05</span><div><strong>Encouraging</strong><p>Celebrates progress, persistence, curiosity, and problem solving.</p></div></li>
+      </ol>
+    </div>
+  </div>
+  <div class="wrap">
+    <blockquote class="ab-statement">
+      <p>Our goal is to help more students recognize that they&rsquo;re capable learners, even if their strengths don&rsquo;t always show up in a traditional classroom.</p>
+    </blockquote>
+  </div>
+</section>
+
+<!-- 5. Technology + human connection -->
+<section class="section ab-dark" id="people" aria-labelledby="people-title">
+  <svg class="contour-field" viewBox="0 0 1100 420" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M-20,90 C 180,50 320,130 500,90 C 680,50 820,120 1120,80" fill="none" stroke-opacity="0.06" stroke-width="1"/>
+    <path d="M-20,260 C 220,220 340,290 540,250 C 720,215 880,280 1120,245" fill="none" stroke-opacity="0.14" stroke-width="1"/>
+    <path d="M-20,380 C 240,345 360,410 560,370 C 740,335 900,395 1120,360" fill="none" stroke-opacity="0.05" stroke-width="1"/>
+  </svg>
+  <div class="wrap">
+    <div class="ab-head">
+      <p class="eyebrow">Human-centered</p>
+      <h2 class="ab-h2" id="people-title">Technology should enhance human connection, <span>not replace it.</span></h2>
+    </div>
+
+    <ol class="ab-loop" aria-label="The Mathlete learning loop">
+      <li class="ab-node">
+        <svg class="ab-icon" aria-hidden="true"><use href="#i-arc"/></svg>
+        <h3>Student practice</h3>
+        <p>Labs and class activities students work through on their own, at their own pace.</p>
+        <span class="ab-tag ab-tag--live">Live today</span>
+      </li>
+      <li class="ab-arrow" aria-hidden="true">&rarr;</li>
+      <li class="ab-node">
+        <svg class="ab-icon" aria-hidden="true"><use href="#i-bars"/></svg>
+        <h3>Learning insights</h3>
+        <p>Progress, missed problems, and areas of difficulty, saved to the student&rsquo;s account.</p>
+        <span class="ab-tag ab-tag--live">Live today</span>
+      </li>
+      <li class="ab-arrow" aria-hidden="true">&rarr;</li>
+      <li class="ab-node ab-node--human">
+        <svg class="ab-icon" aria-hidden="true"><use href="#i-people"/></svg>
+        <h3>Human guidance</h3>
+        <p>A tutor or teacher steps in where the student needs help, then sends them back to practice.</p>
+        <span class="ab-tag ab-tag--live">Private tutoring today</span>
+      </li>
+      <li class="ab-loop-back" aria-hidden="true"><b>&larr;</b> back to practice, with a stronger understanding</li>
+    </ol>
+
+    <div class="ab-human-grid">
+      <div class="prose">
+        <p>As education becomes increasingly digital and AI-powered, we believe it&rsquo;s more important than ever to keep real people involved in the learning process.</p>
+        <p>Technology can provide interactive experiences, immediate feedback, personalized practice, and insight into where a student might be struggling.</p>
+        <p>But it can&rsquo;t replace the encouragement, understanding, mentorship, and human connection that make good teaching so valuable. We believe the future of education should combine the best of technology with the best of human instruction.</p>
+      </div>
+      <div>
+        <h3 class="kicker" id="model-title">The Mathlete learning model</h3>
+        <ol class="ab-steps" aria-labelledby="model-title">
+          <li><span>Students practice independently throughout the week.</span></li>
+          <li><span>The platform tracks progress, missed problems, and areas of difficulty.</span></li>
+          <li><span>Teachers and tutors see where students need help. <span class="ab-tag ab-tag--soon">In development</span></span></li>
+          <li><span>Short, purposeful check-ins let instructors clarify difficult concepts and give personal support.</span></li>
+          <li><span>Students return to independent practice with a stronger understanding.</span></li>
+        </ol>
+        <p class="ab-checkin">Sometimes a student needs just two minutes of guidance. Other times, they need a 20-minute conversation to work through a difficult concept.</p>
+        <p class="ab-note">Students with a Mathlete account can already see their own progress and review missed problems. Views that bring that picture to tutors and teachers are being built now.</p>
+      </div>
+    </div>
+
+    <blockquote class="ab-statement">
+      <p>Technology helps us understand where students are. People help them figure out where to go next.</p>
+    </blockquote>
+  </div>
+</section>
+
+<!-- 6. Beyond the right answer -->
+<section class="section" id="problem-solving" aria-labelledby="solve-title">
+  <div class="wrap">
+    <div class="ab-head">
+      <p class="eyebrow">Problem solving</p>
+      <h2 class="ab-h2" id="solve-title">Beyond getting the right answer. <span>Learning how to solve problems.</span></h2>
+    </div>
+    <div class="ab-solve">
+      <div class="prose">
+        <p>At the heart of Mathlete is something bigger than math and science: the development of problem-solving skills.</p>
+        <p>We want students to understand how to approach unfamiliar challenges, break complicated problems into smaller pieces, recognize patterns, test ideas, learn from mistakes, and keep working toward a solution. These are skills that extend far beyond a classroom.</p>
+        <p>A student calculating the trajectory of a mountain bike jump is also learning how to model a problem, interpret information, make predictions, and apply mathematical reasoning. Those same skills carry into engineering, business, technology, and the countless challenges they&rsquo;ll meet throughout life.</p>
+      </div>
+      <figure class="ab-console" aria-labelledby="console-cap">
+        <p class="q" id="console-cap">Will the rider clear the gap?</p>
+        <dl>
+          <dt>model</dt><dd>y = &minus;0.1x&sup2; + x + 2</dd>
+          <dt>interpret</dt><dd>the lip is 2 ft up; the arc tops out at x = 5</dd>
+          <dt>predict</dt><dd>lands at x &asymp; 11.7 ft</dd>
+          <dt>test</dt><dd>send it &rarr; <span class="ok">&check; in the landing zone</span></dd>
+          <dt>apply</dt><dd>same reasoning, any problem</dd>
+        </dl>
+      </figure>
+    </div>
+
+    <ul class="ab-skills" aria-label="Skills we build">
+      <li><svg class="ab-icon" aria-hidden="true"><use href="#i-question"/></svg><strong>Curiosity</strong><p>Asking why, and wanting to find out.</p></li>
+      <li><svg class="ab-icon" aria-hidden="true"><use href="#i-search"/></svg><strong>Critical thinking</strong><p>Weighing information and checking that an answer makes sense.</p></li>
+      <li><svg class="ab-icon" aria-hidden="true"><use href="#i-flask"/></svg><strong>Experimentation</strong><p>Testing an idea, changing one thing, trying again.</p></li>
+      <li><svg class="ab-icon" aria-hidden="true"><use href="#i-flag"/></svg><strong>Persistence</strong><p>Learning from mistakes and sticking with a hard problem.</p></li>
+      <li><svg class="ab-icon" aria-hidden="true"><use href="#i-gear"/></svg><strong>Application</strong><p>Using the math on something real.</p></li>
+    </ul>
+
+    <p class="ab-closer">We want students to become confident thinkers, curious learners, and capable problem solvers. Because education shouldn&rsquo;t just prepare students to pass their next test. It should prepare them to understand and navigate the world around them.</p>
+  </div>
+</section>
+
+<!-- 7. What learning with Mathlete looks like -->
+<section class="section section--panel" id="platform" aria-labelledby="platform-title">
+  <div class="wrap">
+    <div class="ab-head">
+      <p class="eyebrow">What learning looks like</p>
+      <h2 class="ab-h2" id="platform-title">Meaningful learning, built around <span>real academic goals.</span></h2>
+    </div>
+    <ul class="ab-features">
+      <li class="ab-feature">
+        <svg class="ab-icon" aria-hidden="true"><use href="#i-book"/></svg>
+        <h3>Curriculum-aligned academics</h3>
+        <p>Real courses with clear learning objectives: Algebra 1, Geometry, Algebra 2, and Precalculus, with physics explored through the labs.</p>
+        <p class="ab-feature-foot"><a class="read-link" href="classes/">Browse the classes</a></p>
+      </li>
+      <li class="ab-feature">
+        <svg class="ab-icon" aria-hidden="true"><use href="#i-arc"/></svg>
+        <h3>Interactive learning labs</h3>
+        <p>Experiment with math and science concepts through simulations, challenges, and real-world problems.</p>
+        <p class="ab-feature-foot"><a class="read-link" href="index.html#labs" data-track="about_cta_labs_card">Explore the labs</a></p>
+      </li>
+      <li class="ab-feature">
+        <svg class="ab-icon" aria-hidden="true"><use href="#i-sliders"/></svg>
+        <h3>Personalized practice</h3>
+        <p>Choose a level, revisit difficult concepts, and go deeper when you&rsquo;re ready. Many labs offer beginner through advanced challenges.</p>
+      </li>
+      <li class="ab-feature">
+        <svg class="ab-icon" aria-hidden="true"><use href="#i-bars"/></svg>
+        <h3>Progress and mastery tracking</h3>
+        <p>Students with an account see their strengths and areas of difficulty, set goals, and get a saved list of missed problems to review.</p>
+        <p class="ab-feature-foot"><span class="ab-tag ab-tag--live">With an account</span></p>
+      </li>
+      <li class="ab-feature">
+        <svg class="ab-icon" aria-hidden="true"><use href="#i-people"/></svg>
+        <h3>Human guidance and mentorship</h3>
+        <p>One-on-one tutoring today. Next: giving every teacher and tutor the information they need for targeted support.</p>
+        <p class="ab-feature-foot"><a class="read-link" href="tutoring.html">Private tutoring</a><span class="ab-tag ab-tag--soon">Tutor views in development</span></p>
+      </li>
+      <li class="ab-feature">
+        <svg class="ab-icon" aria-hidden="true"><use href="#i-mountain"/></svg>
+        <h3>Learning beyond the screen</h3>
+        <p>Every concept ties back to something physical: a jump, a trail, a bike, a mountain. The goal is math students recognize the next time they ride.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- 8. Where it starts: mountain biking -->
+<section class="section ab-dark" id="mtb" aria-labelledby="mtb-title">
+  <svg class="contour-field" viewBox="0 0 1100 420" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M-20,60 C 180,20 320,100 500,60 C 680,20 820,90 1120,50" fill="none" stroke-opacity="0.07" stroke-width="1"/>
+    <path d="M-20,190 C 220,150 340,220 540,180 C 720,145 880,210 1120,175" fill="none" stroke-opacity="0.2" stroke-width="1"/>
+    <path d="M-20,330 C 260,300 380,360 580,325 C 760,295 920,345 1120,310" fill="none" stroke-opacity="0.06" stroke-width="1"/>
+  </svg>
+  <div class="wrap">
+    <div class="ab-head">
+      <p class="eyebrow">Where it starts</p>
+      <h2 class="ab-h2" id="mtb-title">Where it starts: <span>mountain biking.</span></h2>
+    </div>
+    <div class="ab-mtb-grid">
+      <div class="prose">
+        <p>Mathlete began with a simple idea: what if we taught students math and physics through something they already loved?</p>
+        <p>Mountain biking provides an incredible environment for exploring academic concepts. Students can explore quadratic functions through jump trajectories, geometry through trail design, statistics through race performance, and physics through speed, forces, and momentum.</p>
+      </div>
+      <p class="ab-mtb-lines">
+        <span>There&rsquo;s <em>mathematics</em> in every jump,</span>
+        <span><em>geometry</em> in every trail,</span>
+        <span><em>physics</em> in every turn,</span>
+        <span>and <em>problem solving</em> in every challenge.</span>
+      </p>
+    </div>
+
+    <ul class="ab-examples" aria-label="From the trail to the classroom">
+      <li class="ab-example"><a href="learning-lab/engineering/">
+        <img src="assets/jump-lab.jpg" alt="" width="1400" height="900" loading="lazy" decoding="async">
+        <span class="ab-example-body">
+          <span class="ab-example-from">Jumping</span>
+          <span class="ab-example-to">Quadratic functions and physics</span>
+          <span class="ab-example-lab">Engineering Lab <span aria-hidden="true">&rarr;</span></span>
+        </span>
+      </a></li>
+      <li class="ab-example"><a href="learning-lab/trail-crew/">
+        <img src="assets/trailbuilder.jpg" alt="" width="1400" height="1093" loading="lazy" decoding="async">
+        <span class="ab-example-body">
+          <span class="ab-example-from">Trail building</span>
+          <span class="ab-example-to">Geometry and measurement</span>
+          <span class="ab-example-lab">Trail Crew <span aria-hidden="true">&rarr;</span></span>
+        </span>
+      </a></li>
+      <li class="ab-example"><a href="learning-lab/race-team/">
+        <img src="assets/strava-showdown.jpg" alt="" width="1400" height="1093" loading="lazy" decoding="async">
+        <span class="ab-example-body">
+          <span class="ab-example-from">Race performance</span>
+          <span class="ab-example-to">Statistics and data analysis</span>
+          <span class="ab-example-lab">Race Team <span aria-hidden="true">&rarr;</span></span>
+        </span>
+      </a></li>
+      <li class="ab-example"><a href="learning-lab/bike-workshop/">
+        <img src="assets/gear-ratio-lab.jpg" alt="" width="1400" height="948" loading="lazy" decoding="async">
+        <span class="ab-example-body">
+          <span class="ab-example-from">Bike setup</span>
+          <span class="ab-example-to">Forces, ratios, and energy</span>
+          <span class="ab-example-lab">Bike Workshop <span aria-hidden="true">&rarr;</span></span>
+        </span>
+      </a></li>
+    </ul>
+
+    <div class="ab-beyond">
+      <div class="ab-beyond-text">
+        <p><strong>But mountain biking is just the beginning.</strong> The larger vision is an educational platform that connects academic learning to the many interests, activities, and passions that make students unique.</p>
+        <p>Because the best starting point for learning isn&rsquo;t necessarily a textbook. Sometimes it&rsquo;s a bike, a ball, a computer, a musical instrument, or a question a student has always wanted to answer.</p>
+      </div>
+      <ul class="ab-interests" aria-label="Interests: mountain biking and skiing are available now; the rest are ideas for the future">
+        <li class="is-live"><b>&check;</b> Mountain biking</li>
+        <li class="is-live"><a href="ski/"><b>&check;</b> Skiing <span aria-hidden="true">&rarr;</span></a></li>
+        <li>Soccer</li>
+        <li>Skateboarding</li>
+        <li>Music</li>
+        <li>Gaming</li>
+        <li>Art</li>
+        <li>Building things</li>
+        <li>Your question here</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 9. Mission -->
+<section class="ab-mission ab-dark" id="mission" aria-labelledby="mission-title">
+  <div class="wrap">
+    <h2 class="eyebrow" id="mission-title">Our mission</h2>
+    <p class="ab-mission-statement">To make meaningful academic learning more accessible, engaging, and relevant by connecting education to the things students are passionate about.</p>
+    <div class="ab-mission-body">
+      <p>We want to help students develop a genuine curiosity for learning, build confidence in their abilities, and discover that they are capable of far more than they might have thought.</p>
+      <p>We believe there&rsquo;s no single path to understanding, no single way to be a good student, and no reason that education should look exactly the same for everyone.</p>
+    </div>
+    <p class="ab-final">
+      <span>Find what they&rsquo;re passionate about.</span>
+      <span>Start there.</span>
+      <span>Build from it.</span>
+    </p>
+    <div class="hero-actions">
+      <a class="button" href="index.html" data-track="about_cta_mission_explore">Explore Mathlete</a>
+      <a class="read-link" href="index.html#labs" data-track="about_cta_mission_labs">Explore learning labs <span aria-hidden="true">&rarr;</span></a>
+      <a class="read-link" href="mailto:wcmalfeld@gmail.com?subject=Bringing%20Mathlete%20to%20our%20school" data-track="about_cta_mission_school">Bring Mathlete to your school <span aria-hidden="true">&rarr;</span></a>
+    </div>
+    <p class="ab-brand-line">Learning that starts with what they&rsquo;re passionate about. Built around how they learn. Guided by people who care.</p>
+  </div>
+</section>
 
 </main>
 
