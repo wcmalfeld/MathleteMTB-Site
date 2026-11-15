@@ -1,32 +1,15 @@
 /* ============================================================
    ABOUT PAGE (about.html)
-   Loaded after site.css. Reuses the site's tokens and type; the
-   dark "lab terminal" bands reuse the Learning Lab colours from
-   lab.css, scoped to .ab-dark so the rest of the page stays paper.
+   Loaded after site.css and uses its (dark) tokens and type.
+   .ab-dark bands sit on the deepest ground so sections alternate.
    ============================================================ */
 
-/* ---------- dark band: the Lab's palette, scoped ---------- */
+/* ---------- deep band ---------- */
 .ab-dark {
-  --ink:       #ECEFE7;
-  --ink-soft:  #A8B4AA;
-  --text:      #D3DACF;
-  --cream:     #1E2622;
-  --rule:      rgba(236, 239, 231, 0.14);
-  --rule-soft: rgba(236, 239, 231, 0.08);
-  --tint:      rgba(236, 239, 231, 0.05);
-  --blaze:     #E36A40;
-  --blaze-dim: #E8825E;
-  --contour:   #C9A764;
-  --moss:      #8DBA74;
-  background: #131815;
-  color: var(--ink);
+  background: var(--lab-deep);
   position: relative;
   overflow: hidden;
 }
-.ab-dark .contour-field path { stroke: var(--ink); }
-.ab-dark .contour-field path:nth-child(2) { stroke: var(--moss); }
-.ab-dark .button { background: #ECEFE7; color: #131815; }
-.ab-dark .button:hover { background: var(--blaze); color: #131815; }
 .ab-dark .wrap { position: relative; z-index: 1; }
 .section.ab-dark + .section { border-top: 0; }
 
@@ -74,9 +57,8 @@
   border: 1px solid currentColor;
   white-space: nowrap;
 }
-.ab-tag--live { color: #3F7A3A; }
+.ab-tag--live { color: var(--moss); }
 .ab-tag--soon { color: var(--ink-soft); border-style: dashed; }
-.ab-dark .ab-tag--live { color: var(--moss); }
 /* <use> content inherits these from the outer <svg> */
 .ab-icon {
   width: 44px; height: 44px; color: var(--blaze); flex-shrink: 0;
@@ -122,7 +104,7 @@
 /* the "terminal window" figure */
 .ab-term {
   margin: 0;
-  background: #0D110F;
+  background: var(--bg);
   border: 1px solid var(--rule);
   box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.8);
 }
@@ -211,7 +193,7 @@
   padding: 28px 28px 0;
   transition: transform .2s ease, box-shadow .2s ease;
 }
-.ab-pillar:hover { transform: translateY(-4px); box-shadow: 0 18px 36px -24px rgba(31, 43, 36, 0.45); }
+.ab-pillar:hover { transform: translateY(-4px); box-shadow: 0 18px 36px -20px rgba(0, 0, 0, 0.7); }
 .ab-pillar:nth-child(2) { --pillar: var(--chalk); }
 .ab-pillar:nth-child(3) { --pillar: var(--contour); }
 .ab-pillar .ab-icon { color: var(--pillar, var(--blaze)); }
@@ -385,7 +367,8 @@
 }
 .ab-console {
   margin: 0;
-  background: #131815;
+  background: var(--lab-deep);
+  border: 1px solid var(--rule);
   color: #D3DACF;
   font-family: var(--f-mono);
   font-size: 13.5px;
@@ -600,4 +583,4 @@
 h3.kicker { font-weight: 400; }
 
 /* ---------- focus on dark bands ---------- */
-.ab-dark a:focus-visible { outline-color: #ECEFE7; }
+a:focus-visible { outline-color: var(--ink); }

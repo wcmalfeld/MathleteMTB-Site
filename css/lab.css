@@ -1,39 +1,12 @@
 /* ============================================================
    LEARNING LAB
-   The "lab interior": the same type, components and layout as
-   site.css, on a dark charcoal-and-pine ground with terrain accents.
-   Loaded after site.css, only on /learning-lab/ pages. Most of the
-   flip happens by redefining site.css's color tokens on body.lab;
-   the rest of this file is the Lab's own components.
+   The Lab's own components (category tiles, tool cards, filters,
+   ski/riding variants). Colors come from site.css, which is dark
+   site-wide; loaded after it on Lab, Classes, Ski and student pages.
    ============================================================ */
 
-body.lab {
-  --ink:       #ECEFE7;   /* primary text */
-  --ink-soft:  #A8B4AA;   /* muted text */
-  --text:      #D3DACF;   /* long-form text */
-  --bg:        #131815;   /* charcoal */
-  --panel:     #19201C;   /* banded sections */
-  --cream:     #1E2622;   /* card surface */
-  --rule:      rgba(236, 239, 231, 0.14);
-  --rule-soft: rgba(236, 239, 231, 0.08);
-  --tint:      rgba(236, 239, 231, 0.05);
-  --blaze:     #E36A40;   /* brighter rust, readable on dark */
-  --blaze-dim: #E8825E;
-  --chalk:     #86B6D4;
-  --contour:   #C9A764;
-  --moss:      #8DBA74;   /* terrain green */
-  --lab-deep:  #0D110F;
-  color-scheme: dark;
-}
-
-/* hard-coded light colors in site.css */
-.lab .site-nav { background: rgba(19, 24, 21, 0.9); }
-.lab .footer { background: var(--lab-deep); }
-.lab .tool-card:not(.tool-card--soon):hover { box-shadow: 0 14px 30px -16px rgba(0, 0, 0, 0.7); }
-.lab .button { color: var(--lab-deep); }
-.lab .button:hover { color: var(--lab-deep); background: var(--blaze); }
-.lab .contour-field path { stroke: var(--ink); }
-.lab .contour-field path:nth-child(2) { stroke: var(--moss); }
+/* The dark palette, light nav, footer, buttons and contour lines are now
+   the site-wide defaults in site.css, so body.lab needs no overrides. */
 
 /* ---------- page header ---------- */
 .lab-head { background: radial-gradient(120% 140% at 85% 0%, rgba(141, 186, 116, 0.10), transparent 60%); }
@@ -254,9 +227,6 @@ body.lab {
 .lab-cta-actions .read-link { margin-top: 0; }
 @media (max-width: 760px) { .lab-cta .wrap { grid-template-columns: 1fr; } }
 
-/* "Book a Session" in the nav: dark text on the brighter rust */
-.lab .nav-book { color: var(--lab-deep); }
-.lab .nav-book:hover { background: var(--blaze-dim); }
 
 /* ---------- home page (index.html is the Lab) ---------- */
 .lab-home-title { margin: 0; line-height: 0; }  /* the logo is the page heading */

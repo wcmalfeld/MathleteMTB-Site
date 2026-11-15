@@ -1,26 +1,31 @@
 /* ============================================================
    MATHLETE MTB
-   Same design language as willmalfeld.com: field-notes /
-   trail-map. Warm paper, deep pine ink, trail-blaze rust.
+   Field-notes / trail-map design language. One palette for the
+   whole site: a light paper nav bar over a dark charcoal-and-pine
+   page (the "Lab" look), with trail-blaze rust as the accent.
+   The page tokens are dark; .site-nav redefines them light.
    Every photo slot is a fixed-shape frame that crops to fit,
    so any photo (landscape or portrait) can drop in.
    ============================================================ */
 
 :root {
-  /* --- color --- */
-  --ink:          #1F2B24;   /* deep pine, primary text */
-  --ink-soft:     #48584B;   /* muted body text */
-  --text:         #28352D;   /* long-form body text */
-  --bg:           #F3F0E7;   /* warm paper */
-  --panel:        #EBE7DB;   /* slightly deeper paper for bands */
-  --rule:         rgba(31, 43, 36, 0.16);
-  --rule-soft:    rgba(31, 43, 36, 0.09);
-  --tint:         rgba(31, 43, 36, 0.06);   /* photo frame ground */
-  --blaze:        #C1502E;   /* trail-blaze rust, primary accent */
-  --blaze-dim:    #A8431F;
-  --chalk:        #3E6E8E;   /* chalkboard blue, teaching accent */
-  --contour:      #B08D4F;   /* elevation-line gold */
-  --cream:        #F7F5EE;
+  /* --- color: the page (dark) --- */
+  --ink:          #ECEFE7;   /* primary text */
+  --ink-soft:     #A8B4AA;   /* muted text */
+  --text:         #D3DACF;   /* long-form text */
+  --bg:           #131815;   /* charcoal */
+  --panel:        #19201C;   /* banded sections */
+  --cream:        #1E2622;   /* card surface */
+  --rule:         rgba(236, 239, 231, 0.14);
+  --rule-soft:    rgba(236, 239, 231, 0.08);
+  --tint:         rgba(236, 239, 231, 0.05);   /* photo frame ground */
+  --blaze:        #E36A40;   /* trail-blaze rust, brightened for dark */
+  --blaze-dim:    #E8825E;
+  --chalk:        #86B6D4;   /* chalkboard blue, teaching accent */
+  --contour:      #C9A764;   /* elevation-line gold */
+  --moss:         #8DBA74;   /* terrain green */
+  --lab-deep:     #0D110F;   /* deepest ground: footer, feature bands */
+  color-scheme: dark;
 
   /* --- type --- */
   --f-display: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
@@ -155,7 +160,7 @@ button:focus-visible {
 .button {
   display: inline-block;
   background: var(--ink);
-  color: var(--cream);
+  color: var(--lab-deep);
   font-family: var(--f-mono);
   font-size: 13px;
   letter-spacing: 0.1em;
@@ -164,14 +169,27 @@ button:focus-visible {
   padding: 15px 26px;
   transition: background-color .15s ease;
 }
-.button:hover { background: var(--blaze); }
+.button:hover { background: var(--blaze); color: var(--lab-deep); }
 
 /* ---------- nav ---------- */
+/* The light surfaces: the nav bar and the tool player's top bar get
+   paper tokens, scoped to the bar. */
+.site-nav,
+.player-bar {
+  --ink:       #1F2B24;
+  --ink-soft:  #48584B;
+  --cream:     #F7F5EE;
+  --rule:      rgba(31, 43, 36, 0.16);
+  --blaze:     #C1502E;
+  --blaze-dim: #A8431F;
+  color-scheme: light;
+  color: var(--ink);
+}
 .site-nav {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgba(243, 240, 231, 0.9);
+  background: rgba(243, 240, 231, 0.95);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--rule);
@@ -318,6 +336,8 @@ button:focus-visible {
   overflow: hidden;
   padding: 80px 0 72px;
 }
+.contour-field path { stroke: var(--ink); }
+.contour-field path:nth-child(2) { stroke: var(--moss); }
 .contour-field {
   position: absolute;
   inset: 0;
@@ -623,7 +643,7 @@ button:focus-visible {
   background: var(--cream);
   color: var(--ink);
 }
-.pill--physics { border-color: rgba(62, 110, 142, 0.4); color: var(--chalk); }
+.pill--physics { border-color: rgba(134, 182, 212, 0.45); color: var(--chalk); }
 
 /* ---------- learning tools: card grid ---------- */
 .tool-grid {
@@ -656,7 +676,7 @@ button:focus-visible {
 .tool-card:not(.tool-card--soon):hover {
   border-color: var(--ink);
   transform: translateY(-3px);
-  box-shadow: 0 10px 24px -14px rgba(31, 43, 36, 0.35);
+  box-shadow: 0 14px 30px -16px rgba(0, 0, 0, 0.7);
 }
 .tool-card > summary:focus-visible { outline: 2px solid var(--blaze); outline-offset: 3px; }
 
@@ -896,8 +916,8 @@ body.dialog-open { overflow: hidden; }
 
 /* ---------- contact ---------- */
 .contact {
-  background: var(--ink);
-  color: var(--cream);
+  background: var(--lab-deep);
+  color: var(--ink);
   position: relative;
   overflow: hidden;
 }
@@ -936,13 +956,13 @@ body.dialog-open { overflow: hidden; }
   padding-bottom: 2px;
 }
 .contact-links a:hover { border-color: var(--blaze); color: var(--blaze); }
-.contact .button { background: var(--blaze); color: #fff; border: 0; padding-bottom: 15px; }
-.contact .button:hover { background: var(--blaze-dim); color: #fff; }
+.contact .button { background: var(--blaze); color: var(--lab-deep); border: 0; padding-bottom: 15px; }
+.contact .button:hover { background: var(--blaze-dim); color: var(--lab-deep); }
 
 /* ---------- footer ---------- */
 .footer {
   padding: 32px 0 36px;
-  background: var(--ink);
+  background: var(--lab-deep);
   border-top: 1px solid rgba(247, 245, 238, 0.12);
 }
 .footer .wrap {
@@ -1043,13 +1063,13 @@ body.lb-open { overflow: hidden; }
 
 .tool-card--members {
   justify-content: center;
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--cream);
+  background: var(--lab-deep);
+  border-color: var(--blaze);
+  color: var(--ink);
 }
 .tool-card--members .tool-card-body { justify-content: center; flex: 0; }
 .tool-card--members .kicker { color: var(--contour); }
-.tool-card--members .tool-card-desc { color: rgba(247, 245, 238, 0.75); }
+.tool-card--members .tool-card-desc { color: var(--ink-soft); }
 .tool-card--members .tool-card-more { border-color: var(--blaze); }
 .tool-card--members:hover .tool-card-more { color: #F0A07F; }
 
@@ -1075,7 +1095,7 @@ body.lb-open { overflow: hidden; }
   padding: 13px 14px;
   color: var(--ink);
   background: var(--cream);
-  border: 1px solid rgba(31, 43, 36, 0.35);
+  border: 1px solid rgba(236, 239, 231, 0.3);
   border-radius: 0;
 }
 .input:focus { outline: 2px solid var(--blaze); outline-offset: 1px; border-color: var(--ink); }
@@ -1106,11 +1126,11 @@ button.button:disabled { opacity: 0.6; cursor: progress; }
   font-size: 15px;
   line-height: 1.5;
   border-left: 3px solid var(--chalk);
-  background: rgba(62, 110, 142, 0.1);
+  background: rgba(134, 182, 212, 0.1);
   color: var(--ink);
 }
-.notice--error { border-color: var(--blaze); background: rgba(193, 80, 46, 0.1); }
-.notice--success { border-color: #2E7D46; background: rgba(46, 125, 70, 0.1); }
+.notice--error { border-color: var(--blaze); background: rgba(227, 106, 64, 0.1); }
+.notice--success { border-color: var(--moss); background: rgba(141, 186, 116, 0.1); }
 
 /* ============================================================
    TOOL PLAYER (tool.html)
@@ -1129,7 +1149,7 @@ body.player {
   gap: 18px;
   height: 56px;
   padding: 0 20px;
-  background: var(--bg);
+  background: #F3F0E7;
   border-bottom: 1px solid var(--rule);
 }
 .player-title {
@@ -1433,6 +1453,7 @@ textarea.input { resize: vertical; min-height: 120px; line-height: 1.5; }
 
 /* ---------- homepage: Learning Lab call-out (dark band on the light site) ---------- */
 .lab-callout {
+  border: 1px solid var(--rule);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1499,7 +1520,7 @@ textarea.input { resize: vertical; min-height: 120px; line-height: 1.5; }
 }
 .offer-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 26px; }
 .offer-actions .read-link { margin-top: 0; }
-.offer--lab { background: #19201C; color: #ECEFE7; border-color: #19201C; border-top-color: #8DBA74; }
+.offer--lab { background: var(--lab-deep); color: var(--ink); border-color: var(--rule); border-top-color: var(--moss); }
 .offer--lab .kicker { color: #8DBA74; }
 .offer--lab p:not(.kicker) { color: #C3CCC0; }
 .offer--lab .button { background: #ECEFE7; color: #131815; }
