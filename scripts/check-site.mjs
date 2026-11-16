@@ -401,6 +401,34 @@ const helpValues = [...cb.matchAll(/name="help_with" value="([^"]+)"/g)].map(m =
 check('Every "help with" option is allowed by the database', helpValues.length === 8 && helpValues.every(v => sql.includes(`'${v}'`)));
 check('Inquiries are insert-only for visitors', /revoke all on public\.inquiries from anon, authenticated;/.test(sql) && !/grant select[^;]*public\.inquiries/i.test(sql));
 
+// ---- tutoring team (generated from content/tutors/ by scripts/build-tutors.mjs) ----
+{
+  const { loadTutors, render: renderTutors } = await import('./build-tutors.mjs');
+  const model = loadTutors();
+  check('Tutor content has no problems (content/tutors/)', model.errors.length === 0, model.errors.slice(0, 5).join('; '));
+  if (!model.errors.length) {
+    const want = renderTutors();
+    const stale = Object.entries(want).filter(([p, h]) => !existsSync(root + p) || read(p) !== h).map(([p]) => p);
+    check('Tutor pages are up to date (node scripts/build-tutors.mjs)', stale.length === 0, stale.join(', '));
+    const unpublished = model.all.filter(t => !t.published && existsSync(root + `tutors/${t.slug}/index.html`)).map(t => t.slug);
+    check('Unpublished tutors have no profile page', unpublished.length === 0, unpublished.join(', '));
+    check('At least one published tutor, and every one has a profile', model.tutors.length > 0 && model.tutors.every(t => existsSync(root + `tutors/${t.slug}/index.html`)));
+    const titles = model.tutors.map(t => (read(`tutors/${t.slug}/index.html`).match(/<title>([^<]*)<\/title>/) || [])[1]);
+    check('Every tutor profile has its own title', new Set(titles).size === titles.length && titles.every(Boolean));
+    const inq = read('tutors/inquire/index.html');
+    check('Inquiry form lists every published tutor', model.tutors.every(t => inq.includes(`<option value="${t.slug}">`)));
+    check('Every profile links to the inquiry form with that tutor chosen', model.tutors.every(t => read(`tutors/${t.slug}/index.html`).includes(`tutors/inquire/?tutor=${t.slug}`)));
+  }
+  const tsql = read('supabase/tutoring.sql');
+  const inq = read('tutors/inquire/index.html');
+  const levelVals = [...inq.matchAll(/<select[^>]*name="student_level"[\s\S]*?<\/select>/g)].flatMap(m => [...m[0].matchAll(/value="([^"]+)"/g)].map(x => x[1]));
+  check('Every inquiry level is allowed by the database', levelVals.length > 0 && levelVals.every(v => tsql.includes(`'${v}'`)));
+  const fmtVals = [...inq.matchAll(/name="format" value="([^"]+)"/g)].map(m => m[1]);
+  check('Every inquiry format is allowed by the database', fmtVals.length > 0 && fmtVals.every(v => tsql.includes(`'${v}'`)));
+  check('Tutoring inquiries are insert-only for visitors', /revoke all on public\.tutoring_inquiries from anon, authenticated;/.test(tsql) && !/grant select[^;]*public\.tutoring_inquiries/i.test(tsql));
+  check('Tutor pages never build HTML from strings', !/\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write/.test(read('js/tutors.js')));
+}
+
 // ---- secrets / private files in the repo ----
 let files = [];
 try {

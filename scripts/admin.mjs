@@ -12,7 +12,7 @@
 //   node scripts/admin.mjs reset-link you@example.com  print that link instead (to send yourself)
 //   node scripts/admin.mjs upload path/to/tool.html tool-04/index.html
 //                                                      put a private tool in the private bucket
-//   node scripts/admin.mjs inquiries [all]             College & Beyond inquiries not yet handled (or all)
+//   node scripts/admin.mjs inquiries [all]             tutoring and College & Beyond inquiries not yet handled (or all)
 //   node scripts/admin.mjs handled <inquiry-id>        mark an inquiry as handled
 //
 // Students and tutors (needs supabase/progress.sql; see docs/PROGRESS-TRACKING.md):
@@ -576,8 +576,22 @@ const commands = {
 
   async inquiries(which) {
     const filter = which === 'all' ? '' : '&handled=eq.false';
+    // Tutoring inquiries (supabase/tutoring.sql), if that file has been run.
+    const tutoring = await api('GET', `/rest/v1/tutoring_inquiries?select=*&order=created_at.desc${filter}`)
+      .catch(e => { if (/^404|PGRST205|42P01/.test(e.message)) return null; throw e; });
+    if (tutoring === null) console.log('\n  (Tutoring inquiries: run supabase/tutoring.sql in the SQL Editor to start receiving them.)');
+    for (const r of tutoring || []) {
+      console.log(`\n  ${r.created_at.slice(0, 16).replace('T', ' ')}  ${r.handled ? '[handled] ' : ''}tutoring`);
+      console.log(`  ${r.name} <${r.email}>  (level: ${r.student_level}, subject: ${r.subject}, format: ${r.format})`);
+      console.log(`  Preferred tutor: ${r.preferred_tutor}`);
+      console.log(`  Help with: ${r.help_with.replace(/\s+/g, ' ')}`);
+      if (r.additional_info) console.log(`  More: ${r.additional_info.replace(/\s+/g, ' ')}`);
+      console.log(`  id: ${r.id}`);
+    }
     const rows = await api('GET', `/rest/v1/inquiries?select=*&order=created_at.desc${filter}`);
-    if (!rows.length) return console.log(`\n  No ${which === 'all' ? '' : 'open '}inquiries.\n`);
+    const total = rows.length + (tutoring || []).length;
+    if (!total) return console.log(`\n  No ${which === 'all' ? '' : 'open '}inquiries.\n`);
+    if (!rows.length) return console.log(`\n  ${total} inquir${total === 1 ? 'y' : 'ies'}. Mark one done with: node scripts/admin.mjs handled <id>\n`);
     for (const r of rows) {
       console.log(`\n  ${r.created_at.slice(0, 16).replace('T', ' ')}  ${r.handled ? '[handled] ' : ''}${r.service}`);
       console.log(`  ${r.name} <${r.email}>  (${r.reaching_out_as}, grade: ${r.grade})`);
@@ -586,12 +600,14 @@ const commands = {
       if (r.message) console.log(`  Message: ${r.message.replace(/\s+/g, ' ')}`);
       console.log(`  id: ${r.id}`);
     }
-    console.log(`\n  ${rows.length} inquir${rows.length === 1 ? 'y' : 'ies'}. Mark one done with: node scripts/admin.mjs handled <id>\n`);
+    console.log(`\n  ${total} inquir${total === 1 ? 'y' : 'ies'}. Mark one done with: node scripts/admin.mjs handled <id>\n`);
   },
 
   async handled(id) {
     if (!/^[0-9a-f-]{36}$/i.test(id || '')) die('Usage: handled <inquiry-id>  (the id printed by "inquiries")');
-    const rows = await api('PATCH', `/rest/v1/inquiries?id=eq.${id}`, { handled: true }, { Prefer: 'return=representation' });
+    let rows = await api('PATCH', `/rest/v1/inquiries?id=eq.${id}`, { handled: true }, { Prefer: 'return=representation' });
+    if (!rows.length) rows = await api('PATCH', `/rest/v1/tutoring_inquiries?id=eq.${id}`, { handled: true }, { Prefer: 'return=representation' })
+      .catch(e => { if (/^404|PGRST205|42P01/.test(e.message)) return []; throw e; });
     if (!rows.length) die(`No inquiry with id ${id}.`);
     console.log(`\n  Marked ${rows[0].name}'s inquiry as handled.\n`);
   },
