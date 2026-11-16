@@ -260,9 +260,6 @@
 body.lab--ski { --moss: #8EC5E0; }
 .lab--ski .lab-head { background: radial-gradient(120% 140% at 85% 0%, rgba(142, 197, 224, 0.13), transparent 60%); }
 .lab--ski .pill--moss { border-color: rgba(142, 197, 224, 0.45); }
-.lab-head .lab-ski-title { margin: 14px 0 34px; line-height: 0; }
-/* The Mathlete Ski wordmark (assets/mathlete-ski-logo.png: white on transparent). */
-.lab-ski-logo { display: block; width: min(100%, max(62vw, 300px), 760px); height: auto; }
 
 /* ---------- Riding curriculum (riding/): drafts for coach review ---------- */
 .ride-banner {
