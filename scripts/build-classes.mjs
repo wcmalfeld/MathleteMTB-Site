@@ -68,7 +68,7 @@ function page({ path, depth, title, description, body, noindex }) {
     <a href="index.html" class="brand">Mathlete<span>.</span>MTB</a>
     <ul class="nav-links">
       <li><a href="index.html">The Lab</a></li>
-      <li><a href="classes/" class="active"${depth === 1 ? ' aria-current="page"' : ''}>Classes</a></li>
+      <li><a href="classes/" class="active"${depth === 1 ? ' aria-current="page"' : ''}>Courses</a></li>
       <li><a href="ski/">Ski</a></li>
       <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
       <li><a href="about.html">About</a></li>
