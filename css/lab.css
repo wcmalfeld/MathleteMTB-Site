@@ -338,3 +338,44 @@ body.lab--ski { --moss: #8EC5E0; }
 .ride-sources { list-style: none; margin: 0; padding: 0; }
 .ride-source { display: flex; flex-direction: column; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
 .ride-source-note { font-size: 15px; color: var(--ink-soft); }
+
+/* ---------- field notes: annotated real-jump photos in a tool's details ---------- */
+.field-notes { grid-column: 1 / -1; padding-top: 30px; border-top: 1px solid var(--rule); }
+.field-notes-head { max-width: 560px; margin-bottom: 22px; }
+.field-notes-head .kicker { margin-bottom: 8px; }
+.field-notes-title { margin: 0 0 8px; font-family: var(--f-display); font-size: clamp(22px, 2.4vw, 28px); line-height: 1.1; color: var(--ink); }
+.field-notes-lede { margin: 0; color: var(--ink-soft); }
+/* Portrait 3:4, portrait 3:4, landscape ~1.53:1: these column widths
+   make all three photos the same height. */
+.field-notes-grid { display: grid; grid-template-columns: 1fr 1fr 2.04fr; gap: 16px; align-items: start; }
+.field-note { margin: 0; }
+.field-note .fig-frame { position: relative; border: 1px solid var(--rule); }
+.field-note img { display: block; height: auto; }
+.field-note figcaption { margin-top: 12px; font-size: 14px; line-height: 1.5; color: var(--text); }
+.field-step { display: block; margin-bottom: 4px; font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--blaze-dim); }
+
+.field-ink { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.field-ink path, .field-ink circle { fill: none; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.field-ink .fi-path { stroke: #F3F0E7; stroke-width: 2.5; stroke-dasharray: 2 7; }
+.field-ink .fi-head { stroke: #F3F0E7; stroke-width: 2.5; }
+.field-ink .fi-arc { stroke: var(--blaze); stroke-width: 3; stroke-dasharray: 9 7; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6)); }
+.field-ink .fi-dot { fill: var(--blaze); stroke: #F3F0E7; stroke-width: 2; }
+.field-ink .fi-dot--peak { fill: #F3F0E7; stroke: var(--blaze); }
+.field-ink .fi-grid path { stroke: rgba(243, 240, 231, 0.32); stroke-width: 1; }
+.field-ink .fi-axis { stroke: rgba(243, 240, 231, 0.8); stroke-width: 1.5; }
+/* Labels are HTML, not SVG text, so they stay readable however small the photo is. */
+.field-chips { position: absolute; inset: 0; pointer-events: none; }
+.fi-chip { position: absolute; padding: 4px 7px; background: rgba(13, 17, 15, 0.84); color: #F3F0E7; font-family: var(--f-mono); font-size: 10.5px; line-height: 1.2; letter-spacing: 0.04em; white-space: nowrap; }
+.fi-chip--eq { font-size: 11.5px; padding: 6px 9px; border-left: 2px solid var(--blaze); }
+@media (prefers-reduced-motion: no-preference) {
+  .field-ink .fi-arc--trace { animation: fi-trace 2.4s linear infinite; }
+  @keyframes fi-trace { to { stroke-dashoffset: -32; } }
+}
+
+@media (max-width: 760px) {
+  .field-notes-grid { grid-template-columns: 1fr 1fr; }
+  .field-note--wide { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+  .field-notes-grid { grid-template-columns: 1fr; gap: 24px; }
+}

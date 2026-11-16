@@ -20,7 +20,7 @@
    description lives in content/tool-details/<id>.html.
 
    To change which tools are public, change `access` here. The number of
-   public tools must match MATHLETE_PUBLIC_TOOL_COUNT at the bottom (now 6);
+   public tools must match MATHLETE_PUBLIC_TOOL_COUNT at the bottom (now 5);
    the site warns in the browser console otherwise. Making a tool public also means
    hosting it publicly (`url`); making one private means taking its
    public copy down and uploading it with `node scripts/admin.mjs upload`.
@@ -42,6 +42,21 @@
    ============================================================ */
 window.MATHLETE_TOOLS = [
   {
+    id: 'jump-lab',
+    name: 'Jump Lab',
+    access: 'public',
+    status: 'live',
+    url: 'https://www.mathletemtb.com/learning-lab/jump-lab/',   // in this repo: learning-lab/jump-lab/
+    category: 'engineering',
+    summary: 'Set the speed, angle and heights of a jump, predict where the rider lands, then send it and check the projectile-motion math.',
+    image: 'assets/jump-lab.jpg',
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    subjects: ['algebra', 'trigonometry', 'physics'],
+    duration: 'challenge',
+    minutes: '15-30 min',
+    featured: true
+  },
+  {
     id: 'trail-builder',
     name: 'Trail Builder',
     access: 'public',
@@ -59,9 +74,9 @@ window.MATHLETE_TOOLS = [
   {
     id: 'physics-playground',
     name: 'MTB Physics Playground',
-    access: 'public',
+    access: 'private',
     status: 'live',
-    url: 'https://www.mathletemtb.com/learning-lab/physics-playground/',   // in this repo: learning-lab/physics-playground/ (a build; see scripts/import-playground.mjs)
+    file: 'physics-playground/index.html',   // source: private-tools/physics-playground/ (packed by scripts/import-playground.mjs)
     category: 'engineering',
     summary: 'Launch a rider off a jump, predict the landing, then see the projectile-motion math that explains it.',
     image: 'assets/physics-playground.jpg',
@@ -69,7 +84,7 @@ window.MATHLETE_TOOLS = [
     subjects: ['algebra', 'trigonometry', 'physics'],
     duration: 'challenge',
     minutes: '10-20 min',
-    featured: true
+    featured: false
   },
   {
     id: 'gear-ratio-lab',
@@ -102,21 +117,6 @@ window.MATHLETE_TOOLS = [
     featured: true
   },
   {
-    id: 'jump-lab',
-    name: 'Jump Lab',
-    access: 'public',
-    status: 'live',
-    url: 'https://www.mathletemtb.com/learning-lab/jump-lab/',   // in this repo: learning-lab/jump-lab/
-    category: 'engineering',
-    summary: 'Set the speed, angle and heights of a jump, predict where the rider lands, then send it and check the projectile-motion math.',
-    image: 'assets/jump-lab.jpg',
-    difficulty: ['beginner', 'intermediate', 'advanced'],
-    subjects: ['algebra', 'trigonometry', 'physics'],
-    duration: 'challenge',
-    minutes: '15-30 min',
-    featured: true
-  },
-  {
     id: 'tool-05',
     name: 'Tool 05',
     access: 'public',
@@ -139,4 +139,4 @@ window.MATHLETE_TOOLS = [
   }
 ];
 
-window.MATHLETE_PUBLIC_TOOL_COUNT = 6;
+window.MATHLETE_PUBLIC_TOOL_COUNT = 5;

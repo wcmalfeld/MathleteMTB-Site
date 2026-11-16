@@ -161,15 +161,19 @@ appears once), then signed in, and check the rows with
 
 The Playground is a React app in its own repository. Its tracking code is
 `src/progress.tsx` there; it reports to `window.MathleteProgress` when the
-app runs on this site and does nothing anywhere else. To publish a new
-version:
+app runs on this site and does nothing anywhere else. It is members-only
+(since 2026-11-15): members open it through `tool.html?id=physics-playground`.
+To publish a new version:
 
 1. In the Playground folder: `npm run build`
 2. In this folder: `node scripts/import-playground.mjs /path/to/mtb-physics/dist`
-3. `node scripts/check-site.mjs`, then commit and push this site.
+3. Upload it: `node scripts/admin.mjs upload private-tools/physics-playground/index.html physics-playground/index.html`
+4. `node scripts/check-site.mjs`
 
-The import replaces `learning-lab/physics-playground/` and adds the three
-site scripts to its `index.html`. Don't edit that folder by hand. If you
+The import packs the build into one file,
+`private-tools/physics-playground/index.html` (git-ignored), with a line
+that lets the app use the player page's `window.MathleteProgress`.
+`learning-lab/physics-playground/` now only redirects old links to the player. If you
 add a new kind of question to `src/progress.tsx`, register it in
 `supabase/progress.sql` and add it to the list in `scripts/check-site.mjs`.
 

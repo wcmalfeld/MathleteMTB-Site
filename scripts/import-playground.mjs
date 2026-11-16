@@ -1,23 +1,25 @@
 #!/usr/bin/env node
-// Copies a build of the MTB Physics Playground into this site, so it shares
-// the site's login and can save a signed-in student's progress.
+// Packs a build of the MTB Physics Playground into the single HTML file that
+// members open through tool.html (it is a members-only tool; see docs/ACCESS.md).
 //
 // The Playground is a React app with its own repository (wcmalfeld/mtb-physics).
 // After changing it there:
 //   1. in that folder:   npm run build
 //   2. in this folder:   node scripts/import-playground.mjs /path/to/mtb-physics/dist
-//   3. node scripts/check-site.mjs, then commit and push this site as usual.
+//   3. upload it:        node scripts/admin.mjs upload private-tools/physics-playground/index.html physics-playground/index.html
+//   4. node scripts/check-site.mjs
 //
-// What it does: replaces learning-lab/physics-playground/ with the build,
-// and adds to its index.html the three site scripts progress tracking needs
-// (the app itself only looks for window.MathleteProgress; see src/progress.tsx
-// in the Playground). Nothing else in the build is changed.
+// What it does: inlines the build's one script and one stylesheet into its
+// index.html, and adds a line that lets the app find window.MathleteProgress
+// on the player page (tool.html loads js/progress.js; the app runs in an
+// iframe inside it). The result goes to private-tools/physics-playground/,
+// which is git-ignored, so it is never published with the site.
 
-import { cpSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = new URL('..', import.meta.url).pathname;
-const dest = root + 'learning-lab/physics-playground/';
+const outDir = root + 'private-tools/physics-playground/';
 const src = process.argv[2] && resolve(process.argv[2]);
 
 function die(msg) { console.error('\n  ' + msg + '\n'); process.exit(1); }
@@ -25,24 +27,32 @@ if (!src) die('Usage: node scripts/import-playground.mjs /path/to/mtb-physics/di
 if (!existsSync(src + '/index.html') || !existsSync(src + '/assets')) die(`${src} doesn't look like a Playground build (no index.html and assets/). Run "npm run build" there first.`);
 
 let html = readFileSync(src + '/index.html', 'utf8');
-if (/(src|href)="\//.test(html)) die('The build uses absolute paths ("/assets/..."). Keep base: "./" in the Playground\'s vite.config.ts and rebuild.');
-if (!html.includes('</head>')) die('Unexpected index.html: no </head>.');
+const scripts = [...html.matchAll(/<script type="module"[^>]*src="\.\/assets\/([^"]+\.js)"[^>]*><\/script>/g)];
+const styles = [...html.matchAll(/<link rel="stylesheet"[^>]*href="\.\/assets\/([^"]+\.css)"[^>]*>/g)];
+if (scripts.length !== 1 || styles.length > 1) die('Expected one module script and at most one stylesheet in the build\'s index.html.');
 
-const inject = `    <meta name="description" content="Launch a rider off a jump, predict the landing, then see the projectile-motion math that explains it.">
-    <link rel="canonical" href="https://www.mathletemtb.com/learning-lab/physics-playground/">
-    <!-- Added by scripts/import-playground.mjs: saves a signed-in student's
-         answers to their Mathlete account. The app works the same without them. -->
-    <script src="../../js/supabase-config.js"></script>
-    <script src="../../js/auth.js?v=8"></script>
-    <script src="../../js/progress.js?v=3"></script>
-  </head>`;
-html = html.replace('</head>', inject.trimStart());
+const js = readFileSync(src + '/assets/' + scripts[0][1], 'utf8');
+if (/<\/script/i.test(js)) die('The script contains "</script", so it can\'t be inlined safely.');
+if (/\bimport\(/.test(js)) die('The build has lazy-loaded chunks (import(...)); a single-file tool can\'t load them. Turn code splitting off in the Playground and rebuild.');
+const css = styles.length ? readFileSync(src + '/assets/' + styles[0][1], 'utf8') : '';
+if (/<\/style/i.test(css)) die('The stylesheet contains "</style", so it can\'t be inlined safely.');
+if (/url\((?!["']?data:)/.test(css)) die('The stylesheet loads files with url(...); those won\'t resolve in a single-file tool.');
 
-rmSync(dest, { recursive: true, force: true });
-cpSync(src, dest, { recursive: true });
-writeFileSync(dest + 'index.html', html);
+// A build copied from an older public copy of the site may still carry
+// the site scripts and the canonical link it used to have; drop them.
+html = html
+  .replace(/\s*<!-- Added by scripts\/import-playground\.mjs[\s\S]*?-->/, '')
+  .replace(/\s*<script src="\.\.\/\.\.\/js\/[^"]+"><\/script>/g, '')
+  .replace(/\s*<link rel="canonical"[^>]*>/, '');
 
-const js = readFileSync(dest + 'assets/' + html.match(/assets\/(index-[^"]+\.js)/)[1], 'utf8');
-console.log(`\n  Copied ${src} -> learning-lab/physics-playground/`);
+const shim = '<script>/* Added by scripts/import-playground.mjs: use the player page\'s progress tracking. */try{if(!window.MathleteProgress&&window.parent!==window)window.MathleteProgress=window.parent.MathleteProgress;}catch(e){}</script>';
+html = html
+  .replace(scripts[0][0], () => shim + '\n    <script type="module">' + js + '</script>')
+  .replace(styles.length ? styles[0][0] : '\u0000', () => '<style>' + css + '</style>');
+
+mkdirSync(outDir, { recursive: true });
+writeFileSync(outDir + 'index.html', html);
+
+console.log(`\n  Packed ${src} -> private-tools/physics-playground/index.html (${Math.round(html.length / 1024)} KB)`);
 if (!js.includes('MathleteProgress')) console.log('  WARNING: this build has no progress tracking in it (src/progress.tsx missing?). Students\' answers will not be saved.');
-console.log('  Next: node scripts/check-site.mjs, then commit and push.\n');
+console.log('  Next: node scripts/admin.mjs upload private-tools/physics-playground/index.html physics-playground/index.html\n');

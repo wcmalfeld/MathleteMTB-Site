@@ -9,7 +9,7 @@ Supabase's database and file storage, not in the browser.
 | What | Who can use it | Where it's enforced |
 |---|---|---|
 | Homepage, About, Login, Account pages | Everyone | Not protected (public pages) |
-| **Public tools** (5 live + 1 coming soon) | Everyone, no login | Hosted publicly, e.g. `wcmalfeld.github.io/...` |
+| **Public tools** (4 live + 1 coming soon) | Everyone, no login | Hosted publicly, e.g. `wcmalfeld.github.io/...` |
 | **Private tools** | Signed-in members with active access | Supabase Storage row-level security |
 | Member list (`public.members`) | Each member sees only their own row; only you can change it | Postgres row-level security + revoked write privileges |
 
@@ -36,20 +36,23 @@ that server-side check.
 | id | Tool | Access |
 |---|---|---|
 | `trail-builder` | Trail Builder | public |
-| `physics-playground` | MTB Physics Playground | public |
+| `physics-playground` | MTB Physics Playground | **private** (bucket: `physics-playground/index.html`) |
 | `gear-ratio-lab` | Gear Ratio Lab | public |
 | `strava-showdown` | Strava Showdown | public |
 | `jump-lab` | Jump Lab | public |
 | `tool-05` | Tool 06 (Coming Soon placeholder) | public |
 | `summit-expedition` | Summit Expedition | **private** (bucket: `summit-expedition/index.html`) |
 
-All five live public tools are in this repo at `learning-lab/<id>/` (so they
+All four live public tools are in this repo at `learning-lab/<id>/` (so they
 share the site's login and can save a signed-in student's progress; see
-`docs/PROGRESS-TRACKING.md`). The MTB Physics Playground is developed in its
-own repository and its build is copied in with
-`node scripts/import-playground.mjs`. The Coming Soon placeholder is public
-too, so visitors see six cards.
-(`MATHLETE_PUBLIC_TOOL_COUNT` at the bottom of `js/tools-config.js` is now 6.)
+`docs/PROGRESS-TRACKING.md`). The Coming Soon placeholder is public too.
+(`MATHLETE_PUBLIC_TOOL_COUNT` at the bottom of `js/tools-config.js` is now 5.)
+The MTB Physics Playground became members-only on 2026-11-15. It is developed
+in its own repository; `node scripts/import-playground.mjs` packs its build
+into `private-tools/physics-playground/index.html` for upload, and
+`learning-lab/physics-playground/` only redirects old links to the player.
+Like every private tool, schools' licences don't include it (private tools
+are direct-member access only).
 Summit Expedition is members-only: its file lives in the private bucket, and
 its source is kept (git-ignored) in `private-tools/summit-expedition/`.
 **Its old public copy at `wcmalfeld.github.io/Summit-Expedition---Mathlete/`
