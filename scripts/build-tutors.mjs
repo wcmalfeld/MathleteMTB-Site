@@ -97,6 +97,9 @@ function page({ path, depth, title, description, image, body, scripts = [], noin
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/assets/icons/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <base href="${base}">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
