@@ -71,6 +71,7 @@ function page({ path, depth, title, description, body }) {
       <li><a href="classes/">Courses</a></li>
       <li><a href="ski/">Ski</a></li>
       <li><a href="tutoring.html"><span class="nav-long">Private </span>Tutoring</a></li>
+      <li><a href="resources/">Resources</a></li>
       <li><a href="about.html">About</a></li>
     </ul>
     <a class="nav-book" href="book.html">Book a Session</a>

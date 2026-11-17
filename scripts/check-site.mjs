@@ -429,6 +429,28 @@ check('Inquiries are insert-only for visitors', /revoke all on public\.inquiries
   check('Tutor pages never build HTML from strings', !/\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write/.test(read('js/tutors.js')));
 }
 
+// ---- Resources library (scripts/build-resources.mjs, supabase/library.sql) ----
+{
+  const { render: renderResources } = await import('./build-resources.mjs');
+  const want = renderResources();
+  const stale = Object.entries(want).filter(([p, h]) => !existsSync(root + p) || read(p) !== h).map(([p]) => p);
+  check('Resources pages are up to date (node scripts/build-resources.mjs)', stale.length === 0, stale.join(', '));
+  const lsql = read('supabase/library.sql');
+  check('Library tables are read-only to the browser (changes only through checked functions)',
+    /revoke all on public\.library_items from anon, authenticated;/.test(lsql) && /revoke all on public\.library_categories from anon, authenticated;/.test(lsql)
+    && !/grant (insert|update|delete|all)[^;]*on public\.library_/i.test(lsql));
+  const mimes = (lsql.match(/allowed_mime_types\)\s*values[\s\S]*?array\[([\s\S]*?)\]\)/) || [])[1] || '';
+  check('Library bucket is private and refuses HTML, SVG and scripts', /\('library', 'library', false/.test(lsql) && mimes.length > 0 && !/html|svg|javascript|octet-stream|x-ms/.test(mimes));
+  check('Library pages never build HTML from strings', ['js/library-common.js', 'js/library.js', 'js/library-manage.js'].every(f => !/\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write/.test(read(f))));
+  const common = read('js/library-common.js');
+  check('Video embeds are built from YouTube/Vimeo ids only', common.includes("'https://www.youtube-nocookie.com/embed/' + id") && common.includes("'https://player.vimeo.com/video/' + id"));
+  let htmlFiles = [];
+  try { htmlFiles = execSync("git ls-files --cached --others --exclude-standard '*.html'", { cwd: root, encoding: 'utf8' }).split('\n').filter(Boolean); } catch {}
+  const navPages = htmlFiles.filter(f => existsSync(root + f) && read(f).includes('class="nav-links"'));
+  const noLink = navPages.filter(f => !read(f).includes('<li><a href="resources/"'));
+  check('Every page’s main menu links to Resources', noLink.length === 0, noLink.slice(0, 5).join(', '));
+}
+
 // ---- secrets / private files in the repo ----
 let files = [];
 try {
