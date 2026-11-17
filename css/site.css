@@ -367,7 +367,7 @@ button:focus-visible {
   text-transform: uppercase;
   margin: 0 0 26px;
 }
-.hero-title span { color: var(--blaze); }
+.hero-title span { color: inherit; }   /* headings are one colour (white) */
 .hero-lede {
   font-family: var(--f-serif);
   font-size: clamp(20px, 2.2vw, 24px);

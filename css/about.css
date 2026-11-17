@@ -24,7 +24,7 @@
   margin: 0;
   text-wrap: balance;
 }
-.ab-h2 span { color: var(--blaze); }
+.ab-h2 span { color: inherit; }   /* headings are one colour (white) */
 .ab-intro {
   font-family: var(--f-serif);
   font-size: clamp(19px, 2vw, 22px);
@@ -83,7 +83,7 @@
   margin: 0 0 28px;
   text-wrap: balance;
 }
-.ab-hero-title span { color: var(--blaze); }
+.ab-hero-title span { color: inherit; }
 .ab-hero-sub {
   font-family: var(--f-serif);
   font-size: clamp(21px, 2.3vw, 26px);
@@ -480,7 +480,7 @@
   text-transform: uppercase;
 }
 .ab-mtb-lines span { display: block; }
-.ab-mtb-lines em { font-style: normal; color: var(--blaze); }
+.ab-mtb-lines em { font-style: normal; color: inherit; }
 .ab-examples {
   list-style: none;
   margin: 0;
@@ -574,8 +574,6 @@
   text-transform: uppercase;
 }
 .ab-final span { display: block; }
-.ab-final span:nth-child(2) { color: var(--blaze); }
-.ab-final span:nth-child(3) { color: var(--moss); }
 .ab-mission .hero-actions .read-link { margin-top: 0; }
 .ab-brand-line { margin: 56px 0 0; padding-top: 22px; border-top: 1px solid var(--rule); font-family: var(--f-mono); font-size: 12.5px; letter-spacing: 0.06em; color: var(--ink-soft); }
 
