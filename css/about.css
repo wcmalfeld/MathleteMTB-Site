@@ -101,6 +101,38 @@
 }
 .ab-hero .hero-actions .read-link { margin-top: 0; }
 
+/* the La Bassa photo: a tilted print pinned over the terminal's top-right corner */
+.ab-hero-visual {
+  position: relative;
+  padding: 96px 0 0 0;
+}
+.ab-print {
+  position: absolute;
+  top: 0;
+  right: -36px;
+  width: 58%;
+  margin: 0;
+  padding: 8px 8px 0;
+  background: #F1EEE6;
+  transform: rotate(4deg);
+  box-shadow: 0 26px 50px -18px rgba(0, 0, 0, 0.9);
+  z-index: 2;
+}
+.ab-print img { display: block; width: 100%; height: auto; }
+.ab-print figcaption {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #3A2A1C;
+  text-align: right;
+  padding: 6px 2px 7px;
+}
+.ab-hero-visual .ab-term {
+  position: relative;
+  z-index: 1;
+  width: 88%;
+}
+
 /* the "terminal window" figure */
 .ab-term {
   margin: 0;
@@ -139,6 +171,15 @@
   .ab-hero { padding: 64px 0 72px; }
   .ab-hero-grid { grid-template-columns: 1fr; gap: 44px; }
   .ab-term { max-width: 560px; }
+  .ab-hero-visual { max-width: 600px; }
+  .ab-hero-visual { padding-top: 120px; }
+  .ab-print { right: 0; width: 50%; }
+}
+@media (max-width: 560px) {
+  .ab-hero-visual { padding-top: 100px; }
+  .ab-print { width: 58%; right: 4px; padding: 6px 6px 0; transform: rotate(3deg); }
+  .ab-print figcaption { font-size: 10px; padding: 4px 2px 5px; text-wrap: balance; }
+  .ab-hero-visual .ab-term { width: 94%; }
 }
 
 /* ---------- 2. more than one way ---------- */
