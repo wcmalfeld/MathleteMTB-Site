@@ -20,7 +20,7 @@
    description lives in content/tool-details/<id>.html.
 
    To change which tools are public, change `access` here. The number of
-   public tools must match MATHLETE_PUBLIC_TOOL_COUNT at the bottom (now 6);
+   public tools must match MATHLETE_PUBLIC_TOOL_COUNT at the bottom (now 7);
    the site warns in the browser console otherwise. Making a tool public also means
    hosting it publicly (`url`); making one private means taking its
    public copy down and uploading it with `node scripts/admin.mjs upload`.
@@ -53,6 +53,21 @@ window.MATHLETE_TOOLS = [
     difficulty: ['beginner', 'intermediate', 'advanced'],
     subjects: ['algebra', 'trigonometry', 'physics'],
     duration: 'challenge',
+    minutes: '15-30 min',
+    featured: true
+  },
+  {
+    id: 'berm-lab',
+    name: 'Berm Lab',
+    access: 'public',
+    status: 'live',
+    url: 'https://www.mathletemtb.com/learning-lab/berm-lab/',   // in this repo: learning-lab/berm-lab/
+    category: 'engineering',
+    summary: 'Pick a tight, middle or wide line, set your speed and bank the berm, then watch the forces, lean and grip demand of a corner change.',
+    image: 'assets/berm-lab.jpg',
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    subjects: ['geometry', 'trigonometry', 'algebra', 'physics'],
+    duration: 'extended',
     minutes: '15-30 min',
     featured: true
   },
@@ -154,4 +169,4 @@ window.MATHLETE_TOOLS = [
   }
 ];
 
-window.MATHLETE_PUBLIC_TOOL_COUNT = 6;
+window.MATHLETE_PUBLIC_TOOL_COUNT = 7;

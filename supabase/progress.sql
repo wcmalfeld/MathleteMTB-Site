@@ -563,6 +563,78 @@ insert into public.question_skills (question_id, skill_id) values
   ('carve-lab:c5-math',    'forces-motion')
 on conflict do nothing;
 
+-- Berm Lab (learning-lab/berm-lab/, Mathlete MTB): the Challenge Arena's
+-- graded steps: each prediction (one try, locked in before the simulator),
+-- the maths questions, and the graded simulator runs (the C3 zero-grip
+-- target; the C6 design). Must match questionKinds() in
+-- learning-lab/berm-lab/logic/challenges.js (scripts/check-site.mjs checks).
+insert into public.questions (id, game_id, title, question_type, difficulty) values
+  ('berm-lab:c1-predict', 'berm-lab', 'Pick Your Line: prediction (lowest acceleration)', 'prediction', 'beginner'),
+  ('berm-lab:c1-accel', 'berm-lab', 'Pick Your Line: acceleration on the middle line', 'numeric', 'beginner'),
+  ('berm-lab:c1-ratio', 'berm-lab', 'Pick Your Line: tight vs. wide acceleration', 'choice', 'beginner'),
+  ('berm-lab:c2-predict', 'berm-lab', 'Speed Is Squared: prediction (double the speed)', 'prediction', 'beginner'),
+  ('berm-lab:c2-convert', 'berm-lab', 'Speed Is Squared: convert 20 km/h to m/s', 'numeric', 'beginner'),
+  ('berm-lab:c2-accel', 'berm-lab', 'Speed Is Squared: acceleration at twice the speed', 'numeric', 'beginner'),
+  ('berm-lab:c3-predict', 'berm-lab', 'Berm Sweet Spot: prediction (matched angle)', 'prediction', 'intermediate'),
+  ('berm-lab:c3-angle', 'berm-lab', 'Berm Sweet Spot: calculate the matched angle', 'numeric', 'intermediate'),
+  ('berm-lab:c3-sim', 'berm-lab', 'Berm Sweet Spot: zero grip demand in the simulator', 'other', 'intermediate'),
+  ('berm-lab:c4-predict', 'berm-lab', 'Flat vs. Berm: prediction (which needs more friction)', 'prediction', 'intermediate'),
+  ('berm-lab:c4-flat', 'berm-lab', 'Flat vs. Berm: grip needed on the flat corner', 'numeric', 'intermediate'),
+  ('berm-lab:c4-source', 'berm-lab', 'Flat vs. Berm: where the inward force comes from', 'choice', 'intermediate'),
+  ('berm-lab:c5-predict', 'berm-lab', 'Does Weight Matter: prediction', 'prediction', 'intermediate'),
+  ('berm-lab:c5-force', 'berm-lab', 'Does Weight Matter: inward force for 100 kg', 'numeric', 'intermediate'),
+  ('berm-lab:c5-grip', 'berm-lab', 'Does Weight Matter: grip coefficient vs. mass', 'choice', 'intermediate'),
+  ('berm-lab:c6-predict', 'berm-lab', 'The Perfect Berm: prediction (is flat enough)', 'prediction', 'advanced'),
+  ('berm-lab:c6-design', 'berm-lab', 'The Perfect Berm: a design within the grip limit', 'other', 'advanced'),
+  ('berm-lab:c6-math', 'berm-lab', 'The Perfect Berm: q and grip for your design', 'numeric', 'advanced'),
+  ('berm-lab:c6-min', 'berm-lab', 'The Perfect Berm: smallest workable berm angle', 'numeric', 'advanced')
+on conflict (id) do update
+  set title = excluded.title, question_type = excluded.question_type, difficulty = excluded.difficulty;
+
+insert into public.question_skills (question_id, skill_id) values
+  ('berm-lab:c1-predict', 'geometry'),
+  ('berm-lab:c1-accel', 'geometry'),
+  ('berm-lab:c1-accel', 'speed-velocity'),
+  ('berm-lab:c1-accel', 'forces-motion'),
+  ('berm-lab:c1-ratio', 'geometry'),
+  ('berm-lab:c1-ratio', 'ratios-proportions'),
+  ('berm-lab:c2-predict', 'algebra'),
+  ('berm-lab:c2-predict', 'speed-velocity'),
+  ('berm-lab:c2-convert', 'algebra'),
+  ('berm-lab:c2-convert', 'speed-velocity'),
+  ('berm-lab:c2-convert', 'ratios-proportions'),
+  ('berm-lab:c2-accel', 'algebra'),
+  ('berm-lab:c2-accel', 'speed-velocity'),
+  ('berm-lab:c2-accel', 'forces-motion'),
+  ('berm-lab:c3-predict', 'trigonometry'),
+  ('berm-lab:c3-angle', 'trigonometry'),
+  ('berm-lab:c3-angle', 'forces-motion'),
+  ('berm-lab:c3-sim', 'trigonometry'),
+  ('berm-lab:c4-predict', 'forces-motion'),
+  ('berm-lab:c4-predict', 'trigonometry'),
+  ('berm-lab:c4-flat', 'forces-motion'),
+  ('berm-lab:c4-flat', 'trigonometry'),
+  ('berm-lab:c4-flat', 'algebra'),
+  ('berm-lab:c4-source', 'forces-motion'),
+  ('berm-lab:c4-source', 'trigonometry'),
+  ('berm-lab:c5-predict', 'forces-motion'),
+  ('berm-lab:c5-force', 'forces-motion'),
+  ('berm-lab:c5-force', 'algebra'),
+  ('berm-lab:c5-grip', 'forces-motion'),
+  ('berm-lab:c6-predict', 'trigonometry'),
+  ('berm-lab:c6-predict', 'forces-motion'),
+  ('berm-lab:c6-predict', 'algebra'),
+  ('berm-lab:c6-design', 'trigonometry'),
+  ('berm-lab:c6-design', 'forces-motion'),
+  ('berm-lab:c6-design', 'algebra'),
+  ('berm-lab:c6-math', 'trigonometry'),
+  ('berm-lab:c6-math', 'forces-motion'),
+  ('berm-lab:c6-math', 'algebra'),
+  ('berm-lab:c6-min', 'trigonometry'),
+  ('berm-lab:c6-min', 'forces-motion'),
+  ('berm-lab:c6-min', 'algebra')
+on conflict do nothing;
+
 -- 4. Sessions, attempts and the review queue ------------------------
 create table if not exists public.game_sessions (
   id               uuid primary key,          -- made in the browser

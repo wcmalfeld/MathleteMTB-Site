@@ -17,7 +17,8 @@ window.MATHLETE_LAB_CATEGORIES = [
     name: 'Engineering Lab',
     focus: 'Physics, motion and mechanical systems: what happens when a rider leaves the lip of a jump, carves a berm or compresses the fork.',
     concepts: ['Algebra', 'Geometry', 'Trigonometry', 'Quadratic functions', 'Physics'],
-    upcoming: ['Berm Lab', 'Suspension Setup Studio']
+    // Berm Lab is live (tools-config.js).
+    upcoming: ['Suspension Setup Studio']
   },
   {
     id: 'trail-crew',

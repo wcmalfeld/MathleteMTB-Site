@@ -59,7 +59,8 @@ const jumpLabKinds = html => [
 const playgroundKinds = () => ['predict-outcome', 'predict-distance', 'predict-airtime', 'q-compare-runs', 'q-angle-components', 'calc-vx-q', 'calc-vy-q', 'compare-vy-q', 'height-time-q', 'graph-q'];
 // Carve Lab: its challenge data lists them (questionKinds()).
 const carveKinds = (await import('../learning-lab/carve-lab/logic/challenges.js')).questionKinds().map(k => k.kind);
-const QUESTION_KINDS = { 'trail-builder': KIND, 'gear-ratio-lab': KIND, 'strava-showdown': KIND, 'jump-lab': jumpLabKinds, 'physics-playground': playgroundKinds, 'carve-lab': () => carveKinds };
+const bermKinds = (await import('../learning-lab/berm-lab/logic/challenges.js')).questionKinds().map(k => k.kind);
+const QUESTION_KINDS = { 'trail-builder': KIND, 'gear-ratio-lab': KIND, 'strava-showdown': KIND, 'jump-lab': jumpLabKinds, 'physics-playground': playgroundKinds, 'carve-lab': () => carveKinds, 'berm-lab': () => bermKinds };
 const hosted = pub.filter(t => (t.url || '').startsWith(SITE_ORIGIN)).map(t => ({ ...t, page: t.url.slice(SITE_ORIGIN.length) + 'index.html' }));
 check('Tools on mathletemtb.com live at learning-lab/<id>/ in this repo', hosted.every(t => t.page === `learning-lab/${t.id}/index.html` && existsSync(root + t.page)), hosted.map(t => t.page).join(', '));
 for (const t of hosted) {
@@ -196,6 +197,29 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   const t = tools.find(x => x.id === 'carve-lab');
   check('Carve Lab is a live public tool in Mathlete Ski → Tuning Bench, with its card image', !!t && t.status === 'live' && t.access === 'public' && t.category === 'tuning-bench' && existsSync(root + t.image) && t.url.endsWith('/learning-lab/carve-lab/'));
   check('Carve Lab is listed on the Ski home and the Tuning Bench page', read('ski/index.html').includes('learning-lab/carve-lab/') && read('ski/tuning-bench/index.html').includes('learning-lab/carve-lab/'));
+}
+
+// ---- Berm Lab (Mathlete MTB; standalone module; tests: scripts/test-berm-lab.mjs) ----
+{
+  const dir = 'learning-lab/berm-lab/';
+  const html = read(dir + 'index.html');
+  const css = read(dir + 'styles/berm-lab.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  const leaking = css.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@') && !/^(from|to|\d+%)$/.test(sel)).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith('.blab'));
+  check('Berm Lab styles are all scoped under .blab', leaking.length === 0, leaking.slice(0, 5).join(' | '));
+  const js = execSync(`find ${root + dir} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
+  const coupled = js.filter(f => !f.endsWith('/main.js') && /MathleteProgress|MathleteAuth|supabase|tools-config/.test(readFileSync(f, 'utf8')));
+  check('Berm Lab module doesn’t depend on the site (only its page connects it)', coupled.length === 0 && !/site\.css|site-nav|site\.js/.test(html), coupled.join(', '));
+  check('Berm Lab page loads progress tracking in order, then the module', ['js/supabase-config.js', 'js/auth.js', 'js/progress.js', 'src="main.js'].map(x => html.indexOf(x)).every((v, i, a) => v > 0 && (i === 0 || v > a[i - 1])));
+  const unsafe = js.filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(/.test(readFileSync(f, 'utf8')));
+  check('Berm Lab never builds HTML from strings', unsafe.length === 0, unsafe.join(', '));
+  // Every graded question kind is registered for progress saving, and nothing extra.
+  const { questionKinds } = await import('../' + dir + 'logic/challenges.js');
+  const kinds = questionKinds().map(k => 'berm-lab:' + k.kind).sort();
+  const sqlKinds = [...new Set([...read('supabase/progress.sql').matchAll(/\('(berm-lab:[a-z0-9-]+)',\s*'berm-lab'/g)].map(m => m[1]))].sort();
+  check(`Berm Lab question kinds match supabase/progress.sql (${kinds.length})`, kinds.length > 0 && kinds.join() === sqlKinds.join(), `lab: ${kinds.join(' ')} | sql: ${sqlKinds.join(' ')}`);
+  const t = tools.find(x => x.id === 'berm-lab');
+  check('Berm Lab is a live public tool in The Lab → Engineering Lab, with its card image', !!t && t.status === 'live' && t.access === 'public' && t.category === 'engineering' && existsSync(root + t.image) && t.url.endsWith('/learning-lab/berm-lab/'));
+  check('Berm Lab is listed on the Lab home and the Engineering Lab page, and its placeholder is gone', read('index.html').includes('learning-lab/berm-lab/') && read('learning-lab/engineering/index.html').includes('learning-lab/berm-lab/') && !read('js/lab-categories.js').includes("'Berm Lab'"));
 }
 
 // ---- Classes (generated from content/classes/ by scripts/build-classes.mjs) ----

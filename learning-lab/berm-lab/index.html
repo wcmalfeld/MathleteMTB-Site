@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/assets/icons/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<title>Berm Lab — Mathlete MTB</title>
+<meta name="description" content="The science of cornering: pick a tight, middle or wide line, set the speed, bank the berm and watch the centripetal acceleration, normal force, friction and grip demand of a mountain bike corner. Interactive graphs and six challenges.">
+<link rel="canonical" href="https://www.mathletemtb.com/learning-lab/berm-lab/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/berm-lab.css?v=1">
+<style>html, body { margin: 0; background: #111613; }</style>
+</head>
+<body>
+<!-- The lab's own page. The module lives in this folder and works anywhere;
+     this page also connects it to student accounts. Listed in The Lab ->
+     Engineering Lab. See docs/BERM-LAB.md. -->
+<div id="berm-lab">
+  <noscript><p style="padding:24px;font-family:sans-serif;color:#eee">Berm Lab needs JavaScript turned on.</p></noscript>
+</div>
+<!-- Optional: the site's progress tracking (saves a signed-in student's answers). -->
+<script src="../../js/supabase-config.js?v=7" defer></script>
+<script src="../../js/auth.js?v=8" defer></script>
+<script src="../../js/progress.js?v=3" defer></script>
+<script type="module" src="main.js?v=1"></script>
+</body>
+</html>
