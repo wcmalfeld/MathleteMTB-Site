@@ -73,6 +73,7 @@ window.MATHLETE_LAB_CATEGORIES = [
     name: 'Tuning Bench',
     focus: 'Ski and binding setup: sidecut geometry, turn radius, edge angles and the ratios behind a good tune.',
     concepts: ['Geometry', 'Circles', 'Angles', 'Ratios', 'Unit conversions'],
-    upcoming: ['Sidecut & Turn Radius', 'Edge Angle Workshop']
+    // Carve Lab (live) covers the planned 'Sidecut & Turn Radius' and 'Edge Angle Workshop'.
+    upcoming: []
   }
 ];

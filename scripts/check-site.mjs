@@ -57,7 +57,9 @@ const jumpLabKinds = html => [
   ...[...html.slice(html.indexOf('const PREDICTIONS = ['), html.indexOf('const CONCEPTS = ')).matchAll(/^    id: '([a-z0-9-]+)'/gm)].map(m => 'predict-' + m[1])];
 // Physics Playground: a minified build, so its kinds are listed here (they are defined in src/progress.tsx in its own repository).
 const playgroundKinds = () => ['predict-outcome', 'predict-distance', 'predict-airtime', 'q-compare-runs', 'q-angle-components', 'calc-vx-q', 'calc-vy-q', 'compare-vy-q', 'height-time-q', 'graph-q'];
-const QUESTION_KINDS = { 'trail-builder': KIND, 'gear-ratio-lab': KIND, 'strava-showdown': KIND, 'jump-lab': jumpLabKinds, 'physics-playground': playgroundKinds };
+// Carve Lab: its challenge data lists them (questionKinds()).
+const carveKinds = (await import('../learning-lab/carve-lab/logic/challenges.js')).questionKinds().map(k => k.kind);
+const QUESTION_KINDS = { 'trail-builder': KIND, 'gear-ratio-lab': KIND, 'strava-showdown': KIND, 'jump-lab': jumpLabKinds, 'physics-playground': playgroundKinds, 'carve-lab': () => carveKinds };
 const hosted = pub.filter(t => (t.url || '').startsWith(SITE_ORIGIN)).map(t => ({ ...t, page: t.url.slice(SITE_ORIGIN.length) + 'index.html' }));
 check('Tools on mathletemtb.com live at learning-lab/<id>/ in this repo', hosted.every(t => t.page === `learning-lab/${t.id}/index.html` && existsSync(root + t.page)), hosted.map(t => t.page).join(', '));
 for (const t of hosted) {
@@ -173,6 +175,29 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   check('The Lab’s original Jump Lab game is untouched and still listed', existsSync(root + 'learning-lab/jump-lab/index.html') && tools.some(t => t.id === 'jump-lab' && t.status === 'live'));
 }
 
+// ---- Carve Lab (Mathlete Ski; standalone module; tests: scripts/test-carve-lab.mjs) ----
+{
+  const dir = 'learning-lab/carve-lab/';
+  const html = read(dir + 'index.html');
+  const css = read(dir + 'styles/carve-lab.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  const leaking = css.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@') && !/^(from|to|\d+%)$/.test(sel)).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith('.clab'));
+  check('Carve Lab styles are all scoped under .clab', leaking.length === 0, leaking.slice(0, 5).join(' | '));
+  const js = execSync(`find ${root + dir} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
+  const coupled = js.filter(f => !f.endsWith('/main.js') && /MathleteProgress|MathleteAuth|supabase|tools-config/.test(readFileSync(f, 'utf8')));
+  check('Carve Lab module doesn’t depend on the site (only its page connects it)', coupled.length === 0 && !/site\.css|site-nav|site\.js/.test(html), coupled.join(', '));
+  check('Carve Lab page loads progress tracking in order, then the module', ['js/supabase-config.js', 'js/auth.js', 'js/progress.js', 'src="main.js'].map(x => html.indexOf(x)).every((v, i, a) => v > 0 && (i === 0 || v > a[i - 1])));
+  const unsafe = js.filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(/.test(readFileSync(f, 'utf8')));
+  check('Carve Lab never builds HTML from strings', unsafe.length === 0, unsafe.join(', '));
+  // Every graded question kind is registered for progress saving, and nothing extra.
+  const { questionKinds } = await import('../' + dir + 'logic/challenges.js');
+  const kinds = questionKinds().map(k => 'carve-lab:' + k.kind).sort();
+  const sqlKinds = [...new Set([...read('supabase/progress.sql').matchAll(/\('(carve-lab:[a-z0-9-]+)',\s*'carve-lab'/g)].map(m => m[1]))].sort();
+  check(`Carve Lab question kinds match supabase/progress.sql (${kinds.length})`, kinds.length > 0 && kinds.join() === sqlKinds.join(), `lab: ${kinds.join(' ')} | sql: ${sqlKinds.join(' ')}`);
+  const t = tools.find(x => x.id === 'carve-lab');
+  check('Carve Lab is a live public tool in Mathlete Ski → Tuning Bench, with its card image', !!t && t.status === 'live' && t.access === 'public' && t.category === 'tuning-bench' && existsSync(root + t.image) && t.url.endsWith('/learning-lab/carve-lab/'));
+  check('Carve Lab is listed on the Ski home and the Tuning Bench page', read('ski/index.html').includes('learning-lab/carve-lab/') && read('ski/tuning-bench/index.html').includes('learning-lab/carve-lab/'));
+}
+
 // ---- Classes (generated from content/classes/ by scripts/build-classes.mjs) ----
 {
   const { loadClasses } = await import('../content/classes/model.mjs');
@@ -246,12 +271,13 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   check('Run order is documented: setup → progress → organizations → curriculum', /AFTER\s+setup\.sql and progress\.sql \(and before curriculum\.sql\)/.test(sqlO.replace(/--\s*/g, '')));
 }
 
-// ---- home page (the Lab) ----
+// ---- home pages (the Lab, and Mathlete Ski) ----
 const index = read('index.html');
-const cards = [...index.matchAll(/<article\b[^>]*\bdata-lab-tool="([^"]+)"/g)].map(m => m[1]);
+// Each sport's tools are on its own home page (MTB: index.html, Ski: ski/index.html).
+const cards = ['index.html', 'ski/index.html'].flatMap(f => [...read(f).matchAll(/<article\b[^>]*\bdata-lab-tool="([^"]+)"/g)].map(m => m[1]));
 const liveIds = tools.filter(t => t.status === 'live').map(t => t.id);
-check('Every live tool has a card on the home page', liveIds.every(id => cards.includes(id)), liveIds.filter(id => !cards.includes(id)).join(', '));
-check('Every card on the home page is a live tool in the config', cards.every(id => liveIds.includes(id)), cards.filter(id => !liveIds.includes(id)).join(', '));
+check('Every live tool has a card on its sport’s home page', liveIds.every(id => cards.includes(id)), liveIds.filter(id => !cards.includes(id)).join(', '));
+check('Every card on the home pages is a live tool in the config', cards.every(id => liveIds.includes(id)), cards.filter(id => !liveIds.includes(id)).join(', '));
 const noDetails = tools.filter(t => t.status === 'live' && !existsSync(root + detailsPath(t))).map(t => t.id);
 check('Every live tool has a description in content/tool-details/', noDetails.length === 0, noDetails.join(', '));
 check('No private tool file is linked from the home page', priv.every(t => !index.includes(t.file)));

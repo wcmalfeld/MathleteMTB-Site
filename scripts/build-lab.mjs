@@ -145,7 +145,7 @@ function page({ path, depth, title, description, body, sport = 'mtb' }) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/site.css?v=16">
-<link rel="stylesheet" href="css/lab.css?v=9">
+<link rel="stylesheet" href="css/lab.css?v=10">
 </head>
 <body class="${SPORTS[sport].bodyClass}">
 <a class="skip-link" href="${path}#main">Skip to content</a>
@@ -288,7 +288,13 @@ export function render() {
     <p class="meta lab-count" data-lab-count aria-live="polite" hidden></p>
     <div class="tool-grid" data-lab-grid>${mine.map(t => toolCard(t, categories)).join('')}
     </div>
-    <p class="lab-empty" data-lab-empty hidden>No tools match those filters yet. <button type="button" class="lab-filter-reset" data-lab-clear>Clear filters</button></p>` : `
+    <p class="lab-empty" data-lab-empty hidden>No tools match those filters yet. <button type="button" class="lab-filter-reset" data-lab-clear>Clear filters</button></p>${
+    // A sport with only a couple of live tools still shows what's coming
+    // (outside the filtered grid, so the filters only ever act on real tools).
+    mine.length < 3 && upcoming.length ? `
+    <h3 class="lab-soon-head">In development</h3>
+    <div class="tool-grid">${upcoming.join('')}
+    </div>` : ''}` : `
     <div class="tool-grid">${upcoming.join('')}
     </div>`;
 

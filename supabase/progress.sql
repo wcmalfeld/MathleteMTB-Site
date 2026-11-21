@@ -512,6 +512,57 @@ insert into public.question_skills (question_id, skill_id) values
   ('physics-playground:graph-q',            'geometry')
 on conflict do nothing;
 
+-- Carve Lab (learning-lab/carve-lab/, Mathlete Ski): the Challenge Arena's
+-- graded steps. Each challenge's prediction (one try, locked in before the
+-- simulator), its maths questions, and the graded simulator runs (hitting a
+-- target radius; a design that meets every constraint). The list must match
+-- questionKinds() in learning-lab/carve-lab/logic/challenges.js
+-- (scripts/check-site.mjs checks).
+insert into public.questions (id, game_id, title, question_type, difficulty) values
+  ('carve-lab:c1-predict', 'carve-lab', 'Sidecut Detective: prediction (which ski turns tighter)',            'prediction', 'beginner'),
+  ('carve-lab:c1-radius',  'carve-lab', 'Sidecut Detective: turn radius R = Rsc × cos θ',                    'numeric',    'beginner'),
+  ('carve-lab:c1-ratio',   'carve-lab', 'Sidecut Detective: double the sidecut, what happens to R',          'choice',     'beginner'),
+  ('carve-lab:c2-predict', 'carve-lab', 'Edge Angle Experiment: prediction (rough edge angle)',               'prediction', 'beginner'),
+  ('carve-lab:c2-angle',   'carve-lab', 'Edge Angle Experiment: solve 12 = 16 cos θ',                         'numeric',    'beginner'),
+  ('carve-lab:c2-sim',     'carve-lab', 'Edge Angle Experiment: hit a 12 m turn in the simulator',            'other',      'beginner'),
+  ('carve-lab:c3-predict', 'carve-lab', 'Speed Is Everything: prediction (double the speed)',                 'prediction', 'intermediate'),
+  ('carve-lab:c3-accel',   'carve-lab', 'Speed Is Everything: acceleration at twice the speed',               'numeric',    'intermediate'),
+  ('carve-lab:c3-factor',  'carve-lab', 'Speed Is Everything: triple the speed, factor on acceleration',      'numeric',    'intermediate'),
+  ('carve-lab:c4-predict', 'carve-lab', 'Heavy Skier Experiment: prediction (who needs more force)',          'prediction', 'intermediate'),
+  ('carve-lab:c4-accel',   'carve-lab', 'Heavy Skier Experiment: compare the accelerations',                  'choice',     'intermediate'),
+  ('carve-lab:c4-force',   'carve-lab', 'Heavy Skier Experiment: inward force F = ma',                        'numeric',    'intermediate'),
+  ('carve-lab:c5-predict', 'carve-lab', 'Design Your Turn: prediction (what sets the radius)',                'prediction', 'advanced'),
+  ('carve-lab:c5-design',  'carve-lab', 'Design Your Turn: a design that meets every constraint',             'other',      'advanced'),
+  ('carve-lab:c5-math',    'carve-lab', 'Design Your Turn: radius and force for your own design',             'numeric',    'advanced')
+on conflict (id) do update
+  set title = excluded.title, question_type = excluded.question_type, difficulty = excluded.difficulty;
+
+insert into public.question_skills (question_id, skill_id) values
+  ('carve-lab:c1-predict', 'geometry'),
+  ('carve-lab:c1-radius',  'geometry'),
+  ('carve-lab:c1-radius',  'trigonometry'),
+  ('carve-lab:c1-ratio',   'ratios-proportions'),
+  ('carve-lab:c2-predict', 'trigonometry'),
+  ('carve-lab:c2-angle',   'trigonometry'),
+  ('carve-lab:c2-sim',     'trigonometry'),
+  ('carve-lab:c3-predict', 'forces-motion'),
+  ('carve-lab:c3-predict', 'speed-velocity'),
+  ('carve-lab:c3-accel',   'algebra'),
+  ('carve-lab:c3-accel',   'forces-motion'),
+  ('carve-lab:c3-factor',  'algebra'),
+  ('carve-lab:c3-factor',  'ratios-proportions'),
+  ('carve-lab:c4-predict', 'forces-motion'),
+  ('carve-lab:c4-accel',   'forces-motion'),
+  ('carve-lab:c4-force',   'forces-motion'),
+  ('carve-lab:c4-force',   'algebra'),
+  ('carve-lab:c5-predict', 'geometry'),
+  ('carve-lab:c5-design',  'trigonometry'),
+  ('carve-lab:c5-design',  'forces-motion'),
+  ('carve-lab:c5-math',    'trigonometry'),
+  ('carve-lab:c5-math',    'algebra'),
+  ('carve-lab:c5-math',    'forces-motion')
+on conflict do nothing;
+
 -- 4. Sessions, attempts and the review queue ------------------------
 create table if not exists public.game_sessions (
   id               uuid primary key,          -- made in the browser

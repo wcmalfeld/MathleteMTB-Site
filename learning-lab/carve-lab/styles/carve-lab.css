@@ -1,0 +1,413 @@
+/* ============================================================
+   Carve Lab (Mathlete Ski)
+   Every rule is scoped under .clab, so the lab can sit inside another page
+   without changing anything around it. Dark Mathlete Lab ground with the
+   Ski ice-blue accent; the slope itself is bright groomed snow.
+   Each vector has one colour AND one look, and a text label:
+     velocity      blue, thin solid        (v = … m/s)
+     acceleration  amber, dashed           (a = … m/s²)
+     force         red-orange, thick       (F = … N)
+   ============================================================ */
+.clab {
+  --bg: #0F1519; --panel: #141C21; --card: #19232A; --deep: #0A0F12;
+  --ink: #EAF0F2; --soft: #A3B3BA; --text: #CFD9DD;
+  --rule: rgba(234, 240, 242, 0.14); --rule-soft: rgba(234, 240, 242, 0.07); --tint: rgba(234, 240, 242, 0.05);
+  --ice: #8EC5E0; --ice-deep: #5FA8CC; --gold: #E8BC4E; --right: #6CC37A; --wrong: #F28A62; --info: #8EC5E0;
+  --v-ui: #7DB8F0; --a-ui: #E8BC4E; --f-ui: #F27D52; --a-col: #E8BC4E; --b-col: #C59BEB;
+  --snow: #EEF3F6; --snow-line: rgba(96, 128, 150, 0.16); --track: #2B475B; --plan: #7F98AA;
+  --v-snow: #1A5FA8; --a-snow: #8A5A00; --f-snow: #C3361C;
+  --f-display: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
+  --f-body: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  background: var(--bg); color: var(--text); font-family: var(--f-body); font-size: 16px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased; min-height: 100vh; color-scheme: dark;
+}
+.clab *, .clab *::before, .clab *::after { box-sizing: border-box; }
+.clab [hidden] { display: none !important; }
+.clab a { color: var(--ink); }
+.clab :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.clab h1[tabindex="-1"]:focus, .clab h2[tabindex="-1"]:focus, .clab .cl-main:focus { outline: none; }
+.clab p { max-width: 52rem; }
+.clab .cl-wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+.clab .cl-sr { position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; margin: -1px; }
+.clab .cl-skip { position: absolute; left: -9999px; top: 8px; z-index: 10; background: var(--ink); color: var(--bg); padding: 8px 14px; }
+.clab .cl-skip:focus { left: 12px; }
+.clab var { font-style: italic; font-family: Georgia, 'Times New Roman', serif; }
+
+/* ---------- top bar, section nav ---------- */
+.clab .cl-top { background: var(--deep); border-bottom: 1px solid var(--rule); }
+.clab .cl-top-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; min-height: 58px; padding-top: 8px; padding-bottom: 8px; }
+.clab .cl-top-left, .clab .cl-top-right { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; }
+.clab .cl-logo { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 20px; text-transform: uppercase; color: var(--ink); }
+.clab .cl-logo span { color: var(--ice); }
+.clab .cl-back { font-family: var(--f-mono); font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--soft); text-decoration: none; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.clab .cl-back:hover { color: var(--ice); border-color: var(--ice); }
+.clab .cl-activity { margin: 0; font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); }
+.clab .cl-status { margin: 0; font-family: var(--f-mono); font-size: 12px; color: var(--soft); }
+.clab .cl-navbar { background: var(--panel); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 5; }
+.clab .cl-nav ol { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; overflow-x: auto; scrollbar-width: none; }
+.clab .cl-nav ol::-webkit-scrollbar { display: none; }
+.clab .cl-nav-link { display: flex; align-items: baseline; gap: 8px; padding: 14px 12px 12px; white-space: nowrap; text-decoration: none; border-bottom: 3px solid transparent;
+  font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); }
+.clab .cl-nav-link:hover { color: var(--ink); }
+.clab .cl-nav-link[aria-current="page"] { color: var(--ink); border-color: var(--ice); }
+.clab .cl-nav-mark { font-size: 11px; letter-spacing: 0; padding: 1px 6px; border: 1px solid var(--rule); border-radius: 999px; color: var(--ink); }
+.clab .cl-main { padding: 26px 0 80px; outline: none; }
+
+/* ---------- type ---------- */
+.clab .cl-kicker { margin: 0 0 8px; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ice); }
+.clab .cl-h1 { margin: 0 0 8px; font-family: var(--f-display); font-weight: 800; font-size: clamp(44px, 6.4vw, 78px); line-height: 0.92; text-transform: uppercase; color: var(--ink); }
+.clab .cl-h2 { margin: 0 0 12px; font-family: var(--f-display); font-weight: 800; font-size: clamp(30px, 4.4vw, 46px); line-height: 1; text-transform: uppercase; color: var(--ink); }
+.clab .cl-h2--small { font-size: clamp(24px, 3vw, 30px); margin: 0; }
+.clab .cl-h3 { margin: 0 0 10px; font-size: 19px; font-weight: 700; color: var(--ink); }
+.clab .cl-lede { margin: 0 0 14px; font-size: 18px; color: var(--text); }
+.clab .cl-note { font-size: 14px; color: var(--soft); }
+.clab .cl-mini, .clab .cl-mini-label { margin: 0; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); }
+.clab .cl-section-head { margin-bottom: 22px; }
+.clab .cl-block { margin-top: 34px; }
+.clab .cl-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin: 10px 0; }
+
+/* ---------- buttons and inputs ---------- */
+.clab .cl-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 10px 18px; border: 1px solid var(--ink); border-radius: 0;
+  font: inherit; font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; cursor: pointer; background: transparent; color: var(--ink); }
+.clab .cl-btn:hover { background: var(--tint); }
+.clab .cl-btn--primary { background: var(--ink); color: var(--deep); }
+.clab .cl-btn--primary:hover { background: var(--ice); border-color: var(--ice); color: var(--deep); }
+.clab .cl-btn--quiet { border-color: var(--rule); }
+.clab .cl-btn--ghost { min-height: 36px; padding: 6px 12px; font-size: 11.5px; border-color: var(--rule); color: var(--soft); }
+.clab .cl-btn--a { border-color: var(--a-col); }
+.clab .cl-btn--b { border-color: var(--b-col); }
+.clab .cl-btn:disabled { opacity: 0.45; cursor: default; }
+.clab .cl-input { min-height: 44px; padding: 8px 10px; border: 1px solid var(--rule); background: var(--deep); color: var(--ink); font: inherit; font-family: var(--f-mono); font-size: 15px; border-radius: 0; }
+.clab .cl-input:focus { border-color: var(--ice); }
+.clab .cl-textarea { width: 100%; min-height: 110px; font-family: var(--f-body); font-size: 15.5px; resize: vertical; }
+.clab .cl-select { min-height: 36px; padding: 4px 8px; background: var(--deep); color: var(--ink); border: 1px solid var(--rule); font: inherit; font-family: var(--f-mono); font-size: 12.5px; }
+.clab .cl-segs { display: inline-flex; border: 1px solid var(--rule); }
+.clab .cl-seg { min-height: 36px; padding: 4px 12px; border: 0; background: transparent; color: var(--soft); font: inherit; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.04em; cursor: pointer; }
+.clab .cl-seg + .cl-seg { border-left: 1px solid var(--rule); }
+.clab .cl-seg[aria-checked="true"] { background: var(--ice); color: var(--deep); }
+.clab .cl-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14.5px; cursor: pointer; }
+.clab input[type="checkbox"], .clab input[type="radio"] { width: 18px; height: 18px; accent-color: var(--ice); margin: 0; }
+
+/* ---------- simulator page ---------- */
+.clab .cl-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 12px 40px; align-items: end; margin-bottom: 20px; }
+.clab .cl-try { list-style: none; margin: 0; padding: 12px 16px; border-left: 3px solid var(--ice); background: var(--panel); font-size: 14.5px; }
+.clab .cl-try li { margin: 3px 0; }
+.clab .cl-try b { color: var(--ice); font-family: var(--f-mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+
+.clab .cl-sim { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 20px; align-items: start; }
+.clab .cl-sim-stage { min-width: 0; }
+.clab .cl-scene { position: relative; }
+.clab .cl-scene-canvas { position: relative; border: 1px solid var(--rule); background: var(--snow); line-height: 0; }
+.clab .cl-scene-svg { display: block; width: 100%; height: auto; touch-action: manipulation; }
+.clab .cl-readout { position: absolute; left: 10px; bottom: 8px; margin: 0; padding: 4px 8px; background: rgba(10, 15, 18, 0.78); color: var(--ink); font-family: var(--f-mono); font-size: 12px; line-height: 1.4; max-width: calc(100% - 140px); }
+.clab .cl-insets { position: absolute; left: 10px; top: 10px; display: flex; flex-direction: column; gap: 8px; width: min(26%, 210px); }
+.clab .cl-inset { margin: 0; background: rgba(10, 15, 18, 0.86); border: 1px solid rgba(255, 255, 255, 0.12); line-height: 1.2; }
+.clab .cl-inset figcaption { padding: 5px 8px 0; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); }
+.clab .cl-inset-svg { display: block; width: 100%; height: auto; }
+
+/* the snow scene */
+.clab .cl-cord-bg { fill: var(--snow); }
+.clab .cl-cord-line { stroke: var(--snow-line); stroke-width: 1; }
+.clab .cl-tree-shadow { fill: rgba(30, 55, 75, 0.16); }
+.clab .cl-tree-a { fill: #2E5A45; }
+.clab .cl-tree-b { fill: #3E7559; }
+.clab .cl-tree-c { fill: #E9F0F2; opacity: 0.55; }
+.clab .cl-path-planned { fill: none; stroke: var(--plan); stroke-width: 1.6; stroke-dasharray: 2 7; stroke-linecap: round; }
+.clab .cl-trail-outer { fill: none; stroke: var(--track); stroke-width: 5.5; stroke-linecap: round; }
+.clab .cl-trail-inner { fill: none; stroke: var(--snow); stroke-width: 2; stroke-linecap: round; }
+.clab .cl-chevrons path { fill: none; stroke: var(--plan); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.clab .cl-radius { stroke: #42667E; stroke-width: 1.6; stroke-dasharray: 6 5; }
+.clab .cl-centre circle { fill: var(--snow); stroke: #42667E; stroke-width: 2; }
+.clab .cl-centre line { stroke: #42667E; stroke-width: 1.5; }
+.clab .cl-centre-label, .clab .cl-radius-label, .clab .cl-vec-label, .clab .cl-ghost-label, .clab .cl-fall text, .clab .cl-scalebar text {
+  font-family: var(--f-mono); font-size: 12.5px; paint-order: stroke; stroke: var(--snow); stroke-width: 4px; stroke-linejoin: round; }
+.clab .cl-centre-label { fill: #1F3A4C; font-size: 12px; font-weight: 500; }
+.clab .cl-radius-label { fill: #1F3A4C; font-weight: 500; }
+.clab .cl-shadow { fill: rgba(25, 45, 65, 0.18); }
+.clab .cl-skier-skis rect { fill: #17242E; }
+.clab .cl-jacket { fill: #E0553A; stroke: #8E2A17; stroke-width: 1; }
+.clab .cl-helmet { fill: #17242E; }
+.clab .cl-pole { stroke: #51626E; stroke-width: 1.6; stroke-linecap: round; }
+.clab .cl-spray circle { fill: #fff; stroke: rgba(80, 110, 130, 0.35); stroke-width: 0.6; }
+.clab .cl-vec line { stroke-linecap: round; }
+.clab .cl-vec--v line { stroke: var(--v-snow); stroke-width: 2.6; }
+.clab .cl-vec--v path { fill: var(--v-snow); }
+.clab .cl-vec--v text { fill: var(--v-snow); }
+.clab .cl-vec--a line { stroke: var(--a-snow); stroke-width: 2.6; stroke-dasharray: 6 4; }
+.clab .cl-vec--a path { fill: var(--a-snow); }
+.clab .cl-vec--a text { fill: var(--a-snow); }
+.clab .cl-vec--f line { stroke: var(--f-snow); stroke-width: 5.5; }
+.clab .cl-vec--f path { fill: var(--f-snow); }
+.clab .cl-vec--f text { fill: var(--f-snow); font-weight: 500; }
+.clab .cl-ghost { fill: none; stroke-width: 2.4; stroke-dasharray: 10 5; opacity: 0.95; }
+.clab .cl-ghost--a { stroke: #A07A10; fill: #A07A10; }
+.clab .cl-ghost--b { stroke: #7A4EA8; fill: #7A4EA8; }
+.clab text.cl-ghost-label { font-weight: 500; stroke: var(--snow); stroke-width: 4px; }
+.clab path.cl-ghost--a, .clab path.cl-ghost--b { fill: none; }
+.clab .cl-fall line, .clab .cl-fall path { stroke: #42667E; stroke-width: 2; fill: none; }
+.clab .cl-fall text { fill: #42667E; font-size: 11px; }
+.clab .cl-scalebar path { stroke: #1F3A4C; stroke-width: 1.6; fill: none; }
+.clab .cl-scalebar text { fill: #1F3A4C; font-size: 11.5px; }
+
+/* insets */
+.clab .cl-ski-top { fill: #DDE6EA; stroke: #fff; stroke-width: 0.8; }
+.clab .cl-ski-chord { stroke: var(--gold); stroke-width: 1; stroke-dasharray: 3 3; }
+.clab .cl-ski-depth { stroke: var(--gold); stroke-width: 2; }
+.clab .cl-inset-t { fill: var(--ink); font-family: var(--f-mono); font-size: 12px; }
+.clab .cl-inset-s { fill: var(--soft); font-family: var(--f-mono); font-size: 10px; }
+.clab .cl-inset-s--dark { fill: #2B475B; }
+.clab .cl-x-snow { fill: #DCE6EB; }
+.clab .cl-x-surface { stroke: #fff; stroke-width: 1.5; }
+.clab .cl-x-ski { fill: var(--ice); stroke: #fff; stroke-width: 0.8; }
+.clab .cl-x-boot { fill: #E0553A; }
+.clab .cl-x-leg { stroke: #9FB2BC; stroke-width: 6; stroke-linecap: round; }
+.clab .cl-x-arc { fill: none; stroke: var(--gold); stroke-width: 2; }
+
+/* playback bar */
+.clab .cl-playbar { display: grid; gap: 8px; padding: 12px 0 0; }
+.clab .cl-playbar-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.clab .cl-play { min-width: 168px; }
+.clab .cl-scrub-row { gap: 12px; }
+.clab .cl-scrub-row .cl-scrub { flex: 1 1 220px; }
+.clab .cl-vecbox { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 4px; font-size: 14px; cursor: pointer; }
+.clab .cl-swatch { width: 24px; height: 0; border-top: 3px solid; display: inline-block; }
+.clab .cl-vecbox--v .cl-swatch { border-color: var(--v-ui); }
+.clab .cl-vecbox--a .cl-swatch { border-color: var(--a-ui); border-top-style: dashed; }
+.clab .cl-vecbox--f .cl-swatch { border-color: var(--f-ui); border-top-width: 6px; }
+
+/* sliders */
+.clab .cl-range { -webkit-appearance: none; appearance: none; width: 100%; height: 28px; background: transparent; margin: 4px 0 0; cursor: pointer; }
+.clab .cl-range::-webkit-slider-runnable-track { height: 4px; background: var(--rule); }
+.clab .cl-range::-moz-range-track { height: 4px; background: var(--rule); }
+.clab .cl-range::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -9px; border-radius: 50%; background: var(--ice); border: 3px solid var(--deep); box-shadow: 0 0 0 1px var(--ice); }
+.clab .cl-range::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--ice); border: 3px solid var(--deep); }
+.clab .cl-range:disabled { cursor: not-allowed; opacity: 0.5; }
+
+/* control panel */
+.clab .cl-sim-panel { background: var(--panel); border: 1px solid var(--rule); padding: 16px 16px 12px; }
+.clab .cl-panel-title { margin: 0 0 6px; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--soft); font-weight: 500; }
+.clab .cl-control { padding: 12px 0 10px; border-bottom: 1px solid var(--rule-soft); }
+.clab .cl-control.is-locked { opacity: 0.72; }
+.clab .cl-control-head { display: flex; align-items: center; gap: 8px; }
+.clab .cl-control-name { font-weight: 700; color: var(--ink); font-size: 15.5px; }
+.clab .cl-control-value { margin-left: auto; display: inline-flex; align-items: baseline; gap: 5px; }
+.clab .cl-num { width: 76px; min-height: 36px; padding: 4px 6px; text-align: right; background: var(--deep); color: var(--ink); border: 1px solid var(--rule); font-family: var(--f-mono); font-size: 15px; }
+.clab .cl-num:focus { border-color: var(--ice); }
+.clab .cl-unit { font-family: var(--f-mono); font-size: 13px; color: var(--soft); min-width: 2.2em; }
+.clab .cl-range-ends { display: flex; justify-content: space-between; gap: 8px; font-family: var(--f-mono); font-size: 11px; color: var(--soft); }
+.clab .cl-alt { color: var(--ice); font-size: 12px; }
+.clab .cl-control-explain { margin: 4px 0 0; font-size: 13.5px; color: var(--soft); line-height: 1.45; }
+.clab .cl-control-fb { margin: 6px 0 0; font-family: var(--f-mono); font-size: 12px; line-height: 1.45; color: var(--gold); min-height: 0; }
+.clab .cl-control-fb:empty { display: none; }
+.clab .cl-lock { margin: 4px 0 0; font-family: var(--f-mono); font-size: 11.5px; color: var(--soft); }
+.clab .cl-lock::before { content: '🔒 '; }
+.clab .cl-units { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+.clab .cl-units-label { font-size: 12.5px; color: var(--soft); }
+.clab .cl-units .cl-seg { border: 1px solid var(--rule); }
+.clab .cl-panel-foot { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.clab .cl-help-btn { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--rule); background: transparent; color: var(--ice); font: inherit; font-family: var(--f-mono); font-size: 13px; line-height: 1; cursor: pointer; padding: 0; position: relative; }
+.clab .cl-help-btn::after { content: ''; position: absolute; inset: -9px; }
+.clab .cl-help-btn:hover { border-color: var(--ice); background: var(--tint); }
+
+/* ---------- analysis ---------- */
+.clab .cl-analysis { margin-top: 26px; border: 1px solid var(--rule); background: var(--panel); }
+.clab .cl-analysis-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--rule); }
+.clab .cl-analysis-toggle { min-height: 40px; padding: 6px 14px; border: 1px solid var(--rule); background: transparent; color: var(--soft); font: inherit; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; }
+.clab .cl-analysis-toggle:hover { color: var(--ink); border-color: var(--ink); }
+.clab .cl-analysis-body { padding: 16px; }
+.clab .cl-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.clab .cl-tile { background: var(--card); border: 1px solid var(--rule-soft); padding: 12px 12px 10px; border-top: 3px solid var(--ice); min-width: 0; }
+.clab .cl-tile--accel, .clab .cl-tile--g { border-top-color: var(--a-ui); }
+.clab .cl-tile--force { border-top-color: var(--f-ui); }
+.clab .cl-tile--turn { border-top-color: var(--v-ui); }
+.clab .cl-tile-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+.clab .cl-tile-label { margin: 0; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); font-weight: 500; }
+.clab .cl-tile-value { margin: 6px 0 4px; font-family: var(--f-display); font-weight: 800; font-size: 34px; line-height: 1; color: var(--ink); }
+.clab .cl-tile-value span { font-family: var(--f-mono); font-weight: 400; font-size: 14px; color: var(--soft); }
+.clab .cl-tile-eq { margin: 0; font-family: var(--f-mono); font-size: 12px; color: var(--text); overflow-wrap: anywhere; }
+.clab .cl-model-note { margin: 12px 0 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.clab .cl-graphs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.clab .cl-graph-card { background: var(--card); border: 1px solid var(--rule-soft); padding: 12px; min-width: 0; }
+.clab .cl-graph { margin: 0; }
+.clab .cl-graph-title { font-weight: 700; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
+.clab .cl-graph-svg { display: block; width: 100%; height: auto; cursor: crosshair; }
+.clab .cl-graph-svg:focus-visible { outline-offset: 0; }
+.clab .cl-g-grid line { stroke: var(--rule-soft); }
+.clab .cl-g-axes text { fill: var(--soft); font-family: var(--f-mono); font-size: 11px; }
+.clab .cl-g-axis { stroke: var(--soft); }
+.clab .cl-g-axlabel { fill: var(--text) !important; font-size: 11.5px !important; }
+.clab .cl-g-curve { fill: none; stroke: var(--ice); stroke-width: 2.6; }
+.clab .cl-g-guide { fill: none; stroke: var(--gold); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.clab .cl-g-current path { fill: var(--gold); stroke: var(--deep); stroke-width: 1.5; }
+.clab .cl-g-curlabel { fill: var(--gold); font-family: var(--f-mono); font-size: 12px; }
+.clab .cl-g-mark circle { fill: var(--bg); stroke-width: 2.5; }
+.clab .cl-g-mark text { font-family: var(--f-mono); font-size: 12px; font-weight: 500; }
+.clab .cl-g-mark--a circle { stroke: var(--a-col); } .clab .cl-g-mark--a text { fill: var(--a-col); }
+.clab .cl-g-mark--b circle { stroke: var(--b-col); } .clab .cl-g-mark--b text { fill: var(--b-col); }
+.clab .cl-g-x circle { fill: none; stroke: var(--soft); stroke-width: 1.5; stroke-dasharray: 2 2; }
+.clab .cl-g-x text { fill: var(--soft); font-family: var(--f-mono); font-size: 11px; }
+.clab .cl-g-probe circle { fill: var(--ink); }
+.clab .cl-g-tip { fill: var(--deep); stroke: var(--rule); }
+.clab .cl-g-tiptext { fill: var(--ink); font-family: var(--f-mono); font-size: 11.5px; }
+.clab .cl-graph-read { margin: 4px 0 0; font-family: var(--f-mono); font-size: 12px; color: var(--soft); min-height: 1.4em; }
+.clab .cl-formula { margin: 8px 0 4px; font-family: var(--f-mono); font-size: 13px; color: var(--ice); }
+.clab .cl-graph-note { margin: 0; font-size: 13.5px; color: var(--text); }
+.clab .cl-compare-grid { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 16px; align-items: start; margin-top: 10px; }
+.clab .cl-compare-svg { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
+.clab .cl-compare-snow { fill: var(--snow); }
+.clab .cl-cmp-path { fill: none; stroke-width: 3; }
+.clab path.cl-cmp-a { stroke: #A07A10; }
+.clab path.cl-cmp-b { stroke: #7A4EA8; stroke-dasharray: 8 4; }
+.clab text.cl-cmp-a { fill: #8A6608; font-family: var(--f-mono); font-size: 11.5px; }
+.clab text.cl-cmp-b { fill: #6A3E98; font-family: var(--f-mono); font-size: 11.5px; }
+.clab .cl-cmp-start { fill: #1F3A4C; }
+.clab .cl-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.clab .cl-table th, .clab .cl-table td { padding: 6px 8px; border-bottom: 1px solid var(--rule-soft); text-align: right; font-family: var(--f-mono); font-size: 13px; }
+.clab .cl-table th[scope="row"], .clab .cl-table thead th:first-child { text-align: left; font-family: var(--f-body); font-size: 14px; font-weight: 500; color: var(--text); }
+.clab .cl-table thead th { color: var(--soft); font-weight: 500; }
+.clab .cl-col-a { color: var(--a-col) !important; } .clab .cl-col-b { color: var(--b-col) !important; }
+.clab .cl-table tr.is-same td { color: var(--soft); }
+.clab .cl-ratio { color: var(--ice); }
+.clab .cl-saved { list-style: none; margin: 8px 0; padding: 0; }
+.clab .cl-saved li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 8px 0; border-bottom: 1px solid var(--rule-soft); }
+.clab .cl-saved li.is-new { animation: cl-flash 1.2s; }
+.clab .cl-saved-name { font-weight: 700; color: var(--ink); }
+.clab .cl-saved-cfg { font-family: var(--f-mono); font-size: 12.5px; color: var(--soft); flex: 1 1 260px; }
+@keyframes cl-flash { from { background: rgba(142, 197, 224, 0.2); } to { background: transparent; } }
+
+/* ---------- help dialog and explanations ---------- */
+.clab .cl-help { max-width: 560px; width: calc(100% - 32px); padding: 0; border: 1px solid var(--rule); background: var(--panel); color: var(--text); }
+.clab .cl-help::backdrop { background: rgba(5, 8, 10, 0.7); }
+.clab .cl-help-inner { position: relative; padding: 20px 20px 16px; max-height: 85vh; overflow: auto; }
+.clab .cl-help-close { position: absolute; right: 12px; top: 12px; }
+.clab .cl-explain-title { margin: 0 70px 10px 0; font-family: var(--f-display); font-weight: 800; font-size: 28px; text-transform: uppercase; color: var(--ink); line-height: 1; }
+.clab .cl-explain p { margin: 0 0 10px; font-size: 15px; }
+.clab .cl-explain-eq { font-family: var(--f-mono); color: var(--ice); background: var(--deep); padding: 8px 10px; display: inline-block; }
+.clab .cl-explain-visual { margin: 6px 0 12px; background: var(--deep); border: 1px solid var(--rule-soft); }
+.clab .cl-explain-visual svg { display: block; width: 100%; max-width: 360px; height: auto; margin: 0 auto; }
+.clab .cl-explain-deeper summary { cursor: pointer; font-family: var(--f-mono); font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ice); min-height: 32px; display: flex; align-items: center; }
+.clab .cl-explain-deeper p { margin-top: 6px; }
+.clab .cl-hv-t { fill: var(--ink); font-family: var(--f-mono); font-size: 13px; }
+.clab .cl-hv-s { fill: var(--soft); font-family: var(--f-mono); font-size: 11px; }
+.clab .cl-hv-circle { fill: none; stroke: var(--rule); stroke-width: 1.5; stroke-dasharray: 3 4; }
+.clab .cl-hv-centre { fill: var(--soft); }
+.clab .cl-hv-path { fill: none; stroke: var(--ice); stroke-width: 3; }
+.clab .cl-hv-r { stroke: var(--gold); stroke-width: 2; stroke-dasharray: 5 4; }
+.clab .cl-hv-v line { stroke: var(--v-ui); } .clab .cl-hv-v path { fill: var(--v-ui); }
+.clab .cl-hv-a line { stroke: var(--a-ui); stroke-dasharray: 5 3; } .clab .cl-hv-a path { fill: var(--a-ui); }
+.clab .cl-hv-f line { stroke: var(--f-ui); } .clab .cl-hv-f path { fill: var(--f-ui); }
+.clab .cl-hv-body { fill: #E0553A; }
+
+/* ---------- the model page ---------- */
+.clab .cl-chain { list-style: none; counter-reset: c; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0 0 30px; padding: 0; }
+.clab .cl-chain li { background: var(--panel); border: 1px solid var(--rule); border-top: 3px solid var(--ice); padding: 14px 16px; }
+.clab .cl-chain li p { margin: 0; font-size: 14.5px; }
+.clab .cl-chain-eq { font-family: var(--f-mono); font-size: 20px !important; color: var(--ink); margin-bottom: 6px !important; }
+.clab .cl-explains { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.clab .cl-explain-card, .clab .cl-honest { background: var(--panel); border: 1px solid var(--rule); padding: 16px; min-width: 0; }
+.clab .cl-explain-card .cl-explain-title { font-size: 24px; margin-right: 0; }
+.clab .cl-honest { margin: 24px 0; border-left: 3px solid var(--gold); }
+
+/* ---------- challenge arena ---------- */
+.clab .cl-stats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin: 0 0 12px; }
+.clab .cl-stats div { background: var(--panel); border: 1px solid var(--rule); padding: 10px 12px; }
+.clab .cl-stats dt { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); }
+.clab .cl-stats dd { margin: 4px 0 0; font-family: var(--f-display); font-weight: 800; font-size: 26px; color: var(--ink); line-height: 1; }
+.clab .cl-concepts { font-size: 14.5px; margin: 0 0 22px; }
+.clab .cl-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.clab .cl-card { display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--rule); padding: 16px; border-top: 3px solid var(--rule); }
+.clab .cl-card.is-done { border-top-color: var(--right); }
+.clab .cl-card-num { margin: 0; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ice); }
+.clab .cl-card-title { margin: 4px 0 6px; font-family: var(--f-display); font-weight: 800; font-size: 26px; line-height: 1; text-transform: uppercase; color: var(--ink); }
+.clab .cl-card-meta { margin: 0 0 8px; font-size: 13px; color: var(--soft); }
+.clab .cl-card-desc { margin: 0 0 10px; font-size: 14.5px; flex: 1; }
+.clab .cl-card-status { margin: 0 0 12px; font-family: var(--f-mono); font-size: 12px; color: var(--soft); }
+.clab .cl-pill { display: inline-block; padding: 1px 8px; border: 1px solid var(--rule); border-radius: 999px; font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); }
+.clab .cl-pill--beginner { border-color: var(--right); }
+.clab .cl-pill--intermediate { border-color: var(--gold); }
+.clab .cl-pill--advanced { border-color: var(--wrong); }
+.clab .cl-back-link { font-family: var(--f-mono); font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--soft); }
+.clab .cl-scenario { background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--ice); padding: 14px 16px; margin-bottom: 18px; }
+.clab .cl-scenario p { margin: 4px 0; font-size: 16.5px; }
+.clab .cl-objective { font-size: 15px !important; color: var(--soft); }
+.clab .cl-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.clab .cl-step { border: 1px solid var(--rule); background: var(--bg); padding: 16px; }
+.clab .cl-step-h { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font-family: var(--f-display); font-weight: 800; font-size: 24px; text-transform: uppercase; color: var(--ink); }
+.clab .cl-step-n { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ice); color: var(--deep); font-family: var(--f-mono); font-size: 14px; font-weight: 500; }
+.clab .cl-step--locked { border-style: dashed; color: var(--soft); font-family: var(--f-mono); font-size: 13px; text-align: center; }
+.clab .cl-step .cl-sim { margin-top: 10px; }
+.clab .cl-locked-pred { padding: 10px 12px; background: var(--panel); border: 1px solid var(--rule); }
+.clab .cl-verdict { margin: 10px 0 0; padding: 10px 12px; border-left: 3px solid; background: var(--panel); }
+.clab .cl-verdict.is-right { border-color: var(--right); }
+.clab .cl-verdict.is-wrong { border-color: var(--gold); }
+.clab .cl-run-extra { margin-top: 12px; }
+.clab .cl-run-btns { display: grid; gap: 8px; }
+.clab .cl-run-btn { justify-content: flex-start; text-align: left; text-transform: none; letter-spacing: 0; font-size: 13.5px; }
+.clab .cl-run-table { margin-top: 10px; }
+.clab .cl-run-status { margin-top: 10px; }
+.clab .cl-checklist { list-style: none; margin: 10px 0 0; padding: 0; font-family: var(--f-mono); font-size: 13px; }
+.clab .cl-checklist li { padding: 4px 0; }
+.clab .cl-checklist .is-ok { color: var(--right); }
+.clab .cl-checklist .is-no { color: var(--wrong); }
+.clab .cl-complete { margin-top: 18px; padding: 18px; border: 1px solid var(--right); background: var(--panel); }
+
+/* questions */
+.clab .cl-prompt { font-size: 17px; color: var(--ink); margin: 0 0 10px; display: block; font-weight: 500; }
+.clab .cl-choices { border: 0; margin: 0 0 10px; padding: 0; display: grid; gap: 8px; }
+.clab .cl-choices legend { padding: 0; }
+.clab .cl-choice { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--rule); cursor: pointer; }
+.clab .cl-choice:hover { background: var(--tint); }
+.clab .cl-choice:has(input:checked) { border-color: var(--ice); background: rgba(142, 197, 224, 0.08); }
+.clab .cl-fields { display: flex; flex-wrap: wrap; gap: 12px 18px; margin-bottom: 8px; }
+.clab .cl-field { display: grid; gap: 4px; }
+.clab .cl-field label { font-size: 14px; color: var(--soft); }
+.clab .cl-input-unit { display: inline-flex; align-items: center; gap: 8px; }
+.clab .cl-input-unit .cl-input { width: 130px; }
+.clab .cl-mark { font-family: var(--f-mono); font-size: 12px; min-height: 1.2em; }
+.clab .cl-mark.is-right { color: var(--right); } .clab .cl-mark.is-wrong { color: var(--wrong); }
+.clab .cl-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 0; }
+.clab .cl-hints { margin: 10px 0 0; padding-left: 20px; font-size: 15px; }
+.clab .cl-hints li { margin: 4px 0; }
+.clab .cl-fb { margin-top: 10px; }
+.clab .cl-fb p { margin: 4px 0; }
+.clab .cl-fb--right { color: var(--right); }
+.clab .cl-fb--wrong { color: var(--wrong); }
+.clab .cl-fb--info { color: var(--info); }
+.clab .cl-solution { margin-top: 12px; padding: 12px 14px; background: var(--panel); border-left: 3px solid var(--ice); }
+.clab .cl-solution p { margin: 4px 0; }
+.clab .cl-solution-h { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ice); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1100px) {
+  .clab .cl-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .clab .cl-graphs, .clab .cl-explains { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .clab .cl-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .clab .cl-sim { grid-template-columns: minmax(0, 1fr); }
+  .clab .cl-hero { grid-template-columns: minmax(0, 1fr); }
+  .clab .cl-insets { position: static; flex-direction: row; width: auto; margin-top: 8px; }
+  .clab .cl-inset { flex: 1 1 0; min-width: 0; }
+  .clab .cl-readout { max-width: calc(100% - 20px); }
+  .clab .cl-compare-grid { grid-template-columns: minmax(0, 1fr); }
+  .clab .cl-compare-svg { max-width: 300px; }
+  .clab .cl-chain { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .clab .cl-wrap { padding: 0 16px; }
+  .clab .cl-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .clab .cl-tile--turn { grid-column: 1 / -1; }
+  .clab .cl-graphs, .clab .cl-explains { grid-template-columns: minmax(0, 1fr); }
+  .clab .cl-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .clab .cl-tile-value { font-size: 28px; }
+  .clab .cl-activity { display: none; }
+  .clab .cl-readout { position: static; max-width: none; background: var(--deep); line-height: 1.4; }
+  .clab .cl-play { min-width: 0; flex: 1 1 150px; }
+  .clab .cl-analysis-body { padding: 12px; }
+  .clab .cl-step { padding: 12px; }
+  .clab .cl-inset figcaption { font-size: 9.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .clab .cl-saved li.is-new { animation: none; }
+}

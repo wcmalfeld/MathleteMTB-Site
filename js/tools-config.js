@@ -20,7 +20,7 @@
    description lives in content/tool-details/<id>.html.
 
    To change which tools are public, change `access` here. The number of
-   public tools must match MATHLETE_PUBLIC_TOOL_COUNT at the bottom (now 5);
+   public tools must match MATHLETE_PUBLIC_TOOL_COUNT at the bottom (now 6);
    the site warns in the browser console otherwise. Making a tool public also means
    hosting it publicly (`url`); making one private means taking its
    public copy down and uploading it with `node scripts/admin.mjs upload`.
@@ -117,6 +117,21 @@ window.MATHLETE_TOOLS = [
     featured: true
   },
   {
+    id: 'carve-lab',
+    name: 'Carve Lab',
+    access: 'public',
+    status: 'live',
+    url: 'https://www.mathletemtb.com/learning-lab/carve-lab/',   // in this repo: learning-lab/carve-lab/
+    category: 'tuning-bench',
+    summary: 'Tip the ski, change the sidecut, speed and mass, and watch the turn radius, acceleration and force of a carved turn change on the snow.',
+    image: 'assets/carve-lab.jpg',
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    subjects: ['geometry', 'trigonometry', 'algebra', 'physics'],
+    duration: 'extended',
+    minutes: '30-45 min',
+    featured: true
+  },
+  {
     id: 'tool-05',
     name: 'Tool 05',
     access: 'public',
@@ -139,4 +154,4 @@ window.MATHLETE_TOOLS = [
   }
 ];
 
-window.MATHLETE_PUBLIC_TOOL_COUNT = 5;
+window.MATHLETE_PUBLIC_TOOL_COUNT = 6;

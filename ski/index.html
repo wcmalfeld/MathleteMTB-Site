@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/site.css?v=16">
-<link rel="stylesheet" href="css/lab.css?v=9">
+<link rel="stylesheet" href="css/lab.css?v=10">
 </head>
 <body class="lab lab--ski">
 <a class="skip-link" href="ski/#main">Skip to content</a>
@@ -97,7 +97,7 @@
       <li><a class="lab-cat" href="ski/tuning-bench/">
         <h3 class="lab-cat-name">Tuning Bench</h3>
         <p class="lab-cat-focus">Ski and binding setup: sidecut geometry, turn radius, edge angles and the ratios behind a good tune.</p>
-        <span class="lab-cat-count">2 in development</span>
+        <span class="lab-cat-count">1 tool</span>
       </a></li>
     <!-- /BUILD:lab-cats -->
     </ul>
@@ -110,6 +110,62 @@
       <h2 class="label" id="tools-title">All tools</h2>
     </div>
     <!-- BUILD:lab-tools -->
+    <form class="lab-filters" data-lab-filters hidden aria-label="Filter tools">
+      <div class="lab-filter"><label for="f-category">Activity</label><select id="f-category" name="category"><option value="">All activities</option><option value="slope-physics">Slope Physics</option><option value="mountain-ops">Mountain Ops</option><option value="race-room">Race Room</option><option value="tuning-bench">Tuning Bench</option></select></div>
+      <div class="lab-filter"><label for="f-subject">Math</label><select id="f-subject" name="subjects"><option value="">All subjects</option><option value="algebra">Algebra</option><option value="geometry">Geometry</option><option value="trigonometry">Trigonometry</option><option value="statistics">Statistics</option><option value="calculus">Calculus</option><option value="physics">Physics</option></select></div>
+      <div class="lab-filter"><label for="f-difficulty">Level</label><select id="f-difficulty" name="difficulty"><option value="">All levels</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></div>
+      <div class="lab-filter"><label for="f-duration">Time</label><select id="f-duration" name="duration"><option value="">Any length</option><option value="quick">Quick activity</option><option value="challenge">Full challenge</option><option value="extended">Extended exploration</option></select></div>
+      <button type="reset" class="lab-filter-reset">Clear</button>
+    </form>
+    <p class="meta lab-count" data-lab-count aria-live="polite" hidden></p>
+    <div class="tool-grid" data-lab-grid>
+    <article class="tool-card lab-card" id="tool-carvelab" data-lab-tool="carve-lab" data-category="tuning-bench" data-subjects="geometry trigonometry algebra physics" data-difficulty="beginner intermediate advanced" data-duration="extended">
+      <span class="tool-thumb"><span class="lab-flag lab-flag--featured">Featured</span><img src="assets/carve-lab.jpg" alt="" loading="lazy" decoding="async"></span>
+      <div class="tool-card-body">
+        <p class="kicker">Tuning Bench</p>
+        <h3 class="tool-card-title"><a href="https://www.mathletemtb.com/learning-lab/carve-lab/" target="_blank" rel="noopener">Carve Lab</a></h3>
+        <p class="tool-card-desc">Tip the ski, change the sidecut, speed and mass, and watch the turn radius, acceleration and force of a carved turn change on the snow.</p>
+        <dl class="lab-facts">
+          <div><dt>Level</dt><dd>Beginner &ndash; Advanced</dd></div>
+          <div><dt>Time</dt><dd>30-45 min</dd></div>
+        </dl>
+        <ul class="pill-row" aria-label="Math">
+          <li class="pill">Geometry</li><li class="pill">Trigonometry</li><li class="pill">Algebra</li><li class="pill pill--physics">Physics</li>
+        </ul>
+        <div class="lab-card-actions">
+          <a class="button" href="https://www.mathletemtb.com/learning-lab/carve-lab/" target="_blank" rel="noopener">Launch <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> Carve Lab (opens in a new tab)</span></a>
+          <details class="lab-more">
+            <summary class="read-link">Details</summary>
+            <div class="tool-detail">
+              <figure class="tool-shot" data-gallery>
+                <a class="fig-frame" href="assets/carve-lab.jpg" data-lightbox data-caption="Carve Lab: a 45° edge angle carving a 10.6 m turn at 12 m/s"><img src="assets/carve-lab.jpg" alt="Carve Lab: a top-down view of a groomed slope with a skier partway through a carved turn of radius 10.6 metres, the turn's centre marked, velocity, acceleration and force arrows on the skier, and insets showing the ski's sidecut and its 45 degree edge angle" width="1400" height="900" loading="lazy" decoding="async"></a>
+                <figcaption class="meta">The simulator: every slider redraws the turn, the arrows and the numbers together, to scale.</figcaption>
+              </figure>
+              <div class="tool-text">
+                <ul class="tool-tags">
+                  <li class="pill pill--physics">Physics</li>
+                  <li class="pill">Trig &middot; Squared relationships</li>
+                  <li class="pill">Mathlete Ski</li>
+                </ul>
+                <p class="service-desc">Students change a ski's sidecut radius and edge angle, the skier's speed and mass, then press <em>Start turn</em> to watch the skier carve it. The turn radius, centripetal acceleration, lateral g and required inward force all come from three equations, <em>R&nbsp;=&nbsp;R<sub>sc</sub>&nbsp;cos&nbsp;&theta;</em>, <em>a&nbsp;=&nbsp;v&sup2;/R</em> and <em>F&nbsp;=&nbsp;ma</em>, worked through live with the student's numbers.</p>
+                <ul class="service-points">
+                  <li><strong>Simulation first.</strong> Tip the ski and the line tightens; double the speed and the acceleration arrow grows four times. Linked turns, pause-anywhere vectors, and a true-scale view.</li>
+                  <li><strong>A Graph Lab alongside.</strong> Radius vs. edge angle, acceleration and force vs. speed, with the current setup marked, plus a side-by-side comparison of two setups.</li>
+                  <li><strong>Five challenges.</strong> Each starts with a prediction, then an experiment, the maths and a written explanation. Points reward the reasoning as well as the right answer.</li>
+                  <li><strong>Honest about the model.</strong> It's an idealized carve, and the lab says what it leaves out (flex, snow, skidding). It's for learning the maths, not for ski advice.</li>
+                </ul>
+                <div class="tool-actions">
+                  <a class="button" data-tool-launch href="https://www.mathletemtb.com/learning-lab/carve-lab/" target="_blank" rel="noopener">Open Carve Lab <span aria-hidden="true">&rarr;</span></a>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </article>
+    </div>
+    <p class="lab-empty" data-lab-empty hidden>No tools match those filters yet. <button type="button" class="lab-filter-reset" data-lab-clear>Clear filters</button></p>
+    <h3 class="lab-soon-head">In development</h3>
     <div class="tool-grid">
     <article class="tool-card tool-card--soon lab-soon">
       <div class="tool-card-body">
@@ -139,18 +195,6 @@
       <div class="tool-card-body">
         <p class="kicker">Race Room <span class="kicker-flag">In development</span></p>
         <h3 class="tool-card-title">Gate Timing Challenge</h3>
-      </div>
-    </article>
-    <article class="tool-card tool-card--soon lab-soon">
-      <div class="tool-card-body">
-        <p class="kicker">Tuning Bench <span class="kicker-flag">In development</span></p>
-        <h3 class="tool-card-title">Sidecut &amp; Turn Radius</h3>
-      </div>
-    </article>
-    <article class="tool-card tool-card--soon lab-soon">
-      <div class="tool-card-body">
-        <p class="kicker">Tuning Bench <span class="kicker-flag">In development</span></p>
-        <h3 class="tool-card-title">Edge Angle Workshop</h3>
       </div>
     </article>
     </div>

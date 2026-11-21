@@ -176,6 +176,7 @@
 /* in-development placeholders */
 .lab-soon .tool-card-body { padding: 22px; }
 .lab-soon .tool-card-title { font-size: 24px; }
+.lab-soon-head { margin: 48px 0 16px; font-family: var(--f-display); font-weight: 800; font-size: clamp(22px, 2.4vw, 28px); text-transform: uppercase; color: var(--ink); }
 
 /* ---------- section heads on dark ---------- */
 .lab .section + .section { border-top-color: var(--rule); }
