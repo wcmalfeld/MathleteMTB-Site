@@ -148,6 +148,7 @@
   var TABSETS = {
     learning: [
       { id: 'dashboard', href: 'dashboard.html', label: 'Dashboard' },
+      { id: 'rewards', href: 'rewards.html', label: 'Rewards' },
       { id: 'play', href: 'index.html#tools', label: 'Play' },
       { id: 'progress', href: 'my-progress.html', label: 'My Progress' },
       { id: 'review', href: 'review.html', label: 'Review My Mistakes' },

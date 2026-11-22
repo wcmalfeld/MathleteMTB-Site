@@ -633,6 +633,26 @@ check('Inquiries are insert-only for visitors', /revoke all on public\.inquiries
   check('No lesson sources are committed', tracked.trim() === '', tracked.split('\n').slice(0, 3).join(', '));
 }
 
+// ---- Rewards: Trail XP, streaks, levels, badges, Garage (supabase/rewards.sql) ----
+{
+  const rsql = read('supabase/rewards.sql');
+  check('Reward records are read-only to the browser (no write grants; awards only via triggers)',
+    !/grant (insert|update|delete|all)[^;]*on public\.reward_/i.test(rsql) && /revoke all on public\.%I from anon, authenticated/.test(rsql)
+    && /reward_award\(uuid, uuid, text, text, integer, timestamptz, jsonb, boolean\),[\s\S]*from public, anon, authenticated;/.test(rsql));
+  check('Rewards hook into the existing learning events (answers and finished sessions)', /after insert on public\.question_attempts/.test(rsql) && /after update of completed on public\.game_sessions/.test(rsql));
+  check('A rewards failure can never block saving an answer', (rsql.match(/exception when others then\s+raise warning 'rewards:/g) || []).length === 2);
+  check('Every reward is idempotent (one ledger row per student per event key)', /unique \(user_id, idempotency_key\)/.test(rsql));
+  const rwJs = ['js/rewards.js', 'js/rewards-live.js'];
+  check('Rewards scripts never build HTML from strings', rwJs.every(f => !/\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write/.test(read(f))));
+  check('Rewards respect reduced motion', read('css/rewards.css').includes('prefers-reduced-motion') && read('js/rewards-live.js').includes('prefers-reduced-motion'));
+  check('progress.js shows reward celebrations after saves', /function celebrate\(\)/.test(read('js/progress.js')) && read('js/progress.js').includes("js/rewards-live.js"));
+  let pages = [];
+  try { pages = execSync(`grep -rl 'js/progress.js' --include='*.html' .`, { cwd: root, encoding: 'utf8' }).split('\n').filter(Boolean); } catch {}
+  const stale = pages.filter(f => !f.includes('private-tools/')).filter(f => !/js\/progress\.js\?v=4/.test(read(f.replace(/^\.\//, ''))));
+  check('Every page loads the current progress.js (v=4)', stale.length === 0, stale.join(', '));
+  check('Rewards tab is on the student pages', read('js/student.js').includes("href: 'rewards.html'") && existsSync(root + 'rewards.html'));
+}
+
 // ---- secrets / private files in the repo ----
 let files = [];
 try {

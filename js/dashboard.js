@@ -109,7 +109,7 @@
     return sec;
   }
 
-  function render(d, goals) {
+  function render(d, goals, sb) {
     var main = document.getElementById('student-main');
     var name = d.student && d.student.display_name ? d.student.display_name : 'Mathlete';
     document.getElementById('student-title').textContent = 'Welcome back, ' + name + '.';
@@ -122,6 +122,8 @@
     S.drawTabs('dashboard', d.review.waiting);
     S.clear(main);
 
+    // Rewards strip (js/rewards.js): streak, today's goal, level.
+    if (window.MathleteRewards && sb) { var strip = el('div'); main.appendChild(strip); window.MathleteRewards.strip(sb, strip); }
     main.appendChild(weekSection(d));
     var gs = goalsSection(goals || []);
     if (gs) main.appendChild(gs);
@@ -158,7 +160,7 @@
     // Goals are a bonus on this page: if they can't be loaded, show the rest.
     var goals = ctx.sb.rpc('student_goals').then(function (r) { return r.error ? [] : r.data; }, function () { return []; });
     return Promise.all([S.loadDashboard(ctx.sb), goals]).then(function (r) {
-      render(r[0], r[1]);
+      render(r[0], r[1], ctx.sb);
       // The school the student is working in (branding, what it has switched on).
       if (window.MathleteOrg && window.MathleteOrg.mountSchool) window.MathleteOrg.mountSchool(ctx.sb, document.getElementById('student-main'));
     });

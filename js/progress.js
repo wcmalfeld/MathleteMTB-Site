@@ -130,19 +130,38 @@
       writeQueue(all);
       var mine = uid ? all.filter(function (it) { return it.uid === uid; }) : [];
       if (!mine.length) return;
+      var savedAny = false;
       return A.client().then(function (sb) {
         function next(i) {
           if (i >= mine.length) { retryDelay = RETRY_MIN_MS; return; }
           return send(sb, mine[i]).then(function (outcome) {
             if (outcome === 'retry') { scheduleRetry(); return; }
             removeFromQueue(mine[i].id);
+            if (outcome === 'saved') savedAny = true;
             return next(i + 1);
           });
         }
         return next(0);
-      });
+      }).then(function () { if (savedAny) celebrate(); });
     }).catch(function () { scheduleRetry(); }).then(function () { flushing = null; });
     return flushing;
+  }
+
+  // ---------- Trail XP celebrations ----------
+  // After something is saved, js/rewards-live.js asks the server what it
+  // earned (XP, goal, level, badge) and shows a small card. Loaded on first
+  // use, so pages and games that never save don't download it.
+  var liveLoading = null;
+  function celebrate() {
+    if (api.showRewards === false) return;
+    try {
+      if (window.MathleteRewardsLive) { window.MathleteRewardsLive.check(); return; }
+      if (liveLoading || !ROOT) return;
+      liveLoading = document.createElement('script');
+      liveLoading.src = ROOT + 'js/rewards-live.js?v=1';
+      liveLoading.onload = function () { if (window.MathleteRewardsLive) window.MathleteRewardsLive.check(); };
+      document.head.appendChild(liveLoading);
+    } catch (e) { /* never get in a game's way */ }
   }
 
   // ---------- "log in to save" note for visitors ----------

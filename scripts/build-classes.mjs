@@ -528,7 +528,7 @@ ${rows.join('\n')}
 // ---------- supabase/curriculum.sql ----------
 const q = s => `'${String(s).replace(/'/g, "''")}'`;
 function curriculumSql(model) {
-  const skills = model.skills.map(s => `  (${q(s.id)}, ${q(s.topic.course.id)}, ${q(s.topic.id)}, ${q(s.title)})`).join(',\n');
+  const skills = model.skills.map(s => `  (${q(s.id)}, ${q(s.topic.course.id)}, ${q(s.topic.unit.id)}, ${q(s.topic.id)}, ${q(s.title)})`).join(',\n');
   const tracked = model.activities.filter(a => a.tracking);
   // Lab tools (a.tool) register their own question kinds in progress.sql;
   // here they're only linked to curriculum skills.
@@ -561,6 +561,8 @@ create table if not exists public.curriculum_skills (
   title      text not null,
   active     boolean not null default true
 );
+-- The unit each skill's topic belongs to (used by the rewards' exploration badges).
+alter table public.curriculum_skills add column if not exists unit_id text;
 create table if not exists public.curriculum_question_skills (
   question_id text not null references public.questions (id) on delete cascade,
   skill_id    text not null references public.curriculum_skills (id) on delete cascade,
@@ -580,9 +582,9 @@ grant select on public.curriculum_skills, public.curriculum_question_skills to a
 -- 1. Skills (ids are permanent; a skill removed from the content is
 --    marked inactive, never deleted, so old progress keeps its meaning).
 update public.curriculum_skills set active = false;
-insert into public.curriculum_skills (id, course_id, topic_id, title) values
+insert into public.curriculum_skills (id, course_id, unit_id, topic_id, title) values
 ${skills}
-on conflict (id) do update set course_id = excluded.course_id, topic_id = excluded.topic_id, title = excluded.title, active = true;
+on conflict (id) do update set course_id = excluded.course_id, unit_id = excluded.unit_id, topic_id = excluded.topic_id, title = excluded.title, active = true;
 
 -- 2. Question kinds for tracked activities that aren't Lab tools, filed under a broad
 --    skill ('algebra' unless the activity names one) for the dashboard's skill meters.
