@@ -52,7 +52,7 @@ export function buildCatalog() {
   FEATURES.forEach((f, i) => add({ ...f, slug: f.id.split('.')[1], type: 'feature', sort_order: i }));
   Object.entries(SPORTS).forEach(([id, s], i) => add({ id: 'sport.' + id, slug: id, type: 'sport', sport: id, sort_order: 10 + i, ...s }));
   courses.forEach(c => add({
-    id: 'course.' + c.id, slug: c.slug, name: c.name, type: 'course', subject: 'Mathematics', course_id: c.id,
+    id: 'course.' + c.id, slug: c.slug, name: c.name, type: 'course', subject: c.subject, course_id: c.id,
     description: c.description, objectives: c.units.map(u => u.title), url: `classes/${c.slug}/`, sort_order: 100 + c.order
   }));
   // Live public labs from the Learning Lab.
@@ -65,12 +65,18 @@ export function buildCatalog() {
     });
     rel.push([t.id, 'sport.' + sport, 'requires']);
   });
-  // Classes activities (labs that live in a course).
+  // Classes activities (labs that live in a course). A Lab tool used in a
+  // course (a.tool) is already listed above; it only gets the link.
   activities.forEach((a, i) => {
     const home = a.home.split('.')[0];
+    if (a.tool) {
+      if (!out.some(x => x.id === a.tool)) throw new Error(`activity ${a.id}: tool ${a.tool} isn't a live public Lab tool`);
+      rel.push([a.tool, 'course.' + home, 'part_of']);
+      return;
+    }
     add({
       id: a.id, slug: a.id, name: a.title, type: a.type === 'lab' ? 'lab' : 'module', sport: 'mtb', description: a.summary,
-      subject: 'Mathematics', course_id: home, objectives: a.objectives || [], skills: a.skills || [],
+      subject: courses.find(c => c.id === home).subject, course_id: home, objectives: a.objectives || [], skills: a.skills || [],
       game_ids: a.tracking ? [a.tracking.gameId] : [], thumbnail: a.image || null, url: a.route, sort_order: 300 + i
     });
     rel.push([a.id, 'sport.mtb', 'requires']);

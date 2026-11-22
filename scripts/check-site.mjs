@@ -232,8 +232,35 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   const want = renderClasses();
   const staleC = Object.entries(want).filter(([p, h]) => !existsSync(root + p) || read(p) !== h).map(([p]) => p);
   check('Classes pages and supabase/curriculum.sql are up to date (node scripts/build-classes.mjs)', staleC.length === 0, staleC.slice(0, 5).join(', '));
+  const mathCourses = model.courses.filter(c => !c.pathway);
   check('Classes: Algebra 1, Algebra 2, Geometry and Precalculus, 9 units each, every topic with skills',
-    model.courses.map(c => c.name).join() === 'Algebra 1,Algebra 2,Geometry,Precalculus' && model.courses.every(c => c.units.length === 9) && model.topics.every(t => t.skills.length >= 2));
+    mathCourses.map(c => c.name).join() === 'Algebra 1,Algebra 2,Geometry,Precalculus' && mathCourses.every(c => c.units.length === 9) && model.topics.every(t => t.skills.length >= 2));
+
+  // Physics of the Ride (content/classes/physics.mjs, PRDs/collegePhysics.md)
+  const P = model.pathway, pMods = P.courses.flatMap(c => c.units.flatMap(u => u.topics));
+  check('Physics of the Ride: Trail Physics (6 units, 17 modules) and Trail Technology (3 units, 11 modules), units numbered 1–9',
+    P.courses.map(c => `${c.name}:${c.units.length}:${c.units.reduce((n, u) => n + u.topics.length, 0)}`).join() === 'Trail Physics:6:17,Trail Technology:3:11' &&
+    P.courses.flatMap(c => c.units.map(u => u.number)).join() === '1,2,3,4,5,6,7,8,9');
+  check('Physics of the Ride: every module has a hook, concepts, a status, a category, a lab and at least 3 objectives',
+    pMods.every(t => t.hook && t.concepts.length && t.status && t.category && t.labs.length && t.skills.length >= 3));
+  check('Physics of the Ride: the PRD’s 23 flagship labs are in the lab library, each used by a module', P.labs.filter(l => l.flagship).length === 23 && P.labs.every(l => l.modules.length));
+  const pathPage = read(P.href + 'index.html');
+  check('Physics of the Ride page links to every module', pMods.every(t => pathPage.includes(`href="${t.href}"`)));
+  const overclaim = pMods.filter(t => t.status !== 'published' && /Lesson available/.test(read(t.href + 'index.html'))).map(t => t.id);
+  check('Physics modules only say “Lesson available” once published', overclaim.length === 0 && pMods.every(t => t.status === 'published' || pathPage.includes(`data-topic="${t.id}"`)), overclaim.join(', '));
+  const unnoted = pMods.filter(t => t.note && !read(t.href + 'index.html').includes('About the model:')).map(t => t.id);
+  check('Physics modules state their model’s assumptions where they have them', unnoted.length === 0, unnoted.join(', '));
+  check('Physics content roadmap is generated (docs/PHYSICS-ROADMAP.md)', read('docs/PHYSICS-ROADMAP.md').includes('| ' + pMods[0].course.name + ' 1 |'));
+  // Lab tools used in courses: every linked kind must be registered in progress.sql for that game.
+  const progressSql = read('supabase/progress.sql');
+  const toolActs = ACTIVITIES.filter(a => a.tool && a.status === 'live');
+  const badKinds = toolActs.flatMap(a => Object.keys(a.tracking.questions).filter(k => !new RegExp(`\\('${a.tracking.gameId}:${k}',\\s*'${a.tracking.gameId}'`).test(progressSql)).map(k => a.id + ':' + k));
+  check('Physics labs: every question kind linked to a skill is registered in supabase/progress.sql', toolActs.length >= 3 && badKinds.length === 0, badKinds.join(', '));
+  const bermAll = [...progressSql.matchAll(/\('berm-lab:([a-z0-9-]+)', 'berm-lab'/g)].map(m => m[1]);
+  const bermMap = toolActs.find(a => a.id === 'berm-lab').tracking.questions;
+  check('Berm Lab: all its question kinds count toward Trail Physics skills', bermAll.length === 19 && bermAll.every(k => bermMap[k]));
+  check('Lab tools in courses don’t re-register their question kinds in curriculum.sql', !/\('(jump-lab|berm-lab|gear-ratio-lab):[a-z0-9-]+', '(jump-lab|berm-lab|gear-ratio-lab)', /.test(read('supabase/curriculum.sql')));
+  check('Classes progress returns recent first tries (module mastery can improve)', /'recent_ok', x\.recent_ok/.test(read('supabase/curriculum.sql')) && read('js/classes.js').includes('recent_ok'));
   const lab = ACTIVITIES.find(a => a.id === 'slope-lab');
   const { QUESTIONS: LABQ } = await import('../learning-lab/slope-lab/content/questions.js');
   const labMap = Object.fromEntries(LABQ.map(q => [q.id, q.objective]));

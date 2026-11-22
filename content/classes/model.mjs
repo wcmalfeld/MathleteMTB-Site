@@ -1,7 +1,11 @@
 // CLASSES: turns curriculum.mjs + activities.mjs into one checked model
 // with stable ids, used by scripts/build-classes.mjs and check-site.mjs.
-import { COURSES } from './curriculum.mjs';
+import { COURSES as MATH_COURSES } from './curriculum.mjs';
 import { ACTIVITIES } from './activities.mjs';
+import { PHYSICS_COURSES, PATHWAY, LABS, STATUSES, CATEGORIES } from './physics.mjs';
+
+export { STATUSES, CATEGORIES, PATHWAY };
+const COURSES = [...MATH_COURSES, ...PHYSICS_COURSES];
 
 export const ACTIVITY_TYPES = { lab: 'Interactive lab', guided: 'Guided activity', game: 'Game', practice: 'Practice' };
 export const LEVELS = { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' };
@@ -14,10 +18,11 @@ export function loadClasses() {
 
   [...COURSES].sort((a, b) => a.order - b.order).forEach(c => {
     claim(c.id, 'course');
-    const course = { ...c, units: [], href: `classes/${c.slug}/` };
+    const course = { ...c, subject: c.subject || 'Mathematics', pathway: c.pathway || null, units: [], href: `classes/${c.slug}/` };
     const slugs = new Set();
+    let moduleN = 0;
     c.units.forEach((u, ui) => {
-      const unit = { id: `${c.id}.u.${u.slug}`, slug: u.slug, title: u.title, number: ui + 1, course, topics: [] };
+      const unit = { id: `${c.id}.u.${u.slug}`, slug: u.slug, title: u.title, desc: u.desc || null, number: (c.firstUnit || 1) + ui, course, topics: [] };
       claim(unit.id, 'unit');
       u.topics.forEach((t, ti) => {
         const id = `${c.id}.${t.slug}`;
@@ -27,6 +32,15 @@ export function loadClasses() {
         if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(t.slug)) errors.push(`bad topic slug ${t.slug}`);
         const topic = { id, slug: t.slug, title: t.title, desc: t.desc, mtb: t.mtb, prereq: t.prereq || [], number: ti + 1,
           unit, course, href: `classes/${c.slug}/${t.slug}/`, skills: [] };
+        if (course.pathway) {
+          // A Physics of the Ride module: numbered through its course, with a content status.
+          Object.assign(topic, { module: ++moduleN, hook: t.hook, concepts: t.concepts || [], math: t.math || [], note: t.note || null,
+            category: t.category, status: t.status, experiences: t.experiences || [] });
+          if (!t.hook) errors.push(`${id} has no hook question`);
+          if (!STATUSES[t.status]) errors.push(`${id}: unknown status ${t.status}`);
+          if (!CATEGORIES[t.category]) errors.push(`${id}: unknown category ${t.category}`);
+          topic.experiences.forEach(x => { if (!LABS.some(l => l.id === x)) errors.push(`${id}: unknown lab ${x}`); });
+        }
         if (!t.skills || !t.skills.length) errors.push(`${id} has no skills`);
         (t.skills || []).forEach(s => {
           const m = s.match(/^([a-z0-9-]+):\s*(.+)$/);
@@ -63,5 +77,16 @@ export function loadClasses() {
   });
   courses.forEach(c => { c.activityIds = new Set(c.units.flatMap(u => u.topics.flatMap(t => t.activities.map(a => a.id)))); });
 
-  return { courses, units, topics, skills, activities, skillById, topicById, errors };
+  // Physics of the Ride: its courses, and its lab library with what's live.
+  const activityById = new Map(activities.map(a => [a.id, a]));
+  const labs = LABS.map(l => {
+    if (l.activity && !ACTIVITIES.some(a => a.id === l.activity)) errors.push(`lab ${l.id}: unknown activity ${l.activity}`);
+    return { ...l, live: activityById.get(l.activity) || null, modules: topics.filter(t => (t.experiences || []).includes(l.id)) };
+  });
+  labs.filter(l => !l.modules.length).forEach(l => errors.push(`lab ${l.id} isn't used by any module`));
+  topics.filter(t => t.course.pathway).forEach(t => { t.labs = t.experiences.map(x => labs.find(l => l.id === x)); });
+  const pathway = { ...PATHWAY, href: `classes/${PATHWAY.slug}/`, courses: courses.filter(c => c.pathway === PATHWAY.id), labs };
+  if (courses.some(c => c.slug === PATHWAY.slug)) errors.push(`course slug ${PATHWAY.slug} clashes with the pathway page`);
+
+  return { courses, units, topics, skills, activities, skillById, topicById, pathway, errors };
 }

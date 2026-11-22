@@ -85,3 +85,41 @@ Progress is stored against skill ids, so:
   on topics that have activities.
 - Slope Lab answers also appear on the student dashboard (under Algebra)
   and in Review My Mistakes, like any other game.
+
+## Physics of the Ride
+
+Built from [PRDs/collegePhysics.md](../PRDs/collegePhysics.md), Phase 1
+(the curriculum architecture). It lives inside Classes as two more courses:
+
+| Page | Address |
+|---|---|
+| The pathway dashboard: both courses, 9 units, 28 modules, the lab library | `/classes/physics-of-the-ride/` |
+| Trail Physics (Mechanics & Energy, units 1–6, 17 modules) | `/classes/trail-physics/` |
+| Trail Technology (Electricity, Magnetism & Optics, units 7–9, 11 modules) | `/classes/trail-technology/` |
+| A module | `/classes/trail-physics/uniform-circular-motion/` |
+
+- **Content:** `content/classes/physics.mjs`. A module is a Classes topic
+  with extra fields: `hook`, `concepts`, `math`, `experiences` (lab ids),
+  `category`, `status` and an optional `note` on the model's assumptions.
+  Ids are permanent, as for every topic.
+- **Status:** each module has a content status (Planned → … → Published).
+  Until a module is Published its pages say "Lesson coming". All 28 are
+  Planned for now. `docs/PHYSICS-ROADMAP.md` is generated with the status,
+  category and labs of every module, for the content team.
+- **Labs already linked:** Jump Lab (Module 6), Berm Lab (Module 9, plus the
+  skills it touches in Modules 2, 3 and 8) and Gear Ratio Lab (Module 13).
+  They're Lab tools (`tool:` in `activities.mjs`), so their question kinds
+  stay registered in `progress.sql`; `curriculum.sql` only links them to
+  physics skills.
+- **Progress states** (js/classes.js `moduleState`): Not started, In
+  progress (some skills), Practised (every skill), Mastered (every skill,
+  with at least 2 of its 5 most recent first tries counted and 80% of them
+  right). `curriculum_progress()` now also returns `recent` and `recent_ok`
+  per skill, so newer work replaces older.
+- **Not built yet:** lesson content, the 21 planned labs, the Explore,
+  Apply and Engineer levels inside lessons, and teacher assignments (these
+  wait for classes and assignments in the multi-org plan).
+
+After a change: `node scripts/build-classes.mjs`, then
+`node scripts/build-catalog.mjs`, then re-run `supabase/curriculum.sql`
+and `supabase/catalog.sql` in the SQL Editor.

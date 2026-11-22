@@ -75,6 +75,53 @@ const JUMP_IDEAS = {
 const jumpQuestionSkills = Object.fromEntries(Object.entries(jumpKinds()).map(([q, ideas]) =>
   [q, [...new Set(ideas.flatMap(i => JUMP_IDEAS[i] || []))]]));
 
+// Physics of the Ride: Lab tools' question kinds (from supabase/progress.sql)
+// -> physics skills. Kinds that don't practise physics are left out.
+const PM = 'phys1.projectile-motion.', CM = 'phys1.uniform-circular-motion.', RD = 'phys1.rotational-dynamics.';
+const FR = 'phys1.applications-of-newtons-laws.friction', UNITS = 'phys1.scientific-measurement.unit-conversions', TRIG = 'phys1.mathematics-review.trig-ratios';
+const JUMP_LAB = {
+  'clear-the-gap':         [PM + 'launch-variables', PM + 'predict-landing'],
+  'minimum-speed':         [PM + 'launch-variables', PM + 'predict-landing'],
+  'perfect-trajectory':    [PM + 'launch-variables', PM + 'flight'],
+  'same-distance':         [PM + 'launch-variables'],
+  'solve-before-jump':     [PM + 'components', PM + 'flight', PM + 'predict-landing'],
+  'mission-prediction':    [PM + 'predict-landing'],
+  'predict-speed-plus-20': [PM + 'launch-variables'],
+  'predict-double-speed':  [PM + 'launch-variables', PM + 'flight'],
+  'predict-angle-up-5':    [PM + 'launch-variables'],
+  'predict-drop-landing':  [PM + 'flight', PM + 'independence']
+};
+const BERM_LAB = {
+  'c1-predict': [CM + 'speed-and-radius'],
+  'c1-accel':   [CM + 'centripetal-acceleration'],
+  'c1-ratio':   [CM + 'speed-and-radius'],
+  'c2-predict': [CM + 'speed-and-radius'],
+  'c2-convert': [UNITS],
+  'c2-accel':   [CM + 'centripetal-acceleration', CM + 'speed-and-radius'],
+  'c3-predict': [CM + 'banking'],
+  'c3-angle':   [CM + 'banking', TRIG],
+  'c3-sim':     [CM + 'banking'],
+  'c4-predict': [CM + 'banking', FR],
+  'c4-flat':    [CM + 'centripetal-acceleration', FR],
+  'c4-source':  [CM + 'centripetal-force'],
+  'c5-predict': [CM + 'centripetal-force'],
+  'c5-force':   [CM + 'centripetal-force'],
+  'c5-grip':    [CM + 'centripetal-force', FR],
+  'c6-predict': [CM + 'banking'],
+  'c6-design':  [CM + 'banking'],
+  'c6-math':    [CM + 'banking', FR],
+  'c6-min':     [CM + 'banking', TRIG]
+};
+const GEAR_LAB = {
+  'sheet-ratio':           [RD + 'gear-ratio'],
+  'geo-gear-inches':       [RD + 'gear-ratio'],
+  'sheet-development':     [RD + 'drivetrain'],
+  'sheet-speed':           [RD + 'drivetrain'],
+  'geo-circumference':     [RD + 'drivetrain'],
+  'tune-prediction':       [RD + 'drivetrain'],
+  'precalc-angular-speed': [RD + 'angular-velocity']
+};
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -123,5 +170,76 @@ export const ACTIVITIES = [
     parts: ['Jump simulator', 'Learning modules (5)', 'Equation decoder', 'Missions (6)'],
     skills: [...new Set(Object.values(jumpQuestionSkills).flat())],
     tracking: { gameId: 'jump-trajectory-lab', questions: jumpQuestionSkills }
+  },
+
+  // ---------- Physics of the Ride (content/classes/physics.mjs) ----------
+  // These are Lab tools (js/tools-config.js, `tool`), so their question
+  // kinds are already registered in supabase/progress.sql; curriculum.sql
+  // only links them to physics skills. check-site.mjs checks every kind.
+  {
+    id: 'jump-lab',
+    tool: 'jump-lab',
+    title: 'Jump Lab',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/jump-lab/',
+    image: 'assets/jump-lab.jpg',
+    home: 'phys1.projectile-motion',
+    summary: 'Set the speed, angle and heights of a jump, predict where the rider lands, then send it and check the projectile-motion maths.',
+    objectives: [
+      'Split a takeoff velocity into horizontal and vertical components',
+      'Predict flight time, peak height and landing point',
+      'Explain how speed and angle change a trajectory'
+    ],
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    minutes: '15-30 min',
+    parts: ['Jump simulator', 'Predictions', 'Missions (5)'],
+    skills: [...new Set(Object.values(JUMP_LAB).flat())],
+    tracking: { gameId: 'jump-lab', questions: JUMP_LAB }
+  },
+  {
+    id: 'berm-lab',
+    tool: 'berm-lab',
+    title: 'Berm Lab',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/berm-lab/',
+    image: 'assets/berm-lab.jpg',
+    home: 'phys1.uniform-circular-motion',
+    summary: 'Pick a tight, middle or wide line, set your speed and bank the berm, then watch the forces, lean and grip demand of a corner change.',
+    objectives: [
+      'Calculate centripetal acceleration and force',
+      'Explain why speed matters more than radius',
+      'Find the bank angle where a turn needs no friction'
+    ],
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    minutes: '15-30 min',
+    parts: ['Corner simulator', 'Graphs', 'Challenges (6)'],
+    skills: [...new Set(Object.values(BERM_LAB).flat())],
+    tracking: { gameId: 'berm-lab', questions: BERM_LAB }
+  },
+  {
+    id: 'gear-ratio-lab',
+    tool: 'gear-ratio-lab',
+    title: 'Gear Ratio Lab',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/gear-ratio-lab/',
+    image: 'assets/gear-ratio-lab.jpg',
+    home: 'phys1.rotational-dynamics',
+    summary: 'Gear a race bike for a course, then work out ratios, speeds and times to beat a rival.',
+    objectives: [
+      'Calculate gear ratios and distance per crank turn',
+      'Find speed from cadence and gearing',
+      'Convert wheel speed to angular speed'
+    ],
+    difficulty: ['intermediate', 'advanced'],
+    minutes: '30-45 min',
+    parts: ['Race bike setup', 'Lab sheet', 'Tune-up prediction'],
+    skills: [...new Set(Object.values(GEAR_LAB).flat())],
+    tracking: { gameId: 'gear-ratio-lab', questions: GEAR_LAB }
   }
 ];

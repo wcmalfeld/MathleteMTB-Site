@@ -10,7 +10,8 @@
 --                                 curriculum skills (an attempt at one
 --                                 question counts for all its skills)
 --   * question kinds for tracked activities (e.g. the Slope Lab), so
---     record_attempt() accepts them
+--     record_attempt() accepts them (Lab tools such as Berm Lab register
+--     theirs in progress.sql; here they're only linked to skills)
 --   * curriculum_progress()       a student's progress per curriculum skill
 --                                 and per tracked activity
 -- Who can see what: the same rules as the rest of progress.sql (a student
@@ -551,10 +552,149 @@ insert into public.curriculum_skills (id, course_id, topic_id, title) values
   ('precalc.mathematical-limits.limits-at-infinity', 'precalc', 'precalc.mathematical-limits', 'Find limits at infinity'),
   ('precalc.introduction-to-calculus-concepts.instantaneous-rate', 'precalc', 'precalc.introduction-to-calculus-concepts', 'Estimate instantaneous rate of change'),
   ('precalc.introduction-to-calculus-concepts.tangent-lines', 'precalc', 'precalc.introduction-to-calculus-concepts', 'Interpret the slope of a tangent line'),
-  ('precalc.introduction-to-calculus-concepts.area-under-curve', 'precalc', 'precalc.introduction-to-calculus-concepts', 'Estimate area under a curve')
+  ('precalc.introduction-to-calculus-concepts.area-under-curve', 'precalc', 'precalc.introduction-to-calculus-concepts', 'Estimate area under a curve'),
+  ('phys1.introduction-to-physics.what-physics-studies', 'phys1', 'phys1.introduction-to-physics', 'Describe what physics studies, with examples from riding'),
+  ('phys1.introduction-to-physics.models-and-laws', 'phys1', 'phys1.introduction-to-physics', 'Tell an observation, a model, a law and a theory apart'),
+  ('phys1.introduction-to-physics.systems', 'phys1', 'phys1.introduction-to-physics', 'Describe a mountain bike as a physical system of interacting parts'),
+  ('phys1.introduction-to-physics.physics-of-the-bike', 'phys1', 'phys1.introduction-to-physics', 'Name the physics each part of a bike depends on'),
+  ('phys1.mathematics-review.rearrange-equations', 'phys1', 'phys1.mathematics-review', 'Rearrange an equation to solve for any of its variables'),
+  ('phys1.mathematics-review.ratios-proportions', 'phys1', 'phys1.mathematics-review', 'Use ratios and proportions in riding problems'),
+  ('phys1.mathematics-review.right-triangles', 'phys1', 'phys1.mathematics-review', 'Find a missing side of a right triangle'),
+  ('phys1.mathematics-review.trig-ratios', 'phys1', 'phys1.mathematics-review', 'Use sine, cosine and tangent to find sides and angles'),
+  ('phys1.mathematics-review.trail-grade', 'phys1', 'phys1.mathematics-review', 'Calculate a trail’s grade from elevation change and horizontal distance'),
+  ('phys1.mathematics-review.read-graphs', 'phys1', 'phys1.mathematics-review', 'Read and interpret a graph of a riding quantity'),
+  ('phys1.scientific-measurement.si-units', 'phys1', 'phys1.scientific-measurement', 'Use SI base and derived units'),
+  ('phys1.scientific-measurement.unit-conversions', 'phys1', 'phys1.scientific-measurement', 'Convert between units, such as km/h, m/s and mph'),
+  ('phys1.scientific-measurement.scientific-notation', 'phys1', 'phys1.scientific-measurement', 'Write and calculate with scientific notation'),
+  ('phys1.scientific-measurement.significant-figures', 'phys1', 'phys1.scientific-measurement', 'Report a result with sensible significant figures'),
+  ('phys1.scientific-measurement.uncertainty', 'phys1', 'phys1.scientific-measurement', 'Estimate a measurement’s uncertainty and percent uncertainty'),
+  ('phys1.scientific-measurement.models-assumptions', 'phys1', 'phys1.scientific-measurement', 'Name a model’s assumptions and when they stop holding'),
+  ('phys1.kinematics.distance-displacement', 'phys1', 'phys1.kinematics', 'Tell distance from displacement, and speed from velocity'),
+  ('phys1.kinematics.average-velocity', 'phys1', 'phys1.kinematics', 'Calculate average velocity from a change in position'),
+  ('phys1.kinematics.acceleration', 'phys1', 'phys1.kinematics', 'Calculate acceleration, including braking'),
+  ('phys1.kinematics.motion-equations', 'phys1', 'phys1.kinematics', 'Use the constant-acceleration equations to predict position and speed'),
+  ('phys1.kinematics.motion-graphs', 'phys1', 'phys1.kinematics', 'Read and sketch position-, velocity- and acceleration-time graphs'),
+  ('phys1.kinematics.free-fall', 'phys1', 'phys1.kinematics', 'Describe free fall, with g ≈ 9.8 m/s²'),
+  ('phys1.vectors.scalars-vectors', 'phys1', 'phys1.vectors', 'Tell scalar and vector quantities apart'),
+  ('phys1.vectors.add-vectors', 'phys1', 'phys1.vectors', 'Add and subtract vectors, by drawing and by components'),
+  ('phys1.vectors.components', 'phys1', 'phys1.vectors', 'Resolve a vector into horizontal and vertical components'),
+  ('phys1.vectors.resultant', 'phys1', 'phys1.vectors', 'Find a resultant’s magnitude and direction'),
+  ('phys1.projectile-motion.components', 'phys1', 'phys1.projectile-motion', 'Split a takeoff velocity into horizontal and vertical components'),
+  ('phys1.projectile-motion.independence', 'phys1', 'phys1.projectile-motion', 'Explain why horizontal and vertical motion are independent'),
+  ('phys1.projectile-motion.flight', 'phys1', 'phys1.projectile-motion', 'Calculate flight time, maximum height and horizontal range'),
+  ('phys1.projectile-motion.predict-landing', 'phys1', 'phys1.projectile-motion', 'Predict where a rider lands, using the trajectory equations'),
+  ('phys1.projectile-motion.launch-variables', 'phys1', 'phys1.projectile-motion', 'Explain how takeoff speed and angle change a trajectory'),
+  ('phys1.newtons-laws.inertia', 'phys1', 'phys1.newtons-laws', 'Explain inertia and Newton’s first law'),
+  ('phys1.newtons-laws.net-force', 'phys1', 'phys1.newtons-laws', 'Combine forces to find the net force'),
+  ('phys1.newtons-laws.second-law', 'phys1', 'phys1.newtons-laws', 'Use F_net = ma to find a force, mass or acceleration'),
+  ('phys1.newtons-laws.third-law', 'phys1', 'phys1.newtons-laws', 'Identify action-reaction pairs, such as tire and trail'),
+  ('phys1.newtons-laws.free-body', 'phys1', 'phys1.newtons-laws', 'Draw a free-body diagram for a rider and bike'),
+  ('phys1.applications-of-newtons-laws.normal-force', 'phys1', 'phys1.applications-of-newtons-laws', 'Find the normal force, on flat ground and on a slope'),
+  ('phys1.applications-of-newtons-laws.friction', 'phys1', 'phys1.applications-of-newtons-laws', 'Use the friction model F_f = μN for static and kinetic friction'),
+  ('phys1.applications-of-newtons-laws.inclines', 'phys1', 'phys1.applications-of-newtons-laws', 'Split gravity into parts along and across a slope'),
+  ('phys1.applications-of-newtons-laws.hookes-law', 'phys1', 'phys1.applications-of-newtons-laws', 'Use Hooke’s law for a spring'),
+  ('phys1.applications-of-newtons-laws.stress-strain', 'phys1', 'phys1.applications-of-newtons-laws', 'Describe elastic deformation, stress and strain'),
+  ('phys1.uniform-circular-motion.arc-length', 'phys1', 'phys1.uniform-circular-motion', 'Relate arc length, angle and radius'),
+  ('phys1.uniform-circular-motion.angular-velocity', 'phys1', 'phys1.uniform-circular-motion', 'Relate angular velocity, speed and radius with ω = v/r'),
+  ('phys1.uniform-circular-motion.centripetal-acceleration', 'phys1', 'phys1.uniform-circular-motion', 'Calculate centripetal acceleration with a = v²/r'),
+  ('phys1.uniform-circular-motion.centripetal-force', 'phys1', 'phys1.uniform-circular-motion', 'Calculate the inward force a turn needs and identify what supplies it'),
+  ('phys1.uniform-circular-motion.speed-and-radius', 'phys1', 'phys1.uniform-circular-motion', 'Explain how speed and radius change the demands of a corner'),
+  ('phys1.uniform-circular-motion.banking', 'phys1', 'phys1.uniform-circular-motion', 'Explain how a banked turn supplies inward force, and find the matched bank angle'),
+  ('phys1.energy-and-gravitation.kinetic-energy', 'phys1', 'phys1.energy-and-gravitation', 'Calculate kinetic energy'),
+  ('phys1.energy-and-gravitation.potential-energy', 'phys1', 'phys1.energy-and-gravitation', 'Calculate gravitational potential energy'),
+  ('phys1.energy-and-gravitation.conservation', 'phys1', 'phys1.energy-and-gravitation', 'Use conservation of mechanical energy to predict speed after a descent'),
+  ('phys1.energy-and-gravitation.elastic-energy', 'phys1', 'phys1.energy-and-gravitation', 'Calculate the energy stored in a compressed spring'),
+  ('phys1.energy-and-gravitation.energy-losses', 'phys1', 'phys1.energy-and-gravitation', 'Account for energy lost to friction and other non-conservative forces'),
+  ('phys1.energy-and-gravitation.gravitation', 'phys1', 'phys1.energy-and-gravitation', 'Describe Newton’s law of gravitation and gravitational fields'),
+  ('phys1.work-and-power.work', 'phys1', 'phys1.work-and-power', 'Calculate the work done by a force'),
+  ('phys1.work-and-power.work-energy', 'phys1', 'phys1.work-and-power', 'Use the work-energy theorem'),
+  ('phys1.work-and-power.power', 'phys1', 'phys1.work-and-power', 'Calculate average power, including climbing power'),
+  ('phys1.work-and-power.power-to-weight', 'phys1', 'phys1.work-and-power', 'Compare riders using power-to-weight ratio'),
+  ('phys1.work-and-power.efficiency', 'phys1', 'phys1.work-and-power', 'Calculate and interpret energy efficiency'),
+  ('phys1.momentum-and-collisions.momentum', 'phys1', 'phys1.momentum-and-collisions', 'Calculate momentum'),
+  ('phys1.momentum-and-collisions.impulse', 'phys1', 'phys1.momentum-and-collisions', 'Use the impulse-momentum theorem'),
+  ('phys1.momentum-and-collisions.interaction-time', 'phys1', 'phys1.momentum-and-collisions', 'Explain why a longer interaction time means a smaller average force'),
+  ('phys1.momentum-and-collisions.conservation', 'phys1', 'phys1.momentum-and-collisions', 'Use conservation of momentum in a collision'),
+  ('phys1.momentum-and-collisions.collision-types', 'phys1', 'phys1.momentum-and-collisions', 'Tell elastic and inelastic collisions apart'),
+  ('phys1.rotational-dynamics.angular-velocity', 'phys1', 'phys1.rotational-dynamics', 'Relate angular velocity, linear speed and radius'),
+  ('phys1.rotational-dynamics.gear-ratio', 'phys1', 'phys1.rotational-dynamics', 'Calculate a gear ratio and explain mechanical advantage'),
+  ('phys1.rotational-dynamics.drivetrain', 'phys1', 'phys1.rotational-dynamics', 'Follow rotation from crank to wheel to find distance and speed'),
+  ('phys1.rotational-dynamics.torque', 'phys1', 'phys1.rotational-dynamics', 'Calculate torque from a force and a lever arm'),
+  ('phys1.rotational-dynamics.moment-of-inertia', 'phys1', 'phys1.rotational-dynamics', 'Explain moment of inertia and why wheel mass matters'),
+  ('phys1.rotational-dynamics.rotational-energy', 'phys1', 'phys1.rotational-dynamics', 'Calculate rotational kinetic energy'),
+  ('phys1.fluids.density', 'phys1', 'phys1.fluids', 'Calculate density from mass and volume'),
+  ('phys1.fluids.pressure', 'phys1', 'phys1.fluids', 'Calculate pressure from force and area'),
+  ('phys1.fluids.pascal', 'phys1', 'phys1.fluids', 'Use Pascal’s principle to explain a hydraulic brake'),
+  ('phys1.fluids.hydraulic-advantage', 'phys1', 'phys1.fluids', 'Calculate the force multiplication between pistons of different areas'),
+  ('phys1.fluids.continuity', 'phys1', 'phys1.fluids', 'Use the continuity equation for steady flow'),
+  ('phys1.fluids.bernoulli-drag', 'phys1', 'phys1.fluids', 'Describe Bernoulli’s principle and air resistance'),
+  ('phys1.oscillations.restoring-force', 'phys1', 'phys1.oscillations', 'Describe a restoring force with Hooke’s law'),
+  ('phys1.oscillations.period-frequency', 'phys1', 'phys1.oscillations', 'Calculate the period and frequency of a spring-mass system'),
+  ('phys1.oscillations.shm-graphs', 'phys1', 'phys1.oscillations', 'Read displacement, velocity and acceleration graphs of simple harmonic motion'),
+  ('phys1.oscillations.energy-in-shm', 'phys1', 'phys1.oscillations', 'Track spring and kinetic energy through an oscillation'),
+  ('phys1.oscillations.damping', 'phys1', 'phys1.oscillations', 'Describe how damping changes an oscillation'),
+  ('phys1.waves.wave-properties', 'phys1', 'phys1.waves', 'Identify wavelength, frequency, amplitude and period'),
+  ('phys1.waves.wave-speed', 'phys1', 'phys1.waves', 'Use v = fλ and T = 1/f'),
+  ('phys1.waves.wave-types', 'phys1', 'phys1.waves', 'Tell transverse and longitudinal waves apart'),
+  ('phys1.waves.interference', 'phys1', 'phys1.waves', 'Predict constructive and destructive interference'),
+  ('phys1.waves.sound', 'phys1', 'phys1.waves', 'Describe sound as a wave, and resonance'),
+  ('phys1.thermodynamics.temperature-heat', 'phys1', 'phys1.thermodynamics', 'Tell temperature, heat and thermal energy apart, and convert temperature scales'),
+  ('phys1.thermodynamics.specific-heat', 'phys1', 'phys1.thermodynamics', 'Use Q = mcΔT'),
+  ('phys1.thermodynamics.braking-heat', 'phys1', 'phys1.thermodynamics', 'Estimate a brake’s temperature rise from kinetic energy, stating the assumptions'),
+  ('phys1.thermodynamics.gas-law', 'phys1', 'phys1.thermodynamics', 'Use the ideal gas law for a tire'),
+  ('phys1.thermodynamics.first-law', 'phys1', 'phys1.thermodynamics', 'Apply the first law of thermodynamics with a stated sign convention'),
+  ('phys1.thermodynamics.second-law', 'phys1', 'phys1.thermodynamics', 'Explain the second law and why no engine is 100% efficient'),
+  ('phys2.electric-mountain-bike.systems', 'phys2', 'phys2.electric-mountain-bike', 'Identify the electrical systems on a modern bike'),
+  ('phys2.electric-mountain-bike.energy-chain', 'phys2', 'phys2.electric-mountain-bike', 'Trace energy from battery to motor to wheel'),
+  ('phys2.electric-mountain-bike.mechanics-to-electricity', 'phys2', 'phys2.electric-mountain-bike', 'Connect force, energy and power to their electrical versions'),
+  ('phys2.electric-charge-and-field.charge', 'phys2', 'phys2.electric-charge-and-field', 'Describe positive and negative charge, and conservation of charge'),
+  ('phys2.electric-charge-and-field.conductors-insulators', 'phys2', 'phys2.electric-charge-and-field', 'Tell conductors and insulators apart'),
+  ('phys2.electric-charge-and-field.coulombs-law', 'phys2', 'phys2.electric-charge-and-field', 'Use Coulomb’s law'),
+  ('phys2.electric-charge-and-field.fields', 'phys2', 'phys2.electric-charge-and-field', 'Draw and interpret electric field lines'),
+  ('phys2.electric-potential.potential-difference', 'phys2', 'phys2.electric-potential', 'Explain voltage as energy per unit charge'),
+  ('phys2.electric-potential.battery-energy', 'phys2', 'phys2.electric-potential', 'Calculate the energy a battery stores, in joules and watt-hours'),
+  ('phys2.electric-potential.capacitors', 'phys2', 'phys2.electric-potential', 'Calculate capacitance and the energy a capacitor stores'),
+  ('phys2.electric-potential.equipotentials', 'phys2', 'phys2.electric-potential', 'Interpret equipotential lines and field strength'),
+  ('phys2.current-resistance-ohms-law.current', 'phys2', 'phys2.current-resistance-ohms-law', 'Calculate current as charge per unit time'),
+  ('phys2.current-resistance-ohms-law.ohms-law', 'phys2', 'phys2.current-resistance-ohms-law', 'Use Ohm’s law'),
+  ('phys2.current-resistance-ohms-law.electric-power', 'phys2', 'phys2.current-resistance-ohms-law', 'Calculate electrical power and energy use'),
+  ('phys2.current-resistance-ohms-law.resistivity', 'phys2', 'phys2.current-resistance-ohms-law', 'Explain how material, length and thickness set resistance'),
+  ('phys2.current-resistance-ohms-law.ac-dc', 'phys2', 'phys2.current-resistance-ohms-law', 'Tell alternating and direct current apart'),
+  ('phys2.circuits-and-dc-instruments.series', 'phys2', 'phys2.circuits-and-dc-instruments', 'Analyze a series circuit'),
+  ('phys2.circuits-and-dc-instruments.parallel', 'phys2', 'phys2.circuits-and-dc-instruments', 'Analyze a parallel circuit'),
+  ('phys2.circuits-and-dc-instruments.internal-resistance', 'phys2', 'phys2.circuits-and-dc-instruments', 'Explain a battery’s internal resistance and terminal voltage'),
+  ('phys2.circuits-and-dc-instruments.meters', 'phys2', 'phys2.circuits-and-dc-instruments', 'Describe how to measure current and voltage'),
+  ('phys2.circuits-and-dc-instruments.rc-circuits', 'phys2', 'phys2.circuits-and-dc-instruments', 'Describe how a capacitor charges and discharges in a circuit'),
+  ('phys2.magnetism.magnetic-fields', 'phys2', 'phys2.magnetism', 'Describe magnetic poles and field lines'),
+  ('phys2.magnetism.force-on-charge', 'phys2', 'phys2.magnetism', 'Find the force on a moving charge in a magnetic field'),
+  ('phys2.magnetism.force-on-wire', 'phys2', 'phys2.magnetism', 'Find the force on a current-carrying wire'),
+  ('phys2.magnetism.motors', 'phys2', 'phys2.magnetism', 'Explain how an electric motor turns current into rotation'),
+  ('phys2.magnetism.sensors', 'phys2', 'phys2.magnetism', 'Explain how a magnet and sensor measure wheel speed'),
+  ('phys2.electromagnetic-induction.flux', 'phys2', 'phys2.electromagnetic-induction', 'Calculate magnetic flux'),
+  ('phys2.electromagnetic-induction.faradays-law', 'phys2', 'phys2.electromagnetic-induction', 'Use Faraday’s law to find an induced emf'),
+  ('phys2.electromagnetic-induction.lenz', 'phys2', 'phys2.electromagnetic-induction', 'Use Lenz’s law to find the direction of an induced current'),
+  ('phys2.electromagnetic-induction.generators', 'phys2', 'phys2.electromagnetic-induction', 'Explain how a generator or dynamo makes electricity'),
+  ('phys2.electromagnetic-induction.transformers-ac', 'phys2', 'phys2.electromagnetic-induction', 'Describe transformers and AC'),
+  ('phys2.electromagnetic-waves.spectrum', 'phys2', 'phys2.electromagnetic-waves', 'Place types of radiation on the electromagnetic spectrum'),
+  ('phys2.electromagnetic-waves.speed-of-light', 'phys2', 'phys2.electromagnetic-waves', 'Use c = fλ'),
+  ('phys2.electromagnetic-waves.wireless', 'phys2', 'phys2.electromagnetic-waves', 'Explain how radio waves carry signals for GPS and Bluetooth'),
+  ('phys2.electromagnetic-waves.energy', 'phys2', 'phys2.electromagnetic-waves', 'Relate a wave’s frequency to the energy it carries'),
+  ('phys2.geometric-optics.reflection', 'phys2', 'phys2.geometric-optics', 'Use the law of reflection'),
+  ('phys2.geometric-optics.refraction', 'phys2', 'phys2.geometric-optics', 'Use Snell’s law'),
+  ('phys2.geometric-optics.total-internal-reflection', 'phys2', 'phys2.geometric-optics', 'Explain total internal reflection'),
+  ('phys2.geometric-optics.thin-lens', 'phys2', 'phys2.geometric-optics', 'Use the thin-lens equation to locate an image'),
+  ('phys2.geometric-optics.magnification', 'phys2', 'phys2.geometric-optics', 'Calculate magnification'),
+  ('phys2.vision-and-optical-instruments.eye-optics', 'phys2', 'phys2.vision-and-optical-instruments', 'Describe the eye as a lens system'),
+  ('phys2.vision-and-optical-instruments.accommodation', 'phys2', 'phys2.vision-and-optical-instruments', 'Explain how the eye focuses near and far'),
+  ('phys2.vision-and-optical-instruments.correction', 'phys2', 'phys2.vision-and-optical-instruments', 'Explain how corrective lenses work'),
+  ('phys2.vision-and-optical-instruments.instruments', 'phys2', 'phys2.vision-and-optical-instruments', 'Describe how lenses combine in cameras and other instruments'),
+  ('phys2.wave-optics.interference', 'phys2', 'phys2.wave-optics', 'Explain constructive and destructive interference of light'),
+  ('phys2.wave-optics.diffraction', 'phys2', 'phys2.wave-optics', 'Describe diffraction patterns'),
+  ('phys2.wave-optics.polarization', 'phys2', 'phys2.wave-optics', 'Explain polarization and how polarized lenses cut glare'),
+  ('phys2.wave-optics.thin-film', 'phys2', 'phys2.wave-optics', 'Explain thin-film interference in lens coatings')
 on conflict (id) do update set course_id = excluded.course_id, topic_id = excluded.topic_id, title = excluded.title, active = true;
 
--- 2. Question kinds for tracked activities, filed under the broad
+-- 2. Question kinds for tracked activities that aren't Lab tools, filed under the broad
 --    'algebra' skill for the dashboard's skill meters.
 insert into public.questions (id, game_id, title, difficulty) values
   ('slope-lab:f1', 'slope-lab', 'Slope & Linear Relationships Lab: question F1', null),
@@ -676,7 +816,7 @@ insert into public.question_skills (question_id, skill_id) values
 on conflict do nothing;
 
 -- 3. Which curriculum skills each question practises.
-delete from public.curriculum_question_skills where question_id in (select id from public.questions where game_id = 'slope-lab' union select id from public.questions where game_id = 'jump-trajectory-lab');
+delete from public.curriculum_question_skills where question_id in (select id from public.questions where game_id = 'slope-lab' union select id from public.questions where game_id = 'jump-trajectory-lab' union select id from public.questions where game_id = 'jump-lab' union select id from public.questions where game_id = 'berm-lab' union select id from public.questions where game_id = 'gear-ratio-lab');
 insert into public.curriculum_question_skills (question_id, skill_id) values
   ('slope-lab:f1', 'alg1.slope-and-rate-of-change.slope-as-rate'),
   ('slope-lab:f2', 'alg1.slope-and-rate-of-change.interpret-sign'),
@@ -806,12 +946,65 @@ insert into public.curriculum_question_skills (question_id, skill_id) values
   ('jump-trajectory-lab:m6-blueprint', 'alg1.graphing-quadratics.equation-forms'),
   ('jump-trajectory-lab:m6-meaning', 'alg1.vertex-and-axis-of-symmetry.interpret-vertex'),
   ('jump-trajectory-lab:m6-meaning', 'alg1.applications-of-quadratic-functions.reasonable-answers'),
-  ('jump-trajectory-lab:m6-meaning', 'alg1.graphing-quadratics.equation-forms')
+  ('jump-trajectory-lab:m6-meaning', 'alg1.graphing-quadratics.equation-forms'),
+  ('jump-lab:clear-the-gap', 'phys1.projectile-motion.launch-variables'),
+  ('jump-lab:clear-the-gap', 'phys1.projectile-motion.predict-landing'),
+  ('jump-lab:minimum-speed', 'phys1.projectile-motion.launch-variables'),
+  ('jump-lab:minimum-speed', 'phys1.projectile-motion.predict-landing'),
+  ('jump-lab:perfect-trajectory', 'phys1.projectile-motion.launch-variables'),
+  ('jump-lab:perfect-trajectory', 'phys1.projectile-motion.flight'),
+  ('jump-lab:same-distance', 'phys1.projectile-motion.launch-variables'),
+  ('jump-lab:solve-before-jump', 'phys1.projectile-motion.components'),
+  ('jump-lab:solve-before-jump', 'phys1.projectile-motion.flight'),
+  ('jump-lab:solve-before-jump', 'phys1.projectile-motion.predict-landing'),
+  ('jump-lab:mission-prediction', 'phys1.projectile-motion.predict-landing'),
+  ('jump-lab:predict-speed-plus-20', 'phys1.projectile-motion.launch-variables'),
+  ('jump-lab:predict-double-speed', 'phys1.projectile-motion.launch-variables'),
+  ('jump-lab:predict-double-speed', 'phys1.projectile-motion.flight'),
+  ('jump-lab:predict-angle-up-5', 'phys1.projectile-motion.launch-variables'),
+  ('jump-lab:predict-drop-landing', 'phys1.projectile-motion.flight'),
+  ('jump-lab:predict-drop-landing', 'phys1.projectile-motion.independence'),
+  ('berm-lab:c1-predict', 'phys1.uniform-circular-motion.speed-and-radius'),
+  ('berm-lab:c1-accel', 'phys1.uniform-circular-motion.centripetal-acceleration'),
+  ('berm-lab:c1-ratio', 'phys1.uniform-circular-motion.speed-and-radius'),
+  ('berm-lab:c2-predict', 'phys1.uniform-circular-motion.speed-and-radius'),
+  ('berm-lab:c2-convert', 'phys1.scientific-measurement.unit-conversions'),
+  ('berm-lab:c2-accel', 'phys1.uniform-circular-motion.centripetal-acceleration'),
+  ('berm-lab:c2-accel', 'phys1.uniform-circular-motion.speed-and-radius'),
+  ('berm-lab:c3-predict', 'phys1.uniform-circular-motion.banking'),
+  ('berm-lab:c3-angle', 'phys1.uniform-circular-motion.banking'),
+  ('berm-lab:c3-angle', 'phys1.mathematics-review.trig-ratios'),
+  ('berm-lab:c3-sim', 'phys1.uniform-circular-motion.banking'),
+  ('berm-lab:c4-predict', 'phys1.uniform-circular-motion.banking'),
+  ('berm-lab:c4-predict', 'phys1.applications-of-newtons-laws.friction'),
+  ('berm-lab:c4-flat', 'phys1.uniform-circular-motion.centripetal-acceleration'),
+  ('berm-lab:c4-flat', 'phys1.applications-of-newtons-laws.friction'),
+  ('berm-lab:c4-source', 'phys1.uniform-circular-motion.centripetal-force'),
+  ('berm-lab:c5-predict', 'phys1.uniform-circular-motion.centripetal-force'),
+  ('berm-lab:c5-force', 'phys1.uniform-circular-motion.centripetal-force'),
+  ('berm-lab:c5-grip', 'phys1.uniform-circular-motion.centripetal-force'),
+  ('berm-lab:c5-grip', 'phys1.applications-of-newtons-laws.friction'),
+  ('berm-lab:c6-predict', 'phys1.uniform-circular-motion.banking'),
+  ('berm-lab:c6-design', 'phys1.uniform-circular-motion.banking'),
+  ('berm-lab:c6-math', 'phys1.uniform-circular-motion.banking'),
+  ('berm-lab:c6-math', 'phys1.applications-of-newtons-laws.friction'),
+  ('berm-lab:c6-min', 'phys1.uniform-circular-motion.banking'),
+  ('berm-lab:c6-min', 'phys1.mathematics-review.trig-ratios'),
+  ('gear-ratio-lab:sheet-ratio', 'phys1.rotational-dynamics.gear-ratio'),
+  ('gear-ratio-lab:geo-gear-inches', 'phys1.rotational-dynamics.gear-ratio'),
+  ('gear-ratio-lab:sheet-development', 'phys1.rotational-dynamics.drivetrain'),
+  ('gear-ratio-lab:sheet-speed', 'phys1.rotational-dynamics.drivetrain'),
+  ('gear-ratio-lab:geo-circumference', 'phys1.rotational-dynamics.drivetrain'),
+  ('gear-ratio-lab:tune-prediction', 'phys1.rotational-dynamics.drivetrain'),
+  ('gear-ratio-lab:precalc-angular-speed', 'phys1.rotational-dynamics.angular-velocity')
 on conflict do nothing;
 
 -- 4. Progress per curriculum skill (only skills with activity are listed)
 --    and per tracked activity, for the signed-in student or one a tutor
 --    is assigned. p_prefix narrows it, e.g. 'alg1.' for one course.
+--    Per skill: questions (first tries), first_try (right first time),
+--    last_at, and the same two counts over the 5 most recent first tries
+--    (recent, recent_ok), so mastery reflects current understanding.
 create or replace function public.curriculum_progress(p_prefix text default null, p_student uuid default null)
 returns jsonb
 language plpgsql
@@ -830,13 +1023,18 @@ begin
   end if;
   return jsonb_build_object(
     'skills', coalesce((
-      select jsonb_object_agg(x.skill_id, jsonb_build_object('questions', x.n, 'first_try', x.ok, 'last_at', x.last_at))
+      select jsonb_object_agg(x.skill_id, jsonb_build_object('questions', x.n, 'first_try', x.ok, 'last_at', x.last_at, 'recent', x.recent, 'recent_ok', x.recent_ok))
       from (
-        select cqs.skill_id, count(*) n, count(*) filter (where f.first_correct) ok, max(f.occurred_at) last_at
-        from public.question_first_tries f
-        join public.curriculum_question_skills cqs on cqs.question_id = f.question_id
-        where f.student_id = v_sid and (p_prefix is null or cqs.skill_id like p_prefix || '%')
-        group by cqs.skill_id
+        select y.skill_id, count(*) n, count(*) filter (where y.first_correct) ok, max(y.occurred_at) last_at,
+               count(*) filter (where y.rn <= 5) recent, count(*) filter (where y.rn <= 5 and y.first_correct) recent_ok
+        from (
+          select cqs.skill_id, f.first_correct, f.occurred_at,
+                 row_number() over (partition by cqs.skill_id order by f.occurred_at desc, f.attempt_id) rn
+          from public.question_first_tries f
+          join public.curriculum_question_skills cqs on cqs.question_id = f.question_id
+          where f.student_id = v_sid and (p_prefix is null or cqs.skill_id like p_prefix || '%')
+        ) y
+        group by y.skill_id
       ) x), '{}'::jsonb),
     'activities', coalesce((
       select jsonb_object_agg(s.game_id, jsonb_build_object('sessions', s.n, 'completed', s.done, 'last_at', s.last_at))

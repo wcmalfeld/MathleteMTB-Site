@@ -4,7 +4,9 @@
 //  - For a signed-in student: progress per skill, topic and course, from
 //    the database function curriculum_progress() (supabase/curriculum.sql).
 //    Progress counts questions answered in activities, tagged with the
-//    curriculum skills they practise. It never claims mastery.
+//    curriculum skills they practise. Math topics never claim mastery.
+//  - Physics of the Ride modules ([data-module]) get one of four states
+//    (PRD 8.4), worked out by moduleState() below from the same data.
 //  - For a student working in a school: which courses its plan leaves out,
 //    and which topics it recommends.
 // Guests see the pages exactly as generated. Text is set as text only.
@@ -45,6 +47,30 @@
     }
   }
 
+  // Physics of the Ride: a module's state from its skills' practice.
+  //   Not started: nothing answered on any of its skills.
+  //   In progress: some skills practised.     Practised: every skill.
+  //   Mastered:    every skill, each with at least MASTERY_MIN of its most
+  //                recent first tries counted and MASTERY_RATE of them right.
+  //                recent/recent_ok cover the 5 latest first tries, so newer
+  //                work replaces older (supabase/curriculum.sql).
+  var MASTERY_MIN = 2, MASTERY_RATE = 0.8;
+  var STATE_TEXT = { 'not-started': 'Not started', 'in-progress': 'In progress', 'practised': 'Practised', 'mastered': 'Mastered' };
+  function moduleState(ids, skills) {
+    var done = ids.filter(function (id) { return skills[id] && skills[id].questions; });
+    if (!done.length) return 'not-started';
+    if (done.length < ids.length) return 'in-progress';
+    var solid = ids.every(function (id) { var s = skills[id], n = s.recent || 0; return n >= MASTERY_MIN && (s.recent_ok || 0) / n >= MASTERY_RATE; });
+    return solid ? 'mastered' : 'practised';
+  }
+  function showState(el, state) {
+    var out = el.querySelector('[data-module-state]');
+    if (!out) return;
+    out.setAttribute('data-state', state);
+    out.textContent = STATE_TEXT[state];
+    out.hidden = false;
+  }
+
   function show(data) {
     var skills = data.skills || {}, acts = data.activities || {};
     var practised = function (ids) { return ids.filter(function (id) { return skills[id] && skills[id].questions; }).length; };
@@ -71,8 +97,14 @@
     document.querySelectorAll('.cls-topic[data-topic]').forEach(function (li) {
       var ids = skillsOf(li), n = practised(ids), out = li.querySelector('[data-topic-status]');
       if (!out || !n) return;
-      out.textContent = '✓ ' + n + ' of ' + ids.length + ' skills practised';
+      out.textContent = (li.hasAttribute('data-module') ? STATE_TEXT[moduleState(ids, skills)] + ': ' : '✓ ') + n + ' of ' + ids.length + ' skills practised';
       out.hidden = false;
+    });
+
+    // Physics of the Ride: module states on the pathway page and module pages.
+    document.querySelectorAll('[data-module][data-skills]').forEach(function (el) {
+      if (el.classList.contains('cls-topic')) return;
+      showState(el, moduleState(skillsOf(el), skills));
     });
 
     // Course cards and course header: topics started.
@@ -82,7 +114,7 @@
       Object.keys(skills).forEach(function (id) { if (id.indexOf(course) === 0 && skills[id].questions) started[id.split('.').slice(0, 2).join('.')] = true; });
       var n = Object.keys(started).length;
       if (!n) return;
-      p.textContent = 'You’ve started ' + n + ' of ' + p.getAttribute('data-topics') + ' topics.';
+      p.textContent = 'You’ve started ' + n + ' of ' + p.getAttribute('data-topics') + ' ' + (p.getAttribute('data-word') || 'topics') + '.';
       p.hidden = false;
     });
   }

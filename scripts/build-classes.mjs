@@ -3,11 +3,15 @@
 // activities.mjs):
 //   node scripts/build-classes.mjs
 // Writes
-//   classes/index.html                       the four courses
+//   classes/index.html                       the courses
+//   classes/physics-of-the-ride/index.html   the physics pathway (its two
+//                                            courses, 28 modules, lab library)
 //   classes/<course>/index.html              units and topics
-//   classes/<course>/<topic>/index.html      one page per topic
+//   classes/<course>/<topic>/index.html      one page per topic (or module)
 //   supabase/curriculum.sql                  curriculum skills, and which
 //                                            activity questions practise them
+//   docs/PHYSICS-ROADMAP.md                  module statuses and categories,
+//                                            for content developers
 // Like the Lab pages (build-lab.mjs), the output is plain HTML committed to
 // the repo: no deploy-time build, readable without JavaScript and by search
 // engines. js/classes.js adds a signed-in student's progress on top.
@@ -15,7 +19,8 @@
 
 import { writeFileSync, mkdirSync, readdirSync, rmSync, existsSync, statSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { loadClasses, ACTIVITY_TYPES, LEVELS } from '../content/classes/model.mjs';
+import { loadClasses, ACTIVITY_TYPES, LEVELS, STATUSES, CATEGORIES } from '../content/classes/model.mjs';
+import { LESSON_STEPS, LEVELS_OF_WORK } from '../content/classes/physics.mjs';
 
 const root = new URL('..', import.meta.url).pathname;
 const SITE = 'https://www.mathletemtb.com/';
@@ -27,6 +32,8 @@ const ART = {
   climb: `<svg class="cls-art" viewBox="0 0 240 120" aria-hidden="true"><path class="cls-art-ground" d="M0,108 L60,96 L120,70 L170,58 L240,22 L240,120 L0,120 Z"/><path class="cls-art-line" d="M0,108 L60,96 L120,70 L170,58 L240,22"/><path class="cls-art-dash" d="M120,70 L170,70 M170,70 L170,58"/><text x="140" y="84">run</text><text x="176" y="68">rise</text></svg>`,
   jump: `<svg class="cls-art" viewBox="0 0 240 120" aria-hidden="true"><path class="cls-art-ground" d="M0,110 L40,110 L78,78 L84,110 L150,110 L170,92 L240,110 L240,120 L0,120 Z"/><path class="cls-art-line" d="M0,110 L40,110 L78,78"/><path class="cls-art-dash" d="M78,78 Q120,8 170,92"/><circle class="cls-art-dot" cx="120" cy="36" r="4"/><path class="cls-art-line" d="M150,110 L170,92 L240,110"/></svg>`,
   frame: `<svg class="cls-art" viewBox="0 0 240 120" aria-hidden="true"><circle class="cls-art-line" cx="58" cy="82" r="30"/><circle class="cls-art-line" cx="182" cy="82" r="30"/><path class="cls-art-line" d="M58,82 L104,82 L92,40 Z M104,82 L160,42 L92,40 M160,42 L182,82 M160,42 L156,28 M92,40 L88,30"/><path class="cls-art-dash" d="M104,82 m-14,0 a14,14 0 0 1 4,-10"/></svg>`,
+  ride: `<svg class="cls-art" viewBox="0 0 240 120" aria-hidden="true"><path class="cls-art-ground" d="M0,112 L46,112 L84,84 L90,112 L240,112 L240,120 L0,120 Z"/><path class="cls-art-line" d="M0,112 L46,112 L84,84"/><path class="cls-art-dash" d="M84,84 Q140,0 196,112"/><path class="cls-art-line" d="M120,40 L160,40 M120,40 L120,14"/><circle class="cls-art-dot" cx="120" cy="40" r="4"/><text x="164" y="44">vx</text><text x="104" y="14">vy</text><path class="cls-art-line" d="M196,112 L240,104"/></svg>`,
+  spark: `<svg class="cls-art" viewBox="0 0 240 120" aria-hidden="true"><path class="cls-art-line" d="M28,34 H112 V88 H28 V66 M28,54 V34"/><path class="cls-art-line" d="M18,54 H38 M22,66 H34"/><circle class="cls-art-dot" cx="112" cy="61" r="7"/><path class="cls-art-dash" d="M124,61 H140"/><path class="cls-art-wave" d="M140,61 C148,31 156,31 164,61 S180,91 188,61 S204,31 212,61 S228,91 236,61"/><text x="46" y="104">V = IR</text><text x="170" y="104">c = fλ</text></svg>`,
   wheel: `<svg class="cls-art" viewBox="0 0 240 120" aria-hidden="true"><circle class="cls-art-line" cx="48" cy="60" r="34"/><path class="cls-art-line" d="M48,60 L72,36"/><circle class="cls-art-dot" cx="72" cy="36" r="4"/><path class="cls-art-dash" d="M72,36 L240,36"/><path class="cls-art-wave" d="M96,60 C108,26 124,26 136,60 S164,94 176,60 S204,26 216,60 S232,82 240,74"/></svg>`
 };
 
@@ -61,7 +68,7 @@ function page({ path, depth, title, description, body, noindex }) {
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/site.css?v=16">
 <link rel="stylesheet" href="css/lab.css?v=10">
-<link rel="stylesheet" href="css/classes.css?v=2">
+<link rel="stylesheet" href="css/classes.css?v=3">
 </head>
 <body class="lab cls">
 <a class="skip-link" href="${path}#main">Skip to content</a>
@@ -103,7 +110,7 @@ ${body}
 <script src="js/auth.js?v=8" defer></script>
 <script src="js/site.js?v=8" defer></script>
 <script src="js/track.js?v=1" defer></script>
-<script src="js/classes.js?v=2" defer></script>
+<script src="js/classes.js?v=3" defer></script>
 </body>
 </html>
 `;
@@ -138,8 +145,8 @@ function activityCard(a, topic, model) {
 }
 
 // ---------- pages ----------
-function landing(model) {
-  const cards = model.courses.map(c => {
+function courseCards(list) {
+  return list.map(c => {
     const topics = c.units.reduce((n, u) => n + u.topics.length, 0);
     const acts = c.activityIds.size;
     return `
@@ -155,23 +162,50 @@ function landing(model) {
       </div>
     </article></li>`;
   }).join('');
+}
+
+const moduleCount = c => c.units.reduce((n, u) => n + u.topics.length, 0);
+const lessonState = t => t.status === 'published' ? 'Lesson available' : t.status === 'planned' ? 'Lesson coming' : 'Lesson in development';
+
+function landing(model) {
+  const P = model.pathway;
+  const cards = courseCards(model.courses.filter(c => !c.pathway));
+  const labsLive = P.labs.filter(l => l.live).length;
   return page({
     path: 'classes/', depth: 1, title: 'Classes — Mathlete MTB',
-    description: 'Curriculum-aligned high school math through mountain biking: Algebra 1, Algebra 2, Geometry and Precalculus, organized by unit, topic and skill.',
+    description: 'Curriculum-aligned high school math and physics through mountain biking: Algebra 1, Algebra 2, Geometry, Precalculus and Physics of the Ride, organized by unit, topic and skill.',
     body: `
 <header class="page-head lab-head cls-head">
   <div class="wrap">
     <p class="eyebrow">Classes</p>
     <h1 class="page-title">Learn the math.</h1>
-    <p class="hero-lede">Pick the math class you’re taking, find the unit and topic you’re on in school, and practise it with mountain biking labs built for exactly that idea.</p>
+    <p class="hero-lede">Pick the math class you’re taking, find the unit and topic you’re on in school, and practise it with mountain biking labs built for exactly that idea. Then take on the physics of the ride.</p>
   </div>
 </header>
 
 <section class="section" aria-labelledby="courses-title">
   <div class="wrap">
-    <div class="lab-section-head"><h2 class="label" id="courses-title">Courses</h2></div>
+    <div class="lab-section-head"><h2 class="label" id="courses-title">Math courses</h2></div>
     <ul class="cls-courses">${cards}
     </ul>
+  </div>
+</section>
+
+<section class="section section--panel" aria-labelledby="physics-title">
+  <div class="wrap">
+    <div class="lab-section-head"><h2 class="label" id="physics-title">Physics</h2></div>
+    <article class="pr-feature">
+      <div class="pr-feature-text">
+        <p class="kicker">New pathway</p>
+        <h3 class="pr-feature-name"><a href="${P.href}">${esc(P.name)}</a></h3>
+        <p class="cls-course-desc">${esc(P.card)}</p>
+        <p class="cls-course-count">${plural(P.courses.length, 'course')} &middot; ${plural(P.courses.reduce((n, c) => n + c.units.length, 0), 'unit')} &middot; ${plural(P.courses.reduce((n, c) => n + moduleCount(c), 0), 'module')} &middot; ${plural(labsLive, 'lab')} ready now</p>
+        <a class="button" href="${P.href}">Explore ${esc(P.name)} <span aria-hidden="true">&rarr;</span></a>
+      </div>
+      <ul class="pr-feature-courses">${P.courses.map(c => `
+        <li><a href="${c.href}"><span class="pr-feature-sub">${esc(c.subtitle)}</span>${esc(c.name)}</a></li>`).join('')}
+      </ul>
+    </article>
     <p class="cls-note">Classes follow a common US high school sequence. Your school’s order may differ: every topic is its own page, so jump straight to what you’re learning. Looking for standalone games and simulations? They’re in <a href="index.html#tools">the Lab</a>.</p>
   </div>
 </section>
@@ -183,14 +217,15 @@ function coursePage(c, model) {
   const units = c.units.map(u => {
     const withActs = u.topics.filter(t => t.activities.length).length;
     const topics = u.topics.map(t => `
-          <li class="cls-topic" data-topic="${esc(t.id)}" data-skills="${esc(t.skills.map(s => s.id).join(' '))}">
+          <li class="cls-topic" data-topic="${esc(t.id)}" data-skills="${esc(t.skills.map(s => s.id).join(' '))}"${c.pathway ? ' data-module' : ''}>
             <div class="cls-topic-main">
-              <h4 class="cls-topic-title"><a href="${t.href}">${esc(t.title)}</a></h4>
+              ${c.pathway ? `<p class="pr-module-n">Module ${t.module}</p>` : ''}<h4 class="cls-topic-title"><a href="${t.href}">${esc(t.title)}</a></h4>
               <p class="cls-topic-desc">${esc(t.desc)}</p>
               <ul class="cls-skill-chips" aria-label="Skills">${t.skills.map(s => `<li>${esc(s.title)}</li>`).join('')}</ul>
             </div>
             <div class="cls-topic-side">
-              <span class="cls-count${t.activities.length ? ' cls-count--live' : ''}">${t.activities.length ? plural(t.activities.length, 'activity', 'activities') : 'Activities in development'}</span>
+              <span class="cls-count${t.activities.length ? ' cls-count--live' : ''}">${t.activities.length ? plural(t.activities.length, 'activity', 'activities') : 'Activities in development'}</span>${c.pathway ? `
+              <span class="pr-lesson pr-lesson--${esc(t.status)}">${lessonState(t)}</span>` : ''}
               <span class="cls-status" data-topic-status hidden></span>
             </div>
           </li>`).join('');
@@ -199,24 +234,28 @@ function coursePage(c, model) {
         <summary>
           <span class="cls-unit-n">Unit ${u.number}</span>
           <span class="cls-unit-title">${esc(u.title)}</span>
-          <span class="cls-unit-meta">${plural(u.topics.length, 'topic')}${withActs ? ` &middot; ${withActs} with activities` : ''}</span>
-        </summary>
+          <span class="cls-unit-meta">${plural(u.topics.length, c.pathway ? 'module' : 'topic')}${withActs ? ` &middot; ${withActs} with activities` : ''}</span>
+        </summary>${u.desc ? `
+        <p class="pr-unit-desc">${esc(u.desc)}</p>` : ''}
         <ol class="cls-topics">${topics}
         </ol>
       </details></li>`;
   }).join('');
-  const topicCount = c.units.reduce((n, u) => n + u.topics.length, 0);
+  const topicCount = moduleCount(c);
+  const P = model.pathway;
+  const crumbList = c.pathway ? [{ label: 'Classes', href: 'classes/' }, { label: P.name, href: P.href }, { label: c.name }] : [{ label: 'Classes', href: 'classes/' }, { label: c.name }];
+  const others = c.pathway ? model.courses.filter(o => o.pathway === c.pathway && o !== c) : model.courses.filter(o => o !== c && !o.pathway);
   return page({
-    path: c.href, depth: 2, title: `${c.name} — Classes — Mathlete MTB`, description: c.description,
+    path: c.href, depth: 2, title: `${c.name} — ${c.pathway ? P.name : 'Classes'} — Mathlete MTB`, description: c.description,
     body: `
 <header class="page-head lab-head cls-head">
   <div class="wrap">
-    ${crumbs([{ label: 'Classes', href: 'classes/' }, { label: c.name }])}
-    <p class="eyebrow">Class</p>
+    ${crumbs(crumbList)}
+    <p class="eyebrow">${c.pathway ? `${esc(P.name)} &middot; ${esc(c.subtitle)}` : 'Class'}</p>
     <h1 class="page-title">${esc(c.name)}</h1>
     <p class="hero-lede">${esc(c.intro)}</p>
-    <p class="cls-course-count">${plural(c.units.length, 'unit')} &middot; ${plural(topicCount, 'topic')} &middot; ${c.activityIds.size ? plural(c.activityIds.size, 'learning activity', 'learning activities') : 'activities in development'}</p>
-    <p class="cls-course-progress" data-course-progress="${esc(c.id)}" data-topics="${topicCount}" hidden></p>
+    <p class="cls-course-count">${plural(c.units.length, 'unit')} &middot; ${plural(topicCount, c.pathway ? 'module' : 'topic')} &middot; ${c.activityIds.size ? plural(c.activityIds.size, 'learning activity', 'learning activities') : 'activities in development'}</p>
+    <p class="cls-course-progress" data-course-progress="${esc(c.id)}" data-topics="${topicCount}"${c.pathway ? ' data-word="modules"' : ''} hidden></p>
   </div>
 </header>
 
@@ -233,9 +272,10 @@ function coursePage(c, model) {
 
 <section class="section section--panel" aria-labelledby="other-title">
   <div class="wrap">
-    <div class="lab-section-head"><h2 class="label" id="other-title">Other classes</h2></div>
+    <div class="lab-section-head"><h2 class="label" id="other-title">${c.pathway ? 'Also in ' + esc(P.name) : 'Other classes'}</h2></div>
     <ul class="lab-also">
-      ${model.courses.filter(o => o !== c).map(o => `<li><a href="${o.href}">${esc(o.name)}</a></li>`).join('\n      ')}
+      ${others.map(o => `<li><a href="${o.href}">${esc(o.name)}</a></li>`).join('\n      ')}
+      ${c.pathway ? `<li><a href="${P.href}">${esc(P.name)} overview</a></li>` : `<li><a href="${P.href}">${esc(P.name)}</a></li>`}
       <li><a href="classes/">All classes</a></li>
     </ul>
   </div>
@@ -250,22 +290,25 @@ function topicPage(t, model) {
   const acts = t.activities;
   const prereq = t.prereq.map(id => model.topicById.get(id));
   const siblings = u.topics.filter(x => x !== t);
+  const P = model.pathway, mod = !!c.pathway;
+  const word = mod ? 'module' : 'topic';
   return page({
     path: t.href, depth: 3, title: `${t.title} — ${c.name} — Mathlete MTB`, description: `${c.name}, ${u.title}: ${t.desc}`,
     body: `
-<header class="page-head lab-head cls-head cls-head--topic" data-topic="${esc(t.id)}" data-skills="${esc(t.skills.map(s => s.id).join(' '))}">
+<header class="page-head lab-head cls-head cls-head--topic" data-topic="${esc(t.id)}" data-skills="${esc(t.skills.map(s => s.id).join(' '))}"${mod ? ' data-module' : ''}>
   <div class="wrap">
-    ${crumbs([{ label: 'Classes', href: 'classes/' }, { label: c.name, href: c.href }, { label: u.title, href: c.href + '#' + u.slug }, { label: t.title }])}
-    <p class="eyebrow">${esc(c.name)} &middot; Unit ${u.number}: ${esc(u.title)}</p>
+    ${crumbs([{ label: 'Classes', href: 'classes/' }, ...(mod ? [{ label: P.name, href: P.href }] : []), { label: c.name, href: c.href }, { label: u.title, href: c.href + '#' + u.slug }, { label: t.title }])}
+    <p class="eyebrow">${esc(c.name)} &middot; Unit ${u.number}: ${esc(u.title)}${mod ? ` &middot; Module ${t.module}` : ''}</p>
     <h1 class="page-title">${esc(t.title)}</h1>
-    <p class="hero-lede">${esc(t.desc)}</p>
+    <p class="hero-lede">${esc(t.desc)}</p>${mod ? `
+    <p class="pr-head-status"><span class="pr-lesson pr-lesson--${esc(t.status)}">${lessonState(t)}</span><span class="pr-state" data-module-state hidden></span></p>` : ''}
   </div>
 </header>
-
+${mod ? modulePhysics(t) : ''}
 <section class="section cls-topic-body" aria-label="About this topic">
   <div class="wrap cls-topic-grid">
     <div>
-      <h2 class="label">What you’ll learn</h2>
+      <h2 class="label">${mod ? 'Learning objectives' : 'What you’ll learn'}</h2>
       <ul class="cls-objectives">${t.skills.map(s => `
         <li data-skill="${esc(s.id)}"><span class="cls-objective">${esc(s.title)}</span><span class="cls-skill-status" hidden></span></li>`).join('')}
       </ul>
@@ -287,6 +330,7 @@ function topicPage(t, model) {
       <p>The skills above show what this topic covers. ${prev && prev.activities.length || next && next.activities.length ? 'Nearby topics already have activities.' : 'In the meantime, the Lab has standalone tools you can explore.'}</p>
       <p><a class="read-link" href="index.html#tools">Explore the Lab <span aria-hidden="true">&rarr;</span></a></p>
     </div>`}
+    ${mod ? moduleComing(t) : ''}
     <p class="cls-progress-note" data-progress-note hidden></p>
   </div>
 </section>
@@ -294,12 +338,12 @@ function topicPage(t, model) {
 <section class="section" aria-label="More in this class">
   <div class="wrap cls-more">
     ${siblings.length ? `<div>
-      <h2 class="label">Also in Unit ${u.number}</h2>
+      <h2 class="label">Also in Unit ${u.number}${mod ? ': ' + esc(u.title) : ''}</h2>
       <ul class="lab-also">${siblings.map(s => `<li><a href="${s.href}">${esc(s.title)}</a></li>`).join('')}</ul>
     </div>` : ''}
     <nav class="cls-pager" aria-label="Topics in order">
-      ${prev ? `<a href="${prev.href}"><span>Previous topic</span>${esc(prev.title)}</a>` : '<span></span>'}
-      ${next ? `<a href="${next.href}"><span>Next topic</span>${esc(next.title)}</a>` : `<a href="${c.href}"><span>End of course</span>Back to ${esc(c.name)}</a>`}
+      ${prev ? `<a href="${prev.href}"><span>Previous ${word}</span>${esc(prev.title)}</a>` : '<span></span>'}
+      ${next ? `<a href="${next.href}"><span>Next ${word}</span>${esc(next.title)}</a>` : `<a href="${c.href}"><span>End of course</span>Back to ${esc(c.name)}</a>`}
     </nav>
   </div>
 </section>
@@ -307,12 +351,175 @@ function topicPage(t, model) {
   });
 }
 
+// ---------- Physics of the Ride ----------
+// The parts of a module page a math topic doesn't have: the hook question,
+// the physics concepts, the equations and the model's assumptions.
+function modulePhysics(t) {
+  return `
+<section class="section pr-hook-section" aria-labelledby="hook-title">
+  <div class="wrap pr-hook-grid">
+    <div class="pr-hook">
+      <h2 class="label" id="hook-title">The question</h2>
+      <p class="pr-hook-q">${esc(t.hook)}</p>
+    </div>
+    <div class="pr-physics">
+      <h2 class="label">The physics</h2>
+      <ul class="cls-skill-chips pr-concepts">${t.concepts.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+      ${t.math.length ? `<h2 class="label pr-math-label">The math</h2>
+      <ul class="pr-math">${t.math.map(m => `<li>${esc(m)}</li>`).join('')}</ul>` : ''}
+      ${t.note ? `<p class="pr-note"><b>About the model:</b> ${esc(t.note)}</p>` : ''}
+    </div>
+  </div>
+</section>
+`;
+}
+
+// What's still coming to a module: its planned labs and the full lesson.
+function moduleComing(t) {
+  const planned = t.labs.filter(l => !l.live || !t.activities.includes(l.live));
+  const lesson = t.status !== 'published';
+  if (!planned.length && !lesson) return '';
+  return `<div class="pr-coming">
+      <h3 class="pr-coming-title">Coming to this module</h3>
+      <ul class="pr-coming-list">${planned.map(l => `
+        <li><b>${esc(l.name)}</b> <span class="pr-chip">Planned lab</span><br>${esc(l.desc)}</li>`).join('')}${lesson ? `
+        <li><b>The full lesson</b> <span class="pr-chip">${esc(lessonState(t))}</span><br>Hook, prediction, explanation, experiment, worked problems, challenges and a claim–evidence–reasoning write-up, at three levels: Explore, Apply and Engineer.</li>` : ''}
+      </ul>
+    </div>`;
+}
+
+function pathwayPage(model) {
+  const P = model.pathway;
+  const units = P.courses.reduce((n, c) => n + c.units.length, 0), modules = P.courses.reduce((n, c) => n + moduleCount(c), 0);
+  const live = P.labs.filter(l => l.live);
+  const route = P.courses.map(c => `
+    <section class="pr-course" aria-labelledby="pr-${esc(c.slug)}">
+      <div class="pr-course-head">
+        <div class="pr-course-art" aria-hidden="true">${ART[c.art] || ''}</div>
+        <div>
+          <p class="kicker">Course ${c.order - P.courses[0].order + 1} &middot; ${c.level === 'advanced' ? 'Advanced enrichment' : 'Start here'}</p>
+          <h2 class="pr-course-name" id="pr-${esc(c.slug)}"><a href="${c.href}">${esc(c.name)}</a></h2>
+          <p class="pr-course-sub">${esc(c.subtitle)}</p>
+          <p class="cls-course-desc">${esc(c.card)}</p>
+          <p class="cls-course-count">${plural(c.units.length, 'unit')} &middot; ${plural(moduleCount(c), 'module')} &middot; ${c.activityIds.size ? plural(c.activityIds.size, 'lab') + ' ready' : 'labs in development'}</p>
+          <p class="cls-course-progress" data-course-progress="${esc(c.id)}" data-topics="${moduleCount(c)}" data-word="modules" hidden></p>
+        </div>
+      </div>
+      <ol class="pr-units">${c.units.map(u => `
+        <li class="pr-unit">
+          <h3 class="pr-unit-title"><span class="pr-unit-n">Unit ${u.number}</span> <a href="${c.href}#${esc(u.slug)}">${esc(u.title)}</a></h3>
+          <p class="pr-unit-desc">${esc(u.desc)}</p>
+          <ol class="pr-modules">${u.topics.map(t => `
+            <li class="pr-module${t.activities.length ? ' pr-module--lab' : ''}" data-topic="${esc(t.id)}" data-skills="${esc(t.skills.map(s => s.id).join(' '))}" data-module>
+              <p class="pr-module-n">Module ${t.module}</p>
+              <h4 class="pr-module-title"><a href="${t.href}">${esc(t.title)}</a></h4>
+              <p class="pr-module-hook">${esc(t.hook)}</p>
+              <p class="pr-module-meta">${t.activities.length ? t.activities.map(a => `<a class="pr-chip pr-chip--live" href="${esc(a.route)}?from=${encodeURIComponent(t.href)}">&#9656; ${esc(a.title)}</a>`).join(' ') : ''}<span class="pr-lesson pr-lesson--${esc(t.status)}">${lessonState(t)}</span><span class="pr-state" data-module-state hidden></span></p>
+            </li>`).join('')}
+          </ol>
+        </li>`).join('')}
+      </ol>
+    </section>`).join('');
+  const labRows = P.labs.filter(l => l.flagship).map(l => `
+        <tr><th scope="row">${l.live ? `<a href="${esc(l.live.route)}">${esc(l.name)}</a>` : esc(l.name)}</th><td>${l.modules.map(t => `<a href="${t.href}">${esc(t.course.name)} ${t.module}: ${esc(t.title)}</a>`).join('<br>')}</td><td>${l.live ? '<span class="pr-chip pr-chip--live">Live</span>' : '<span class="pr-chip">Planned</span>'}</td></tr>`).join('');
+  return page({
+    path: P.href, depth: 2, title: `${P.name} — Classes — Mathlete MTB`, description: P.description,
+    body: `
+<header class="page-head lab-head cls-head pr-head">
+  <div class="wrap">
+    ${crumbs([{ label: 'Classes', href: 'classes/' }, { label: P.name }])}
+    <p class="eyebrow">Classes &middot; Physics</p>
+    <h1 class="page-title">${esc(P.name)}</h1>
+    <p class="hero-lede">${esc(P.intro)}</p>
+    <p class="cls-course-count">${plural(P.courses.length, 'course')} &middot; ${plural(units, 'unit')} &middot; ${plural(modules, 'module')} &middot; ${plural(live.length, 'flagship lab')} live, ${P.labs.filter(l => l.flagship && !l.live).length} on the way</p>
+    <p class="pr-reference">${esc(P.reference)}</p>
+  </div>
+</header>
+
+<section class="section" aria-labelledby="route-title">
+  <div class="wrap">
+    <div class="lab-section-head"><h2 class="label" id="route-title">The route</h2></div>
+    <p class="pr-intro">Two courses, ride them in order. Every module starts from a riding question. Modules with a <span class="pr-chip pr-chip--live">&#9656; lab</span> have an interactive lab you can use today; their full lessons are being written. ${'<span data-auth-show="guest">Log in and your progress shows on every module.</span>'}</p>${route}
+  </div>
+</section>
+
+<section class="section section--panel" aria-labelledby="how-title">
+  <div class="wrap">
+    <div class="lab-section-head"><h2 class="label" id="how-title">How every module works</h2></div>
+    <ol class="pr-steps">${LESSON_STEPS.map(([name, what], i) => `
+      <li><span class="pr-step-n">${i + 1}</span><b>${esc(name)}</b><span>${esc(what)}</span></li>`).join('')}
+    </ol>
+    <div class="pr-levels">
+      <h3 class="pr-coming-title">Three ways in</h3>
+      <ul>${LEVELS_OF_WORK.map(([name, what]) => `
+        <li><b>${esc(name)}</b> ${esc(what)}</li>`).join('')}
+      </ul>
+      <p class="pr-small">Students can work at different levels within the same module, so a strong rider who’s still building their math can take on the same physics as an advanced student.</p>
+    </div>
+    <div class="pr-levels">
+      <h3 class="pr-coming-title">Progress</h3>
+      <ul>
+        <li><b>Not started</b> No questions answered on this module’s skills yet.</li>
+        <li><b>In progress</b> Some of the module’s skills practised.</li>
+        <li><b>Practised</b> Every skill in the module practised.</li>
+        <li><b>Mastered</b> Every skill practised, and at least 80% of your most recent first tries on each one right. Opening a page or watching an animation never counts. Come back any time: newer work replaces older.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="labs-title">
+  <div class="wrap">
+    <div class="lab-section-head"><h2 class="label" id="labs-title">Lab library</h2></div>
+    <p class="pr-intro">The flagship labs share one set of physics, so what you learn about acceleration in one shows up again in the next.</p>
+    <div class="pr-table-wrap">
+      <table class="pr-table">
+        <thead><tr><th scope="col">Lab</th><th scope="col">Module</th><th scope="col">Status</th></tr></thead>
+        <tbody>${labRows}
+        </tbody>
+      </table>
+    </div>
+    <p class="cls-note">Every lab is a simplified model: Jump Lab ignores air resistance, Berm Lab is a steady banked turn, Suspension Lab starts with an ideal spring. Each lab says what it assumes. None of them is riding, equipment or safety advice.</p>
+  </div>
+</section>
+`
+  });
+}
+
+// docs/PHYSICS-ROADMAP.md: the content team's view (status, category, labs).
+function roadmapMd(model) {
+  const P = model.pathway;
+  const rows = P.courses.flatMap(c => c.units.flatMap(u => u.topics.map(t =>
+    `| ${c.name} ${t.module} | ${t.title} | ${u.number}. ${u.title} | ${CATEGORIES[t.category]} | ${STATUSES[t.status]} | ${t.labs.map(l => l.live ? `**${l.name}** (live)` : l.name).join(', ') || '–'} | ${t.activities.length ? t.activities.map(a => a.title).join(', ') : '–'} |`)));
+  const counts = Object.keys(STATUSES).map(k => [STATUSES[k], P.courses.flatMap(c => c.units.flatMap(u => u.topics)).filter(t => t.status === k).length]).filter(([, n]) => n);
+  return `# Physics of the Ride: content roadmap
+
+<!-- Generated by scripts/build-classes.mjs from content/classes/physics.mjs.
+     Don't edit: change the content and run  node scripts/build-classes.mjs -->
+
+For content developers and curriculum administrators. Students see the
+modules at [/${P.href}](../${P.href}index.html); they never see the category column.
+
+Statuses (PRD 11.2): ${Object.values(STATUSES).join(' → ')}. Only *Published*
+modules are presented as finished lessons.
+
+Now: ${counts.map(([k, n]) => `${n} ${k.toLowerCase()}`).join(', ')}. Flagship labs: ${P.labs.filter(l => l.flagship && l.live).length} live of ${P.labs.filter(l => l.flagship).length}.
+
+| Module | Title | Unit | Category | Status | Labs (live in bold) | Activities on the page |
+|---|---|---|---|---|---|---|
+${rows.join('\n')}
+`;
+}
+
 // ---------- supabase/curriculum.sql ----------
 const q = s => `'${String(s).replace(/'/g, "''")}'`;
 function curriculumSql(model) {
   const skills = model.skills.map(s => `  (${q(s.id)}, ${q(s.topic.course.id)}, ${q(s.topic.id)}, ${q(s.title)})`).join(',\n');
   const tracked = model.activities.filter(a => a.tracking);
-  const kinds = tracked.flatMap(a => Object.entries(a.tracking.questions).map(([qid, ss]) => ({ id: `${a.tracking.gameId}:${qid.toLowerCase()}`, game: a.tracking.gameId, title: `${a.title}: question ${qid}`, ss })));
+  // Lab tools (a.tool) register their own question kinds in progress.sql;
+  // here they're only linked to curriculum skills.
+  const kinds = tracked.flatMap(a => Object.entries(a.tracking.questions).map(([qid, ss]) => ({ id: `${a.tracking.gameId}:${qid.toLowerCase()}`, game: a.tracking.gameId, title: `${a.title}: question ${qid}`, ss, own: !a.tool })));
+  const own = kinds.filter(k => k.own);
   return `-- ============================================================
 -- GENERATED by scripts/build-classes.mjs from content/classes/.
 -- Don't edit: change the content and run  node scripts/build-classes.mjs
@@ -325,7 +532,8 @@ function curriculumSql(model) {
 --                                 curriculum skills (an attempt at one
 --                                 question counts for all its skills)
 --   * question kinds for tracked activities (e.g. the Slope Lab), so
---     record_attempt() accepts them
+--     record_attempt() accepts them (Lab tools such as Berm Lab register
+--     theirs in progress.sql; here they're only linked to skills)
 --   * curriculum_progress()       a student's progress per curriculum skill
 --                                 and per tracked activity
 -- Who can see what: the same rules as the rest of progress.sql (a student
@@ -362,13 +570,13 @@ insert into public.curriculum_skills (id, course_id, topic_id, title) values
 ${skills}
 on conflict (id) do update set course_id = excluded.course_id, topic_id = excluded.topic_id, title = excluded.title, active = true;
 
--- 2. Question kinds for tracked activities, filed under the broad
+-- 2. Question kinds for tracked activities that aren't Lab tools, filed under the broad
 --    'algebra' skill for the dashboard's skill meters.
 insert into public.questions (id, game_id, title, difficulty) values
-${kinds.map(k => `  (${q(k.id)}, ${q(k.game)}, ${q(k.title)}, null)`).join(',\n')}
+${own.map(k => `  (${q(k.id)}, ${q(k.game)}, ${q(k.title)}, null)`).join(',\n')}
 on conflict (id) do update set game_id = excluded.game_id, title = excluded.title, active = true;
 insert into public.question_skills (question_id, skill_id) values
-${kinds.map(k => `  (${q(k.id)}, 'algebra')`).join(',\n')}
+${own.map(k => `  (${q(k.id)}, 'algebra')`).join(',\n')}
 on conflict do nothing;
 
 -- 3. Which curriculum skills each question practises.
@@ -380,6 +588,9 @@ on conflict do nothing;
 -- 4. Progress per curriculum skill (only skills with activity are listed)
 --    and per tracked activity, for the signed-in student or one a tutor
 --    is assigned. p_prefix narrows it, e.g. 'alg1.' for one course.
+--    Per skill: questions (first tries), first_try (right first time),
+--    last_at, and the same two counts over the 5 most recent first tries
+--    (recent, recent_ok), so mastery reflects current understanding.
 create or replace function public.curriculum_progress(p_prefix text default null, p_student uuid default null)
 returns jsonb
 language plpgsql
@@ -398,13 +609,18 @@ begin
   end if;
   return jsonb_build_object(
     'skills', coalesce((
-      select jsonb_object_agg(x.skill_id, jsonb_build_object('questions', x.n, 'first_try', x.ok, 'last_at', x.last_at))
+      select jsonb_object_agg(x.skill_id, jsonb_build_object('questions', x.n, 'first_try', x.ok, 'last_at', x.last_at, 'recent', x.recent, 'recent_ok', x.recent_ok))
       from (
-        select cqs.skill_id, count(*) n, count(*) filter (where f.first_correct) ok, max(f.occurred_at) last_at
-        from public.question_first_tries f
-        join public.curriculum_question_skills cqs on cqs.question_id = f.question_id
-        where f.student_id = v_sid and (p_prefix is null or cqs.skill_id like p_prefix || '%')
-        group by cqs.skill_id
+        select y.skill_id, count(*) n, count(*) filter (where y.first_correct) ok, max(y.occurred_at) last_at,
+               count(*) filter (where y.rn <= 5) recent, count(*) filter (where y.rn <= 5 and y.first_correct) recent_ok
+        from (
+          select cqs.skill_id, f.first_correct, f.occurred_at,
+                 row_number() over (partition by cqs.skill_id order by f.occurred_at desc, f.attempt_id) rn
+          from public.question_first_tries f
+          join public.curriculum_question_skills cqs on cqs.question_id = f.question_id
+          where f.student_id = v_sid and (p_prefix is null or cqs.skill_id like p_prefix || '%')
+        ) y
+        group by y.skill_id
       ) x), '{}'::jsonb),
     'activities', coalesce((
       select jsonb_object_agg(s.game_id, jsonb_build_object('sessions', s.n, 'completed', s.done, 'last_at', s.last_at))
@@ -425,12 +641,13 @@ grant execute on function public.curriculum_progress(text, uuid) to authenticate
 export function render() {
   const model = loadClasses();
   if (model.errors.length) throw new Error('content/classes has problems:\n  ' + model.errors.join('\n  '));
-  const pages = { 'classes/index.html': landing(model) };
+  const pages = { 'classes/index.html': landing(model), [model.pathway.href + 'index.html']: pathwayPage(model) };
   for (const c of model.courses) {
     pages[c.href + 'index.html'] = coursePage(c, model);
     for (const u of c.units) for (const t of u.topics) pages[t.href + 'index.html'] = topicPage(t, model);
   }
   pages['supabase/curriculum.sql'] = curriculumSql(model);
+  pages['docs/PHYSICS-ROADMAP.md'] = roadmapMd(model);
   return pages;
 }
 
@@ -452,5 +669,5 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     mkdirSync(root + p.replace(/[^/]+$/, ''), { recursive: true });
     writeFileSync(root + p, html); n++;
   }
-  console.log(`wrote ${n} files (classes/ and supabase/curriculum.sql)`);
+  console.log(`wrote ${n} files (classes/, supabase/curriculum.sql, docs/PHYSICS-ROADMAP.md)`);
 }
