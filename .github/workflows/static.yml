@@ -22,11 +22,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  # Two jobs: build (prepare and upload the site), then deploy. Deploying in
+  # the same job as the upload can fail with "No artifacts named github-pages
+  # were found" because GitHub hasn't registered the upload yet
+  # (actions/deploy-pages issue #451). The hand-over between jobs avoids it.
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -56,10 +56,18 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           # Upload entire repository
           path: '.'
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
