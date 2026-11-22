@@ -9,11 +9,11 @@ modules at [/classes/physics/](../classes/physics/index.html); they never see th
 Statuses (PRD 11.2): Planned → Content drafting → Visual development → Interactive activity development → Assessment development → Review → Published. Only *Published*
 modules are presented as finished lessons.
 
-Now: 27 planned, 1 review. Flagship labs: 3 live of 23.
+Now: 26 planned, 2 review. Flagship labs: 3 live of 23.
 
 | Module | Title | Unit | Category | Status | Labs (live in bold) | Activities on the page |
 |---|---|---|---|---|---|---|
-| Trail Physics 1 | Introduction to Physics | 1. Physics Foundations | Core MTB physics | Planned | The Physics of a Mountain Bike | – |
+| Trail Physics 1 | Introduction to Physics | 1. Physics Foundations | Core MTB physics | Review | **The Physics of a Mountain Bike** (live) | Introduction to Physics |
 | Trail Physics 2 | Mathematics Review | 1. Physics Foundations | Core MTB physics | Planned | MTB Math Toolkit | Berm Lab |
 | Trail Physics 3 | Scientific Measurement | 1. Physics Foundations | Core MTB physics | Planned | Trail Measurement Lab, MTB Math Toolkit | Berm Lab |
 | Trail Physics 4 | Motion in One Dimension | 2. Understanding Motion | Core MTB physics | Planned | Trail Speed Lab | – |

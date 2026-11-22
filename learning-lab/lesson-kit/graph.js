@@ -13,7 +13,7 @@
 //   hlines    [{ y, label, cls }]     horizontal reference lines, e.g. the available grip
 
 import { el, svg, clear, id as uid } from './dom.js';
-import { fmt } from '../logic/physics.js';
+import { fmt } from './format.js';
 
 const GW = 380, GH = 250, M = { l: 54, r: 16, t: 16, b: 44 };
 const NICE = [1, 2, 2.5, 5, 10];
@@ -34,19 +34,19 @@ function ticks(max) {
 export function createGraph(o) {
   const titleId = uid('gt'), readId = uid('gr');
   const pw = GW - M.l - M.r, ph = GH - M.t - M.b;
-  const node = el('figure', { class: 'nl-graph' });
-  const s = svg('svg', { viewBox: `0 0 ${GW} ${GH}`, class: 'nl-graph-svg', role: 'application', tabindex: '0', 'aria-labelledby': titleId, 'aria-describedby': readId });
-  const grid = svg('g', { class: 'nl-g-grid' }), axes = svg('g', { class: 'nl-g-axes' });
-  const curve = svg('path', { class: 'nl-g-curve' });
-  const guides = svg('path', { class: 'nl-g-guide' });
-  const extraG = svg('g', { class: 'nl-g-extra' }), markG = svg('g', { class: 'nl-g-marks' }), hlineG = svg('g', { class: 'nl-g-hlines' });
-  const current = svg('g', { class: 'nl-g-current' }, svg('path', { d: 'M 0 -7 L 7 0 L 0 7 L -7 0 Z' }));
-  const curLabel = svg('text', { class: 'nl-g-curlabel' });
-  const probe = svg('g', { class: 'nl-g-probe', visibility: 'hidden' }, svg('circle', { r: 4.5 }), svg('rect', { class: 'nl-g-tip', rx: 3, height: 20 }), svg('text', { class: 'nl-g-tiptext' }));
-  const hit = svg('rect', { x: M.l, y: M.t, width: pw, height: ph, fill: 'transparent', class: 'nl-g-hit' });
+  const node = el('figure', { class: 'ls-graph' });
+  const s = svg('svg', { viewBox: `0 0 ${GW} ${GH}`, class: 'ls-graph-svg', role: 'application', tabindex: '0', 'aria-labelledby': titleId, 'aria-describedby': readId });
+  const grid = svg('g', { class: 'ls-g-grid' }), axes = svg('g', { class: 'ls-g-axes' });
+  const curve = svg('path', { class: 'ls-g-curve' });
+  const guides = svg('path', { class: 'ls-g-guide' });
+  const extraG = svg('g', { class: 'ls-g-extra' }), markG = svg('g', { class: 'ls-g-marks' }), hlineG = svg('g', { class: 'ls-g-hlines' });
+  const current = svg('g', { class: 'ls-g-current' }, svg('path', { d: 'M 0 -7 L 7 0 L 0 7 L -7 0 Z' }));
+  const curLabel = svg('text', { class: 'ls-g-curlabel' });
+  const probe = svg('g', { class: 'ls-g-probe', visibility: 'hidden' }, svg('circle', { r: 4.5 }), svg('rect', { class: 'ls-g-tip', rx: 3, height: 20 }), svg('text', { class: 'ls-g-tiptext' }));
+  const hit = svg('rect', { x: M.l, y: M.t, width: pw, height: ph, fill: 'transparent', class: 'ls-g-hit' });
   s.append(grid, axes, hlineG, curve, guides, extraG, markG, current, curLabel, probe, hit);
-  const readout = el('p', { class: 'nl-graph-read', id: readId, 'aria-live': 'polite' });
-  node.append(el('figcaption', { id: titleId, class: 'nl-graph-title' }, o.title), s, readout);
+  const readout = el('p', { class: 'ls-graph-read', id: readId, 'aria-live': 'polite' });
+  node.append(el('figcaption', { id: titleId, class: 'ls-graph-title' }, o.title), s, readout);
 
   let st = { f: () => 0, x: 0, yMax: 1, probeX: null };
   const [x0, x1] = o.xDomain;
@@ -65,10 +65,10 @@ export function createGraph(o) {
       grid.appendChild(svg('line', { x1: X(t), x2: X(t), y1: M.t, y2: M.t + ph }));
       axes.appendChild(svg('text', { x: X(t), y: M.t + ph + 16, 'text-anchor': 'middle' }, String(t)));
     });
-    axes.appendChild(svg('line', { x1: M.l, x2: M.l + pw, y1: M.t + ph, y2: M.t + ph, class: 'nl-g-axis' }));
-    axes.appendChild(svg('line', { x1: M.l, x2: M.l, y1: M.t, y2: M.t + ph, class: 'nl-g-axis' }));
-    axes.appendChild(svg('text', { x: M.l + pw / 2, y: GH - 6, 'text-anchor': 'middle', class: 'nl-g-axlabel' }, `${o.xLabel} (${o.xUnit})`));
-    axes.appendChild(svg('text', { x: 13, y: M.t + ph / 2, 'text-anchor': 'middle', class: 'nl-g-axlabel', transform: `rotate(-90 13 ${M.t + ph / 2})` }, `${o.yLabel} (${o.yUnit})`));
+    axes.appendChild(svg('line', { x1: M.l, x2: M.l + pw, y1: M.t + ph, y2: M.t + ph, class: 'ls-g-axis' }));
+    axes.appendChild(svg('line', { x1: M.l, x2: M.l, y1: M.t, y2: M.t + ph, class: 'ls-g-axis' }));
+    axes.appendChild(svg('text', { x: M.l + pw / 2, y: GH - 6, 'text-anchor': 'middle', class: 'ls-g-axlabel' }, `${o.xLabel} (${o.xUnit})`));
+    axes.appendChild(svg('text', { x: 13, y: M.t + ph / 2, 'text-anchor': 'middle', class: 'ls-g-axlabel', transform: `rotate(-90 13 ${M.t + ph / 2})` }, `${o.yLabel} (${o.yUnit})`));
   }
   function point(x, y, cls, label) {
     const g = svg('g', { class: cls, transform: `translate(${X(x).toFixed(1)} ${Y(y).toFixed(1)})` });
@@ -105,9 +105,9 @@ export function createGraph(o) {
     current.setAttribute('transform', `translate(${px.toFixed(1)} ${py.toFixed(1)})`);
     curLabel.setAttribute('x', Math.min(px + 10, GW - 120)); curLabel.setAttribute('y', Math.max(py - 10, M.t + 12));
     curLabel.textContent = `(${fx(st.x, o.xDigits === undefined ? 1 : o.xDigits)}, ${fy(cy)})`;
-    clear(hlineG); (st.hlines || []).forEach(h => hlineG.append(svg('line', { x1: M.l, x2: M.l + pw, y1: Y(h.y), y2: Y(h.y), class: 'nl-g-hline ' + (h.cls || '') }), svg('text', { x: M.l + pw - 4, y: Y(h.y) - 5, 'text-anchor': 'end', class: 'nl-g-hlabel' }, h.label)));
-    clear(markG); (st.markers || []).forEach(m => markG.appendChild(point(m.x, m.y, 'nl-g-mark ' + (m.cls || ''), m.label)));
-    clear(extraG); (st.extra || []).forEach(m => { if (m.x >= x0 && m.x <= x1) extraG.appendChild(point(m.x, m.y, 'nl-g-x ' + (m.cls || ''), m.label)); });
+    clear(hlineG); (st.hlines || []).forEach(h => hlineG.append(svg('line', { x1: M.l, x2: M.l + pw, y1: Y(h.y), y2: Y(h.y), class: 'ls-g-hline ' + (h.cls || '') }), svg('text', { x: M.l + pw - 4, y: Y(h.y) - 5, 'text-anchor': 'end', class: 'ls-g-hlabel' }, h.label)));
+    clear(markG); (st.markers || []).forEach(m => markG.appendChild(point(m.x, m.y, 'ls-g-mark ' + (m.cls || ''), m.label)));
+    clear(extraG); (st.extra || []).forEach(m => { if (m.x >= x0 && m.x <= x1) extraG.appendChild(point(m.x, m.y, 'ls-g-x ' + (m.cls || ''), m.label)); });
     if (st.probeX === null) readout.textContent = `Now: ${o.xLabel.toLowerCase()} ${fx(st.x, 1)} ${o.xUnit}, ${o.yLabel.toLowerCase()} ${fy(cy)} ${o.yUnit}.`;
     showProbe();
   }

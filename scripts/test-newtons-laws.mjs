@@ -8,8 +8,11 @@
 const base = new URL('../learning-lab/newtons-laws/', import.meta.url);
 const P = await import(new URL('logic/physics.js', base));
 const L = await import(new URL('logic/lesson.js', base));
-const V = await import(new URL('logic/validate.js', base));
-const { createProgress } = await import(new URL('logic/progress.js', base));
+const kit = new URL('../learning-lab/lesson-kit/', import.meta.url);
+const V = await import(new URL('validate.js', kit));
+const { createProgress: kitProgress } = await import(new URL('progress.js', kit));
+const LESSON = { id: 'newtons-laws', sections: L.SECTIONS, questions: L.QUESTIONS, checkIds: L.CHECK_IDS, mastery: L.mastery };
+const createProgress = o => kitProgress({ lesson: LESSON, ...o });
 const { gradeForces } = await import(new URL('components/forces.js', base));
 
 let pass = 0, fail = 0;
@@ -132,10 +135,11 @@ ok('Sections: complete only when every graded item is answered', !pr.sectionStat
 L.SECTIONS.forEach(s => s.graded.forEach(id => { if (!pr.done(id, L.CHECK_IDS.includes(id) ? pr.checkKey() : null)) pr.reveal(id, L.CHECK_IDS.includes(id) ? pr.checkKey() : null); }));
 ok('Completing every section fires onComplete once', done.length === 1 && pr.summary().complete);
 const store = { data: {}, load(k) { return this.data[k] ? JSON.parse(this.data[k]) : null; }, save(k, v) { this.data[k] = JSON.stringify(v); } };
-const a1 = createProgress({ storage: store }); a1.setLevel('engineer'); a1.attempt('accel-calc', null, '2.5', true, {}); a1.saveExperiment({ mass: 100, traction: 300 }, 'Heavy'); a1.write('final-cer-claim', 'I speed up');
+const a1 = createProgress({ storage: store }); a1.setLevel('engineer'); a1.attempt('accel-calc', null, '2.5', true, {}); a1.setData('lab-saved', [{ label: 'Heavy', config: { mass: 100 } }]); a1.write('final-cer-claim', 'I speed up');
 const a2 = createProgress({ storage: store });
-ok('Progress persists: level, answers, saved experiments and writing come back', a2.level === 'engineer' && a2.earned('accel-calc') && a2.saved[0].label === 'Heavy' && a2.saved[0].config.mass === 100 && a2.written('final-cer-claim') === 'I speed up');
-ok('Saved experiments: at most 8', (() => { for (let i = 0; i < 12; i++) a2.saveExperiment({}, 'e' + i); return a2.saved.length === 8; })());
+ok('Progress persists: level, answers, saved experiments and writing come back', a2.level === 'engineer' && a2.earned('accel-calc') && a2.getData('lab-saved')[0].label === 'Heavy' && a2.getData('lab-saved')[0].config.mass === 100 && a2.written('final-cer-claim') === 'I speed up');
+ok('Activity data comes back as a copy (changing it doesn’t change the saved state)', (() => { const d = a2.getData('lab-saved'); d.push(1); return a2.getData('lab-saved').length === 1; })());
+ok('Progress is kept per lesson (separate storage keys)', (() => { const st = { data: {}, load(k) { return this.data[k] ? JSON.parse(this.data[k]) : null; }, save(k, v) { this.data[k] = JSON.stringify(v); } }; createProgress({ storage: st }).write('x', 'y'); return Object.keys(st.data).every(k => k.startsWith('mathlete-newtons-laws:v1:')); })());
 ok('Kinds for the account: every question id is a valid kind slug', Object.keys(L.questionKinds()).every(k => /^[a-z0-9-]+$/.test(k)));
 
 console.log(`${pass}/${pass + fail} passed`);

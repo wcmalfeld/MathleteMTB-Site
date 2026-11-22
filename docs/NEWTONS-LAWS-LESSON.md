@@ -9,9 +9,10 @@ The module's status in `content/classes/physics.mjs` is `review`, so the
 module page says "Lesson in review". To publish it, set
 `status: 'published'` on `newtons-laws` and run `node scripts/build-classes.mjs`.
 
-It's built like the labs: a standalone module (only `index.html` and
-`main.js` touch the site), a root class of `.nlab`, and the same question,
-graph and progress patterns as Berm Lab.
+It runs in the shared [lesson kit](LESSON-KIT.md) (`learning-lab/lesson-kit/`),
+which draws the sections and keeps progress. This folder holds the
+content, the physics and the interactives. Only `index.html` and `main.js`
+touch the site. Styles are scoped under `.lsn`.
 
 ## What's in it
 
@@ -69,7 +70,7 @@ aren't saved.
 
 ## Tests
 
-- `node scripts/test-newtons-laws.mjs` runs 91 checks: the PRD's worked
+- `node scripts/test-newtons-laws.mjs` runs 92 checks: the PRD's worked
   examples, the model, the ride, every answer, traps, free-body grading,
   progress, retakes and mastery.
 - `node scripts/check-site.mjs` covers scoping, independence, that the kinds

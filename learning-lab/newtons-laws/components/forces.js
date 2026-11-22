@@ -7,9 +7,9 @@
 //
 // pickForces(qid, { progress, key, onDone }) -> element
 
-import { el, clear, button, id as uid } from './dom.js';
+import { el, clear, button, id as uid } from '../../lesson-kit/dom.js';
 import { fbd } from './visuals.js';
-import { ask } from './ask.js';
+import { ask } from '../../lesson-kit/ask.js';
 import { QUESTIONS, SCENARIOS, FORCES, DIR_TEXT, NET_TEXT } from '../logic/lesson.js';
 
 const HINTS = [
@@ -35,39 +35,39 @@ export function pickForces(qid, o) {
   const q = QUESTIONS[qid], sc = SCENARIOS[q.scenario], P = o.progress, key = o.key || null;
   const rec = () => P.question(qid, key) || { attempts: 0, hints: 0, correct: false, revealed: false };
   const picks = {};
-  const wrap = el('div', { class: 'nl-ask nl-forces', 'data-q': qid });
+  const wrap = el('div', { class: 'ls-ask ls-forces', 'data-q': qid });
   const pid = uid('fp');
-  wrap.appendChild(el('p', { class: 'nl-prompt', id: pid }, q.prompt));
-  const diagram = el('div', { class: 'nl-forces-diagram', 'aria-live': 'polite' });
-  const rows = el('fieldset', { class: 'nl-force-rows', 'aria-labelledby': pid }, el('legend', { class: 'nl-sr' }, 'Forces and directions'));
+  wrap.appendChild(el('p', { class: 'ls-prompt', id: pid }, q.prompt));
+  const diagram = el('div', { class: 'ls-forces-diagram', 'aria-live': 'polite' });
+  const rows = el('fieldset', { class: 'ls-force-rows', 'aria-labelledby': pid }, el('legend', { class: 'ls-sr' }, 'Forces and directions'));
   const inputs = {};
   sc.choices.forEach(k => {
     const cid = uid('fc'), sid = uid('fd');
     const box = el('input', { type: 'checkbox', id: cid });
-    const sel = el('select', { id: sid, class: 'nl-select', disabled: true, 'aria-label': FORCES[k].name + ' direction' },
+    const sel = el('select', { id: sid, class: 'ls-select', disabled: true, 'aria-label': FORCES[k].name + ' direction' },
       el('option', { value: '' }, 'Direction…'), sc.dirs.map(d => el('option', { value: d }, DIR_TEXT[d])));
     const sync = () => { sel.disabled = !box.checked || locked; picks[k] = box.checked ? (sel.value || null) : null; draw(); };
     box.addEventListener('change', () => { if (box.checked && !sel.value) sel.focus(); sync(); });
     sel.addEventListener('change', sync);
     inputs[k] = { box, sel };
-    rows.appendChild(el('div', { class: 'nl-force-row' },
-      el('label', { for: cid, class: 'nl-check' }, box, el('span', { class: `nl-swatch nl-swatch--${FORCES[k].cls}`, 'aria-hidden': 'true' }), el('span', null, FORCES[k].name, ' ', el('span', { class: 'nl-sym' }, `(${FORCES[k].sym})`))), sel));
+    rows.appendChild(el('div', { class: 'ls-force-row' },
+      el('label', { for: cid, class: 'ls-check' }, box, el('span', { class: `ls-swatch ls-swatch--${FORCES[k].cls}`, 'aria-hidden': 'true' }), el('span', null, FORCES[k].name, ' ', el('span', { class: 'ls-sym' }, `(${FORCES[k].sym})`))), sel));
   });
-  const grid = el('div', { class: 'nl-forces-grid' }, rows, diagram);
+  const grid = el('div', { class: 'ls-forces-grid' }, rows, diagram);
   wrap.appendChild(grid);
-  const fb = el('div', { class: 'nl-fb', role: 'status', 'aria-live': 'polite' });
-  const hintsEl = el('ol', { class: 'nl-hints', 'aria-label': 'Hints' });
-  const checkBtn = button('Check my diagram', check, 'nl-btn--primary');
-  const hintBtn = button('Get a hint', () => { P.hint(qid, key); drawHints(); }, 'nl-btn--quiet');
-  const showBtn = button('Show the answer', reveal, 'nl-btn--quiet');
-  const after = el('div', { class: 'nl-after' });
-  wrap.append(el('div', { class: 'nl-actions' }, checkBtn, hintBtn, showBtn), hintsEl, fb, after);
+  const fb = el('div', { class: 'ls-fb', role: 'status', 'aria-live': 'polite' });
+  const hintsEl = el('ol', { class: 'ls-hints', 'aria-label': 'Hints' });
+  const checkBtn = button('Check my diagram', check, 'ls-btn--primary');
+  const hintBtn = button('Get a hint', () => { P.hint(qid, key); drawHints(); }, 'ls-btn--quiet');
+  const showBtn = button('Show the answer', reveal, 'ls-btn--quiet');
+  const after = el('div', { class: 'ls-after' });
+  wrap.append(el('div', { class: 'ls-actions' }, checkBtn, hintBtn, showBtn), hintsEl, fb, after);
   let locked = false;
 
   function draw() {
     const forces = Object.keys(picks).filter(k => picks[k]).map(k => ({ type: k, dir: picks[k] }));
     clear(diagram).appendChild(fbd({ tilt: sc.tilt, forces, title: `Your free-body diagram: ${describe(picks)}.` }));
-    diagram.appendChild(el('p', { class: 'nl-small nl-forces-cap' }, sc.title + ' · ' + (forces.length ? forces.length + ' force' + (forces.length > 1 ? 's' : '') : 'no forces yet')));
+    diagram.appendChild(el('p', { class: 'ls-small ls-forces-cap' }, sc.title + ' · ' + (forces.length ? forces.length + ' force' + (forces.length > 1 ? 's' : '') : 'no forces yet')));
   }
   function drawHints() {
     clear(hintsEl);
@@ -77,7 +77,7 @@ export function pickForces(qid, o) {
     hintBtn.textContent = r.hints >= HINTS.length ? 'No more hints' : r.hints ? 'Next hint' : 'Get a hint';
     showBtn.hidden = r.correct || r.revealed || r.attempts < 2;
   }
-  const say = (tone, ...ps) => { clear(fb); fb.className = 'nl-fb nl-fb--' + tone; ps.filter(Boolean).forEach(p => fb.appendChild(el('p', null, p))); };
+  const say = (tone, ...ps) => { clear(fb); fb.className = 'ls-fb ls-fb--' + tone; ps.filter(Boolean).forEach(p => fb.appendChild(el('p', null, p))); };
   function setPicks(map) {
     Object.entries(inputs).forEach(([k, { box, sel }]) => { box.checked = !!map[k]; sel.value = map[k] || ''; picks[k] = map[k] || null; });
     draw();
@@ -87,7 +87,7 @@ export function pickForces(qid, o) {
     Object.values(inputs).forEach(({ box, sel }) => { box.disabled = true; sel.disabled = true; });
     checkBtn.hidden = hintBtn.hidden = showBtn.hidden = true;
     clear(after);
-    after.appendChild(el('div', { class: 'nl-solution' }, el('p', { class: 'nl-solution-h' }, right ? 'Why each force is there' : 'The free-body diagram'),
+    after.appendChild(el('div', { class: 'ls-solution' }, el('p', { class: 'ls-solution-h' }, right ? 'Why each force is there' : 'The free-body diagram'),
       el('ul', null, Object.keys(sc.correct).map(k => el('li', null, el('b', null, `${FORCES[k].name} (${DIR_TEXT[sc.correct[k]]}): `), sc.why[k])))));
     if (sc.net) {
       const opts = sc.tilt ? ['zero', 'uphill', 'downhill'] : ['zero', 'forward', 'backward'];

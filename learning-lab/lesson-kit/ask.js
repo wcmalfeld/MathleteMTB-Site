@@ -8,27 +8,27 @@
 //   q: { id, type, prompt, options | answer+tolerance+unit+traps | fields, hints, solution, skills }
 
 import { el, clear, button, id as uid } from './dom.js';
-import { checkNumber, checkFields, checkChoice } from '../logic/validate.js';
-import { fmt } from '../logic/physics.js';
+import { checkNumber, checkFields, checkChoice } from './validate.js';
+import { fmt } from './format.js';
 
 const digitsFor = tol => (tol >= 1 ? 0 : tol >= 0.1 ? 1 : 2);
 
 export function ask(q, o) {
   const P = o.progress, key = o.key || null;
   const rec = () => P.question(q.id, key) || { attempts: 0, hints: 0, correct: false, revealed: false };
-  const wrap = el('div', { class: 'nl-ask', 'data-q': q.id });
-  const fb = el('div', { class: 'nl-fb', role: 'status', 'aria-live': 'polite' });
-  const hintsEl = el('ol', { class: 'nl-hints', 'aria-label': 'Hints' });
-  const sol = el('div', { class: 'nl-solution', hidden: true });
+  const wrap = el('div', { class: 'ls-ask', 'data-q': q.id });
+  const fb = el('div', { class: 'ls-fb', role: 'status', 'aria-live': 'polite' });
+  const hintsEl = el('ol', { class: 'ls-hints', 'aria-label': 'Hints' });
+  const sol = el('div', { class: 'ls-solution', hidden: true });
   const promptId = uid('qp');
-  wrap.appendChild(el('p', { class: 'nl-prompt', id: promptId }, q.prompt));
+  wrap.appendChild(el('p', { class: 'ls-prompt', id: promptId }, q.prompt));
 
   let read, lock, answerText, marks = () => {};
-  const area = el('div', { class: 'nl-answer' });
+  const area = el('div', { class: 'ls-answer' });
   if (q.type === 'choice') {
     const name = uid('c');
-    const fs = el('fieldset', { class: 'nl-choices', 'aria-labelledby': promptId }, el('legend', { class: 'nl-sr' }, 'Choose one'),
-      q.options.map(op => { const oid = uid('o'); return el('label', { for: oid, class: 'nl-choice' }, el('input', { type: 'radio', id: oid, name, value: op.id }), el('span', null, op.text)); }));
+    const fs = el('fieldset', { class: 'ls-choices', 'aria-labelledby': promptId }, el('legend', { class: 'ls-sr' }, 'Choose one'),
+      q.options.map(op => { const oid = uid('o'); return el('label', { for: oid, class: 'ls-choice' }, el('input', { type: 'radio', id: oid, name, value: op.id }), el('span', null, op.text)); }));
     area.appendChild(fs);
     read = () => { const c = fs.querySelector('input:checked'); return c ? c.value : null; };
     lock = () => fs.querySelectorAll('input').forEach(i => { i.disabled = true; });
@@ -36,14 +36,14 @@ export function ask(q, o) {
   } else {
     const fields = q.type === 'number' ? [{ id: 'v', label: q.label || 'Your answer', answer: q.answer, tolerance: q.tolerance, unit: q.unit, traps: q.traps }] : q.fields;
     const inputs = {};
-    const grid = el('div', { class: 'nl-fields' });
+    const grid = el('div', { class: 'ls-fields' });
     fields.forEach(f => {
       const fid = uid('f');
-      inputs[f.id] = el('input', { id: fid, type: 'text', inputmode: 'decimal', autocomplete: 'off', spellcheck: 'false', class: 'nl-input' });
+      inputs[f.id] = el('input', { id: fid, type: 'text', inputmode: 'decimal', autocomplete: 'off', spellcheck: 'false', class: 'ls-input' });
       inputs[f.id].addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
-      grid.appendChild(el('div', { class: 'nl-field' }, el('label', { for: fid }, f.label),
-        el('span', { class: 'nl-input-unit' }, inputs[f.id], f.unit ? el('span', { class: 'nl-unit' }, f.unit) : null),
-        el('span', { class: 'nl-mark', 'data-for': f.id })));
+      grid.appendChild(el('div', { class: 'ls-field' }, el('label', { for: fid }, f.label),
+        el('span', { class: 'ls-input-unit' }, inputs[f.id], f.unit ? el('span', { class: 'ls-unit' }, f.unit) : null),
+        el('span', { class: 'ls-mark', 'data-for': f.id })));
     });
     area.appendChild(grid);
     read = () => Object.fromEntries(Object.entries(inputs).map(([k, i]) => [k, i.value]));
@@ -52,7 +52,7 @@ export function ask(q, o) {
     marks = res => (res.fields || []).forEach(f => {
       const m = grid.querySelector(`[data-for="${f.id}"]`);
       m.textContent = f.code === 'empty' ? '' : f.correct ? '✓ right' : '✗ not yet';
-      m.className = 'nl-mark ' + (f.correct ? 'is-right' : f.code === 'empty' ? '' : 'is-wrong');
+      m.className = 'ls-mark ' + (f.correct ? 'is-right' : f.code === 'empty' ? '' : 'is-wrong');
       inputs[f.id].setAttribute('aria-invalid', f.correct ? 'false' : 'true');
     });
     q._fields = fields;
@@ -61,20 +61,20 @@ export function ask(q, o) {
   let workBox = null;
   if (q.working) {
     const wid = uid('w');
-    workBox = el('textarea', { id: wid, class: 'nl-textarea nl-working', rows: 4, placeholder: 'Show your working: the equation, your numbers, the steps.' });
+    workBox = el('textarea', { id: wid, class: 'ls-textarea ls-working', rows: 4, placeholder: 'Show your working: the equation, your numbers, the steps.' });
     workBox.value = P.written(q.id + (key ? '|' + key : '') + ':working');
     workBox.addEventListener('change', () => P.write(q.id + (key ? '|' + key : '') + ':working', workBox.value));
-    wrap.appendChild(el('div', { class: 'nl-field nl-field--wide' }, el('label', { for: wid }, 'Your working (saved with your answer)'), workBox));
+    wrap.appendChild(el('div', { class: 'ls-field ls-field--wide' }, el('label', { for: wid }, 'Your working (saved with your answer)'), workBox));
   }
 
-  const checkBtn = button('Check', check, 'nl-btn--primary');
-  const hintBtn = button('Get a hint', hint, 'nl-btn--quiet');
-  const showBtn = button('Show the solution', reveal, 'nl-btn--quiet');
+  const checkBtn = button('Check', check, 'ls-btn--primary');
+  const hintBtn = button('Get a hint', hint, 'ls-btn--quiet');
+  const showBtn = button('Show the solution', reveal, 'ls-btn--quiet');
   hintBtn.hidden = !(q.hints && q.hints.length);
   showBtn.hidden = true;
-  wrap.append(el('div', { class: 'nl-actions' }, checkBtn, hintBtn, showBtn), hintsEl, fb, sol);
+  wrap.append(el('div', { class: 'ls-actions' }, checkBtn, hintBtn, showBtn), hintsEl, fb, sol);
 
-  const say = (tone, ...ps) => { clear(fb); fb.className = 'nl-fb nl-fb--' + tone; ps.filter(Boolean).forEach(p => fb.appendChild(typeof p === 'string' ? el('p', null, p) : p)); };
+  const say = (tone, ...ps) => { clear(fb); fb.className = 'ls-fb ls-fb--' + tone; ps.filter(Boolean).forEach(p => fb.appendChild(typeof p === 'string' ? el('p', null, p) : p)); };
   function drawHints() {
     clear(hintsEl);
     const r = rec(), n = r.hints, hs = q.hints || [];
@@ -92,7 +92,7 @@ export function ask(q, o) {
     lock();
     if (workBox) workBox.readOnly = true;
     checkBtn.hidden = hintBtn.hidden = showBtn.hidden = true;
-    if (q.solution) { clear(sol); sol.append(el('p', { class: 'nl-solution-h' }, right ? 'Why it works' : 'Solution'), el('p', null, q.solution)); sol.hidden = false; }
+    if (q.solution) { clear(sol); sol.append(el('p', { class: 'ls-solution-h' }, right ? 'Why it works' : 'Solution'), el('p', null, q.solution)); sol.hidden = false; }
     const r = rec();
     if (!silent && o.onDone) o.onDone({ correct: right, revealed: !!revealed, attempts: r.attempts, hints: r.hints });
   }

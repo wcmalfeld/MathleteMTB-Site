@@ -222,27 +222,47 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   check('Berm Lab is listed on the Lab home and the Engineering Lab page, and its placeholder is gone', read('index.html').includes('learning-lab/berm-lab/') && read('learning-lab/engineering/index.html').includes('learning-lab/berm-lab/') && !read('js/lab-categories.js').includes("'Berm Lab'"));
 }
 
-// ---- Newton's Laws lesson (Trail Physics, Module 7; tests: scripts/test-newtons-laws.mjs) ----
+// ---- Physics lessons (learning-lab/lesson-kit/ + one folder per lesson) ----
+// tests: scripts/test-newtons-laws.mjs, scripts/test-intro-to-physics.mjs
 {
-  const dir = 'learning-lab/newtons-laws/';
-  const html = read(dir + 'index.html');
-  const css = read(dir + 'styles/newtons-laws.css').replace(/\/\*[\s\S]*?\*\//g, '');
-  const leaking = css.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@')).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith('.nlab'));
-  check('Newton’s Laws lesson styles are all scoped under .nlab', leaking.length === 0, leaking.slice(0, 5).join(' | '));
-  check('Newton’s Laws lesson stylesheet braces balance', (css.match(/\{/g) || []).length === (css.match(/\}/g) || []).length);
-  const js = execSync(`find ${root + dir} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
-  const coupled = js.filter(f => !f.endsWith('/main.js') && /MathleteProgress|MathleteAuth|supabase|tools-config/.test(readFileSync(f, 'utf8')));
-  check('Newton’s Laws lesson module doesn’t depend on the site (only its page connects it)', coupled.length === 0 && !/site\.css|site-nav|site\.js/.test(html), coupled.join(', '));
-  check('Newton’s Laws lesson page loads progress tracking in order, then the module', ['js/supabase-config.js', 'js/auth.js', 'js/progress.js', 'src="main.js'].map(x => html.indexOf(x)).every((v, i, a) => v > 0 && (i === 0 || v > a[i - 1])));
-  const unsafe = js.filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(/.test(readFileSync(f, 'utf8')));
-  check('Newton’s Laws lesson never builds HTML from strings', unsafe.length === 0, unsafe.join(', '));
-  const { questionKinds } = await import('../' + dir + 'logic/lesson.js');
-  const kinds = Object.keys(questionKinds()).map(k => 'newtons-laws:' + k).sort();
-  const sqlKinds = [...new Set([...read('supabase/curriculum.sql').matchAll(/\('(newtons-laws:[a-z0-9-]+)', 'newtons-laws'/g)].map(m => m[1]))].sort();
-  check(`Newton’s Laws lesson question kinds are registered in supabase/curriculum.sql (${kinds.length})`, kinds.length > 0 && kinds.join() === sqlKinds.join(), `lesson: ${kinds.length} | sql: ${sqlKinds.length}`);
-  check('Newton’s Laws lesson kinds are filed under forces-motion, not algebra', /\('newtons-laws:kc-1', 'forces-motion'\)/.test(read('supabase/curriculum.sql')) && !/\('newtons-laws:[a-z0-9-]+', 'algebra'\)/.test(read('supabase/curriculum.sql')));
-  const mod7 = read('classes/trail-physics/newtons-laws/index.html');
-  check('Trail Physics Module 7 links the lesson and says it’s in review (not yet published)', mod7.includes('href="learning-lab/newtons-laws/?from=') && mod7.includes('Lesson in review') && !mod7.includes('Lesson available'));
+  const scoped = f => { const css = read(f).replace(/\/\*[\s\S]*?\*\//g, '');
+    const flat = css.replace(/@media[^{]*\{([\s\S]*?\})\s*\}/g, '$1');
+    return { ok: (css.match(/\{/g) || []).length === (css.match(/\}/g) || []).length,
+      leaking: flat.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@') && !/^(from|to|\d+%)$/.test(sel)).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith('.lsn')) }; };
+  const jsIn = d => execSync(`find ${root + d} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
+  const kitCss = scoped('learning-lab/lesson-kit/lesson-kit.css');
+  check('Lesson kit styles are all scoped under .lsn, braces balanced', kitCss.ok && kitCss.leaking.length === 0, kitCss.leaking.slice(0, 5).join(' | '));
+  const kitJs = jsIn('learning-lab/lesson-kit/');
+  const kitCoupled = kitJs.filter(f => /MathleteProgress|MathleteAuth|supabase|tools-config|newtons-laws|intro-to-physics/.test(readFileSync(f, 'utf8')));
+  check('Lesson kit doesn’t depend on the site or on any one lesson', kitCoupled.length === 0, kitCoupled.join(', '));
+  const curriculumSql = read('supabase/curriculum.sql');
+  const LESSONS = [
+    { id: 'newtons-laws', name: 'Newton’s Laws lesson', css: 'newtons-laws.css', mod: 'classes/trail-physics/newtons-laws/index.html', broad: 'forces-motion' },
+    { id: 'intro-to-physics', name: 'Intro to Physics lesson', css: 'intro-to-physics.css', mod: 'classes/trail-physics/introduction-to-physics/index.html', broad: 'physics' }
+  ];
+  for (const Ls of LESSONS) {
+    const dir = 'learning-lab/' + Ls.id + '/', html = read(dir + 'index.html');
+    const css = scoped(dir + 'styles/' + Ls.css);
+    check(`${Ls.name} styles are all scoped under .lsn, braces balanced`, css.ok && css.leaking.length === 0, css.leaking.slice(0, 5).join(' | '));
+    const js = jsIn(dir);
+    const coupled = js.filter(f => !f.endsWith('/main.js') && /MathleteProgress|MathleteAuth|supabase|tools-config/.test(readFileSync(f, 'utf8')));
+    check(`${Ls.name} module doesn’t depend on the site (only its page connects it)`, coupled.length === 0 && !/site\.css|site-nav|site\.js/.test(html), coupled.join(', '));
+    check(`${Ls.name} page loads progress tracking in order, then the kit styles, then the module`, ['js/supabase-config.js', 'js/auth.js', 'js/progress.js', 'src="main.js'].map(x => html.indexOf(x)).every((v, i, a) => v > 0 && (i === 0 || v > a[i - 1])) && html.indexOf('lesson-kit.css') > 0 && html.indexOf('lesson-kit.css') < html.indexOf('styles/' + Ls.css));
+    const unsafe = [...js, ...kitJs].filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(/.test(readFileSync(f, 'utf8')));
+    check(`${Ls.name} never builds HTML from strings`, unsafe.length === 0, unsafe.join(', '));
+    const { questionKinds } = await import('../' + dir + 'logic/lesson.js');
+    const kinds = Object.keys(questionKinds()).map(k => Ls.id + ':' + k).sort();
+    const sqlKinds = [...new Set([...curriculumSql.matchAll(new RegExp(`\\('(${Ls.id}:[a-z0-9-]+)', '${Ls.id}'`, 'g'))].map(m => m[1]))].sort();
+    check(`${Ls.name} question kinds are registered in supabase/curriculum.sql (${kinds.length})`, kinds.length > 0 && kinds.join() === sqlKinds.join(), `lesson: ${kinds.length} | sql: ${sqlKinds.length}`);
+    check(`${Ls.name} kinds are filed under ${Ls.broad}, not algebra`, new RegExp(`\\('${Ls.id}:kc-1', '${Ls.broad}'\\)`).test(curriculumSql) && !new RegExp(`\\('${Ls.id}:[a-z0-9-]+', 'algebra'\\)`).test(curriculumSql));
+    const mod = read(Ls.mod);
+    check(`${Ls.name}: its module page links the lesson and says it’s in review (not yet published)`, mod.includes(`href="learning-lab/${Ls.id}/?from=`) && mod.includes('Lesson in review') && !mod.includes('Lesson available'));
+  }
+  // The intro lesson's branch map links the labs that are live; keep it in step with the lab library.
+  const { LIVE } = await import('../learning-lab/intro-to-physics/logic/lesson.js');
+  const { LABS } = await import('../content/classes/physics.mjs');
+  const liveLabs = LABS.filter(l => l.activity && l.flagship).map(l => l.id).sort();
+  check('Intro to Physics branch map links exactly the live flagship labs', Object.keys(LIVE).sort().join() === liveLabs.join(), `lesson: ${Object.keys(LIVE).sort().join()} | library: ${liveLabs.join()}`);
 }
 
 // ---- Classes (generated from content/classes/ by scripts/build-classes.mjs) ----

@@ -134,6 +134,15 @@ const NEWTON_IDEAS = {
 };
 const newtonQuestionSkills = Object.fromEntries(Object.entries(newtonKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => NEWTON_IDEAS[i] || []))]]));
 
+// Introduction to Physics lesson: same pattern (learning-lab/intro-to-physics/logic/lesson.js).
+import { questionKinds as introKinds } from '../../learning-lab/intro-to-physics/logic/lesson.js';
+const M1 = 'phys1.introduction-to-physics.';
+const INTRO_IDEAS = {
+  'what-physics': [M1 + 'what-physics-studies'], phenomena: [M1 + 'phenomena'], 'physics-of-the-bike': [M1 + 'physics-of-the-bike'], 'matter-energy': [M1 + 'matter-energy'],
+  systems: [M1 + 'systems'], models: [M1 + 'models-and-laws'], 'observation-explanation': [M1 + 'observation-explanation'], investigation: [M1 + 'investigation'], branches: [M1 + 'branches']
+};
+const introQuestionSkills = Object.fromEntries(Object.entries(introKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => INTRO_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -185,6 +194,29 @@ export const ACTIVITIES = [
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------
+  {
+    id: 'intro-to-physics',
+    title: 'Introduction to Physics',
+    type: 'lesson',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/intro-to-physics/',
+    image: null,
+    home: 'phys1.introduction-to-physics',
+    summary: 'Find the physics hiding on the trail, ride one run through seven physics lessons, then learn how physicists choose systems, build models and design experiments, and become a physics detective.',
+    objectives: [
+      'Explain what physics studies, with riding examples',
+      'Choose a physical system and say what a model leaves out',
+      'Plan an investigation with independent, dependent and controlled variables',
+      'Connect the branches of physics to the bike'
+    ],
+    difficulty: ['beginner', 'intermediate'],
+    minutes: '35-45 min',
+    parts: ['7 sections', 'Find the Physics', 'One ride, seven lessons', 'Experiment designer', 'Knowledge check (8)', 'Physics Detective'],
+    skills: [...new Set(Object.values(introQuestionSkills).flat())],
+    broadSkill: 'physics',
+    tracking: { gameId: 'intro-to-physics', questions: introQuestionSkills }
+  },
   {
     id: 'newtons-laws',
     title: 'Newton’s Laws of Motion',

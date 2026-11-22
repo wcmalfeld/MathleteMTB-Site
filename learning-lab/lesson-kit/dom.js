@@ -1,4 +1,4 @@
-// Small DOM helpers (the same ones the other labs use, prefixed nl-). All
+// Small DOM helpers for lessons (the same ones the labs use, prefixed ls-). All
 // text is set as text, never parsed as HTML.
 
 const SVGNS = 'http://www.w3.org/2000/svg';
@@ -29,10 +29,10 @@ export function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); ret
 export function put(n, ...kids) { clear(n); kids.forEach(k => add(n, k)); return n; }
 export function attrs(n, a) { set(n, a); return n; }
 
-export function button(label, onclick, cls, extra) { return el('button', { type: 'button', class: 'nl-btn' + (cls ? ' ' + cls : ''), onclick, ...(extra || {}) }, label); }
+export function button(label, onclick, cls, extra) { return el('button', { type: 'button', class: 'ls-btn' + (cls ? ' ' + cls : ''), onclick, ...(extra || {}) }, label); }
 
 let uid = 0;
-export const id = prefix => (prefix || 'cl') + '-' + (++uid);
+export const id = prefix => (prefix || 'ls') + '-' + (++uid);
 
 export const reducedMotion = () => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

@@ -1,0 +1,149 @@
+/* ============================================================
+   Introduction to Physics lesson: its pictures and interactives.
+   Loaded after learning-lab/lesson-kit/lesson-kit.css; scoped under .lsn.
+   Clickable spots are HTML buttons over the SVG pictures (keyboard and
+   touch friendly). State is always shown by a word or a mark as well as
+   colour.
+   ============================================================ */
+
+/* ---------- pictures ---------- */
+.lsn .ls-scene-svg { display: block; width: 100%; height: auto; }
+.lsn .ip-mtn-far { fill: #22312C; }
+.lsn .ip-snow { fill: #DDE6E2; }
+.lsn .ip-flag { fill: var(--ice); stroke: var(--ice); stroke-width: 2; }
+.lsn .ip-hill { fill: #1F2D22; }
+.lsn .ip-tree { fill: #19271D; }
+.lsn .ip-trail { fill: none; stroke: #9C7B56; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.lsn .ip-berm { fill: none; stroke: #B48B5E; stroke-width: 12; stroke-linecap: round; }
+.lsn .ip-kicker { fill: #8A6A47; }
+.lsn .ip-arc { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-dasharray: 7 6; }
+.lsn .ip-ground { fill: var(--c-ground); }
+.lsn .ip-ground-line { stroke: var(--c-ground-line); stroke-width: 3; }
+.lsn .ip-rotor { fill: none; stroke: #C9D3CB; stroke-width: 4; stroke-dasharray: 4 3; }
+.lsn .ip-fork { stroke: #E8BC4E; stroke-width: 7; stroke-linecap: round; }
+.lsn .ip-profile-sky { fill: #17221D; }
+.lsn .ip-profile-ground { fill: #2E261C; }
+.lsn .ip-stage-tick { stroke: var(--rule); stroke-width: 1; stroke-dasharray: 3 4; }
+.lsn .ip-marker .ls-frame { stroke-width: 3; }
+.lsn .ip-marker .ls-body { stroke-width: 4; }
+.lsn .ip-boundary { fill: rgba(232, 188, 78, 0.06); stroke: var(--gold); stroke-width: 2; stroke-dasharray: 8 6; }
+.lsn .ip-boundary-t { fill: var(--gold); font-family: var(--f-mono); font-size: 12px; }
+.lsn .ip-surr { fill: var(--soft); }
+.lsn .ip-step { fill: var(--card); stroke: var(--rule); }
+.lsn .ip-step-n { fill: var(--ice); font-family: var(--f-mono); font-size: 13px; }
+.lsn .ip-step-t { fill: var(--ink); font-family: var(--f-body); font-size: 14px; font-weight: 600; }
+.lsn .ls-arrow--flow { color: var(--soft); }
+.lsn .ip-loop { fill: none; stroke: var(--soft); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.lsn .ip-workflow text.ls-small { fill: var(--soft); font-size: 12.5px; }
+.lsn .ip-wind, .lsn .ip-spin { fill: none; stroke: var(--c-r); stroke-width: 2; stroke-linecap: round; }
+.lsn .ip-model-pic text.ls-small { fill: var(--soft); font-size: 12px; }
+.lsn .ip-axis { stroke: var(--soft); stroke-width: 1.2; }
+.lsn .ip-dot { fill: var(--ink); stroke: var(--deep); stroke-width: 2; }
+.lsn .ip-branch-line { stroke: var(--rule); stroke-width: 2; }
+.lsn .ip-hub { fill: var(--card); stroke: var(--ice); stroke-width: 3; }
+.lsn .ip-hub-t { fill: var(--ink); font-family: var(--f-display); font-weight: 800; font-size: 28px; letter-spacing: 0.02em; }
+
+/* ---------- pictures with clickable spots ---------- */
+.lsn .ip-scene { position: relative; border: 1px solid var(--rule); background: var(--deep); overflow: hidden; }
+.lsn .ip-hot { position: absolute; transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--deep);
+  background: var(--gold); color: var(--deep); font: 700 15px/1 var(--f-mono); cursor: pointer; box-shadow: 0 0 0 4px rgba(232, 188, 78, 0.28); }
+.lsn .ip-hot:hover { box-shadow: 0 0 0 6px rgba(232, 188, 78, 0.4); }
+.lsn .ip-hot.is-seen { background: var(--ink); box-shadow: 0 0 0 3px rgba(236, 239, 231, 0.25); }
+.lsn .ip-hot.is-seen::after { content: '✓'; position: absolute; right: -7px; top: -7px; width: 18px; height: 18px; border-radius: 50%; background: var(--right); color: var(--deep); font-size: 11px; line-height: 18px; }
+.lsn .ip-hot.is-open { outline: 3px solid var(--ice); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) {
+  .lsn .ip-hot:not(.is-seen) { animation: ip-pulse 2.2s ease-in-out infinite; }
+  @keyframes ip-pulse { 50% { box-shadow: 0 0 0 9px rgba(232, 188, 78, 0.12); } }
+}
+.lsn .ip-explorer { display: grid; gap: 18px; }
+@media (min-width: 980px) { .lsn .ip-explorer { grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); align-items: start; } }
+.lsn .ip-info { padding: 16px 18px; background: var(--card); border: 1px solid var(--rule); border-left: 3px solid var(--gold); min-height: 120px; }
+.lsn .ip-info > * { margin: 0 0 8px; }
+.lsn .ip-info > *:last-child { margin-bottom: 0; }
+.lsn .ip-info-h { font-size: 19px; color: var(--ink); }
+.lsn .ip-info-q { font-family: var(--f-serif); font-size: 19px; line-height: 1.35; color: var(--ink); }
+.lsn .ip-count { margin: 0 0 10px; font-family: var(--f-mono); font-size: 13px; color: var(--gold); }
+.lsn .ip-congrats { padding: 12px 14px; border: 1px solid var(--right); color: var(--ink); }
+.lsn .ip-concepts { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.lsn .ip-concepts li { padding: 3px 10px; border: 1px solid var(--rule); border-radius: 999px; font-size: 13px; color: var(--ink); }
+.lsn .ip-stage-info { margin-top: 12px; }
+.lsn .ip-all { margin-top: 14px; }
+.lsn .ip-all-list { margin: 8px 0 0; padding-left: 22px; display: grid; gap: 6px; }
+.lsn .ip-all-list li b { display: block; color: var(--ink); }
+.lsn .ip-all-list li span { font-size: 14px; color: var(--soft); }
+.lsn .ip-hot--stage { width: 36px; height: 36px; }
+
+/* ---------- chips, items ---------- */
+.lsn .ip-list { display: grid; gap: 14px; }
+.lsn .ip-item { padding: 14px 16px; background: var(--card); border: 1px solid var(--rule); }
+.lsn .ip-item > .ls-prompt { margin-top: 0; }
+.lsn .ip-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 10px; }
+.lsn .ip-chip { min-height: 40px; padding: 6px 14px; border: 1px solid var(--rule); border-radius: 999px; background: transparent; color: var(--text); font: inherit; font-size: 14.5px; cursor: pointer; }
+.lsn .ip-chip:hover { border-color: var(--ink); }
+.lsn .ip-chip[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: var(--deep); font-weight: 600; }
+.lsn .ip-chip[aria-pressed="true"]::before { content: '✓ '; }
+.lsn .ip-chip:disabled { cursor: default; opacity: 0.8; }
+.lsn .ip-why { margin: 8px 0 0; padding-left: 20px; }
+.lsn .ip-why li { margin: 4px 0; }
+.lsn .ip-after { display: grid; gap: 10px; }
+.lsn .ip-label { display: block; font-size: 14px; color: var(--soft); margin-bottom: 4px; }
+.lsn .ip-select { min-width: min(100%, 280px); }
+
+/* ---------- system zones ---------- */
+.lsn .ip-zones { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); margin: 4px 0 10px; }
+.lsn .ip-zone { padding: 10px 12px; border: 1px solid var(--rule); background: var(--panel); }
+.lsn .ip-zone--in { border: 2px dashed var(--gold); background: rgba(232, 188, 78, 0.05); }
+.lsn .ip-zone-h { margin: 0 0 6px; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--soft); }
+.lsn .ip-zone--in .ip-zone-h { color: var(--gold); }
+.lsn .ip-zone-list { margin: 0; padding-left: 18px; min-height: 1.4em; font-size: 14.5px; }
+
+/* ---------- model comparison ---------- */
+.lsn .ip-compare { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.lsn .ip-compare-fig { margin: 0; padding: 8px; background: var(--deep); border: 1px solid var(--rule); }
+.lsn .ip-compare-fig figcaption { margin: 8px 4px 2px; font-size: 14px; color: var(--text); }
+.lsn .ip-compare-fig figcaption b { color: var(--ink); }
+
+/* ---------- sorting ---------- */
+.lsn .ip-sort { margin: 0; padding-left: 22px; display: grid; gap: 10px; }
+.lsn .ip-sort-row { padding: 10px 12px; background: var(--card); border: 1px solid var(--rule); }
+.lsn .ip-sort-row.is-wrong { border-color: var(--wrong); }
+.lsn .ip-sort-row > p { margin: 0 0 8px; color: var(--ink); }
+.lsn .ip-sort-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.lsn .ip-sort-opt { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 12px; border: 1px solid var(--rule); cursor: pointer; font-size: 14px; }
+.lsn .ip-sort-opt:has(input:checked) { border-color: var(--gold); color: var(--ink); }
+
+/* ---------- experiment design ---------- */
+.lsn .ip-design { display: grid; gap: 14px; }
+.lsn .ip-design .ls-choices { margin: 0; }
+.lsn .ip-design-marks { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-family: var(--f-mono); font-size: 13px; }
+.lsn .ip-design-marks .is-right { color: var(--right); }
+.lsn .ip-design-marks .is-wrong { color: var(--wrong); }
+
+/* ---------- branch map ---------- */
+.lsn .ip-scene--map { max-width: 560px; width: 100%; justify-self: center; border-radius: 8px; }
+.lsn .ip-branch { position: absolute; transform: translate(-50%, -50%); max-width: 30%; min-height: 44px; padding: 6px 10px; border: 2px solid var(--ice); border-radius: 10px;
+  background: var(--panel); color: var(--ink); font: 600 13.5px/1.2 var(--f-body); cursor: pointer; text-align: center; }
+.lsn .ip-branch:hover { background: var(--card); }
+.lsn .ip-branch.is-seen { border-color: var(--right); }
+.lsn .ip-branch.is-seen::after { content: ' ✓'; color: var(--right); }
+.lsn .ip-branch.is-open { background: var(--ice); color: var(--deep); }
+.lsn .ip-labs { margin: 0; padding-left: 18px; }
+.lsn .ip-labs a { color: var(--ink); }
+.lsn .ip-soon { font-family: var(--f-mono); font-size: 11.5px; color: var(--soft); }
+
+/* ---------- physics detective ---------- */
+.lsn .ip-detective-stages { display: grid; gap: 10px; }
+.lsn .ip-det-stage { padding: 12px 14px; background: var(--card); border: 1px solid var(--rule); }
+.lsn .ip-det-h { margin: 0 0 6px; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 10px; }
+.lsn .ip-det-n { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--gold); color: var(--deep); font: 700 13px/1 var(--f-mono); }
+.lsn .ip-parts { display: grid; gap: 4px; }
+.lsn .ip-saved { color: var(--right); font-weight: 600; }
+
+@media (max-width: 640px) {
+  .lsn .ip-hot { width: 32px; height: 32px; font-size: 13px; }
+  .lsn .ip-hot--stage { width: 28px; height: 28px; }
+  /* Phones: the radial map becomes a two-column grid of branch buttons. */
+  .lsn .ip-scene--map { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; border-radius: 0; }
+  .lsn .ip-scene--map .ip-branch-svg { display: none; }
+  .lsn .ip-branch { position: static; transform: none; max-width: none; width: 100%; font-size: 13.5px; }
+}

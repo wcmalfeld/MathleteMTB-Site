@@ -59,7 +59,7 @@ export const PATHWAY = {
 // marks the 23 labs of the PRD's lab library. `activity` names an entry in
 // activities.mjs once a lab exists; the rest are planned.
 export const LABS = [
-  { id: 'bike-anatomy', name: 'The Physics of a Mountain Bike', desc: 'Select a part of the bike (wheels, tires, suspension, brakes, drivetrain or frame) and see the physics it runs on.' },
+  { id: 'bike-anatomy', name: 'The Physics of a Mountain Bike', activity: 'intro-to-physics', desc: 'Select a part of the bike (wheels, tires, suspension, brakes, drivetrain or frame) and see the physics it runs on.' },
   { id: 'math-toolkit', name: 'MTB Math Toolkit', flagship: true, desc: 'A practice area used across every module: rearranging equations, unit conversions, ratios, right triangles, basic trig and reading graphs.' },
   { id: 'trail-measurement-lab', name: 'Trail Measurement Lab', desc: 'Pick a measurement task (a jump’s height, a timing-gate speed, a slope’s grade, suspension travel) and work with real-looking data, units and uncertainty.' },
   { id: 'trail-speed-lab', name: 'Trail Speed Lab', flagship: true, desc: 'Control a rider on a straight trail (start, speed, acceleration, braking) and watch live position-, velocity- and acceleration-time graphs.' },
@@ -112,10 +112,16 @@ export const PHYSICS_COURSES = [
           concepts: ['What physics studies', 'Scientific models', 'Laws and theories', 'Physical systems', 'Observation and evidence'],
           math: [],
           experiences: ['bike-anatomy'], category: 'core',
+          status: 'review',
           skills: ['what-physics-studies: Describe what physics studies, with examples from riding',
+            'phenomena: Identify the physical phenomena happening during a ride',
+            'matter-energy: Tell matter, energy, motion and interactions apart in a riding situation',
             'models-and-laws: Tell an observation, a model, a law and a theory apart',
             'systems: Describe a mountain bike as a physical system of interacting parts',
-            'physics-of-the-bike: Name the physics each part of a bike depends on']
+            'physics-of-the-bike: Name the physics each part of a bike depends on',
+            'observation-explanation: Tell observations, explanations and predictions apart',
+            'investigation: Plan an investigation and name its independent, dependent and controlled variables',
+            'branches: Name the main branches of physics and connect each to riding']
         }),
         M('mathematics-review', 'Mathematics Review', {
           desc: 'The algebra, ratios, geometry and trigonometry that every later module uses, practised on riding problems.',

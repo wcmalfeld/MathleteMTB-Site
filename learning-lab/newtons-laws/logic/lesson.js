@@ -360,3 +360,22 @@ export const LEVELS = [
   { id: 'apply', name: 'Apply', text: 'The standard lesson: the laws, the equations and multi-step problems.' },
   { id: 'engineer', name: 'Engineer', text: 'Deeper explanations open: components, reference frames, model assumptions.' }
 ];
+
+// ------------------------------------------------------------ mastery (PRD 13)
+// All four, each with where to go back to if it isn't met. P is the lesson
+// kit's progress api (learning-lab/lesson-kit/progress.js).
+export const MASTERY_CHECK = 0.8;   // at least 80% on the knowledge check
+export function mastery(P) {
+  const best = P.bestCheck();
+  const fbdIds = ['fbd-flat', 'fbd-climb', 'fbd-brake', 'fbd-downhill'];
+  const scen = { 'fbd-flat': 'flat-steady', 'fbd-climb': 'climb', 'fbd-brake': 'brake', 'fbd-downhill': 'downhill' };
+  const pairs = ['pair-tire', 'pair-landing', 'lab-pair'].some(id => P.earned(id)) || Array.from({ length: P.round }, (_, i) => i + 1).some(r => P.earned('kc-5', P.checkKey(r)));
+  const criteria = [
+    { id: 'check', label: 'At least 80% on the knowledge check (right first try)', met: !!best && best.right / best.total >= MASTERY_CHECK,
+      detail: best ? `Best: ${best.right} of ${best.total}` : 'Not finished yet', review: ['first-law', 'second-law', 'third-law'] },
+    { id: 'final', label: 'The final climbing challenge, worked out correctly', met: P.earned('final-calc') && P.earned('final-fbd'), review: ['fbd', 'second-law'] },
+    { id: 'pair', label: 'An action-reaction pair identified correctly', met: pairs, review: ['third-law'] },
+    { id: 'fbd', label: 'Net force shown with a correct free-body diagram', met: fbdIds.some(id => P.earned(id) && P.earned('fbd-net', scen[id])), review: ['fbd', 'forces'] }
+  ];
+  return { mastered: criteria.every(c => c.met), criteria, best };
+}

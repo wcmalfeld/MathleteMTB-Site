@@ -116,10 +116,10 @@ Built from [PRDs/collegePhysics.md](../PRDs/collegePhysics.md), Phase 1
   with at least 2 of its 5 most recent first tries counted and 80% of them
   right). `curriculum_progress()` now also returns `recent` and `recent_ok`
   per skill, so newer work replaces older.
-- **First lesson:** Module 7, Newton's Laws of Motion
-  (`learning-lab/newtons-laws/`, type `lesson`, status `review`). See
-  [NEWTONS-LAWS-LESSON.md](NEWTONS-LAWS-LESSON.md).
-- **Not built yet:** lesson content for the other 27 modules, the 21 planned labs, the Explore,
+- **Lessons** (type `lesson`, built on the [lesson kit](LESSON-KIT.md), both
+  status `review`): Module 1, [Introduction to Physics](INTRO-TO-PHYSICS-LESSON.md),
+  and Module 7, [Newton's Laws of Motion](NEWTONS-LAWS-LESSON.md).
+- **Not built yet:** lesson content for the other 26 modules, the 21 planned labs, the Explore,
   Apply and Engineer levels inside lessons, and teacher assignments (these
   wait for classes and assignments in the multi-org plan).
 
