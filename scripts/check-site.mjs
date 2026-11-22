@@ -236,16 +236,16 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   check('Classes: Algebra 1, Algebra 2, Geometry and Precalculus, 9 units each, every topic with skills',
     mathCourses.map(c => c.name).join() === 'Algebra 1,Algebra 2,Geometry,Precalculus' && mathCourses.every(c => c.units.length === 9) && model.topics.every(t => t.skills.length >= 2));
 
-  // Physics of the Ride (content/classes/physics.mjs, PRDs/collegePhysics.md)
+  // Physics (content/classes/physics.mjs, PRDs/collegePhysics.md)
   const P = model.pathway, pMods = P.courses.flatMap(c => c.units.flatMap(u => u.topics));
-  check('Physics of the Ride: Trail Physics (6 units, 17 modules) and Trail Technology (3 units, 11 modules), units numbered 1–9',
+  check('Physics: Trail Physics (6 units, 17 modules) and Trail Technology (3 units, 11 modules), units numbered 1–9',
     P.courses.map(c => `${c.name}:${c.units.length}:${c.units.reduce((n, u) => n + u.topics.length, 0)}`).join() === 'Trail Physics:6:17,Trail Technology:3:11' &&
     P.courses.flatMap(c => c.units.map(u => u.number)).join() === '1,2,3,4,5,6,7,8,9');
-  check('Physics of the Ride: every module has a hook, concepts, a status, a category, a lab and at least 3 objectives',
+  check('Physics: every module has a hook, concepts, a status, a category, a lab and at least 3 objectives',
     pMods.every(t => t.hook && t.concepts.length && t.status && t.category && t.labs.length && t.skills.length >= 3));
-  check('Physics of the Ride: the PRD’s 23 flagship labs are in the lab library, each used by a module', P.labs.filter(l => l.flagship).length === 23 && P.labs.every(l => l.modules.length));
+  check('Physics: the PRD’s 23 flagship labs are in the lab library, each used by a module', P.labs.filter(l => l.flagship).length === 23 && P.labs.every(l => l.modules.length));
   const pathPage = read(P.href + 'index.html');
-  check('Physics of the Ride page links to every module', pMods.every(t => pathPage.includes(`href="${t.href}"`)));
+  check('Physics page links to every module', pMods.every(t => pathPage.includes(`href="${t.href}"`)));
   const overclaim = pMods.filter(t => t.status !== 'published' && /Lesson available/.test(read(t.href + 'index.html'))).map(t => t.id);
   check('Physics modules only say “Lesson available” once published', overclaim.length === 0 && pMods.every(t => t.status === 'published' || pathPage.includes(`data-topic="${t.id}"`)), overclaim.join(', '));
   const unnoted = pMods.filter(t => t.note && !read(t.href + 'index.html').includes('About the model:')).map(t => t.id);

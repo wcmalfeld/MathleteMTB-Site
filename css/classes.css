@@ -131,7 +131,7 @@
 .cls-head .cls-school-badge { margin: 4px 0 14px; font-size: 14px; }
 
 /* ============================================================
-   PHYSICS OF THE RIDE (classes/physics-of-the-ride/ and its modules)
+   PHYSICS (classes/physics/ and its modules)
    ============================================================ */
 /* Classes landing: the pathway feature */
 .pr-feature { display: grid; gap: 22px; padding: 26px; background: var(--cream); border: 1px solid var(--rule); border-top: 3px solid var(--contour); }

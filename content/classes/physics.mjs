@@ -1,7 +1,7 @@
 // ============================================================
-// CLASSES: Physics of the Ride (data only). From PRDs/collegePhysics.md.
+// CLASSES: Physics (data only). From PRDs/collegePhysics.md.
 //
-//   Physics of the Ride (a pathway)
+//   Physics (a pathway)
 //     -> Course (Trail Physics, Trail Technology)
 //       -> Unit (numbered 1–9 across both courses)
 //         -> Module (a Classes topic) -> Skills (measurable objectives)
@@ -46,11 +46,11 @@ export const CATEGORIES = {
 };
 
 export const PATHWAY = {
-  id: 'physics-of-the-ride',
-  slug: 'physics-of-the-ride',
-  name: 'Physics of the Ride',
+  id: 'physics',
+  slug: 'physics',
+  name: 'Physics',
   card: 'A complete physics pathway taught through mountain biking: motion, jumps, cornering, energy, suspension and brakes, then the electricity, magnetism and optics inside modern bikes.',
-  description: 'Physics of the Ride: a complete physics curriculum taught through mountain biking, from kinematics and projectile motion to circuits and optics. Two courses, nine units, 28 modules.',
+  description: 'A complete physics curriculum taught through mountain biking, from kinematics and projectile motion to circuits and optics. Two courses, nine units, 28 modules.',
   intro: 'Why does a bigger jump send you farther? Why does a wider line through a berm carry more speed? Where does your speed go when you brake? Start with the ride, make a prediction, then find the physics that explains it.',
   reference: 'Modelled on Carnegie Mellon University’s Open Learning Initiative College Physics 1 and 2.'
 };
@@ -96,7 +96,7 @@ const M = (slug, title, f) => ({ slug, title, status: 'planned', mtb: null, prer
 export const PHYSICS_COURSES = [
   // ===================================================== TRAIL PHYSICS
   {
-    id: 'phys1', slug: 'trail-physics', name: 'Trail Physics', order: 5, art: 'ride', subject: 'Physics', pathway: 'physics-of-the-ride',
+    id: 'phys1', slug: 'trail-physics', name: 'Trail Physics', order: 5, art: 'ride', subject: 'Physics', pathway: 'physics',
     level: 'foundational', firstUnit: 1,
     subtitle: 'Mechanics & Energy',
     card: 'The mechanics of riding: motion, jumps, forces and cornering, energy and momentum, then rotation, fluids, suspension, waves and heat.',
@@ -355,7 +355,7 @@ export const PHYSICS_COURSES = [
 
   // ================================================== TRAIL TECHNOLOGY
   {
-    id: 'phys2', slug: 'trail-technology', name: 'Trail Technology', order: 6, art: 'spark', subject: 'Physics', pathway: 'physics-of-the-ride',
+    id: 'phys2', slug: 'trail-technology', name: 'Trail Technology', order: 6, art: 'spark', subject: 'Physics', pathway: 'physics',
     level: 'advanced', firstUnit: 7,
     subtitle: 'Electricity, Magnetism & Optics',
     card: 'The physics inside modern bike technology: e-bike motors and batteries, circuits and lights, sensors and wireless, lenses and light.',
@@ -510,7 +510,7 @@ export const PHYSICS_COURSES = [
   }
 ];
 
-// How every module is taught (PRD 6), shown on the Physics of the Ride page.
+// How every module is taught (PRD 6), shown on the Physics page.
 export const LESSON_STEPS = [
   ['Hook', 'Start with a riding question, not an equation.'],
   ['Predict', 'Say what you think will happen before you find out.'],

@@ -86,14 +86,14 @@ Progress is stored against skill ids, so:
 - Slope Lab answers also appear on the student dashboard (under Algebra)
   and in Review My Mistakes, like any other game.
 
-## Physics of the Ride
+## Physics
 
 Built from [PRDs/collegePhysics.md](../PRDs/collegePhysics.md), Phase 1
 (the curriculum architecture). It lives inside Classes as two more courses:
 
 | Page | Address |
 |---|---|
-| The pathway dashboard: both courses, 9 units, 28 modules, the lab library | `/classes/physics-of-the-ride/` |
+| The pathway dashboard: both courses, 9 units, 28 modules, the lab library | `/classes/physics/` |
 | Trail Physics (Mechanics & Energy, units 1–6, 17 modules) | `/classes/trail-physics/` |
 | Trail Technology (Electricity, Magnetism & Optics, units 7–9, 11 modules) | `/classes/trail-technology/` |
 | A module | `/classes/trail-physics/uniform-circular-motion/` |

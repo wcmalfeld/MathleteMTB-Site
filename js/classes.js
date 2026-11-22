@@ -5,7 +5,7 @@
 //    the database function curriculum_progress() (supabase/curriculum.sql).
 //    Progress counts questions answered in activities, tagged with the
 //    curriculum skills they practise. Math topics never claim mastery.
-//  - Physics of the Ride modules ([data-module]) get one of four states
+//  - Physics modules ([data-module]) get one of four states
 //    (PRD 8.4), worked out by moduleState() below from the same data.
 //  - For a student working in a school: which courses its plan leaves out,
 //    and which topics it recommends.
@@ -47,7 +47,7 @@
     }
   }
 
-  // Physics of the Ride: a module's state from its skills' practice.
+  // Physics: a module's state from its skills' practice.
   //   Not started: nothing answered on any of its skills.
   //   In progress: some skills practised.     Practised: every skill.
   //   Mastered:    every skill, each with at least MASTERY_MIN of its most
@@ -101,7 +101,7 @@
       out.hidden = false;
     });
 
-    // Physics of the Ride: module states on the pathway page and module pages.
+    // Physics: module states on the pathway page and module pages.
     document.querySelectorAll('[data-module][data-skills]').forEach(function (el) {
       if (el.classList.contains('cls-topic')) return;
       showState(el, moduleState(skillsOf(el), skills));

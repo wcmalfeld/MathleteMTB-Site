@@ -33,7 +33,7 @@ export function loadClasses() {
         const topic = { id, slug: t.slug, title: t.title, desc: t.desc, mtb: t.mtb, prereq: t.prereq || [], number: ti + 1,
           unit, course, href: `classes/${c.slug}/${t.slug}/`, skills: [] };
         if (course.pathway) {
-          // A Physics of the Ride module: numbered through its course, with a content status.
+          // A Physics module: numbered through its course, with a content status.
           Object.assign(topic, { module: ++moduleN, hook: t.hook, concepts: t.concepts || [], math: t.math || [], note: t.note || null,
             category: t.category, status: t.status, experiences: t.experiences || [] });
           if (!t.hook) errors.push(`${id} has no hook question`);
@@ -77,7 +77,7 @@ export function loadClasses() {
   });
   courses.forEach(c => { c.activityIds = new Set(c.units.flatMap(u => u.topics.flatMap(t => t.activities.map(a => a.id)))); });
 
-  // Physics of the Ride: its courses, and its lab library with what's live.
+  // Physics: its courses, and its lab library with what's live.
   const activityById = new Map(activities.map(a => [a.id, a]));
   const labs = LABS.map(l => {
     if (l.activity && !ACTIVITIES.some(a => a.id === l.activity)) errors.push(`lab ${l.id}: unknown activity ${l.activity}`);

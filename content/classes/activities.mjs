@@ -75,7 +75,7 @@ const JUMP_IDEAS = {
 const jumpQuestionSkills = Object.fromEntries(Object.entries(jumpKinds()).map(([q, ideas]) =>
   [q, [...new Set(ideas.flatMap(i => JUMP_IDEAS[i] || []))]]));
 
-// Physics of the Ride: Lab tools' question kinds (from supabase/progress.sql)
+// Physics: Lab tools' question kinds (from supabase/progress.sql)
 // -> physics skills. Kinds that don't practise physics are left out.
 const PM = 'phys1.projectile-motion.', CM = 'phys1.uniform-circular-motion.', RD = 'phys1.rotational-dynamics.';
 const FR = 'phys1.applications-of-newtons-laws.friction', UNITS = 'phys1.scientific-measurement.unit-conversions', TRIG = 'phys1.mathematics-review.trig-ratios';
@@ -172,7 +172,7 @@ export const ACTIVITIES = [
     tracking: { gameId: 'jump-trajectory-lab', questions: jumpQuestionSkills }
   },
 
-  // ---------- Physics of the Ride (content/classes/physics.mjs) ----------
+  // ---------- Physics (content/classes/physics.mjs) ----------
   // These are Lab tools (js/tools-config.js, `tool`), so their question
   // kinds are already registered in supabase/progress.sql; curriculum.sql
   // only links them to physics skills. check-site.mjs checks every kind.
