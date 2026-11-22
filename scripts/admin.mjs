@@ -58,6 +58,11 @@
 //   node scripts/admin.mjs entitle world-class-academy grant sport.ski     one organization: grant | exclude | clear
 //   node scripts/admin.mjs org resources world-class-academy             what it includes and has switched on
 //
+// Teacher Curriculum (needs supabase/teacher-curriculum.sql; see docs/TEACHER-CURRICULUM.md):
+//   node scripts/admin.mjs lessons-upload             upload the lesson plans built by
+//                                                      scripts/build-teacher-curriculum.mjs (only changed ones)
+//   node scripts/admin.mjs lessons                     every uploaded lesson plan and its status
+//
 // MTB Coaching: HIDDEN FOR NOW, these work only after supabase/coaching.sql is run
 // (see docs/COACHING.md). Coaching
 // is separate from tutoring: a tutor sees no riding records and a coach no
@@ -610,6 +615,31 @@ const commands = {
       .catch(e => { if (/^404|PGRST205|42P01/.test(e.message)) return []; throw e; });
     if (!rows.length) die(`No inquiry with id ${id}.`);
     console.log(`\n  Marked ${rows[0].name}'s inquiry as handled.\n`);
+  },
+
+  async 'lessons-upload'() {
+    const file = new URL('../private-content/build/teacher-lessons.json', import.meta.url);
+    if (!existsSync(file)) die('No lesson bundle yet. Run: node scripts/build-teacher-curriculum.mjs');
+    const bundle = JSON.parse(readFileSync(file, 'utf8'));
+    let have;
+    try { have = await api('GET', '/rest/v1/teacher_lessons?select=id,content_hash&organization_id=is.null'); }
+    catch (e) { if (/PGRST205|42P01|404/.test(e.message)) die('The teacher_lessons table is missing. Run supabase/teacher-curriculum.sql in the SQL Editor first.'); throw e; }
+    const hash = new Map(have.map(r => [r.id, r.content_hash]));
+    const changed = bundle.filter(l => hash.get(l.id) !== l.content_hash);
+    for (let i = 0; i < changed.length; i += 10) {
+      const rows = changed.slice(i, i + 10).map(l => ({ ...l, updated_at: new Date().toISOString() }));
+      await api('POST', '/rest/v1/teacher_lessons?on_conflict=id', rows, { Prefer: 'resolution=merge-duplicates,return=minimal' });
+    }
+    const gone = have.filter(r => !bundle.some(l => l.id === r.id));
+    console.log(`\n  ${changed.length} lesson plan${changed.length === 1 ? '' : 's'} uploaded, ${bundle.length - changed.length} unchanged.`);
+    if (gone.length) console.log(`  Still in Supabase but no longer in the sources (left alone): ${gone.map(r => r.id).join(', ')}`);
+    console.log('');
+  },
+
+  async lessons() {
+    const rows = await api('GET', '/rest/v1/teacher_lessons?select=id,quarter,status,title,updated_at&order=id');
+    for (const r of rows) console.log(`  ${r.status.padEnd(10)} Q${r.quarter}  ${r.id.padEnd(48)} ${r.title}`);
+    console.log(`\n  ${rows.length} lesson plans.\n`);
   },
 
   async upload(localFile, objectPath) {

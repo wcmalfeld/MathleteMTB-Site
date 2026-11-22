@@ -36,7 +36,7 @@ function onComplete(s) {
 
 function backLink() {
   const from = new URLSearchParams(location.search).get('from') || '';
-  if (/^classes\/[a-z0-9-]+\/([a-z0-9-]+\/)?$/.test(from)) {
+  if (/^(classes|teacher-curriculum)\/[a-z0-9-]+\/([a-z0-9-]+\/)?$/.test(from)) {
     const course = from.split('/')[1];
     return { href: '../../' + from, label: 'Back to ' + course.replace(/-/g, ' ').replace(/\b(\w)/g, c => c.toUpperCase()) };
   }

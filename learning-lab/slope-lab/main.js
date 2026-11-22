@@ -58,10 +58,10 @@ function onComplete(summary) {
   MP.endSession(sessionId, { completed: true, metrics: { transfer: summary.transfer.firstTry + '/' + summary.transfer.total } });
 }
 
-// Only a Classes page on this site may be the "back" target.
+// Only a Classes or Teacher Curriculum page on this site may be the "back" target.
 function backLink() {
   const from = new URLSearchParams(location.search).get('from') || '';
-  if (!/^classes\/[a-z0-9-]+\/([a-z0-9-]+\/)?$/.test(from)) return null;
+  if (!/^(classes|teacher-curriculum)\/[a-z0-9-]+\/([a-z0-9-]+\/)?$/.test(from)) return null;
   const slug = from.split('/').filter(Boolean).pop();
   const label = slug.replace(/-/g, ' ').replace(/^./, c => c.toUpperCase());
   return { href: '../../' + from, label };

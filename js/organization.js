@@ -235,6 +235,10 @@
     if ((ov.recent || []).length) rec.appendChild(el('ul', { class: 'org-activity' }, ov.recent.map(function (e) { return el('li', null, el('span', { text: ACTION_WORDS[e.action] || e.action }), el('span', { class: 'meta', text: ago(e.at) })); })));
     else rec.appendChild(el('p', { class: 'meta', text: 'Nothing yet.' }));
 
+    var tc = section('Teacher Curriculum', 'Lesson plans for your instructors.');
+    tc.appendChild(el('p', { text: 'Complete, ready-to-teach lesson plans for Algebra 1, Geometry, Algebra 2 and Precalculus, by quarter, unit and topic, each with an MTB activity, practice, an exit ticket and an answer key. Your owners, admins and instructors can open them when your licence includes the Teacher Curriculum.' }));
+    tc.appendChild(el('a', { class: 'read-link', href: 'teacher-curriculum/', text: 'Open the Teacher Curriculum' }));
+
     var next = section('Coming next');
     next.appendChild(el('div', { class: 'student-empty' },
       el('p', { text: 'Classes (instructors with their groups of students, and assignments) and your organization’s learning resources will appear here in upcoming updates.' })));

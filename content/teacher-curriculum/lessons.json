@@ -1,0 +1,2583 @@
+[
+ {
+  "id": "alg1.coordinate-plane",
+  "title": "Mapping the Bike Park",
+  "hook": "Where on the map is the jump line?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students use a coordinate grid to map a bike park, name points and quadrants, and read graphs whose two axes use different scales, the way a trail profile does.",
+  "standards": [
+   "6.NS.C.8",
+   "5.G.A.2",
+   "HSN-Q.A.1"
+  ],
+  "image": null,
+  "objectives": [
+   "Identify the $x$-axis, $y$-axis, origin and the four quadrants.",
+   "Read and write the coordinates of a point as an ordered pair $(x, y)$.",
+   "Tell which quadrant a point is in from the signs of its coordinates.",
+   "Read a graph whose axes use different scales, such as a trail profile."
+  ],
+  "question": "How can two numbers describe exactly where something is, on a map or on a graph?",
+  "mtb": {
+   "text": [
+    "Trail maps and trail profiles are coordinate graphs. A park map uses $x$ and $y$ for east and north; an elevation profile uses $x$ for distance and $y$ for elevation. Riders read both before every new trail.",
+    "Profile graphs on apps like Strava and Trailforks stretch the vertical scale so small hills are visible. Learning to read the scale on each axis is what keeps a rider from panicking at a climb that only looks like a wall."
+   ],
+   "pairs": [
+    [
+     "Origin",
+     "The trailhead or start line"
+    ],
+    [
+     "Ordered pair",
+     "A feature’s location, or (distance, elevation) on a profile"
+    ],
+    [
+     "Negative coordinates",
+     "West or south of the trailhead"
+    ],
+    [
+     "Different axis scales",
+     "An elevation profile that exaggerates steepness"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "classroom",
+   "tool": null,
+   "title": "Bike Park Grid Map",
+   "objective": "Use coordinates to locate, plot and describe features of a bike park relative to the trailhead.",
+   "materials": [
+    "The bike park map projected or printed (the figure in the Mathematical foundation, with labels covered)",
+    "Grid paper",
+    "Colored pencils"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 10,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg1.graphing-ordered-pairs",
+  "title": "Plot the Climb",
+  "hook": "What shape is the ride?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students turn tables of ride data into points on a graph and describe the patterns they see: steady climbs, flat sections, descents and turning points.",
+  "standards": [
+   "6.NS.C.8",
+   "8.F.B.5",
+   "HSF-IF.B.4"
+  ],
+  "image": null,
+  "objectives": [
+   "Plot ordered pairs from a table of values on a coordinate plane.",
+   "Choose sensible axis scales for real data.",
+   "Describe a pattern in plotted points: increasing, decreasing, constant or changing direction.",
+   "Recognise when points fall on a straight line."
+  ],
+  "question": "What can a graph show about a ride that a table of numbers hides?",
+  "mtb": {
+   "text": [
+    "Every GPS ride file is a long list of ordered pairs: time, distance, elevation, speed. Apps draw these as elevation profiles and speed graphs, and riders read the shape to plan their effort.",
+    "Plotting a handful of readings by hand is exactly what those apps do thousands of times a ride. Students see that a straight run of points means a steady grade, and a bend means the trail changes."
+   ],
+   "pairs": [
+    [
+     "Table of values",
+     "GPS readings from a ride"
+    ],
+    [
+     "Increasing points",
+     "A climb"
+    ],
+    [
+     "Points on a line",
+     "A steady, constant-grade section"
+    ],
+    [
+     "Highest point",
+     "The summit of the ride"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Two Rides, One Graph",
+   "objective": "Plot two sets of ride data on the same axes and use the graph to compare the rides.",
+   "materials": [
+    "Grid paper",
+    "Two colored pencils",
+    "The two ride tables below (copy onto the board)"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg1.slope-and-rate-of-change",
+  "title": "Understanding Slope",
+  "hook": "How steep is the trail?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students discover slope as rise over run by comparing two trail climbs, calculate it from two points, read its sign, and turn it into the percent grade printed on trail signs.",
+  "standards": [
+   "8.EE.B.5",
+   "8.F.B.4",
+   "HSF-IF.B.6"
+  ],
+  "image": null,
+  "objectives": [
+   "Define slope as a rate of change: how much $y$ changes for each 1-unit change in $x$.",
+   "Calculate slope from two points using $m = \\frac{y_2 - y_1}{x_2 - x_1}$.",
+   "Interpret positive, negative, zero and undefined slopes.",
+   "Convert a slope to a percent grade and explain what it means on a real trail."
+  ],
+  "question": "How can mathematics tell us exactly how steep a mountain bike trail is, and which of two climbs will be harder?",
+  "mtb": {
+   "text": [
+    "Every trail has a gradient. A trail profile is literally a graph: horizontal distance along the bottom, elevation up the side. The slope of each section tells a rider how hard the climb will be or how fast the descent will feel, and it tells a trail builder whether rain will wash the trail away.",
+    "Trail builders design most singletrack to average about 10% or less, because steeper trails erode quickly and become hard to ride. When students calculate a percent grade, they are doing exactly the calculation a trail crew does before cutting a new trail."
+   ],
+   "pairs": [
+    [
+     "Rise",
+     "Elevation gained or lost on a section of trail"
+    ],
+    [
+     "Run",
+     "Horizontal distance covered"
+    ],
+    [
+     "Positive slope",
+     "A climb"
+    ],
+    [
+     "Negative slope",
+     "A descent"
+    ],
+    [
+     "Larger $|m|$",
+     "A steeper, harder section"
+    ],
+    [
+     "Slope $\\times$ 100%",
+     "The percent grade on a trail sign"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "lab",
+   "tool": "slope-lab",
+   "title": "Trail Slope Explorer",
+   "objective": "Design trails in the Trail Designer and discover how the rise and the run together set the slope and percent grade.",
+   "materials": [
+    "One laptop or tablet per pair",
+    "The Slope & Linear Relationships Lab (no login needed)",
+    "Notebook or recording sheet for predictions"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 5,
+   "practice": 11,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg1.positive-and-negative-slope",
+  "title": "Climb, Descent, Flat or Drop",
+  "hook": "Which way is the trail going?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students classify slopes as positive, negative, zero or undefined, connect each to the direction of a line and a section of trail, and explain why a vertical line has no slope.",
+  "standards": [
+   "8.EE.B.6",
+   "8.F.B.4",
+   "HSF-LE.A.1"
+  ],
+  "image": null,
+  "objectives": [
+   "Classify a slope as positive, negative, zero or undefined from a graph, two points or a description.",
+   "Connect the sign of the slope to the direction of a line read left to right.",
+   "Explain why a horizontal line has slope 0 and a vertical line has an undefined slope.",
+   "Compare the steepness of two lines using $|m|$."
+  ],
+  "question": "What does the sign of a slope tell a rider about the trail ahead?",
+  "mtb": {
+   "text": [
+    "A trail profile is made of four kinds of section: climbs (positive slope), descents (negative slope), flats (zero slope) and drops (in the extreme, vertical: undefined slope). Riders shift gears and position for each one.",
+    "A rider dropping off a ledge isn’t on a slope at all for that moment: the trail’s horizontal run is zero, which is exactly what “undefined” means."
+   ],
+   "pairs": [
+    [
+     "$m > 0$",
+     "A climb"
+    ],
+    [
+     "$m < 0$",
+     "A descent"
+    ],
+    [
+     "$m = 0$",
+     "A flat section"
+    ],
+    [
+     "Undefined $m$",
+     "A vertical drop"
+    ],
+    [
+     "Larger $|m|$",
+     "Steeper, climbing or descending"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "lab",
+   "tool": "slope-lab",
+   "title": "Climb, Descent or Flat?",
+   "objective": "Build trails with positive, negative and zero slope, and see why a vertical trail has no defined slope.",
+   "materials": [
+    "One laptop or tablet per pair",
+    "The Slope & Linear Relationships Lab",
+    "Recording sheet: kind of slope, start, end, run, slope"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 10,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg1.linear-relationships",
+  "title": "Is the Climb Steady?",
+  "hook": "Spotting a constant rate of change",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students recognise a constant rate of change in tables, graphs, equations and situations, and decide whether a relationship is linear.",
+  "standards": [
+   "8.F.A.3",
+   "8.F.B.4",
+   "HSF-LE.A.1"
+  ],
+  "image": null,
+  "objectives": [
+   "Decide whether a table shows a linear relationship by checking for a constant rate of change.",
+   "Find the rate of change from a table, including tables with unequal steps in $x$.",
+   "Connect a linear relationship’s table, graph, equation and verbal description.",
+   "Explain why some real relationships are not linear."
+  ],
+  "question": "How can you tell, from just a few numbers, whether a climb has a steady grade?",
+  "mtb": {
+   "text": [
+    "Fire roads are often built at a steady grade, so each 100 ft of road gains the same elevation: a linear relationship. Singletrack changes grade constantly, so its profile curves.",
+    "A rider who knows the climb is linear can predict exactly how much elevation is left from any point. That’s a real pacing tool."
+   ],
+   "pairs": [
+    [
+     "Constant rate of change",
+     "A steady-grade fire road"
+    ],
+    [
+     "First differences",
+     "Elevation gained per equal stretch of trail"
+    ],
+    [
+     "Non-linear",
+     "A trail that steepens or eases"
+    ],
+    [
+     "$y = mx + b$",
+     "Elevation = grade × distance + start elevation"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "lab",
+   "tool": "slope-lab",
+   "title": "Steady Climb Detector",
+   "objective": "Use the Slope Lab’s table lesson and trail tables to decide which climbs have a constant grade.",
+   "materials": [
+    "One device per pair",
+    "The Slope & Linear Relationships Lab",
+    "The three trail tables below"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg1.proportional-relationships",
+  "title": "Gear Up: Proportional Relationships",
+  "hook": "Does twice the pedaling mean twice the distance?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students identify proportional relationships ($y = kx$) from tables, graphs and situations, find the constant of proportionality, and use gear ratios to see proportion in action.",
+  "standards": [
+   "7.RP.A.2",
+   "8.EE.B.5",
+   "HSA-CED.A.2"
+  ],
+  "image": null,
+  "objectives": [
+   "Decide whether a relationship is proportional using a table, a graph or an equation.",
+   "Find the constant of proportionality $k = \\frac{y}{x}$.",
+   "Write and use an equation of the form $y = kx$.",
+   "Explain why a linear relationship with a starting amount is not proportional."
+  ],
+  "question": "When does doubling one quantity always double another, and how can we tell?",
+  "mtb": {
+   "text": [
+    "A bike’s drivetrain is a proportion machine. In a given gear, the rear wheel always turns the same number of times per pedal turn, so wheel turns, and distance, are proportional to pedal turns.",
+    "Riding at a steady speed, distance is proportional to time. But a ride’s total time including a 10-minute stop is not proportional: the stop is a starting amount."
+   ],
+   "pairs": [
+    [
+     "$k$",
+     "The gear ratio, or a steady speed"
+    ],
+    [
+     "$y = kx$",
+     "Wheel turns = ratio × pedal turns"
+    ],
+    [
+     "Passes through the origin",
+     "No pedaling, no distance"
+    ],
+    [
+     "Not proportional",
+     "Cost with a fixed lift-ticket fee"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "tool",
+   "tool": "gear-ratio-lab",
+   "title": "Gear Ratios Are Proportions",
+   "objective": "Use real bike setups to show that wheel turns are proportional to pedal turns, with the gear ratio as the constant.",
+   "materials": [
+    "One device per pair",
+    "The Gear Ratio Lab",
+    "A table with columns: pedal turns, wheel turns, ratio"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg1.writing-linear-equations",
+  "title": "Writing the Trail’s Equation",
+  "hook": "Can one equation describe a whole climb?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students write the equation of a line from a slope and a point, from two points and from a real description, and use it to predict elevations on a climb.",
+  "standards": [
+   "8.F.B.4",
+   "HSA-CED.A.2",
+   "HSF-LE.A.2"
+  ],
+  "image": null,
+  "objectives": [
+   "Write $y = mx + b$ from the slope and the $y$-intercept.",
+   "Write the equation of a line from a slope and any point.",
+   "Write the equation of a line through two points.",
+   "Write a linear model from a real-world description and use it to predict."
+  ],
+  "question": "How can one equation tell a rider their elevation anywhere on a climb?",
+  "mtb": {
+   "text": [
+    "A climb with a steady grade is a line. Its equation, elevation $= \\text{grade} \\times \\text{distance} + \\text{start}$, lets a rider (or a trail designer) find the elevation at any point without measuring it.",
+    "Trail designers use exactly this model to check that a planned trail reaches a ridge without exceeding a maximum grade."
+   ],
+   "pairs": [
+    [
+     "$m$",
+     "The trail’s grade"
+    ],
+    [
+     "$b$",
+     "Elevation at the trailhead"
+    ],
+    [
+     "$y = mx + b$",
+     "Elevation anywhere on the climb"
+    ],
+    [
+     "Two points",
+     "Two GPS readings on the climb"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Design the Ridge Climb",
+   "objective": "Write linear models for two proposed trail routes and use them to decide which meets the trail crew’s rules.",
+   "materials": [
+    "The route sheet (copy from the questions)",
+    "Graph paper",
+    "Calculator"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg1.slope-intercept-form",
+  "title": "Reading y = mx + b",
+  "hook": "What do m and b mean on the trail?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students identify the slope and $y$-intercept from $y = mx + b$, interpret both in context, rewrite equations in slope-intercept form, and use the Slope Lab’s sliders to see how each changes the line.",
+  "standards": [
+   "8.F.B.4",
+   "HSF-LE.B.5",
+   "HSF-IF.C.7a"
+  ],
+  "image": null,
+  "objectives": [
+   "Identify the slope and $y$-intercept from an equation in the form $y = mx + b$.",
+   "Explain what $m$ and $b$ mean in a real situation, with units.",
+   "Rewrite a linear equation in slope-intercept form.",
+   "Predict how changing $m$ or $b$ changes the graph."
+  ],
+  "question": "What do the two numbers in $y = mx + b$ tell you about a trail, and what happens when you change them?",
+  "mtb": {
+   "text": [
+    "Elevation $=$ grade $\\times$ distance $+$ starting elevation is slope-intercept form. The grade is $m$ and the trailhead elevation is $b$.",
+    "Riders compare trails by $m$ (how hard) and plan their day by $b$ (where they start). Two trails with the same grade but different starts are parallel lines."
+   ],
+   "pairs": [
+    [
+     "$m$",
+     "Grade (rate of climb or descent)"
+    ],
+    [
+     "$b$",
+     "Starting elevation"
+    ],
+    [
+     "Parallel lines",
+     "Same grade, different trailheads"
+    ],
+    [
+     "Negative $m$",
+     "A descent"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "lab",
+   "tool": "slope-lab",
+   "title": "Slider Detective",
+   "objective": "Use the Slope Lab’s $y = mx + b$ sliders to discover how $m$ and $b$ control a line, then connect them to trail designs.",
+   "materials": [
+    "One device per pair",
+    "The Slope & Linear Relationships Lab",
+    "Recording sheet"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg1.point-slope-form",
+  "title": "From the Trail Sign",
+  "hook": "You know where you are and how steep it is. What comes next?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students write lines in point-slope form from any point and a slope, convert to slope-intercept form, and choose the most useful form for a problem.",
+  "standards": [
+   "8.F.B.4",
+   "HSA-CED.A.2",
+   "HSA-SSE.A.1"
+  ],
+  "image": null,
+  "objectives": [
+   "Write the equation of a line in point-slope form, $y - y_1 = m(x - x_1)$.",
+   "Convert from point-slope to slope-intercept form.",
+   "Choose a useful form of a line for a given problem.",
+   "Use a point-slope model from a trail sign to predict elevations."
+  ],
+  "question": "Why write a line starting from any point, instead of always from the $y$-intercept?",
+  "mtb": {
+   "text": [
+    "Trail signs, GPS readings and map markers give a point in the middle of a trail, not at the trailhead. Point-slope form uses that point directly.",
+    "A rider reading “7% for the next mile” at a sign can predict the elevation at the top of the climb without knowing where the trail began."
+   ],
+   "pairs": [
+    [
+     "$(x_1, y_1)$",
+     "A trail sign’s position and elevation"
+    ],
+    [
+     "$m$",
+     "The grade on the sign"
+    ],
+    [
+     "$y - y_1 = m(x - x_1)$",
+     "Elevation from the sign onward"
+    ],
+    [
+     "Converting forms",
+     "Finding the elevation the trail would have had at the trailhead"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "classroom",
+   "tool": null,
+   "title": "Trail Sign Relay",
+   "objective": "Turn trail-sign information into point-slope models, convert them, and predict elevations.",
+   "materials": [
+    "Sign cards (from the questions below)",
+    "Mini whiteboards",
+    "Calculator"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg1.graphing-linear-equations",
+  "title": "Graphing Two Trails",
+  "hook": "Which trail climbs faster?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students graph lines from slope and intercept, from the two intercepts and from a table, graph horizontal and vertical lines, and compare two trails on one set of axes.",
+  "standards": [
+   "8.F.A.3",
+   "HSF-IF.C.7a",
+   "HSA-REI.D.10"
+  ],
+  "image": null,
+  "objectives": [
+   "Graph a line from its slope and $y$-intercept.",
+   "Graph a line using its $x$- and $y$-intercepts.",
+   "Graph horizontal and vertical lines.",
+   "Compare two linear models on the same axes and interpret where they meet."
+  ],
+  "question": "How does putting two trails on one graph help you compare them?",
+  "mtb": {
+   "text": [
+    "Comparing trail profiles on one graph shows at a glance which climb is steeper (the steeper line), which starts higher (the higher intercept) and where they cross.",
+    "Two trails starting from different trailheads up to the same ridge are a classic choice: steep and short, or gentle and long."
+   ],
+   "pairs": [
+    [
+     "Steeper line",
+     "Harder climb"
+    ],
+    [
+     "Higher $y$-intercept",
+     "Higher trailhead"
+    ],
+    [
+     "Intersection",
+     "Where two trails are at the same elevation"
+    ],
+    [
+     "Horizontal line $y = c$",
+     "A contour: constant elevation"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "lab",
+   "tool": "slope-lab",
+   "title": "Race to the Ridge",
+   "objective": "Build two trails in the Trail Designer, graph both models together and find where they reach the same elevation.",
+   "materials": [
+    "One device per pair",
+    "The Slope & Linear Relationships Lab",
+    "Graph paper"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg1.domain-and-range",
+  "title": "From Trailhead to Summit",
+  "hook": "Where does the model make sense?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students find domain and range from graphs, tables and sets of pairs, choose reasonable domains for real models, and write them with inequalities and interval notation.",
+  "standards": [
+   "HSF-IF.A.1",
+   "HSF-IF.B.5",
+   "HSF-IF.A.2"
+  ],
+  "image": null,
+  "objectives": [
+   "Find the domain and range from a graph, a table or a set of ordered pairs.",
+   "Choose a reasonable domain and range for a real-world model.",
+   "Write domain and range using inequalities and interval notation.",
+   "Tell the difference between a discrete and a continuous domain."
+  ],
+  "question": "A trail equation can be evaluated anywhere. Why does it only make sense on part of the number line?",
+  "mtb": {
+   "text": [
+    "The equation for a climb can be evaluated at $d = -3000$ or $d = 20000$, but the trail doesn’t exist there. The domain is the part of the model that matches the real trail: trailhead to summit.",
+    "Choosing the domain is a modelling decision, and stating it is what stops a model from making silly predictions."
+   ],
+   "pairs": [
+    [
+     "Domain",
+     "Trailhead to summit"
+    ],
+    [
+     "Range",
+     "Lowest to highest elevation on the section"
+    ],
+    [
+     "Discrete domain",
+     "Number of laps or runs"
+    ],
+    [
+     "Continuous domain",
+     "Distance or time"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Model the Whole Ride",
+   "objective": "Describe a three-part ride with linear models and give each model a sensible domain and range.",
+   "materials": [
+    "The ride description (below)",
+    "Graph paper",
+    "Calculator"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg1.function-notation",
+  "title": "E(d): Function Notation on the Trail",
+  "hook": "What does E(500) = 1,640 mean?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students decide whether a relation is a function, evaluate functions in $f(x)$ notation, solve $f(x) = c$, and interpret statements like $E(500) = 1640$ in context.",
+  "standards": [
+   "HSF-IF.A.1",
+   "HSF-IF.A.2",
+   "HSF-IF.B.4"
+  ],
+  "image": null,
+  "objectives": [
+   "Decide whether a relation is a function from a table, a set of pairs or a graph.",
+   "Evaluate functions written in $f(x)$ notation.",
+   "Solve equations of the form $f(x) = c$.",
+   "Interpret function notation in a real context."
+  ],
+  "question": "Why do mathematicians give functions names, and what does a statement like $E(500) = 1640$ tell a rider?",
+  "mtb": {
+   "text": [
+    "A ride file is a set of functions of time: distance $D(t)$, elevation $E(t)$, speed $S(t)$. At each moment there is exactly one value of each.",
+    "Function notation is how coaches and data apps talk about a ride precisely: $S(30) = 24$ means “24 km/h at 30 minutes”."
+   ],
+   "pairs": [
+    [
+     "$E(d)$",
+     "Elevation after $d$ of trail"
+    ],
+    [
+     "$S(t)$",
+     "Speed at time $t$"
+    ],
+    [
+     "Solving $E(d) = c$",
+     "Where on the trail you reach an elevation"
+    ],
+    [
+     "Not a function",
+     "A trail that passes the same distance mark at two elevations (impossible)"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Ride Data in Function Notation",
+   "objective": "Read, evaluate and interpret functions describing a real ride.",
+   "materials": [
+    "The ride table (below)",
+    "Calculator"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "geo.triangle-classification",
+  "title": "The Frame Is Two Triangles",
+  "hook": "Why are bike frames built from triangles?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students classify triangles by sides and by angles, use the triangle inequality to decide which side lengths can form a triangle, and apply both to a mountain bike frame.",
+  "standards": [
+   "7.G.A.2",
+   "HSG-CO.C.10",
+   "HSG-MG.A.1"
+  ],
+  "image": null,
+  "objectives": [
+   "Classify a triangle by its sides as scalene, isosceles or equilateral.",
+   "Classify a triangle by its angles as acute, right or obtuse.",
+   "Use the triangle inequality to decide whether three lengths make a triangle.",
+   "Find the possible lengths of a third side."
+  ],
+  "question": "What makes a triangle a triangle, and why is it the strongest shape for a bike frame?",
+  "mtb": {
+   "text": [
+    "A traditional bike frame is two triangles: the front triangle (top tube, down tube, seat tube) and the rear triangle (seat stays, chainstays, seat tube). Because triangles are rigid, the frame keeps its shape under a rider’s weight and the hits of a trail.",
+    "Frame designers start from side lengths and angles, so the triangle inequality and triangle classification are part of every frame drawing."
+   ],
+   "pairs": [
+    [
+     "Rigid triangle",
+     "A frame that doesn’t flex out of shape"
+    ],
+    [
+     "Side lengths",
+     "Tube lengths"
+    ],
+    [
+     "Triangle inequality",
+     "Which tube lengths can actually be joined"
+    ],
+    [
+     "Obtuse angle",
+     "The wide angle at the head tube junction on many frames"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "classroom",
+   "tool": null,
+   "title": "Frame Triangle Investigation",
+   "objective": "Classify the triangles in a mountain bike frame and use the triangle inequality to test frame designs.",
+   "materials": [
+    "Straws or card strips cut to the lengths below (1 cm = 2 cm of tube)",
+    "Paper fasteners or tape",
+    "Protractor",
+    "A bike or a frame photo (optional)"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 5,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "geo.triangle-angle-relationships",
+  "title": "Angles in the Front Triangle",
+  "hook": "Know two angles, know the frame",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students use the triangle angle sum theorem, the exterior angle theorem and the base angles of isosceles triangles to find missing angles, including the angles in a bike frame.",
+  "standards": [
+   "HSG-CO.C.10",
+   "8.G.A.5",
+   "HSG-MG.A.1"
+  ],
+  "image": null,
+  "objectives": [
+   "Use the triangle angle sum theorem to find a missing angle.",
+   "Use the exterior angle theorem.",
+   "Use the base angles theorem for isosceles triangles.",
+   "Write and solve equations for unknown angles."
+  ],
+  "question": "Why does knowing two angles of a triangle always tell you the third?",
+  "mtb": {
+   "text": [
+    "A frame’s front triangle has an angle at the head-tube junction, one at the seat cluster and one at the bottom bracket. Designers choose two; the angle sum fixes the third.",
+    "Riders talk about “head angle” and “seat angle”, measured from the ground rather than inside the triangle, but they’re linked to the triangle’s angles by straight-angle and parallel-line facts."
+   ],
+   "pairs": [
+    [
+     "Angle sum = 180°",
+     "Two frame angles fix the third"
+    ],
+    [
+     "Exterior angle",
+     "An angle measured outside the frame triangle"
+    ],
+    [
+     "Isosceles base angles",
+     "A symmetric triangular truss"
+    ],
+    [
+     "Equation in $x$",
+     "A design spec with an unknown"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "classroom",
+   "tool": null,
+   "title": "Frame Angle Detectives",
+   "objective": "Use triangle angle theorems to find the missing angles in a simplified bike frame.",
+   "materials": [
+    "The frame data below drawn on the board",
+    "Protractor (to check)",
+    "Calculator"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "geo.triangle-congruence",
+  "title": "Identical Frames: Triangle Congruence",
+  "hook": "How do builders know two triangles are exactly the same?",
+  "minutes": 55,
+  "grade": null,
+  "status": "published",
+  "summary": "Students learn the SSS, SAS, ASA, AAS and HL congruence shortcuts, choose the right one, write short proofs, and use congruent triangles (CPCTC) to find measures.",
+  "standards": [
+   "HSG-CO.B.7",
+   "HSG-CO.B.8",
+   "HSG-SRT.B.5"
+  ],
+  "image": null,
+  "objectives": [
+   "Identify which congruence shortcut (SSS, SAS, ASA, AAS, HL) applies, or that none does.",
+   "Write a congruence statement with corresponding vertices in order.",
+   "Prove two triangles congruent in a two-column proof.",
+   "Use CPCTC to find missing sides and angles."
+  ],
+  "question": "What is the least information that guarantees two triangles are identical?",
+  "mtb": {
+   "text": [
+    "A bike’s left and right rear triangles (seat stays and chainstays on each side) must be congruent, or the rear wheel sits crooked and the bike pulls to one side. Frame builders check this on a jig.",
+    "A builder doesn’t measure everything: measuring three tube lengths (SSS) or two tubes and the angle between them (SAS) on each side is enough to guarantee the two sides match."
+   ],
+   "pairs": [
+    [
+     "Congruent triangles",
+     "Left and right rear triangles"
+    ],
+    [
+     "SSS",
+     "Measure all three tube lengths on each side"
+    ],
+    [
+     "SAS",
+     "Two tubes and the angle where they join"
+    ],
+    [
+     "CPCTC",
+     "If the triangles match, the dropouts line up"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "The Frame Jig Check",
+   "objective": "Decide, from a builder’s measurements, whether a bike’s left and right rear triangles are guaranteed to be congruent.",
+   "materials": [
+    "The case cards below",
+    "Ruler and protractor (for the construction check)"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "geo.similar-triangles",
+  "title": "How Tall Is That Tree?",
+  "hook": "Measuring what you can’t reach with similar triangles",
+  "minutes": 55,
+  "grade": null,
+  "status": "published",
+  "summary": "Students prove triangles similar using AA, SAS~ and SSS~, set up proportions between corresponding sides, and use shadows to measure a tree for a trail feature.",
+  "standards": [
+   "HSG-SRT.A.2",
+   "HSG-SRT.A.3",
+   "HSG-SRT.B.5"
+  ],
+  "image": null,
+  "objectives": [
+   "Prove triangles similar using AA, SAS~ or SSS~.",
+   "Write a similarity statement and the scale factor.",
+   "Use proportions to find missing side lengths.",
+   "Solve indirect-measurement problems with shadows."
+  ],
+  "question": "How can you measure the height of something you can’t climb?",
+  "mtb": {
+   "text": [
+    "Trail crews often need the height of a tree before building near it, or deciding whether a fallen trunk will reach across a gully. Shadows and similar triangles give that height with just a tape measure.",
+    "Scale models of jumps and trail features are similar figures too: a 1:10 model has every length one tenth of the real feature, and every angle the same."
+   ],
+   "pairs": [
+    [
+     "AA similarity",
+     "Rider and tree in the same sunlight"
+    ],
+    [
+     "Scale factor",
+     "Shadow of tree ÷ shadow of rider"
+    ],
+    [
+     "Proportion",
+     "Tree height from a rider’s height"
+    ],
+    [
+     "Similar figures",
+     "A scale model of a jump"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "classroom",
+   "tool": null,
+   "title": "Measure the Trail Tree",
+   "objective": "Use shadows and similar triangles to estimate the height of a tall object near the school (or a model indoors).",
+   "materials": [
+    "Tape measures (at least 10 m)",
+    "A sunny day, or a lamp and objects indoors",
+    "Recording sheet",
+    "Calculator"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "geo.pythagorean-theorem",
+  "title": "How Long Is the Trail, Really?",
+  "hook": "The surface length is the hypotenuse",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students use $a^2 + b^2 = c^2$ to find missing sides of right triangles, use the converse to test for right angles, and compare a trail’s horizontal run with its length along the surface.",
+  "standards": [
+   "8.G.B.7",
+   "8.G.B.8",
+   "HSG-SRT.C.8"
+  ],
+  "image": null,
+  "objectives": [
+   "Find a missing side of a right triangle with the Pythagorean theorem.",
+   "Use the converse to decide whether a triangle is right.",
+   "Solve distance and length problems in context.",
+   "Compare a trail’s horizontal distance with its surface length."
+  ],
+  "question": "If you know how far a trail goes across and how far it climbs, how long is it?",
+  "mtb": {
+   "text": [
+    "Maps measure horizontal distance; your tyres roll the surface distance. The surface length is the hypotenuse of the rise and the run.",
+    "On ordinary trail grades the difference is tiny (about 2% at a 20% grade, 0.5% at 10%), which is why riders and maps can usually ignore it, and why slope calculations with either distance are close."
+   ],
+   "pairs": [
+    [
+     "Legs",
+     "Horizontal run and rise"
+    ],
+    [
+     "Hypotenuse",
+     "Distance along the trail surface"
+    ],
+    [
+     "Converse",
+     "Checking a jump ramp is square to the ground"
+    ],
+    [
+     "3-4-5 triple",
+     "Builders’ trick for a right angle"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Grade Versus Surface Length",
+   "objective": "Calculate how much longer a trail’s surface is than its horizontal run, for a range of grades.",
+   "materials": [
+    "Calculator",
+    "The table below"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "geo.special-right-triangles",
+  "title": "Ramp Builder’s Triangles",
+  "hook": "Exact answers without a calculator",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students derive and use the side ratios of 45-45-90 and 30-60-90 triangles to find exact lengths, and apply them to designing ramps and features at standard angles.",
+  "standards": [
+   "HSG-SRT.C.6",
+   "HSG-SRT.C.8",
+   "8.G.B.7"
+  ],
+  "image": null,
+  "objectives": [
+   "State and derive the side ratios $1 : 1 : \\sqrt{2}$ and $1 : \\sqrt{3} : 2$.",
+   "Find missing sides of 45-45-90 triangles exactly.",
+   "Find missing sides of 30-60-90 triangles exactly.",
+   "Solve design problems using special right triangles."
+  ],
+  "question": "Why do two particular right triangles have side lengths you can find without a calculator?",
+  "mtb": {
+   "text": [
+    "Ramp and feature builders work with standard angles. A 45° bank and a 30° kicker are special right triangles, so the height and base follow straight from the surface length.",
+    "Knowing the ratios lets a builder sanity-check a plan in their head: a 30° ramp is always exactly half as tall as it is long along the surface."
+   ],
+   "pairs": [
+    [
+     "45-45-90",
+     "A 45° bank: height equals base"
+    ],
+    [
+     "30-60-90",
+     "A 30° kicker: height is half the surface length"
+    ],
+    [
+     "$\\sqrt{2}$, $\\sqrt{3}$",
+     "Ratios a builder can estimate as 1.41 and 1.73"
+    ],
+    [
+     "Exact form",
+     "Precise cutting plans"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Design the Feature Set",
+   "objective": "Use special right triangle ratios to find exact dimensions for a set of ramps and banks.",
+   "materials": [
+    "The design brief below",
+    "Calculator (to convert exact answers)"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "geo.properties-of-quadrilaterals",
+  "title": "The Shape of a Tabletop",
+  "hook": "Which quadrilateral is a jump?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students classify quadrilaterals, explain how the types are related, and use the properties of trapezoids and kites, starting from the trapezoid profile of a tabletop jump.",
+  "standards": [
+   "HSG-CO.C.11",
+   "HSG-MG.A.1",
+   "HSG-GPE.B.7"
+  ],
+  "image": null,
+  "objectives": [
+   "Classify quadrilaterals by their sides, angles and parallel sides.",
+   "Explain how parallelograms, rectangles, rhombuses, squares, trapezoids and kites are related.",
+   "Use the trapezoid midsegment and isosceles trapezoid properties.",
+   "Use the properties of kites."
+  ],
+  "question": "How are all the four-sided shapes related, and which one is a tabletop jump?",
+  "mtb": {
+   "text": [
+    "A tabletop jump has a sloped takeoff, a flat deck and a sloped landing: its side view is an isosceles trapezoid (if both faces have the same slope). Builders design the deck and base lengths, and the midsegment tells them the width halfway up for the dirt estimate.",
+    "Many trail features are quadrilaterals: rectangular skills pads, parallelogram suspension linkages, kite-shaped gussets on frames."
+   ],
+   "pairs": [
+    [
+     "Isosceles trapezoid",
+     "Tabletop jump profile"
+    ],
+    [
+     "Bases",
+     "Deck length and base length"
+    ],
+    [
+     "Legs",
+     "Takeoff and landing faces"
+    ],
+    [
+     "Midsegment",
+     "Average width, used to estimate dirt"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Design a Tabletop Jump",
+   "objective": "Model a tabletop jump as an isosceles trapezoid and compute its key measurements.",
+   "materials": [
+    "Graph paper",
+    "Ruler and protractor",
+    "Calculator"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "geo.parallelograms",
+  "title": "The Four-Bar Linkage",
+  "hook": "How does a suspension link keep its shape while it moves?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students use the side, angle and diagonal properties of parallelograms, prove a quadrilateral is a parallelogram, check parallelograms on a coordinate grid, and model a moving four-bar linkage.",
+  "standards": [
+   "HSG-CO.C.11",
+   "HSG-GPE.B.4",
+   "HSG-GPE.B.5"
+  ],
+  "image": null,
+  "objectives": [
+   "Use the properties of parallelograms to find sides, angles and diagonals.",
+   "Prove that a quadrilateral is a parallelogram.",
+   "Check whether a quadrilateral is a parallelogram on a coordinate grid.",
+   "Explain why a parallelogram linkage keeps opposite sides parallel as it moves."
+  ],
+  "question": "What has to be true for four bars to always form a parallelogram?",
+  "mtb": {
+   "text": [
+    "Many rear suspension designs are four-bar linkages: the front triangle, two links and the rear triangle pivot together. When opposite bars are equal, the linkage is a parallelogram and the rear piece moves up and down without tilting.",
+    "Real designs usually change the bar lengths slightly on purpose, so the shape changes as the suspension compresses; that tunes how the bike pedals and brakes."
+   ],
+   "pairs": [
+    [
+     "Parallelogram",
+     "A linkage with equal opposite bars"
+    ],
+    [
+     "Opposite sides stay parallel",
+     "The connecting bar doesn’t rotate"
+    ],
+    [
+     "Consecutive angles supplementary",
+     "One pivot angle opens as its neighbour closes"
+    ],
+    [
+     "Diagonals bisect",
+     "A check builders can measure"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "classroom",
+   "tool": null,
+   "title": "Suspension Linkage Lab",
+   "objective": "Build and measure a parallelogram four-bar linkage to see which properties stay true as it moves.",
+   "materials": [
+    "Card strips: two 12 cm and two 8 cm per pair, plus one extra 10 cm strip",
+    "Paper fasteners",
+    "Protractor and ruler"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "geo.rectangles-and-rhombuses",
+  "title": "Square the Skills Area",
+  "hook": "How do builders know a corner is square?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students use the properties of rectangles, rhombuses and squares, especially their diagonals, and apply the “equal diagonals” check that builders use to lay out a square-cornered skills area.",
+  "standards": [
+   "HSG-CO.C.11",
+   "HSG-GPE.B.4",
+   "HSG-MG.A.3"
+  ],
+  "image": null,
+  "objectives": [
+   "Use the properties of rectangles, including congruent diagonals.",
+   "Use the properties of rhombuses, including perpendicular diagonals that bisect the angles.",
+   "Use the properties of squares.",
+   "Decide which special parallelogram a quadrilateral is from its diagonals or coordinates."
+  ],
+  "question": "How can measuring two diagonals tell you whether four corners are square?",
+  "mtb": {
+   "text": [
+    "Pump tracks, skills pads, bike-wash platforms and start ramps are laid out with string and pegs. Builders make sure corners are square by measuring the diagonals: equal diagonals mean a rectangle.",
+    "The same check works for a rectangular bike rack base or a wooden ramp deck."
+   ],
+   "pairs": [
+    [
+     "Congruent diagonals",
+     "A square-cornered skills pad"
+    ],
+    [
+     "Perpendicular diagonals",
+     "A rhombus-shaped feature or gusset"
+    ],
+    [
+     "Square",
+     "A pad that’s square in both senses"
+    ],
+    [
+     "Coordinate check",
+     "Laying out from a site plan"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "classroom",
+   "tool": null,
+   "title": "Lay Out the Skills Pad",
+   "objective": "Lay out a rectangle and use the diagonal check to make its corners square.",
+   "materials": [
+    "String and four pegs (outside) or masking tape (inside)",
+    "Tape measures",
+    "Recording sheet"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "geo.regular-polygons",
+  "title": "The Chainring Polygon",
+  "hook": "Where do 32 teeth sit?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students name and classify polygons, find interior, exterior and central angles of regular polygons, and find their areas with the apothem, using a chainring as a regular polygon.",
+  "standards": [
+   "HSG-CO.A.3",
+   "HSG-MG.A.1",
+   "HSG-C.A.3"
+  ],
+  "image": null,
+  "objectives": [
+   "Name polygons and classify them as regular or irregular, convex or concave.",
+   "Find the interior, exterior and central angles of a regular polygon.",
+   "Find the area of a regular polygon using $A = \\frac{1}{2}aP$.",
+   "Model a chainring as a regular polygon."
+  ],
+  "question": "Why do the teeth of a chainring sit exactly at the corners of a regular polygon?",
+  "mtb": {
+   "text": [
+    "A chainring’s teeth are evenly spaced around a circle, so they sit at the vertices of a regular polygon. The chain’s links, all the same length, sit on that polygon as the chain wraps.",
+    "The more teeth, the closer the polygon is to a circle. Engineers even talk about “chordal action”: the chain rising and falling slightly because it rides a polygon, not a true circle."
+   ],
+   "pairs": [
+    [
+     "Regular $n$-gon",
+     "A chainring or cog with $n$ teeth"
+    ],
+    [
+     "Central angle",
+     "Angle between neighbouring teeth"
+    ],
+    [
+     "Side length",
+     "The chain pitch (12.7 mm, half an inch)"
+    ],
+    [
+     "More sides",
+     "A smoother, rounder ring"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Chainring Geometry",
+   "objective": "Model chainrings and cogs as regular polygons and compute their angles and perimeters.",
+   "materials": [
+    "A real chainring or cog (optional)",
+    "Calculator",
+    "Chain pitch: 12.7 mm"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "geo.interior-and-exterior-angles",
+  "title": "Ride the Polygon Loop",
+  "hook": "How much do you turn on a full lap?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students derive the polygon interior angle sum $(n - 2) \\cdot 180°$ by splitting polygons into triangles, discover the 360° exterior angle sum by “riding” a loop, and find the number of sides from an angle measure.",
+  "standards": [
+   "HSG-CO.C.10",
+   "HSG-MG.A.1",
+   "8.G.A.5"
+  ],
+  "image": null,
+  "objectives": [
+   "Find the interior angle sum of any polygon using $(n - 2) \\cdot 180°$.",
+   "Use the fact that the exterior angles of a convex polygon add to 360°.",
+   "Find a missing angle in a polygon.",
+   "Find the number of sides of a regular polygon from an angle."
+  ],
+  "question": "Why does a rider always turn exactly 360° on one lap of any loop?",
+  "mtb": {
+   "text": [
+    "Ride a lap of any loop trail or pump track and you turn through one full circle in total, however many corners there are. Each corner’s turn is an exterior angle; together they make 360°.",
+    "Pump-track designers use this: if a loop has five berms of equal turn, each berm turns 72°."
+   ],
+   "pairs": [
+    [
+     "Exterior angle",
+     "How far you turn at a berm"
+    ],
+    [
+     "Exterior sum = 360°",
+     "One full rotation per lap"
+    ],
+    [
+     "Interior angle",
+     "The angle inside the loop at a corner"
+    ],
+    [
+     "Regular polygon loop",
+     "A loop with identical berms"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "classroom",
+   "tool": null,
+   "title": "Design a Pump-Track Loop",
+   "objective": "Use the 360° exterior angle sum and the interior angle sum to design a polygon-shaped pump-track loop.",
+   "materials": [
+    "Masking tape and a protractor (for the floor demo)",
+    "Grid paper",
+    "Calculator"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg2.systems-of-equations",
+  "title": "Where Does the Rider Land?",
+  "hook": "Solving a jump and a landing ramp together",
+  "minutes": 55,
+  "grade": null,
+  "status": "published",
+  "summary": "Students solve systems of two equations by graphing, substitution and elimination, solve linear–quadratic systems (a jump’s path meeting a landing ramp), and graph systems of inequalities.",
+  "standards": [
+   "HSA-REI.C.6",
+   "HSA-REI.C.7",
+   "HSA-REI.D.12"
+  ],
+  "image": null,
+  "objectives": [
+   "Solve a system of two linear equations by substitution or elimination and interpret the solution.",
+   "Solve a linear–quadratic system algebraically and check it with a graph.",
+   "Decide which solutions make sense in context.",
+   "Graph a system of linear inequalities and identify the feasible region."
+  ],
+  "question": "How can two equations, a rider’s path and a ramp’s surface, tell you exactly where the rider lands?",
+  "mtb": {
+   "text": [
+    "A jump’s flight path is (approximately) a parabola, and a landing ramp is (approximately) a line. Where they meet is where the rider touches down: the solution of a linear–quadratic system.",
+    "Solving systems also answers race questions (when does a faster rider catch a slower one?) and planning questions (which combinations of laps and rest fit in a training session?)."
+   ],
+   "pairs": [
+    [
+     "Linear–quadratic system",
+     "Flight path and landing ramp"
+    ],
+    [
+     "Intersection",
+     "Touchdown point"
+    ],
+    [
+     "Solution outside the domain",
+     "Where the ramp would be if it were longer"
+    ],
+    [
+     "Feasible region",
+     "Training plans that meet every limit"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Design the Landing",
+   "objective": "Use linear–quadratic systems to test whether a rider lands on each proposed landing ramp.",
+   "materials": [
+    "Graphing calculator or graphing app (to check)",
+    "Graph paper"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg2.three-variable-systems",
+  "title": "The Race Team’s Shopping List",
+  "hook": "Three unknowns, three clues",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students reduce systems of three linear equations to two variables, solve them, check the solution in all three equations, and model a race team’s spending with three unknown prices.",
+  "standards": [
+   "HSA-REI.C.6",
+   "HSA-CED.A.3",
+   "HSA-REI.C.8"
+  ],
+  "image": null,
+  "objectives": [
+   "Reduce a three-variable system to a two-variable system by elimination.",
+   "Solve a three-variable linear system and check the solution.",
+   "Model a real situation with three unknowns.",
+   "Recognise systems with no solution or infinitely many."
+  ],
+  "question": "How many clues do you need to find three unknown prices, and how do you combine them?",
+  "mtb": {
+   "text": [
+    "A race team buys spares in mixed orders, and the receipts show only totals. Three different orders are three equations: enough to work out each price.",
+    "Coaches use the same idea to split a training budget across three kinds of session, or to find three unknown average speeds from three timed loops."
+   ],
+   "pairs": [
+    [
+     "Three unknowns",
+     "Prices of tubes, tires and grips"
+    ],
+    [
+     "Three equations",
+     "Three different receipts"
+    ],
+    [
+     "Ordered triple",
+     "The price list"
+    ],
+    [
+     "Inconsistent system",
+     "Receipts that can’t all be right"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Crack the Race-Team Receipts",
+   "objective": "Find three unknown prices from three receipts, then design receipts for a partner to crack.",
+   "materials": [
+    "The receipts (in the worked example)",
+    "Calculator"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg2.matrix-operations",
+  "title": "Bike Shop Matrices",
+  "hook": "Organising a whole inventory in one grid",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students add, subtract, scale and multiply matrices, find 2×2 determinants and inverses, and use a bike shop’s inventory and price matrices to see why matrix multiplication works the way it does.",
+  "standards": [
+   "HSN-VM.C.6",
+   "HSN-VM.C.8",
+   "HSN-VM.C.10"
+  ],
+  "image": null,
+  "objectives": [
+   "Add, subtract and multiply matrices by a scalar.",
+   "Multiply two matrices when the dimensions allow it.",
+   "Find the determinant of a 2×2 matrix.",
+   "Find the inverse of a 2×2 matrix and check it."
+  ],
+  "question": "How can one grid of numbers, multiplied by another, answer a whole set of questions at once?",
+  "mtb": {
+   "text": [
+    "A bike shop tracks stock by store and model: a matrix. Multiplying the stock matrix by a price column gives every store’s stock value in one step, which is exactly what inventory software does.",
+    "Scalar multiplication models a sale (multiply prices by 0.85 for 15% off); adding matrices combines two deliveries."
+   ],
+   "pairs": [
+    [
+     "Matrix",
+     "Stock by shop and model"
+    ],
+    [
+     "Matrix addition",
+     "Adding a delivery to stock"
+    ],
+    [
+     "Scalar multiple",
+     "A storewide discount"
+    ],
+    [
+     "Matrix product",
+     "Stock value of every shop at once"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Run the Bike Shop",
+   "objective": "Use matrix operations to manage two shops’ stock and value.",
+   "materials": [
+    "The stock and price data (in the foundation)",
+    "Calculator (matrix mode optional)"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg2.applications-of-matrices",
+  "title": "Matrices at Work",
+  "hook": "Solving systems and rotating trail maps",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students write systems as matrix equations $AX = B$ and solve them with inverses, organise and combine data with matrices, and use matrices to rotate and reflect points on a trail map.",
+  "standards": [
+   "HSA-REI.C.8",
+   "HSA-REI.C.9",
+   "HSN-VM.C.12"
+  ],
+  "image": null,
+  "objectives": [
+   "Write a system of linear equations as a matrix equation $AX = B$.",
+   "Solve a 2×2 system with $X = A^{-1}B$.",
+   "Use matrices to organise and combine real data.",
+   "Use 2×2 matrices to rotate and reflect points."
+  ],
+  "question": "How can one matrix equation replace a whole page of elimination?",
+  "mtb": {
+   "text": [
+    "Pricing puzzles, team orders and timing splits are systems of equations; writing them as $AX = B$ lets a calculator or spreadsheet solve them instantly.",
+    "Trail maps get rotated so “up” matches the direction a rider is facing. That rotation is a matrix multiplication applied to every point on the map, which is how mapping apps do it."
+   ],
+   "pairs": [
+    [
+     "$AX = B$",
+     "Ticket prices from two group bookings"
+    ],
+    [
+     "$A^{-1}$",
+     "The “undo” that unlocks the prices"
+    ],
+    [
+     "Rotation matrix",
+     "Turning a trail map to face north-up or heading-up"
+    ],
+    [
+     "Reflection matrix",
+     "Mirroring a trail design for the other side of a hill"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Map and Money",
+   "objective": "Use matrix equations to solve a pricing problem and transformation matrices to reorient a trail map.",
+   "materials": [
+    "Graph paper",
+    "Calculator with matrix mode (optional)"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg2.quadratic-graphs",
+  "title": "The Shape of a Jump",
+  "hook": "Three forms, one flight path",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students graph quadratics from standard, vertex and factored form, connect each form to the vertex, axis, intercepts and direction, and write a quadratic for a jump from its features.",
+  "standards": [
+   "HSF-IF.C.7a",
+   "HSF-IF.C.8a",
+   "HSF-IF.B.4"
+  ],
+  "image": null,
+  "objectives": [
+   "Graph a quadratic from standard, vertex or factored form.",
+   "Identify the vertex, axis of symmetry, intercepts and direction of opening.",
+   "Explain which features each form shows directly.",
+   "Write a quadratic from its features or from points."
+  ],
+  "question": "Why does a jump’s flight path make a parabola, and which form of its equation tells you the most?",
+  "mtb": {
+   "text": [
+    "Ignoring air resistance, a rider in the air follows a parabola. The zeros are takeoff and landing, the vertex is the peak, and the axis of symmetry is halfway between.",
+    "Each form of the equation answers a different builder’s question: factored form says where to put the landing, vertex form says how high the rider goes, standard form says the height at the lip."
+   ],
+   "pairs": [
+    [
+     "Zeros",
+     "Takeoff and landing"
+    ],
+    [
+     "Vertex",
+     "Peak height and where it happens"
+    ],
+    [
+     "$a < 0$",
+     "Gravity pulls the path down"
+    ],
+    [
+     "Axis of symmetry",
+     "Halfway point of the flight"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "lab",
+   "tool": "jump-trajectory-lab",
+   "title": "Jump Parabola Explorer",
+   "objective": "Change a jump’s distance and height in the lab and see how the parabola and all three forms of its equation respond.",
+   "materials": [
+    "One device per pair",
+    "The Jump Trajectory Lab",
+    "Recording table: distance, height, vertex form, factored form, $a$"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg2.vertex-form",
+  "title": "Vertex Form: Peak in Plain Sight",
+  "hook": "Where and how high does the rider peak?",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students read the vertex and direction from $y = a(x - h)^2 + k$, write quadratics in vertex form from a vertex and a point, and use vertex form to solve jump problems.",
+  "standards": [
+   "HSF-IF.C.8a",
+   "HSF-BF.B.3",
+   "HSA-CED.A.2"
+  ],
+  "image": null,
+  "objectives": [
+   "Read the vertex, axis and direction from vertex form.",
+   "Describe the transformations $a$, $h$ and $k$ apply to $y = x^2$.",
+   "Write a quadratic in vertex form from the vertex and one other point.",
+   "Solve problems by setting a vertex-form equation equal to a height."
+  ],
+  "question": "How does vertex form put the most important feature of a jump right in its equation?",
+  "mtb": {
+   "text": [
+    "Vertex form is how a jump designer thinks: “I want the rider to peak 2.5 m high, 5 m out.” Those two numbers are $h$ and $k$, and one more point (the lip) fixes $a$.",
+    "Solving vertex form for a height tells a builder where a rider clears an obstacle, like a 1.6 m tabletop deck."
+   ],
+   "pairs": [
+    [
+     "$(h, k)$",
+     "Where and how high the rider peaks"
+    ],
+    [
+     "$a$",
+     "How sharply the path curves (speed and gravity)"
+    ],
+    [
+     "Solving for a height",
+     "Where the rider clears a feature"
+    ],
+    [
+     "Two solutions",
+     "Rising past it and falling past it"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "lab",
+   "tool": "jump-trajectory-lab",
+   "title": "Decode the Jump",
+   "objective": "Use the lab’s Equation decoder to read jumps in vertex form and design jumps to meet a brief.",
+   "materials": [
+    "One device per pair",
+    "The Jump Trajectory Lab"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg2.completing-the-square",
+  "title": "Find the Peak: Completing the Square",
+  "hook": "Turning any jump equation into vertex form",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students complete the square to rewrite quadratics in vertex form and to solve equations, and use it to find the peak of jumps given in standard form.",
+  "standards": [
+   "HSA-SSE.B.3b",
+   "HSA-REI.B.4a",
+   "HSA-REI.B.4b"
+  ],
+  "image": null,
+  "objectives": [
+   "Complete the square for $x^2 + bx$.",
+   "Rewrite $y = ax^2 + bx + c$ in vertex form.",
+   "Solve quadratic equations by completing the square.",
+   "Find a jump’s peak and landing from its standard-form equation."
+  ],
+  "question": "If a jump’s equation hides its peak, how can algebra reveal it?",
+  "mtb": {
+   "text": [
+    "Physics gives a jump’s path in standard form, because it comes from takeoff height, speed and gravity. Completing the square rewrites it in vertex form, revealing the peak without graphing.",
+    "That peak tells a builder how much clearance is needed above a gap or a deck."
+   ],
+   "pairs": [
+    [
+     "Standard form",
+     "The path from takeoff height and speed"
+    ],
+    [
+     "Completing the square",
+     "Finding the peak by algebra"
+    ],
+    [
+     "Vertex form",
+     "Peak height and distance in the equation"
+    ],
+    [
+     "Solving",
+     "Where the rider lands"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Compare Three Jumps",
+   "objective": "Complete the square to find the peak and landing of three jumps, and choose the best design for a beginner line.",
+   "materials": [
+    "Calculator (for square roots)",
+    "Graph paper or graphing app to check"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg2.quadratic-formula",
+  "title": "When Does the Rider Land?",
+  "hook": "Solving the flight-time equation",
+  "minutes": 55,
+  "grade": null,
+  "status": "published",
+  "summary": "Students solve quadratics with the quadratic formula, use the discriminant to count real solutions, and solve projectile equations for flight time and landing distance with the Jump Lab.",
+  "standards": [
+   "HSA-REI.B.4b",
+   "HSA-CED.A.1",
+   "HSF-IF.B.4"
+  ],
+  "image": null,
+  "objectives": [
+   "Solve any quadratic equation with the quadratic formula.",
+   "Use the discriminant to decide how many real solutions there are.",
+   "Solve a projectile equation $h(t) = h_0 + v_y t - 4.9t^2$ for time.",
+   "Interpret solutions in context and reject those that don’t make sense."
+  ],
+  "question": "How long is a rider in the air, and how far do they fly?",
+  "mtb": {
+   "text": [
+    "The Jump Lab computes exactly this: from speed, angle and heights it predicts the landing. Solving $h(t) = 0$ with the quadratic formula is how the prediction is made.",
+    "The discriminant answers real questions too: will a rider clear a height at all? If $D < 0$, never."
+   ],
+   "pairs": [
+    [
+     "$h(t) = 0$",
+     "Touchdown"
+    ],
+    [
+     "Positive root",
+     "Time in the air"
+    ],
+    [
+     "Negative root",
+     "A time before takeoff (rejected)"
+    ],
+    [
+     "$v_x t$",
+     "Landing distance"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "lab",
+   "tool": "jump-lab",
+   "title": "Predict, Then Send It",
+   "objective": "Predict a jump’s flight time and landing distance with the quadratic formula, then check the prediction in the Jump Lab.",
+   "materials": [
+    "One device per pair",
+    "The Jump Lab",
+    "Calculator with sine and cosine"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "alg2.complex-solutions",
+  "title": "Can the Rider Reach It?",
+  "hook": "What complex solutions really mean",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students define $i$, add and multiply complex numbers, find complex solutions of quadratics with the quadratic formula, recognise conjugate pairs, and interpret complex roots as “never happens”.",
+  "standards": [
+   "HSN-CN.A.1",
+   "HSN-CN.A.2",
+   "HSN-CN.C.7"
+  ],
+  "image": null,
+  "objectives": [
+   "Define $i$ and write square roots of negative numbers in terms of $i$.",
+   "Add, subtract and multiply complex numbers.",
+   "Find complex solutions of quadratic equations and recognise conjugate pairs.",
+   "Explain what complex roots mean for a graph and in context."
+  ],
+  "question": "If an equation has no real solution, what do its complex solutions tell us?",
+  "mtb": {
+   "text": [
+    "Complex solutions have a real-world meaning: “this never happens.” A rider whose height equation gives complex times for 3 m simply never gets that high.",
+    "The real part of the complex pair is still useful: it is the time of the peak, the axis of symmetry of the height graph."
+   ],
+   "pairs": [
+    [
+     "Real solutions",
+     "Times the rider passes a height"
+    ],
+    [
+     "Complex solutions",
+     "The rider never reaches that height"
+    ],
+    [
+     "Double root",
+     "The rider just touches it at the peak"
+    ],
+    [
+     "Real part",
+     "Time of the peak"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Can the Rider Reach It?",
+   "objective": "Use the quadratic formula to decide which heights a rider reaches, and interpret real and complex solutions.",
+   "materials": [
+    "Calculator",
+    "The height model $h(t) = 1 + 6t - 4.9t^2$"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "precalc.exponential-models",
+  "title": "Forecasting the Bike Park",
+  "hook": "Growth that multiplies",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students build exponential models $y = ab^t$ from data, use continuous growth $A = Pe^{rt}$, and interpret the initial value and growth factor, forecasting visits to a growing bike park.",
+  "standards": [
+   "HSF-LE.A.1",
+   "HSF-LE.A.2",
+   "HSF-LE.B.5"
+  ],
+  "image": null,
+  "objectives": [
+   "Recognise exponential data by a constant ratio between equally spaced values.",
+   "Build an exponential model from a table or two points.",
+   "Use continuous growth and decay models $A = Pe^{rt}$.",
+   "Interpret $a$, $b$ and $r$ in context, including growth and decay rates."
+  ],
+  "question": "How do you predict something that grows by a percentage each year, rather than by a fixed amount?",
+  "mtb": {
+   "text": [
+    "Mountain biking participation, trail-network use and segment attempts often grow by a percentage each year, which makes exponential models the natural first choice for forecasting.",
+    "Decay models describe a tyre losing a fixed percentage of its pressure per day, or a battery losing capacity per charge cycle."
+   ],
+   "pairs": [
+    [
+     "$a$",
+     "Visits in the starting year"
+    ],
+    [
+     "$b = 1.2$",
+     "20% more riders each year"
+    ],
+    [
+     "$0 < b < 1$",
+     "A slowly leaking tyre"
+    ],
+    [
+     "$Pe^{rt}$",
+     "A trail fund growing continuously"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Forecast the Bike Park",
+   "objective": "Build an exponential model from a bike park’s visitor data and use it to forecast, judging how far the forecast can be trusted.",
+   "materials": [
+    "Calculator or spreadsheet",
+    "Graph paper"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "precalc.logarithmic-models",
+  "title": "The Barometric Altimeter",
+  "hook": "How a bike computer knows your altitude",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students define logarithms as inverses of exponentials, build logarithmic models, linearise exponential data with logarithms, and use the pressure–altitude model inside a bike computer.",
+  "standards": [
+   "HSF-LE.A.4",
+   "HSF-BF.B.5",
+   "HSS-ID.B.6a"
+  ],
+  "image": null,
+  "objectives": [
+   "Convert between exponential and logarithmic form.",
+   "Build and evaluate logarithmic models.",
+   "Linearise exponential data by taking logarithms.",
+   "Use and interpret logarithmic scales."
+  ],
+  "question": "If air pressure falls exponentially as you climb, how can a bike computer turn a pressure reading into an altitude?",
+  "mtb": {
+   "text": [
+    "Most GPS bike computers and watches measure altitude with a barometer, because air pressure falls predictably as you climb. Pressure is exponential in altitude, so altitude is logarithmic in pressure.",
+    "Weather changes the sea-level pressure, which is why these devices drift and ask to be calibrated at a known elevation."
+   ],
+   "pairs": [
+    [
+     "Exponential decay",
+     "Air pressure with altitude"
+    ],
+    [
+     "Logarithm",
+     "Altitude from pressure"
+    ],
+    [
+     "Calibration",
+     "Setting the sea-level reference"
+    ],
+    [
+     "Linearising",
+     "Checking pressure data fit the model"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Altimeter on the Climb",
+   "objective": "Use the logarithmic pressure–altitude model to turn a climb’s pressure readings into altitudes, and see why calibration matters.",
+   "materials": [
+    "Calculator with ln",
+    "The readings below"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "precalc.logarithmic-properties",
+  "title": "The Slow Leak",
+  "hook": "Solving for time with logarithms",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students apply the product, quotient and power properties and the change-of-base formula, and solve exponential and logarithmic equations, including when a leaking tyre will reach a minimum pressure.",
+  "standards": [
+   "HSF-LE.A.4",
+   "HSF-BF.B.5",
+   "HSA-SSE.A.2"
+  ],
+  "image": null,
+  "objectives": [
+   "Expand and condense logarithmic expressions using the product, quotient and power properties.",
+   "Use the change-of-base formula.",
+   "Solve exponential equations by taking logarithms.",
+   "Solve logarithmic equations and reject extraneous solutions."
+  ],
+  "question": "When an unknown is stuck in an exponent, how do you get it out?",
+  "mtb": {
+   "text": [
+    "A slow puncture (or tubeless sealant that hasn’t sealed) loses roughly a fixed percentage of pressure per hour. Solving for $t$ tells a rider whether the tyre will last the ride.",
+    "The same algebra answers “how long until…” questions for battery capacity, trail growth and cooling."
+   ],
+   "pairs": [
+    [
+     "Exponential equation",
+     "Pressure after $t$ hours"
+    ],
+    [
+     "Taking logs",
+     "Bringing $t$ down from the exponent"
+    ],
+    [
+     "Change of base",
+     "Using the ln key for any base"
+    ],
+    [
+     "Extraneous solution",
+     "A negative time or pressure that the model allows but reality doesn’t"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Slow Leak Detective",
+   "objective": "Build an exponential model for a leaking tyre from two readings and use logarithms to predict when it will be too soft.",
+   "materials": [
+    "Calculator with ln",
+    "Optional: a tyre gauge and a real bike"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "precalc.applications",
+  "title": "Cooling the Brakes",
+  "hook": "Growth, decay and Newton’s law of cooling",
+  "minutes": 55,
+  "grade": null,
+  "status": "published",
+  "summary": "Students solve growth and decay problems, model a brake rotor cooling after a long descent with Newton’s law of cooling, and interpret logistic growth with a carrying capacity.",
+  "standards": [
+   "HSF-LE.A.4",
+   "HSF-LE.B.5",
+   "HSF-IF.B.4"
+  ],
+  "image": null,
+  "objectives": [
+   "Solve growth and decay problems, including half-life and doubling time.",
+   "Use Newton’s law of cooling to model and predict temperature.",
+   "Interpret the parameters of a logistic model.",
+   "Choose an appropriate model (exponential, cooling or logistic) for a situation."
+  ],
+  "question": "How quickly does a hot brake rotor cool, and why does it slow down as it gets close to air temperature?",
+  "mtb": {
+   "text": [
+    "Long, steep descents turn the bike’s energy into heat in the brake rotors, which can get hot enough to fade the brakes. Newton’s law of cooling describes how quickly they recover, which matters on a descent with several steep pitches.",
+    "A new bike park’s membership grows quickly, then levels off as the local riding population is reached: logistic growth."
+   ],
+   "pairs": [
+    [
+     "$T_0$",
+     "Rotor temperature at the bottom of the descent"
+    ],
+    [
+     "$T_a$",
+     "Air temperature"
+    ],
+    [
+     "$k$",
+     "How fast the rotor sheds heat"
+    ],
+    [
+     "Carrying capacity $K$",
+     "The most members the park can have"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "Cool the Brakes",
+   "objective": "Fit Newton’s law of cooling to brake-rotor temperature data and use it to make safety predictions.",
+   "materials": [
+    "Calculator with ln",
+    "Graph paper or graphing app"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "precalc.degrees-and-radians",
+  "title": "One Radian of Wheel",
+  "hook": "Measuring angles by how far the wheel rolls",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students define the radian with a rolling wheel, convert between degrees and radians, use $s = r\\theta$ for arc length, and find angular and linear speeds of a bike wheel.",
+  "standards": [
+   "HSF-TF.A.1",
+   "HSG-C.B.5",
+   "HSN-Q.A.1"
+  ],
+  "image": null,
+  "objectives": [
+   "Define a radian and explain why $2\\pi$ radians make a full turn.",
+   "Convert between degrees and radians.",
+   "Use $s = r\\theta$ to find arc length.",
+   "Find angular speed and linear speed with $v = r\\omega$."
+  ],
+  "question": "Why do mathematicians and engineers measure angles by the distance a wheel rolls?",
+  "mtb": {
+   "text": [
+    "When a wheel rolls without slipping, the bike moves forward exactly the arc length of the turn. One radian of wheel rotation moves the bike forward one radius: about 0.37 m on a 29er.",
+    "Bike computers use exactly this: a magnet or sensor counts wheel turns and multiplies by the circumference to get distance and speed."
+   ],
+   "pairs": [
+    [
+     "Radian",
+     "Wheel turn that rolls the bike one radius"
+    ],
+    [
+     "$s = r\\theta$",
+     "Distance rolled"
+    ],
+    [
+     "$\\omega$",
+     "Wheel spin rate"
+    ],
+    [
+     "$v = r\\omega$",
+     "Bike speed"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "classroom",
+   "tool": null,
+   "title": "Roll the Wheel",
+   "objective": "Measure and roll a real wheel to see radians, arc length and linear speed in action.",
+   "materials": [
+    "A bike wheel (or a large paper plate on a pencil axle)",
+    "Tape measure, chalk or tape",
+    "Protractor"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "precalc.unit-circle",
+  "title": "Follow the Valve Stem",
+  "hook": "The height of a spinning valve traces sine",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students define sine and cosine as coordinates on the unit circle, find exact values with reference angles, determine signs by quadrant, and model the height of a wheel’s valve stem.",
+  "standards": [
+   "HSF-TF.A.2",
+   "HSF-TF.A.3",
+   "HSF-TF.B.5"
+  ],
+  "image": null,
+  "objectives": [
+   "Define $\\cos\\theta$ and $\\sin\\theta$ as the coordinates of a point on the unit circle.",
+   "Find exact values for multiples of $\\frac{\\pi}{6}$ and $\\frac{\\pi}{4}$.",
+   "Use reference angles and quadrant signs.",
+   "Model a rotating point’s height with $h = c + r\\sin\\theta$."
+  ],
+  "question": "How can one circle give us the sine and cosine of every angle?",
+  "mtb": {
+   "text": [
+    "Watch the valve stem on a turning wheel: it goes up and down smoothly, and its height above the hub is exactly $r\\sin\\theta$. Its distance in front of the hub is $r\\cos\\theta$.",
+    "That makes every spinning part of a bike (wheels, cranks, chainrings) a unit circle scaled up, and the reason sine waves appear when you graph them."
+   ],
+   "pairs": [
+    [
+     "Unit circle",
+     "A wheel of radius 1"
+    ],
+    [
+     "$\\sin\\theta$",
+     "Valve height above the hub (per unit radius)"
+    ],
+    [
+     "$\\cos\\theta$",
+     "Valve distance in front of the hub"
+    ],
+    [
+     "Quadrant signs",
+     "Above or below, in front or behind the hub"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "classroom",
+   "tool": null,
+   "title": "Measure the Valve Stem",
+   "objective": "Measure a valve stem’s height as a wheel turns and compare it with $h = c + r\\sin\\theta$.",
+   "materials": [
+    "A bike on a stand or upside down (or a large paper wheel)",
+    "Protractor or printed angle template",
+    "Ruler or tape measure"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "precalc.sine-cosine-and-tangent",
+  "title": "Lean Into the Berm",
+  "hook": "Six trig functions and the angle of a turn",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students evaluate all six trigonometric functions of any angle, find exact values for special angles, use a calculator in degree and radian mode, and connect tangent to a rider’s lean angle in the Berm Lab.",
+  "standards": [
+   "HSF-TF.A.2",
+   "HSF-TF.C.8",
+   "HSG-SRT.C.7"
+  ],
+  "image": null,
+  "objectives": [
+   "Define and evaluate sine, cosine, tangent, cosecant, secant and cotangent.",
+   "Find exact values of all six functions for special angles.",
+   "Use a calculator correctly in degree and radian mode.",
+   "Use $\\tan\\theta = \\frac{v^2}{gr}$ to relate a rider’s lean angle to speed and turn radius."
+  ],
+  "question": "How does one angle produce six different ratios, and which one tells a rider how far to lean?",
+  "mtb": {
+   "text": [
+    "In a flat corner, a rider leans so that gravity and the tyre’s grip combine to push them around the turn. The lean angle satisfies $\\tan\\theta = \\frac{v^2}{gr}$: faster or tighter means more lean.",
+    "The Berm Lab shows the lean and the grip demand as you change speed, radius and banking; the reciprocal function $\\sec\\theta$ even tells you how much harder the tyres are pressed into the ground."
+   ],
+   "pairs": [
+    [
+     "$\\tan\\theta$",
+     "Lean needed for a speed and radius"
+    ],
+    [
+     "$\\sec\\theta$",
+     "How much heavier the rider feels in the turn"
+    ],
+    [
+     "$\\tan^{-1}$",
+     "Finding the lean angle"
+    ],
+    [
+     "Radian mode",
+     "What engineers’ formulas expect"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "lab",
+   "tool": "berm-lab",
+   "title": "Lean Angle Lab",
+   "objective": "Use the Berm Lab to see how speed and turn radius set a rider’s lean, and evaluate trig functions of the lean angle.",
+   "materials": [
+    "One device per pair",
+    "The Berm Lab",
+    "Scientific calculator"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "precalc.right-triangle-trigonometry",
+  "title": "Grade Versus Angle",
+  "hook": "A 20% grade is only 11.3°",
+  "minutes": 50,
+  "grade": null,
+  "status": "published",
+  "summary": "Students use SOH-CAH-TOA to find sides and angles of right triangles, convert trail grades to angles with $\\tan^{-1}$, and solve angle-of-elevation and depression problems.",
+  "standards": [
+   "HSG-SRT.C.6",
+   "HSG-SRT.C.8",
+   "HSF-TF.A.2"
+  ],
+  "image": null,
+  "objectives": [
+   "Use sine, cosine and tangent to find missing sides of right triangles.",
+   "Use inverse trigonometric functions to find angles.",
+   "Convert between percent grade and angle.",
+   "Solve angle of elevation and depression problems."
+  ],
+  "question": "Why is a 20% trail grade so much less than a 20° slope?",
+  "mtb": {
+   "text": [
+    "Trail signs and builders use percent grade; physics and ramp design use angles. They’re linked by tangent: grade $= \\tan\\theta$. Because $\\tan\\theta$ is close to $\\theta$ (in radians) for small angles, gentle grades in percent look much bigger than the same slope in degrees.",
+    "Angles of elevation help a rider (or a builder) estimate the height of a drop or tree from a safe distance."
+   ],
+   "pairs": [
+    [
+     "$\\tan\\theta$",
+     "Grade as a decimal"
+    ],
+    [
+     "$\\tan^{-1}$",
+     "Angle from a grade"
+    ],
+    [
+     "Angle of elevation",
+     "Looking up at a drop’s lip"
+    ],
+    [
+     "$\\sin\\theta$",
+     "Rise per metre of trail surface"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "lab",
+   "tool": "slope-lab",
+   "title": "Grade-to-Angle Check",
+   "objective": "Build trails at set grades in the Slope Lab and confirm that its angle readout equals $\\tan^{-1}$ of the grade.",
+   "materials": [
+    "One device per pair",
+    "The Slope & Linear Relationships Lab",
+    "Scientific calculator (degree mode)"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ },
+ {
+  "id": "precalc.trigonometric-identities",
+  "title": "The Jump-Range Identity",
+  "hook": "Why 45° goes furthest",
+  "minutes": 55,
+  "grade": null,
+  "status": "published",
+  "summary": "Students prove and use the Pythagorean identities, the sum and difference formulas and the double-angle formulas, and use $\\sin 2\\theta = 2\\sin\\theta\\cos\\theta$ to explain why a 45° takeoff maximises a jump’s range on level ground.",
+  "standards": [
+   "HSF-TF.C.8",
+   "HSF-TF.C.9",
+   "HSA-SSE.A.2"
+  ],
+  "image": null,
+  "objectives": [
+   "Use $\\sin^2\\theta + \\cos^2\\theta = 1$ and its related forms.",
+   "Use the sum and difference formulas to find exact values.",
+   "Use double-angle formulas.",
+   "Verify identities and apply them to the projectile range formula."
+  ],
+  "question": "How can rewriting a trig expression reveal the best launch angle for a jump?",
+  "mtb": {
+   "text": [
+    "The double-angle identity turns the jump-range formula into a single sine, which shows at a glance that 45° gives the longest jump on level ground, and that 30° and 60° go equally far (but 60° goes much higher).",
+    "The identity $1 + \\tan^2\\theta = \\sec^2\\theta$ is the trail-length fact from Lesson 4.4 in disguise: surface length $=$ run $\\times \\sec\\theta$ $=$ run $\\times \\sqrt{1 + \\text{grade}^2}$."
+   ],
+   "pairs": [
+    [
+     "$\\sin 2\\theta$",
+     "How the range depends on angle"
+    ],
+    [
+     "Maximum of $\\sin 2\\theta$",
+     "Best takeoff angle (45°)"
+    ],
+    [
+     "$\\sin(180° - x) = \\sin x$",
+     "Two angles, same range"
+    ],
+    [
+     "$1 + \\tan^2\\theta = \\sec^2\\theta$",
+     "Surface length from grade"
+    ]
+   ]
+  },
+  "activity": {
+   "kind": "problem",
+   "tool": null,
+   "title": "The Range Investigation",
+   "objective": "Use the double-angle identity to analyse how a jump’s range depends on its takeoff angle.",
+   "materials": [
+    "Calculator",
+    "Optional: the Jump Lab to explore takeoff and landing at different heights"
+   ]
+  },
+  "counts": {
+   "stages": 5,
+   "guided": 4,
+   "practice": 9,
+   "exit": 4
+  }
+ }
+]

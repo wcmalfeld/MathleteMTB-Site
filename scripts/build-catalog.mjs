@@ -29,7 +29,11 @@ const SPORTS = {
 };
 const FEATURES = [
   { id: 'feature.practice-engine', name: 'Academic Practice Engine',
-    description: 'Saves every answer, the student dashboard, Review My Mistakes and goals. Without it, work in this organization isn’t saved.' }
+    description: 'Saves every answer, the student dashboard, Review My Mistakes and goals. Without it, work in this organization isn’t saved.' },
+  // Lesson plans with answer keys (teacher-curriculum/, supabase/teacher-curriculum.sql).
+  // Staff only: an organization's owners, admins and instructors.
+  { id: 'feature.teacher-curriculum', name: 'Teacher Curriculum', audience: 'staff', url: 'teacher-curriculum/',
+    description: 'Complete lesson plans for each quarter of Algebra 1, Geometry, Algebra 2 and Precalculus, with answer keys. For teachers and instructors only.' }
 ];
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const SUBJECTS = { algebra: 'Algebra', geometry: 'Geometry', trigonometry: 'Trigonometry', statistics: 'Statistics', calculus: 'Calculus', physics: 'Physics' };

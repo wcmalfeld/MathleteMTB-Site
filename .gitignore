@@ -11,3 +11,9 @@ js/supabase-config.js
 private-tools/
 
 .DS_Store
+
+# Teacher lesson plans (answer keys). The sources stay off the public repo;
+# scripts/build-teacher-curriculum.mjs builds them and
+# `node scripts/admin.mjs lessons-upload` puts them in Supabase, where only
+# teachers can read them. Back this folder up somewhere private.
+private-content/

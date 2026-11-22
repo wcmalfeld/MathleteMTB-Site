@@ -587,6 +587,52 @@ check('Inquiries are insert-only for visitors', /revoke all on public\.inquiries
   check('Every page’s main menu links to Resources', noLink.length === 0, noLink.slice(0, 5).join(', '));
 }
 
+// ---- Teacher Curriculum (scripts/build-teacher-curriculum.mjs, supabase/teacher-curriculum.sql) ----
+{
+  const { render: renderTC, buildModel } = await import('./build-teacher-curriculum.mjs');
+  const { CURRENT_QUARTER, TOOLS } = await import('../content/teacher-curriculum/quarters.mjs');
+  const model = await buildModel();
+  check('Teacher Curriculum: every unit in exactly one quarter, every lesson complete (PRD section 8)', model.errors.length === 0, model.errors.slice(0, 5).join('; '));
+  if (!model.errors.length) {
+    const { pages, bundle } = await renderTC();
+    const stale = Object.entries(pages).filter(([p, h]) => !existsSync(root + p) || read(p) !== h).map(([p]) => p);
+    check('Teacher Curriculum pages and lessons.json are up to date (node scripts/build-teacher-curriculum.mjs)', stale.length === 0, stale.slice(0, 5).join(', '));
+    check('Teacher Curriculum: Algebra 1, Geometry, Algebra 2 and Precalculus, four quarters each',
+      model.courses.map(c => c.name).join() === 'Algebra 1,Geometry,Algebra 2,Precalculus' && model.courses.every(c => c.quarters.length === 4));
+    const cur = model.courses.flatMap(c => c.quarters.filter(q => q.n === CURRENT_QUARTER).flatMap(q => q.units.flatMap(u => u.topics)));
+    const missing = cur.filter(t => !t.lesson || t.lesson.status !== 'published').map(t => t.id);
+    check(`Every topic in the current quarter (${CURRENT_QUARTER}) has a published lesson plan`, missing.length === 0, `${missing.length} missing: ${missing.slice(0, 6).join(', ')}`);
+    const lessons = model.courses.flatMap(c => c.quarters.flatMap(q => q.units.flatMap(u => u.topics.filter(t => t.lesson))));
+    const live = (() => { const box = { window: {} }; vm.runInNewContext(read('js/tools-config.js'), box); return box.window.MATHLETE_TOOLS || []; })();
+    const badTools = Object.entries(TOOLS).filter(([id, t]) => !existsSync(root + t.route + 'index.html')
+      || (live.some(x => x.id === id) && !live.some(x => x.id === id && x.access === 'public' && x.status === 'live'))).map(([id]) => id);
+    check('Every tool a lesson can launch is a live, public page in this repo', badTools.length === 0, badTools.join(', '));
+    const pub = JSON.parse(read('content/teacher-curriculum/lessons.json'));
+    const leakKeys = pub.filter(l => ['stages', 'guided', 'practice', 'exit', 'resources', 'foundation'].some(k => k in l) || (l.activity && ('answers' in l.activity || 'teacher' in l.activity)));
+    check('lessons.json (public) holds no teaching plan, practice, answers or teacher notes', leakKeys.length === 0, leakKeys.map(l => l.id).join(', '));
+    if (bundle.length) {
+      // The answers themselves must never be in a public page.
+      const leaks = [];
+      for (const b of bundle) {
+        const L = b.content, secrets = [...L.exit.map(x => x.why), ...L.resources.misconceptions.map(m => m[1]), ...L.stages.map(s => s.teach), ...L.activity.answers];
+        for (const sec of secrets) if (sec.length > 30 && Object.values(pages).some(h => h.includes(sec.slice(0, 30).replace(/&/g, '&amp;')))) leaks.push(b.id);
+      }
+      check('No teacher-only text (answers, teaching plan, misconceptions) appears in any public page', leaks.length === 0, [...new Set(leaks)].join(', '));
+    }
+    check('Lesson plans link only to lesson pages that exist (prev/next, breadcrumbs)', lessons.every(t => existsSync(root + t.lesson.href + 'index.html')));
+  }
+  const tsql = read('supabase/teacher-curriculum.sql');
+  check('Lesson plans are readable only through teacher_lesson(), never the table',
+    /alter table public\.teacher_lessons enable row level security;/.test(tsql) && /revoke all on public\.teacher_lessons from anon, authenticated;/.test(tsql)
+    && !/grant [^;]*on public\.teacher_lessons/i.test(tsql) && !/create policy[^;]*teacher_lessons/i.test(tsql) && /if not public\.is_teacher\(\) then return/.test(tsql));
+  const tcJs = execSync(`find ${root}js/teacher-curriculum -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
+  check('Teacher Curriculum scripts never build HTML from strings', tcJs.every(f => !/\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(|new Function/.test(readFileSync(f, 'utf8'))));
+  check('Lesson sources (with answer keys) are git-ignored', read('.gitignore').split('\n').includes('private-content/'));
+  let tracked = '';
+  try { tracked = execSync('git ls-files private-content', { cwd: root, encoding: 'utf8' }); } catch {}
+  check('No lesson sources are committed', tracked.trim() === '', tracked.split('\n').slice(0, 3).join(', '));
+}
+
 // ---- secrets / private files in the repo ----
 let files = [];
 try {

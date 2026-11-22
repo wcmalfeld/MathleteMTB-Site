@@ -28,7 +28,7 @@ const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 const plural = (n, one, many) => `${n} ${n === 1 ? one : (many || one + 's')}`;
 
 // ---------- course artwork (decorative line drawings) ----------
-const ART = {
+export const ART = {
   climb: `<svg class="cls-art" viewBox="0 0 240 120" aria-hidden="true"><path class="cls-art-ground" d="M0,108 L60,96 L120,70 L170,58 L240,22 L240,120 L0,120 Z"/><path class="cls-art-line" d="M0,108 L60,96 L120,70 L170,58 L240,22"/><path class="cls-art-dash" d="M120,70 L170,70 M170,70 L170,58"/><text x="140" y="84">run</text><text x="176" y="68">rise</text></svg>`,
   jump: `<svg class="cls-art" viewBox="0 0 240 120" aria-hidden="true"><path class="cls-art-ground" d="M0,110 L40,110 L78,78 L84,110 L150,110 L170,92 L240,110 L240,120 L0,120 Z"/><path class="cls-art-line" d="M0,110 L40,110 L78,78"/><path class="cls-art-dash" d="M78,78 Q120,8 170,92"/><circle class="cls-art-dot" cx="120" cy="36" r="4"/><path class="cls-art-line" d="M150,110 L170,92 L240,110"/></svg>`,
   frame: `<svg class="cls-art" viewBox="0 0 240 120" aria-hidden="true"><circle class="cls-art-line" cx="58" cy="82" r="30"/><circle class="cls-art-line" cx="182" cy="82" r="30"/><path class="cls-art-line" d="M58,82 L104,82 L92,40 Z M104,82 L160,42 L92,40 M160,42 L182,82 M160,42 L156,28 M92,40 L88,30"/><path class="cls-art-dash" d="M104,82 m-14,0 a14,14 0 0 1 4,-10"/></svg>`,
@@ -191,6 +191,19 @@ function landing(model) {
   </div>
 </section>
 
+<section class="section" aria-labelledby="teach-title">
+  <div class="wrap">
+    <article class="pr-feature cls-teach">
+      <div class="pr-feature-text">
+        <p class="kicker">For teachers</p>
+        <h2 class="pr-feature-name" id="teach-title"><a href="teacher-curriculum/">Teacher Curriculum</a></h2>
+        <p class="cls-course-desc">Ready-to-teach lesson plans that follow these same courses, units and topics, quarter by quarter: objectives, a timed teaching plan, an MTB activity or lab, practice, an exit ticket and a full answer key.</p>
+        <a class="button" href="teacher-curriculum/">Open the lesson plans <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </article>
+  </div>
+</section>
+
 <section class="section section--panel" aria-labelledby="physics-title">
   <div class="wrap">
     <div class="lab-section-head"><h2 class="label" id="physics-title">Physics</h2></div>
@@ -275,7 +288,8 @@ function coursePage(c, model) {
     <div class="lab-section-head"><h2 class="label" id="other-title">${c.pathway ? 'Also in ' + esc(P.name) : 'Other classes'}</h2></div>
     <ul class="lab-also">
       ${others.map(o => `<li><a href="${o.href}">${esc(o.name)}</a></li>`).join('\n      ')}
-      ${c.pathway ? `<li><a href="${P.href}">${esc(P.name)} overview</a></li>` : `<li><a href="${P.href}">${esc(P.name)}</a></li>`}
+      ${c.pathway ? `<li><a href="${P.href}">${esc(P.name)} overview</a></li>` : `<li><a href="${P.href}">${esc(P.name)}</a></li>`}${c.pathway ? '' : `
+      <li><a href="teacher-curriculum/${c.slug}/">${esc(c.name)} lesson plans (teachers)</a></li>`}
       <li><a href="classes/">All classes</a></li>
     </ul>
   </div>
