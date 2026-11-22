@@ -9,7 +9,7 @@ modules at [/classes/physics/](../classes/physics/index.html); they never see th
 Statuses (PRD 11.2): Planned → Content drafting → Visual development → Interactive activity development → Assessment development → Review → Published. Only *Published*
 modules are presented as finished lessons.
 
-Now: 28 planned. Flagship labs: 2 live of 23.
+Now: 27 planned, 1 review. Flagship labs: 3 live of 23.
 
 | Module | Title | Unit | Category | Status | Labs (live in bold) | Activities on the page |
 |---|---|---|---|---|---|---|
@@ -17,10 +17,10 @@ Now: 28 planned. Flagship labs: 2 live of 23.
 | Trail Physics 2 | Mathematics Review | 1. Physics Foundations | Core MTB physics | Planned | MTB Math Toolkit | Berm Lab |
 | Trail Physics 3 | Scientific Measurement | 1. Physics Foundations | Core MTB physics | Planned | Trail Measurement Lab, MTB Math Toolkit | Berm Lab |
 | Trail Physics 4 | Motion in One Dimension | 2. Understanding Motion | Core MTB physics | Planned | Trail Speed Lab | – |
-| Trail Physics 5 | Vectors | 2. Understanding Motion | Core MTB physics | Planned | Vector Lab | – |
+| Trail Physics 5 | Vectors | 2. Understanding Motion | Core MTB physics | Planned | Vector Lab | Newton’s Laws of Motion |
 | Trail Physics 6 | Projectile Motion | 2. Understanding Motion | Core MTB physics | Planned | **Jump Lab** (live) | Jump Lab |
-| Trail Physics 7 | Newton’s Laws of Motion | 3. Forces & Cornering | Core MTB physics | Planned | MTB Force Lab | – |
-| Trail Physics 8 | Friction, Slopes and Springs | 3. Forces & Cornering | Core MTB physics | Planned | Traction Lab, Incline Lab, Suspension Lab | Berm Lab |
+| Trail Physics 7 | Newton’s Laws of Motion | 3. Forces & Cornering | Core MTB physics | Review | **MTB Force Lab** (live) | Newton’s Laws of Motion |
+| Trail Physics 8 | Friction, Slopes and Springs | 3. Forces & Cornering | Core MTB physics | Planned | Traction Lab, Incline Lab, Suspension Lab | Newton’s Laws of Motion, Berm Lab |
 | Trail Physics 9 | Uniform Circular Motion | 3. Forces & Cornering | Core MTB physics | Planned | **Berm Lab** (live) | Berm Lab |
 | Trail Physics 10 | Energy and Gravitation | 4. Energy & Momentum | Core MTB physics | Planned | Trail Energy Lab | – |
 | Trail Physics 11 | Work and Power | 4. Energy & Momentum | Core MTB physics | Planned | MTB Power Lab | – |

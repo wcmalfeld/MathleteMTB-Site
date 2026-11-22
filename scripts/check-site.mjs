@@ -222,6 +222,29 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   check('Berm Lab is listed on the Lab home and the Engineering Lab page, and its placeholder is gone', read('index.html').includes('learning-lab/berm-lab/') && read('learning-lab/engineering/index.html').includes('learning-lab/berm-lab/') && !read('js/lab-categories.js').includes("'Berm Lab'"));
 }
 
+// ---- Newton's Laws lesson (Trail Physics, Module 7; tests: scripts/test-newtons-laws.mjs) ----
+{
+  const dir = 'learning-lab/newtons-laws/';
+  const html = read(dir + 'index.html');
+  const css = read(dir + 'styles/newtons-laws.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  const leaking = css.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@')).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith('.nlab'));
+  check('Newton’s Laws lesson styles are all scoped under .nlab', leaking.length === 0, leaking.slice(0, 5).join(' | '));
+  check('Newton’s Laws lesson stylesheet braces balance', (css.match(/\{/g) || []).length === (css.match(/\}/g) || []).length);
+  const js = execSync(`find ${root + dir} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
+  const coupled = js.filter(f => !f.endsWith('/main.js') && /MathleteProgress|MathleteAuth|supabase|tools-config/.test(readFileSync(f, 'utf8')));
+  check('Newton’s Laws lesson module doesn’t depend on the site (only its page connects it)', coupled.length === 0 && !/site\.css|site-nav|site\.js/.test(html), coupled.join(', '));
+  check('Newton’s Laws lesson page loads progress tracking in order, then the module', ['js/supabase-config.js', 'js/auth.js', 'js/progress.js', 'src="main.js'].map(x => html.indexOf(x)).every((v, i, a) => v > 0 && (i === 0 || v > a[i - 1])));
+  const unsafe = js.filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(/.test(readFileSync(f, 'utf8')));
+  check('Newton’s Laws lesson never builds HTML from strings', unsafe.length === 0, unsafe.join(', '));
+  const { questionKinds } = await import('../' + dir + 'logic/lesson.js');
+  const kinds = Object.keys(questionKinds()).map(k => 'newtons-laws:' + k).sort();
+  const sqlKinds = [...new Set([...read('supabase/curriculum.sql').matchAll(/\('(newtons-laws:[a-z0-9-]+)', 'newtons-laws'/g)].map(m => m[1]))].sort();
+  check(`Newton’s Laws lesson question kinds are registered in supabase/curriculum.sql (${kinds.length})`, kinds.length > 0 && kinds.join() === sqlKinds.join(), `lesson: ${kinds.length} | sql: ${sqlKinds.length}`);
+  check('Newton’s Laws lesson kinds are filed under forces-motion, not algebra', /\('newtons-laws:kc-1', 'forces-motion'\)/.test(read('supabase/curriculum.sql')) && !/\('newtons-laws:[a-z0-9-]+', 'algebra'\)/.test(read('supabase/curriculum.sql')));
+  const mod7 = read('classes/trail-physics/newtons-laws/index.html');
+  check('Trail Physics Module 7 links the lesson and says it’s in review (not yet published)', mod7.includes('href="learning-lab/newtons-laws/?from=') && mod7.includes('Lesson in review') && !mod7.includes('Lesson available'));
+}
+
 // ---- Classes (generated from content/classes/ by scripts/build-classes.mjs) ----
 {
   const { loadClasses } = await import('../content/classes/model.mjs');

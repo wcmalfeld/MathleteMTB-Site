@@ -7,7 +7,7 @@ import { PHYSICS_COURSES, PATHWAY, LABS, STATUSES, CATEGORIES } from './physics.
 export { STATUSES, CATEGORIES, PATHWAY };
 const COURSES = [...MATH_COURSES, ...PHYSICS_COURSES];
 
-export const ACTIVITY_TYPES = { lab: 'Interactive lab', guided: 'Guided activity', game: 'Game', practice: 'Practice' };
+export const ACTIVITY_TYPES = { lesson: 'Interactive lesson', lab: 'Interactive lab', guided: 'Guided activity', game: 'Game', practice: 'Practice' };
 export const LEVELS = { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' };
 
 export function loadClasses() {

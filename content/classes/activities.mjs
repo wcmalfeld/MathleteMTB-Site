@@ -122,6 +122,18 @@ const GEAR_LAB = {
   'precalc-angular-speed': [RD + 'angular-velocity']
 };
 
+// Newton's Laws lesson: the lesson lists its own questions and the ideas each
+// practises (learning-lab/newtons-laws/logic/lesson.js); here those ideas
+// become curriculum skills.
+import { questionKinds as newtonKinds } from '../../learning-lab/newtons-laws/logic/lesson.js';
+const N7 = 'phys1.newtons-laws.';
+const NEWTON_IDEAS = {
+  'force-types': [N7 + 'free-body'], vector: ['phys1.vectors.scalars-vectors'], weight: [N7 + 'force-and-weight'], net: [N7 + 'net-force'],
+  balanced: [N7 + 'balanced-forces'], inertia: [N7 + 'inertia'], 'first-law': [N7 + 'inertia', N7 + 'balanced-forces'], 'second-law': [N7 + 'second-law'],
+  'third-law': [N7 + 'third-law'], pairs: [N7 + 'third-law'], fbd: [N7 + 'free-body'], incline: ['phys1.applications-of-newtons-laws.inclines'], reasoning: [N7 + 'second-law']
+};
+const newtonQuestionSkills = Object.fromEntries(Object.entries(newtonKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => NEWTON_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -173,6 +185,31 @@ export const ACTIVITIES = [
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------
+  {
+    id: 'newtons-laws',
+    title: 'Newton’s Laws of Motion',
+    type: 'lesson',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/newtons-laws/',
+    image: null,
+    home: 'phys1.newtons-laws',
+    summary: 'Seven short sections on forces, inertia, F = ma and action-reaction, with free-body diagrams you build yourself, the MTB Force Lab, a knowledge check and a climbing challenge.',
+    objectives: [
+      'Explain Newton’s three laws with mountain biking examples',
+      'Use F_net = ma and W = mg',
+      'Build free-body diagrams, on the flat and on a slope',
+      'Calculate net force and acceleration on a climb'
+    ],
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    minutes: '45-60 min',
+    parts: ['7 sections', 'Free-body diagram builder', 'MTB Force Lab', 'Knowledge check (8)', 'Final challenge'],
+    skills: [...new Set(Object.values(newtonQuestionSkills).flat())],
+    // Not a Lab tool: its question kinds are registered by curriculum.sql,
+    // filed under the broad 'forces-motion' skill.
+    broadSkill: 'forces-motion',
+    tracking: { gameId: 'newtons-laws', questions: newtonQuestionSkills }
+  },
   // These are Lab tools (js/tools-config.js, `tool`), so their question
   // kinds are already registered in supabase/progress.sql; curriculum.sql
   // only links them to physics skills. check-site.mjs checks every kind.
