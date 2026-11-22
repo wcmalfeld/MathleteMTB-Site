@@ -21,6 +21,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/site.css?v=16">
 <link rel="stylesheet" href="css/lab.css?v=10">
+<link rel="stylesheet" href="css/carousel.css?v=1">
 </head>
 <body class="lab">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -60,7 +61,17 @@
   </svg>
   <div class="wrap">
     <p class="eyebrow">The Mathlete Lab</p>
-    <h1 class="lab-home-title"><img class="hero-logo" src="assets/logo.png" alt="Mathlete MTB: The Mathlete Lab" width="972" height="231"></h1>
+    <div class="hero-brand">
+      <h1 class="lab-home-title"><img class="hero-logo" src="assets/logo.png" alt="Mathlete MTB: The Mathlete Lab" width="972" height="231"></h1>
+      <!-- Photo carousel (js/carousel.js). The photos are listed in
+           js/gallery-config.js; the first one is repeated here so the page
+           has a photo before (or without) JavaScript. -->
+      <div class="carousel" data-carousel aria-label="Photos from the Mathlete MTB world">
+        <div class="carousel-track">
+          <figure class="carousel-slide is-current"><img src="assets/gallery/riding-01.jpg" alt="A rider flying high over a huge dirt jump in a tall, misty forest" width="1280" height="720" decoding="async" fetchpriority="high"></figure>
+        </div>
+      </div>
+    </div>
     <div class="hero-actions">
       <a class="button" href="#tools" data-track="lab_cta_home_hero">Explore the tools</a>
       <a class="read-link hero-link" href="#private-tutoring">Private tutoring <span aria-hidden="true">&darr;</span></a>
@@ -649,6 +660,8 @@
 <script src="js/supabase-config.js?v=7" defer></script>
 <script src="js/auth.js?v=8" defer></script>
 <script src="js/site.js?v=8" defer></script>
+<script src="js/gallery-config.js?v=1" defer></script>
+<script src="js/carousel.js?v=1" defer></script>
 <script src="js/track.js?v=1" defer></script>
 <script src="js/lab.js?v=1" defer></script>
 </body>

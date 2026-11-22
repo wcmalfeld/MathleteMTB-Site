@@ -18,7 +18,7 @@
 //   node scripts/check-site.mjs --online   also checks that every live
 //   public tool's address responds
 
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, statSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import vm from 'node:vm';
 import https from 'node:https';
@@ -220,6 +220,22 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   const t = tools.find(x => x.id === 'berm-lab');
   check('Berm Lab is a live public tool in The Lab → Engineering Lab, with its card image', !!t && t.status === 'live' && t.access === 'public' && t.category === 'engineering' && existsSync(root + t.image) && t.url.endsWith('/learning-lab/berm-lab/'));
   check('Berm Lab is listed on the Lab home and the Engineering Lab page, and its placeholder is gone', read('index.html').includes('learning-lab/berm-lab/') && read('learning-lab/engineering/index.html').includes('learning-lab/berm-lab/') && !read('js/lab-categories.js').includes("'Berm Lab'"));
+}
+
+// ---- Home page photo carousel (js/gallery-config.js, js/carousel.js; PRDs/photoCarousel.md) ----
+{
+  const box = { window: {} };
+  vm.runInNewContext(read('js/gallery-config.js'), box);
+  const G = box.window.MATHLETE_GALLERY || [];
+  const home = read('index.html');
+  check('Gallery: at least two photos, each with alt text, all in assets/gallery/', G.length >= 2 && G.every(p => p.alt && p.alt.length > 10 && /^assets\/gallery\/[a-z0-9-]+\.jpe?g$/.test(p.src) && existsSync(root + p.src)), G.map(p => p.src).join(', '));
+  check('Gallery photos are web-sized (under 400 KB)', G.every(p => statSync(root + p.src).size < 400 * 1024));
+  const gps = G.filter(p => /Exif|GPS/.test(readFileSync(root + p.src).subarray(0, 65536).toString('latin1'))).map(p => p.src);
+  check('Gallery photos carry no EXIF/GPS metadata (location stripped)', gps.length === 0, gps.join(', '));
+  const firstImg = (home.match(/class="carousel-slide[^"]*"><img src="([^"]+)" alt="([^"]+)"/) || []);
+  check('Home page: the carousel sits beside the logo, its first photo matches the gallery', /class="hero-brand">\s*<h1 class="lab-home-title">/.test(home) && firstImg[1] === G[0].src && firstImg[2] === G[0].alt);
+  check('Home page loads the gallery list before the carousel script, and the carousel styles', home.indexOf('src="js/gallery-config.js') > 0 && home.indexOf('src="js/gallery-config.js') < home.indexOf('src="js/carousel.js') && home.includes('css/carousel.css'));
+  check('Carousel builds DOM safely and respects reduced motion', !/innerHTML|insertAdjacentHTML|document\.write/.test(read('js/carousel.js')) && read('js/carousel.js').includes('prefers-reduced-motion'));
 }
 
 // ---- Physics lessons (learning-lab/lesson-kit/ + one folder per lesson) ----

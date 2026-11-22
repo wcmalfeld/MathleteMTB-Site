@@ -1,0 +1,41 @@
+/* ============================================================
+   HOME PAGE PHOTO CAROUSEL (js/carousel.js, js/gallery-config.js)
+   Beside the logo on wide screens, below it on narrow ones. A 16:9 window
+   with a crossfade; the controls stay quiet until the carousel is hovered
+   or focused. Loaded only by index.html, after site.css and lab.css.
+   ============================================================ */
+.hero-brand { display: flex; align-items: center; gap: clamp(24px, 4vw, 56px); margin: 8px 0 28px; }
+.hero-brand .lab-home-title { flex: 0 1 560px; min-width: 0; }
+.hero-brand .hero-logo { margin: 0; }
+.hero-brand .carousel { flex: 1 1 0; max-width: 600px; min-width: 0; }
+@media (max-width: 860px) {
+  .hero-brand { flex-direction: column; align-items: flex-start; gap: 22px; }
+  .hero-brand .lab-home-title { flex: none; width: 100%; }
+  .hero-brand .carousel { flex: none; width: 100%; max-width: 600px; }
+}
+
+.carousel { position: relative; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: rgba(236, 239, 231, 0.04); touch-action: pan-y; }
+.carousel-track { position: absolute; inset: 0; margin: 0; padding: 0; }
+.carousel-slide { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity 0.9s ease; }
+.carousel-slide:first-child { opacity: 1; }                        /* before (or without) JavaScript */
+.carousel.is-ready .carousel-slide { opacity: 0; }
+.carousel.is-ready .carousel-slide.is-current { opacity: 1; }
+.carousel.is-still .carousel-slide { transition: none; }
+.carousel-slide img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* Controls: understated until needed. */
+.carousel-btn { position: absolute; z-index: 2; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%;
+  background: rgba(13, 17, 15, 0.55); color: #F3F0E7; font: 400 26px/1 var(--f-body, sans-serif); cursor: pointer; opacity: 0; transition: opacity 0.25s ease, background 0.2s ease; }
+.carousel-prev { left: 10px; top: 50%; transform: translateY(-50%); }
+.carousel-next { right: 10px; top: 50%; transform: translateY(-50%); }
+.carousel-pause { right: 10px; bottom: 10px; width: 32px; height: 32px; font-size: 12px; letter-spacing: -0.1em; }
+.carousel-btn:hover { background: rgba(13, 17, 15, 0.8); }
+.carousel:hover .carousel-btn, .carousel:focus-within .carousel-btn { opacity: 1; }
+.carousel-btn:focus-visible, .carousel-dot:focus-visible { outline: 2px solid var(--blaze, #E36A40); outline-offset: 2px; opacity: 1; }
+.carousel-dots { position: absolute; z-index: 2; left: 50%; bottom: 10px; transform: translateX(-50%); display: flex; gap: 2px; }
+.carousel-dot { width: 22px; height: 22px; padding: 0; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; }
+.carousel-dot::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: rgba(243, 240, 231, 0.5); box-shadow: 0 0 0 1px rgba(13, 17, 15, 0.35); transition: background 0.2s ease, transform 0.2s ease; }
+.carousel-dot[aria-current="true"]::before { background: #F3F0E7; transform: scale(1.3); }
+/* Touch screens have no hover: keep the arrows faintly visible there. */
+@media (hover: none) { .carousel-btn { opacity: 0.7; } }
+@media (prefers-reduced-motion: reduce) { .carousel-slide, .carousel-btn { transition: none; } }
