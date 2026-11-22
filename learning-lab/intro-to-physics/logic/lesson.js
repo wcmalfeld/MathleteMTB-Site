@@ -264,7 +264,7 @@ export const SECTIONS = [
       { t: 'activity', id: 'find-physics' },
       { t: 'ask', q: 'what-is-physics-quick' }
     ] },
-  { id: 'the-ride', n: 2, title: 'The physics of a ride', minutes: 7, hook: 'How many physics lessons fit into one run down the mountain?',
+  { id: 'the-ride', n: 2, title: 'The physics behind MTB', minutes: 7, hook: 'How many physics lessons fit into one run down the mountain?',
     graded: ['ride-stages', 'ride-projectile', 'ride-energy'],
     blocks: [
       { t: 'p', text: 'Picture the top of the mountain. You point the bike down the trail and go. Within seconds you speed up, your tires bite the dirt, you lean through a berm, fly off a jump, land, and brake before the next corner.' },

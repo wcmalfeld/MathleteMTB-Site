@@ -16,7 +16,7 @@ publish it, set `status: 'published'` on `introduction-to-physics` in
 | Section | What students do |
 |---|---|
 | 1. What is physics? | The definition, then matter, energy, motion and interactions, each with MTB examples. **Find the Physics:** an illustrated trail with 8 hotspots (mountain, rider, front wheel, tires, fork, brakes, berm, jump); each opens a question, a short explanation and the module where it's studied. |
-| 2. The physics of a ride | **One ride, seven physics lessons:** a trail profile with 7 stages. The rider marker rides to each stage, which shows what's happening, its concepts, the MTB link and a question to investigate. All seven together appear at the end. |
+| 2. The physics behind MTB | **One ride, seven physics lessons:** a trail profile with 7 stages. The rider marker rides to each stage, which shows what's happening, its concepts, the MTB link and a question to investigate. All seven together appear at the end. |
 | 3. Matter, energy, motion, interactions | The four ideas in depth. **Classify the physics:** 5 scenarios. More than one category can be right; picks that don't fit are explained. |
 | 4. Systems and models | Systems and surroundings, with a diagram. **Choose your system:** 3 questions, with objects sorted live into System and Surroundings. Then what models are, their limits, and **Real world vs. model**, where students pick what the projectile model leaves out. |
 | 5. How scientists investigate | The 7-step loop, an investigation worked step by step, and the three kinds of variable. **Observation, explanation or prediction?** sorts 6 statements. **Design your own experiment:** independent and dependent variables, 3+ controls, a hypothesis, a prediction and a method, checked and saved. |
