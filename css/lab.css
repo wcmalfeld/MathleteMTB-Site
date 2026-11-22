@@ -377,11 +377,16 @@ body.lab--ski { --moss: #8EC5E0; }
 .field-list li { padding-left: 14px; border-left: 2px solid var(--rule); color: var(--text); line-height: 1.55; }
 .tool-card .field-notes--single { grid-template-columns: 1fr; }
 
+/* Four field notes: three portrait photos in a row, the landscape one full width below. */
+.field-notes-grid--four { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.field-notes-grid--four .field-note--wide { grid-column: 1 / -1; }
+
 @media (max-width: 760px) {
   .field-notes-grid { grid-template-columns: 1fr 1fr; }
   .field-note--wide { grid-column: 1 / -1; }
+  .field-notes-grid--four { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 }
 @media (max-width: 560px) {
-  .field-notes-grid { grid-template-columns: 1fr; gap: 24px; }
+  .field-notes-grid, .field-notes-grid--four { grid-template-columns: 1fr; gap: 24px; }
   .field-notes--single { grid-template-columns: 1fr; gap: 24px; }
 }
