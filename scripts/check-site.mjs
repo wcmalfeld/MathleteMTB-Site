@@ -183,7 +183,8 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
     { id: 'race-day-workshop', name: 'Race-Day Workshop', root: '.rdw', css: 'race-day-workshop.css', entry: 'workshop.js', home: 'classes/algebra-2/solving-equations-and-modeling-constraints/index.html', also: 'classes/algebra-2/absolute-value-equations/index.html', final: 'race-day-workshop.final' },
     { id: 'ride-systems-lab', name: 'Ride Systems Lab', root: '.rsl', css: 'ride-systems.css', entry: 'ride-systems.js', home: 'classes/algebra-2/function-notation/index.html', also: 'classes/algebra-2/inverse-functions/index.html', final: 'ride-systems-lab.final' },
     { id: 'bike-park-blueprint-lab', name: 'Bike Park Blueprint Lab', root: '.bpl', css: 'blueprint.css', entry: 'blueprint.js', home: 'classes/algebra-2/systems-of-equations/index.html', also: 'classes/algebra-2/matrix-operations/index.html', final: 'bike-park-blueprint-lab.final' },
-    { id: 'trail-dynamics-lab', name: 'Trail Dynamics Lab', root: '.tdl', css: 'trail-dynamics.css', entry: 'trail-dynamics.js', home: 'classes/algebra-2/quadratic-graphs/index.html', also: 'classes/algebra-2/quadratic-formula/index.html', final: 'trail-dynamics-lab.final' }
+    { id: 'trail-dynamics-lab', name: 'Trail Dynamics Lab', root: '.tdl', css: 'trail-dynamics.css', entry: 'trail-dynamics.js', home: 'classes/algebra-2/quadratic-graphs/index.html', also: 'classes/algebra-2/quadratic-formula/index.html', final: 'trail-dynamics-lab.final' },
+    { id: 'pump-track-lab', name: 'Pump Track Profile Lab', root: '.ptl', css: 'pump-track.css', entry: 'pump-track.js', home: 'classes/algebra-2/polynomial-graphs/index.html', also: 'classes/algebra-2/remainder-and-factor-theorems/index.html', final: 'pump-track-lab.final' }
   ];
   const cur = read('supabase/curriculum.sql'), rw = read('supabase/rewards.sql');
   for (const Lb of LABS) {
@@ -214,7 +215,8 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   check('Race-Day Workshop names the sag window’s source and says it isn’t setup advice', read('learning-lab/race-day-workshop/workshop.js').includes('tech.ridefox.com') && /not a setup recommendation/.test(read('learning-lab/race-day-workshop/workshop.js')));
   check('Bike Park Blueprint Lab says its resources and prices are fictional', /fictional planning numbers/.test(read('learning-lab/bike-park-blueprint-lab/blueprint.js')));
   check('Trail Dynamics Lab says its braking model is simplified and not riding advice', /not riding advice/.test(read('learning-lab/trail-dynamics-lab/components/labs.js')) && /not a riding recommendation/.test(read('learning-lab/trail-dynamics-lab/trail-dynamics.js')));
-  check('Exact fractions live once, in the kit (lesson-kit/frac.js)', read('learning-lab/bike-park-blueprint-lab/logic/matrix.js').includes("from '../../lesson-kit/frac.js'") && read('learning-lab/trail-dynamics-lab/logic/quadratic.js').includes("from '../../lesson-kit/frac.js'") && !/class Frac/.test(read('learning-lab/bike-park-blueprint-lab/logic/matrix.js')));
+  check('Pump Track Profile Lab says its curves are simplified profiles, not track designs', /not a pump track design or construction specification/.test(read('learning-lab/pump-track-lab/pump-track.js')) && /not a pump track design or construction specification/.test(read('learning-lab/pump-track-lab/components/labs.js')) && /not a pump track design or construction specification/.test(read('learning-lab/pump-track-lab/logic/models.js')));
+  check('Exact fractions live once, in the kit (lesson-kit/frac.js)', read('learning-lab/bike-park-blueprint-lab/logic/matrix.js').includes("from '../../lesson-kit/frac.js'") && read('learning-lab/trail-dynamics-lab/logic/quadratic.js').includes("from '../../lesson-kit/frac.js'") && read('learning-lab/pump-track-lab/logic/poly.js').includes("from '../../lesson-kit/frac.js'") && !/class Frac/.test(read('learning-lab/bike-park-blueprint-lab/logic/matrix.js')));
   check('The kit’s plotter is shared, not copied (no lab keeps its own plot.js)', !existsSync(root + 'learning-lab/ride-systems-lab/components/plot.js') && !existsSync(root + 'learning-lab/bike-park-blueprint-lab/components/plot.js'));
   check('Ride Systems Lab says its trail data is simulated and its drivetrain idealized', /simulated, not surveyed/.test(read('learning-lab/ride-systems-lab/ride-systems.js')) && /idealized/.test(read('learning-lab/ride-systems-lab/components/labs.js')));
 }
@@ -305,7 +307,7 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   const msCss = scoped('learning-lab/lesson-kit/missions.css');
   check('Lesson kit mission-board styles (missions.css) are all scoped under .lsn, braces balanced', msCss.ok && msCss.leaking.length === 0, msCss.leaking.slice(0, 5).join(' | '));
   const kitJs = jsIn('learning-lab/lesson-kit/');
-  const kitCoupled = kitJs.filter(f => /MathleteProgress|MathleteAuth|supabase|tools-config|newtons-laws|intro-to-physics|race-day-workshop|ride-systems|bike-park|trail-dynamics/.test(readFileSync(f, 'utf8')));
+  const kitCoupled = kitJs.filter(f => /MathleteProgress|MathleteAuth|supabase|tools-config|newtons-laws|intro-to-physics|race-day-workshop|ride-systems|bike-park|trail-dynamics|pump-track/.test(readFileSync(f, 'utf8')));
   check('Lesson kit doesn’t depend on the site or on any one lesson', kitCoupled.length === 0, kitCoupled.join(', '));
   const curriculumSql = read('supabase/curriculum.sql');
   const LESSONS = [

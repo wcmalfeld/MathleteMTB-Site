@@ -1,0 +1,113 @@
+/* ============================================================
+   Pump Track Profile Lab (Algebra 2, Polynomial Functions): its own
+   scenes, graph colours, grids and consoles. Loaded after the lesson
+   kit's stylesheets (lesson-kit.css, then missions.css for the shell,
+   plots and tokens). Everything here is scoped under .ptl.
+   Colours: the profile gold (--unk); zeros green (--ok); turning points
+   and touches blue (--in); below-the-line regions orange (--ice).
+   ============================================================ */
+
+/* ---------- side-view profile ---------- */
+.ptl .pt-scene, .ptl .pt-art { display: block; width: 100%; height: auto; }
+.ptl .pt-dirt { fill: #2A2219; }
+.ptl .pt-surface { fill: none; stroke: var(--dirt); stroke-width: 5; stroke-linejoin: round; }
+.ptl .pt-ref { stroke: rgba(236, 239, 231, 0.45); stroke-width: 1.5; stroke-dasharray: 7 5; }
+.ptl .pt-bike circle { fill: none; stroke: var(--ink); stroke-width: 2.5; }
+.ptl .pt-bike path { fill: none; stroke: var(--ice); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.ptl .pt-bike .pt-head { fill: var(--ink); stroke: none; }
+@media (prefers-reduced-motion: no-preference) { .ptl .pt-art .pt-bike { animation: pt-roll 6s ease-in-out infinite alternate; } }
+@keyframes pt-roll { from { translate: -80px 0; } to { translate: 60px 0; } }
+
+/* ---------- graphs ---------- */
+.ptl .pt-line--flow { stroke: var(--unk); stroke-width: 3.5; }
+.ptl .pt-line--target { stroke: rgba(236, 239, 231, 0.45); stroke-width: 3; stroke-dasharray: 7 5; }
+.ptl .pt-line--b { stroke: var(--in); stroke-width: 2.5; }
+.ptl .pt-line--a { stroke: #C59BEB; stroke-width: 2.5; }
+.ptl .pt-line--t { stroke: var(--unk); stroke-width: 4; }
+.ptl .pt-refline { stroke: rgba(236, 239, 231, 0.4); }
+.ptl .pt-vline { stroke: var(--soft); stroke-dasharray: 4 4; }
+.ptl .pt-band--below { fill: rgba(240, 146, 74, 0.14); }
+.ptl .pt-band--above { fill: rgba(127, 201, 143, 0.10); }
+.ptl .pt-mark--now { fill: var(--ice); }
+.ptl .pt-mark--zero { fill: var(--ok); }
+.ptl .pt-mark--touch { fill: var(--in); }
+.ptl .pt-mark--turn { fill: var(--in); }
+.ptl .pt-mark--turn.is-on { fill: var(--unk); }
+.ptl .pt-mark--end { fill: var(--unk); }
+.ptl .pt-mark--b { fill: var(--in); }
+.ptl .pt-mark--a { fill: #C59BEB; }
+.ptl .pt-mark--t { fill: var(--unk); }
+.ptl .pt-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 6px 0 0; padding: 0; list-style: none; font-family: var(--f-mono); font-size: 13px; color: var(--text); }
+.ptl .pt-legend li::before { content: ''; display: inline-block; width: 18px; height: 4px; margin-right: 6px; vertical-align: middle; }
+.ptl .pt-legend .is-b::before { background: var(--in); }
+.ptl .pt-legend .is-a::before { background: #C59BEB; }
+.ptl .pt-legend .is-t::before, .ptl .pt-legend .is-flow::before { background: var(--unk); }
+.ptl .pt-legend .is-target::before { background: rgba(236, 239, 231, 0.45); }
+
+/* ---------- readouts ---------- */
+.ptl .pt-read { display: grid; gap: 8px; align-content: start; }
+.ptl .pt-read p { margin: 0; overflow-wrap: anywhere; }
+.ptl .pt-eqn { font-size: 18px; color: var(--unk); overflow-wrap: anywhere; }
+.ptl .pt-out { color: var(--unk); }
+.ptl .pt-points { margin: 0; padding-left: 20px; font-size: 14.5px; }
+.ptl .pt-points li { margin: 3px 0; }
+.ptl .pt-wait { margin: 10px 0 0; padding: 12px; border: 1px dashed var(--rule); }
+.ptl .pt-toggle[aria-pressed="true"] { border-color: var(--unk); color: var(--ink); background: rgba(232, 193, 74, 0.14); }
+.ptl .pt-roots .ls-btn, .ptl .pt-cands .ls-btn { min-width: 56px; }
+.ptl .pt-terms td, .ptl .pt-terms th { text-align: center; }
+.ptl .pt-sum th, .ptl .pt-sum td { border-top: 2px solid var(--rule); color: var(--unk); }
+
+/* ---------- expansion grid (area model) ---------- */
+.ptl .pt-grid-box { display: grid; gap: 10px; }
+.ptl .pt-grid-wrap { overflow-x: auto; }
+.ptl .pt-grid { border-collapse: collapse; font-family: var(--f-mono); }
+.ptl .pt-grid th, .ptl .pt-grid td { min-width: 76px; padding: 10px 12px; border: 1px solid var(--rule); text-align: center; }
+.ptl .pt-grid th { color: var(--soft); background: var(--deep); }
+.ptl .pt-cell { min-width: 48px; }
+.ptl .pt-prod { font-weight: 600; }
+.ptl .pt-pow4 { color: var(--unk); }
+.ptl .pt-pow3 { color: var(--ice); }
+.ptl .pt-pow2 { color: var(--in); }
+.ptl .pt-pow1 { color: var(--ok); }
+
+/* ---------- zero tester ---------- */
+.ptl .pt-tester { display: grid; gap: 10px; }
+.ptl .pt-cand.is-zero { border-color: var(--ok); color: var(--ok); }
+.ptl .pt-cand.is-not { opacity: 0.6; text-decoration: line-through; }
+
+/* ---------- synthetic division console ---------- */
+.ptl .pt-console-box, .ptl .pt-console { display: grid; gap: 12px; }
+.ptl .pt-synth { border-collapse: collapse; font-family: var(--f-mono); }
+.ptl .pt-synth th, .ptl .pt-synth td { min-width: 64px; padding: 8px 10px; text-align: center; }
+.ptl .pt-synth th.pt-k { color: var(--unk); border-right: 2px solid var(--rule); }
+.ptl .pt-synth th:not(.pt-k) { border-right: 2px solid var(--rule); }
+.ptl .pt-mid { color: var(--soft); }
+.ptl .pt-bottom td { border-top: 2px solid var(--rule); }
+.ptl .pt-ok { color: var(--ok); font-weight: 600; }
+.ptl .pt-rem { outline: 1px dashed var(--unk); outline-offset: -3px; }
+.ptl .pt-cin { width: 64px; text-align: center; }
+
+/* ---------- long division ---------- */
+.ptl .pt-long { display: grid; gap: 10px; }
+.ptl .pt-steps { margin: 0; padding-left: 22px; display: grid; gap: 10px; }
+.ptl .pt-steps li { display: grid; gap: 2px; overflow-wrap: anywhere; }
+
+/* ---------- opening art ---------- */
+.ptl .pt-art-bg { fill: #141C18; }
+.ptl .pt-art-screen { fill: rgba(5, 10, 8, 0.85); stroke: rgba(142, 197, 224, 0.5); }
+.ptl .pt-art-trace { fill: none; stroke: var(--unk); stroke-width: 3; }
+.ptl .pt-art-axis { fill: none; stroke: var(--soft); stroke-width: 1.5; }
+.ptl .pt-art-zero { fill: var(--ok); }
+.ptl .pt-art-ok { fill: var(--unk); }
+
+@media (max-width: 640px) { .ptl .pt-eqn { font-size: 15.5px; } .ptl .pt-synth th, .ptl .pt-synth td { min-width: 0; padding: 6px 4px; } .ptl .pt-cin { width: 52px; } }
+
+/* ---------- layout fixes: padding for the stand-alone tools, maths never uppercased ---------- */
+.ptl .pt-grid-box, .ptl .pt-tester, .ptl .pt-console-box, .ptl .pt-long-box { padding: 16px; }
+@media (max-width: 640px) { .ptl .pt-grid-box, .ptl .pt-tester, .ptl .pt-console-box, .ptl .pt-long-box { padding: 12px; } }
+.ptl .pt-toggle, .ptl .pt-cand, .ptl .pt-cell, .ptl .pt-terms th, .ptl .pt-math { text-transform: none; letter-spacing: 0; }
+.ptl .pt-roots { align-items: center; }
+.ptl .pt-roots .ls-mini-label { flex-basis: 100%; }
+.ptl .pt-guesses .ls-segs { flex-direction: column; align-items: stretch; }
+.ptl .pt-guesses .ls-seg { text-align: left; }
+.ptl .pt-cin:disabled { opacity: 0.35; }

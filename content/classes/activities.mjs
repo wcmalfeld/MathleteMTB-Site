@@ -237,6 +237,34 @@ const TRAIL_IDEAS = {
 };
 const trailQuestionSkills = Object.fromEntries(Object.entries(trailKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => TRAIL_IDEAS[i] || []))]]));
 
+// Pump Track Profile Lab question skills, from the lab's own idea tags
+// (learning-lab/pump-track-lab/logic/questions.js).
+import { questionKinds as pumpKinds } from '../../learning-lab/pump-track-lab/logic/questions.js';
+const PG = 'alg2.polynomial-graphs.', PO = 'alg2.polynomial-operations.', RZ = 'alg2.roots-and-zeros.', RF = 'alg2.remainder-and-factor-theorems.', FH = 'alg2.factoring-higher-degree-polynomials.';
+const PUMP_IDEAS = {
+  recognize:       [PG + 'identify-polynomial'],
+  degree:          [PG + 'degree-leading'],
+  leading:         [PG + 'degree-leading'],
+  'end-behavior':  [PG + 'end-behavior'],
+  turning:         [PG + 'turning-points'],
+  add:             [PO + 'operate'],
+  subtract:        [PO + 'operate'],
+  multiply:        [PO + 'operate'],
+  expand:          [PO + 'expand-factored'],
+  zeros:           [RZ + 'zeros-factors', RF + 'build-polynomials'],
+  factoring:       [FH + 'factor-with-known-root'],
+  multiplicity:    [PG + 'zeros-multiplicity'],
+  graphing:        [PG + 'zeros-multiplicity', PG + 'sign-intervals'],
+  'rational-zero': [RZ + 'rational-root-theorem', RZ + 'find-all-zeros'],
+  synthetic:       [PO + 'synthetic-division'],
+  'long-division': [PO + 'long-division'],
+  remainder:       [RF + 'remainder-theorem'],
+  'factor-theorem':[RF + 'factor-theorem'],
+  interpret:       [PG + 'polynomial-models'],
+  complex:         [RZ + 'fundamental-theorem', 'alg2.complex-solutions.conjugate-pairs']
+};
+const pumpQuestionSkills = Object.fromEntries(Object.entries(pumpKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => PUMP_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -378,6 +406,29 @@ export const ACTIVITIES = [
     parts: ['3 missions', 'Stopping distance simulator', 'Jump equation decoder and tuner', 'Trajectory height analyzer', 'Final Course Analysis (12)', 'Optional complex-number practice'],
     skills: [...new Set(Object.values(trailQuestionSkills).flat())],
     tracking: { gameId: 'trail-dynamics-lab', questions: trailQuestionSkills }
+  },
+  {
+    id: 'pump-track-lab',
+    title: 'Pump Track Profile Lab',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/pump-track-lab/',
+    image: null,
+    home: 'alg2.polynomial-graphs',
+    summary: 'Decode a pump track profile’s degree, end behavior and turning points, combine and expand polynomial profiles, find zeros and multiplicity with the Rational Zero Theorem, then divide it apart with synthetic and long division and the Remainder and Factor Theorems.',
+    objectives: [
+      'Recognize polynomials and read degree, leading coefficient, end behavior and turning points',
+      'Add, subtract and multiply polynomials, and expand factored form to standard form',
+      'Find zeros, use multiplicity to tell crossing from touching, and build a polynomial from its zeros',
+      'Use the Rational Zero Theorem, synthetic division and long division',
+      'Apply the Remainder and Factor Theorems, and count complex zeros'
+    ],
+    difficulty: ['intermediate', 'advanced'],
+    minutes: '25-30 min',
+    parts: ['4 missions', 'Flow line decoder', 'Expansion workbench and factor builder', 'Synthetic division console', 'Final Track Analysis (12)', 'Optional complex-zeros extension'],
+    skills: [...new Set(Object.values(pumpQuestionSkills).flat())],
+    tracking: { gameId: 'pump-track-lab', questions: pumpQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------

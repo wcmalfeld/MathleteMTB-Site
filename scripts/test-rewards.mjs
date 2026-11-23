@@ -72,7 +72,9 @@ const ledgerSum = async (who, type) => (await db.query(`select coalesce(sum(xp),
 const at = (d, hh = 19) => `${d}T${String(hh).padStart(2, '0')}:00:00Z`;
 // Local calendar dates in the zone the summary is asked for; a UTC
 // date would be a day ahead in the evening and make this test fail after 5 pm.
-const daysAgo = (n, tz = 'America/Denver') => new Date(Date.now() - n * 86400000).toLocaleDateString('en-CA', { timeZone: tz });
+// YYYY-MM-DD in a time zone, built from parts (toLocaleDateString('en-CA') isn't ISO on every Node/ICU version).
+const ymd = (ms, tz) => { const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date(ms)).map(x => [x.type, x.value])); return `${p.year}-${p.month}-${p.day}`; };
+const daysAgo = (n, tz = 'America/Denver') => ymd(Date.now() - n * 86400000, tz);
 
 // --- history before rewards.sql exists, replayed when it's installed ---
 await answer('old', 'slope-lab:f1', true, at('2026-09-01'));
@@ -201,7 +203,7 @@ ok('summary: today’s streak is still alive after yesterday’s goal (not shown
 ok('summary adopts the browser’s timezone', sum.timezone === 'America/New_York');
 ok('summary has level, goal, calendar, badges, Garage items and stats', sum.level.title && sum.goal.xp === 20 && Array.isArray(sum.days) && sum.achievements.length === 25 && sum.items.length === 13 && sum.stats.lessons === 1);
 let g = await tryAs('ben', `select public.set_daily_goal('big') g`);
-ok('changing the goal applies from tomorrow', g.ok && g.r.rows[0].g.from === new Date(Date.now() + 86400000).toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), JSON.stringify(g));
+ok('changing the goal applies from tomorrow', g.ok && g.r.rows[0].g.from === ymd(Date.now() + 86400000, 'America/New_York'), JSON.stringify(g));
 g = await tryAs('ben', `select public.set_daily_goal('casual')`);
 ok('…and only once every seven days', !g.ok && /change your goal again/.test(g.e));
 ok('an unknown goal is refused', !(await tryAs('ann', `select public.set_daily_goal('huge')`)).ok);

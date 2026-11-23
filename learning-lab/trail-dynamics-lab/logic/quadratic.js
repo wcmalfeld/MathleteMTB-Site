@@ -4,17 +4,9 @@
 // and completing the square all derive from the coefficients, and every
 // root is verified by substitution. Pure; no DOM.
 
-import { Frac } from '../../lesson-kit/frac.js';
-export { Frac };
+import { Frac, show } from '../../lesson-kit/frac.js';
+export { Frac, show };
 const F = x => Frac.of(x);
-// Show a fraction the way the lab writes numbers: a decimal when it
-// terminates (−1/25 → −0.04, 16/5 → 3.2), otherwise a fraction (−140/3).
-export function show(v) {
-  v = F(v); let d = v.d; while (d % 2 === 0) d /= 2; while (d % 5 === 0) d /= 5;
-  if (d !== 1) return String(v);
-  const x = Number(v), t = String(Number(x.toPrecision(12)));
-  return (x < 0 ? '−' : '') + t.replace('-', '');
-}
 
 // |M| = s²·n with n square-free.
 function squareFree(M) {

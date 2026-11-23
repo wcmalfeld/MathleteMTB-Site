@@ -44,4 +44,12 @@ class Frac {
   toString() { return (this.n < 0 ? '−' : '') + Math.abs(this.n) + (this.d === 1 ? '' : '/' + this.d); }
 }
 export { Frac };
+// Show a fraction the way labs write numbers: a decimal when it terminates
+// (−1/25 → −0.04, 16/5 → 3.2), otherwise a fraction (−140/3).
+export function show(v) {
+  v = Frac.of(v); let d = v.d; while (d % 2 === 0) d /= 2; while (d % 5 === 0) d /= 5;
+  if (d !== 1) return String(v);
+  const x = Number(v), t = String(Number(x.toPrecision(12)));
+  return (x < 0 ? '−' : '') + t.replace('-', '');
+}
 export const gcdInt = gcd;

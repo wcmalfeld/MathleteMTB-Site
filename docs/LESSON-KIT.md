@@ -46,7 +46,7 @@ Lessons using the kit:
 Mission-board labs (Algebra 2) use `missions.js` (`mountMissions`) and `missions.css` (prefix `ms-`) instead of `mountLesson`. They also use:
 - `controls.js`: slider, segmented control, status chip
 - `plot.js`: any window, series, polygons, bands, lines, markers, dragging
-- `frac.js`: exact fractions
+- `frac.js`: exact fractions, and `show()`, which prints a fraction as a decimal when it terminates (−0.04, not −1/25)
 
 `missions.js` supports:
 - one practice set for the whole lab, or one per mission
@@ -58,5 +58,6 @@ The mission-board labs:
 - [Ride Systems Lab](RIDE-SYSTEMS-LAB.md)
 - [Bike Park Blueprint Lab](BIKE-PARK-BLUEPRINT-LAB.md)
 - [Trail Dynamics Lab](TRAIL-DYNAMICS-LAB.md)
+- [Pump Track Profile Lab](PUMP-TRACK-LAB.md)
 
-A change to the kit affects all six labs and lessons. Run every lab's browser run-through after changing `missions.js` or `missions.css`.
+A change to the kit affects all seven labs and lessons. Run every lab's browser run-through after changing `missions.js` or `missions.css`.
