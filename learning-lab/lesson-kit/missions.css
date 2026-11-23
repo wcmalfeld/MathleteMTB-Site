@@ -66,7 +66,10 @@
 .lsn .ms-sim { margin: 18px 0 0; padding: 0; border: 1px solid rgba(142, 197, 224, 0.35); background: var(--deep); }
 .lsn .ms-sim-h { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--rule); font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--in); }
 .lsn .ms-sim-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px rgba(108, 195, 122, 0.2); }
-.lsn .ms-lab { display: grid; gap: 18px; padding: 16px; }
+.lsn .ms-lab { display: grid; gap: 18px; padding: 16px; grid-template-columns: minmax(0, 1fr); }
+/* Segmented controls wrap instead of pushing the page wider on phones. */
+.lsn .ms-mission .ls-segs { flex-wrap: wrap; max-width: 100%; }
+.lsn .ms-lab-visual, .lsn .ms-lab-panel { min-width: 0; }
 .lsn .ms-lab-panel { display: grid; gap: 10px; align-content: start; }
 .lsn .ms-figure { width: 100%; }
 .lsn .ms-figure svg { display: block; width: 100%; height: auto; }
@@ -77,7 +80,7 @@
 .lsn .ms-warn { color: var(--warn); }
 .lsn .ms-mono { font-family: var(--f-mono); }
 .lsn .ms-readout td, .lsn .ms-readout th { padding-top: 7px; padding-bottom: 7px; }
-.lsn .ms-status { display: inline-block; padding: 2px 8px; border: 1px solid currentColor; font-family: var(--f-mono); font-size: 12.5px; white-space: nowrap; }
+.lsn .ms-status { display: inline-block; max-width: 100%; padding: 2px 8px; border: 1px solid currentColor; font-family: var(--f-mono); font-size: 12.5px; white-space: normal; overflow-wrap: anywhere; }
 .lsn .ms-status--ok { color: var(--ok); }
 .lsn .ms-status--warn { color: var(--warn); }
 .lsn .ms-steps { margin: 0; padding-left: 22px; font-family: var(--f-mono); font-size: 14.5px; color: var(--text); }
@@ -110,6 +113,17 @@
 .lsn .ms-miscon li { margin: 6px 0; }
 .lsn .ms-report-actions { margin-top: 10px; }
 
+/* plots (plot.js) */
+.lsn .ms-plot { display: block; width: 100%; height: auto; }
+.lsn .ms-grid { stroke: rgba(236, 239, 231, 0.07); }
+.lsn .ms-axis { stroke: var(--soft); stroke-width: 1.5; }
+.lsn .ms-line { fill: none; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.lsn .ms-band { fill: rgba(142, 197, 224, 0.12); }
+.lsn .ms-poly { fill: rgba(108, 195, 122, 0.16); stroke: none; }
+.lsn .ms-hline, .lsn .ms-vline { stroke-width: 2; }
+.lsn .ms-hl-label { fill: var(--unk); }
+.lsn .ms-guide { fill: none; stroke: var(--in); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.lsn .ms-mark { stroke: var(--deep); stroke-width: 2.5; fill: var(--ink); }
 .lsn .ms-crumbs ol { display: flex; flex-wrap: wrap; gap: 4px 8px; margin: 14px 0 0; padding: 0; list-style: none; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--soft); }
 .lsn .ms-crumbs li + li::before { content: '→'; margin-right: 8px; color: var(--rule); }
 .lsn .ms-crumbs a { color: var(--soft); }

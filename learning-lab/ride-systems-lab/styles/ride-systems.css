@@ -10,10 +10,6 @@
    ============================================================ */
 
 /* ---------- plots ---------- */
-.rsl .rs-plot { display: block; width: 100%; height: auto; }
-.rsl .rs-grid { stroke: rgba(236, 239, 231, 0.07); }
-.rsl .rs-axis { stroke: var(--soft); stroke-width: 1.5; }
-.rsl .rs-line { fill: none; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
 .rsl .rs-line--e { stroke: var(--ink); }
 .rsl .rs-line--faded { stroke: rgba(236, 239, 231, 0.25); stroke-width: 2; }
 .rsl .rs-line--up { stroke: var(--ok); stroke-width: 4; }
@@ -26,14 +22,10 @@
 .rsl .rs-line--deck { stroke: var(--in); stroke-width: 2.5; stroke-dasharray: 4 3; }
 .rsl .rs-band--domain { fill: rgba(142, 197, 224, 0.12); }
 .rsl .rs-band--range { fill: rgba(232, 188, 78, 0.12); }
-.rsl .rs-hline, .rsl .rs-vline { stroke-width: 2; }
 .rsl .rs-hline--test, .rsl .rs-vline--ok { stroke: var(--unk); stroke-dasharray: 7 4; }
 .rsl .rs-hline--warn, .rsl .rs-vline--warn { stroke: var(--warn); stroke-dasharray: 7 4; }
 .rsl .rs-hline--zero { stroke: rgba(236, 239, 231, 0.25); }
-.rsl .rs-hl-label { fill: var(--unk); }
-.rsl .rs-guide { fill: none; stroke: var(--in); stroke-width: 1.5; stroke-dasharray: 4 4; }
 .rsl .rs-guide--rev { stroke: var(--unk); }
-.rsl .rs-mark { stroke: var(--deep); stroke-width: 2.5; fill: var(--ink); }
 .rsl .rs-mark--sample { fill: var(--ink); stroke-width: 1; }
 .rsl .rs-mark--now { fill: var(--ice); }
 .rsl .rs-mark--hit { fill: var(--unk); }

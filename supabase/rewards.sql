@@ -82,6 +82,7 @@ insert into public.reward_activities (game_id, name, kind, course_id, completion
   ('jump-trajectory-lab', 'Jump Trajectory Lab',              'lab',    'alg1',  'session', 3, 0, 0),
   ('race-day-workshop',   'Race-Day Workshop',                'lab',    'alg2',  'session', 5, 0, 0),
   ('ride-systems-lab',    'Ride Systems Lab',                 'lab',    'alg2',  'session', 5, 0, 0),
+  ('bike-park-blueprint-lab', 'Bike Park Blueprint Lab',      'lab',    'alg2',  'session', 5, 0, 0),
   ('jump-lab',            'Jump Lab',                         'lab',    'phys1', 'solved',  0, 0, 3),
   ('berm-lab',            'Berm Lab',                         'lab',    'phys1', 'session', 3, 0, 0),
   ('carve-lab',           'Carve Lab',                        'lab',    null,    'session', 3, 0, 0),
@@ -107,7 +108,8 @@ insert into public.reward_assessments (id, game_id, name, question_ids) values
   ('intro-to-physics.kc', 'intro-to-physics', 'Introduction to Physics: Knowledge Check', array['intro-to-physics:kc-1','intro-to-physics:kc-2','intro-to-physics:kc-3','intro-to-physics:kc-4','intro-to-physics:kc-5','intro-to-physics:kc-6','intro-to-physics:kc-7','intro-to-physics:kc-8']),
   ('newtons-laws.kc', 'newtons-laws', 'Newton’s Laws: Knowledge Check', array['newtons-laws:kc-1','newtons-laws:kc-2','newtons-laws:kc-3','newtons-laws:kc-4','newtons-laws:kc-5','newtons-laws:kc-6','newtons-laws:kc-7','newtons-laws:kc-8']),
   ('race-day-workshop.final', 'race-day-workshop', 'Race-Day Workshop: Race-Day Certification', array['race-day-workshop:final-a-min','race-day-workshop:final-a-max','race-day-workshop:final-a-abs','race-day-workshop:final-a-eval','race-day-workshop:final-b-speed','race-day-workshop:final-c-elev']),
-  ('ride-systems-lab.final', 'ride-systems-lab', 'Ride Systems Lab: Engineer the Ride', array['ride-systems-lab:fa-input','ride-systems-lab:fa-eval','ride-systems-lab:fa-domain','ride-systems-lab:fa-range','ride-systems-lab:fa-inc','ride-systems-lab:fa-dec','ride-systems-lab:fb-ratio','ride-systems-lab:fb-wheel','ride-systems-lab:fb-k','ride-systems-lab:fb-speed','ride-systems-lab:fc-parts','ride-systems-lab:fc-effect','ride-systems-lab:fd-cadence','ride-systems-lab:fd-why'])
+  ('ride-systems-lab.final', 'ride-systems-lab', 'Ride Systems Lab: Engineer the Ride', array['ride-systems-lab:fa-input','ride-systems-lab:fa-eval','ride-systems-lab:fa-domain','ride-systems-lab:fa-range','ride-systems-lab:fa-inc','ride-systems-lab:fa-dec','ride-systems-lab:fb-ratio','ride-systems-lab:fb-wheel','ride-systems-lab:fb-k','ride-systems-lab:fb-speed','ride-systems-lab:fc-parts','ride-systems-lab:fc-effect','ride-systems-lab:fd-cadence','ride-systems-lab:fd-why']),
+  ('bike-park-blueprint-lab.final', 'bike-park-blueprint-lab', 'Bike Park Blueprint Lab: The Final Build Plan', array['bike-park-blueprint-lab:fa-vars','bike-park-blueprint-lab:fa-solve','bike-park-blueprint-lab:fa-meaning','bike-park-blueprint-lab:fa-verify','bike-park-blueprint-lab:fb-aug','bike-park-blueprint-lab:fb-solve','bike-park-blueprint-lab:fb-meaning','bike-park-blueprint-lab:fc-qm','bike-park-blueprint-lab:fc-cost','bike-park-blueprint-lab:fc-budget'])
 on conflict (id) do nothing;
 
 -- The Slope Lab's question ids carry their level (f = foundations, a =

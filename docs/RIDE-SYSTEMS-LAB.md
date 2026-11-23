@@ -57,7 +57,7 @@ This is the second mission-board lab. Its shell is shared with the
 - `lesson-kit/missions.js` and `missions.css`: the opening screen, mission board, mission header and footer, extension, final rounds and pass mark, completion and report. Classes use the `ms-` prefix.
 - `lesson-kit/controls.js`: slider, segmented control and status chip.
 
-Each lab is config plus its own mission pages and interactives. The Ride Systems Lab adds a small plotter, `components/plot.js`. The kit's graph always starts at zero and draws one curve, which doesn't suit elevations around 2,400 m with overlays.
+Each lab is config plus its own mission pages and interactives. The Ride Systems Lab added the plotter. It now lives in the kit as `lesson-kit/plot.js`, shared with the Bike Park Blueprint Lab. The kit's graph always starts at zero and draws one curve, which doesn't suit elevations around 2,400 m with overlays.
 
 ## Progress
 
@@ -81,7 +81,6 @@ learning-lab/ride-systems-lab/
   logic/models.js            trail profiles, drivetrain, transformations, inverses, operations, final sets
   logic/questions.js         every question, ideas, misconceptions, questionKinds()
   components/labs.js         the seven interactives
-  components/plot.js         the plotter (any window, bands, lines, markers, dragging)
   components/visuals.js      drivetrain drawing, trail map, opening art
   styles/ride-systems.css    scoped under .rsl
 ```

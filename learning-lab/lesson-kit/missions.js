@@ -16,14 +16,18 @@
 //   questions, kinds: { id: [ideas] }, ideas: { idea: label }, reportIdeas: [...], misconceptions: { code: label },
 //   open: { kicker, lines: [..], accent, lede, body, enter, back, meta, art: () => element },
 //   board: { title, hook, refsNote, refs: [[title, url]] },
-//   missions: [{ id, n, title, short, minutes, focus, blurb, hook, graded: [ids], practice?: true, page: ctx => [elements] }],
-//   practice?: { ids, count, questions(n) -> { brief, [id]: question }, button, note, kicker },
+//   missions: [{ id, n, title, short, minutes, focus, blurb, hook, graded: [ids], practice?: true | { …same shape as LAB.practice }, page: ctx => [elements] }],
+//   practice?: { ids, count, questions(n) -> { brief, [id]: question }, button, note, kicker },   // used by missions with practice: true
 //   extension?: { kicker, title, blurb, hook, page: ctx => [elements] },
 //   final: { ids, passMark, sets, questions(round) -> { [id]: question }, title, blurb, hook, lockedHook,
 //            doneShort, doneTitle, doneLede, notYet(state) -> text, page: (ctx, F, key) => [elements] },
-//   report: { kicker }
+//   report: { kicker },
+//   summaryExtra?(progress) -> { … }   extra fields merged into the summary (e.g. row operations performed)
+//   stats?(summary) -> [[label, value]] extra tiles on the completion and report stats
 // }
-// ctx (passed to pages): { progress, cleanup, rerender, q(id, { def, key, kicker }), card, eq, explain, note, sim, para, h3, practiceBox() }
+// ctx (passed to pages): { progress, cleanup, rerender, q(id, { def, key, kicker }), card, eq, explain, note, sim, para, h3,
+//   practiceBox(missionId?)   the current mission's practice set, with a "new numbers" button
+//   live(draw)                an element redrawn after every answer (e.g. reveal a graph once a question is done) }
 // Pass mark: a round passes when every question is answered and at least
 // passMark are right without the solution shown. Passing once records the
 // certification (and fires onComplete); it is never a mastery claim.
@@ -66,10 +70,17 @@ export function mountMissions(target, L, opts = {}) {
   });
 
   // ---------- state ----------
-  const variant = () => P.getData('variant', 0);
+  // A mission's practice set: practice: true (or a list of ids, as the
+  // Race-Day Workshop writes it) uses LAB.practice, stored as 'variant' as
+  // the first lab did; an object with its own ids/questions is the
+  // mission's own set, stored per mission.
+  const usesLabSet = m => m.practice === true || Array.isArray(m.practice);
+  const practiceOf = m => (usesLabSet(m) ? (L.practice ? { ...L.practice, store: 'variant' } : null) : m.practice && m.practice.ids ? { ...m.practice, store: 'variant:' + m.id } : null);
+  const variantOf = PR => P.getData(PR.store, 0);
   const finalRound = () => P.getData('finalRound', 1);
   function missionState(m) {
-    const items = m.graded.map(id => [id, null]).concat(m.practice && L.practice ? L.practice.ids.map(id => [id, 'v' + variant()]) : []);
+    const PR = practiceOf(m);
+    const items = m.graded.map(id => [id, null]).concat(PR ? PR.ids.map(id => [id, 'v' + variantOf(PR)]) : []);
     const done = items.filter(([id, k]) => P.done(id, k)).length;
     return { done, total: items.length, complete: done === items.length, started: done > 0 || !!P.state.visited[m.id] };
   }
@@ -110,7 +121,8 @@ export function mountMissions(target, L, opts = {}) {
       correct: recs.filter(([, r]) => r.correct && !r.revealed).length, firstTryRight: answered.filter(r => r.firstTry).length,
       hintsUsed: recs.reduce((n, [, r]) => n + r.hints, 0), solutionsShown: recs.filter(([, r]) => r.revealed).length,
       activeMinutes: Math.round(P.state.activeMs / 60000), startedAt: P.state.startedAt,
-      ideas, practice, misconceptions: Object.entries(codes).sort((a, b) => b[1] - a[1]).map(([code, count]) => ({ code, label: L.misconceptions[code] || code, count }))
+      ideas, practice, misconceptions: Object.entries(codes).sort((a, b) => b[1] - a[1]).map(([code, count]) => ({ code, label: L.misconceptions[code] || code, count })),
+      ...(L.summaryExtra ? L.summaryExtra(P) : {})
     };
   }
 
@@ -165,13 +177,15 @@ export function mountMissions(target, L, opts = {}) {
     return el('div', { class: 'ls-card ls-ask-card ms-ask' }, el('p', { class: 'ls-kicker' }, o.kicker || 'Your turn'),
       ask({ ...def, id }, { progress: P, key: o.key || null, onDone: refresh }));
   }
-  function practiceBox() {
-    const PR = L.practice, n = variant(), PQ = PR.questions(n), key = 'v' + n;
+  let currentMission = null;
+  function practiceBox(mid) {
+    const PR = practiceOf(MISSIONS.find(m => m.id === (mid || currentMission)) || {}), n = variantOf(PR), PQ = PR.questions(n), key = 'v' + n;
     return el('div', null, el('p', { class: 'ms-brief' }, PQ.brief), PR.ids.map(id => q(id, { def: PQ[id], key, kicker: PR.kicker || 'Independent challenge' })),
-      el('div', { class: 'ls-actions' }, button(PR.button || 'New numbers', () => { P.setData('variant', (n + 1) % PR.count); rerender(); }, 'ls-btn--quiet'),
+      el('div', { class: 'ls-actions' }, button(PR.button || 'New numbers', () => { P.setData(PR.store, (n + 1) % PR.count); rerender(); }, 'ls-btn--quiet'),
         PR.note ? el('span', { class: 'ls-small' }, PR.note) : null));
   }
-  const ctx = { progress: P, cleanup: fn => cleanups.push(fn), rerender: () => rerender(), q, card, eq, explain, note, sim, para, h3, practiceBox };
+  const live = draw => { const box = el('div', { class: 'ms-live' }); const r = () => put(box, draw()); r(); refreshers.push(r); return box; };
+  const ctx = { progress: P, cleanup: fn => cleanups.push(fn), rerender: () => rerender(), q, card, eq, explain, note, sim, para, h3, practiceBox, live };
 
   function missionHead(m) {
     return el('header', { class: 'ls-section-head ms-mission-head' },
@@ -240,6 +254,7 @@ export function mountMissions(target, L, opts = {}) {
   }
 
   function missionPage(m) {
+    currentMission = m.id;
     return el('article', { class: 'ms-mission' }, missionHead(m), m.page(ctx), missionFoot(m));
   }
 
@@ -292,7 +307,7 @@ export function mountMissions(target, L, opts = {}) {
   }
   function stats(s, cert) {
     const items = [['Missions completed', `${s.missionsDone} of ${N}`], ['Final challenge', cert ? `${cert.right} of ${cert.total} (round ${cert.round})` : `${s.final.right} of ${s.final.total} so far`],
-      ['Correct answers', String(s.correct)], ['Attempts', String(s.attempts)], ['Right first try', String(s.firstTryRight)], ['Hints used', String(s.hintsUsed)], ['Time', s.activeMinutes < 1 ? 'under a minute' : `about ${s.activeMinutes} min`]];
+      ['Correct answers', String(s.correct)], ['Attempts', String(s.attempts)], ['Right first try', String(s.firstTryRight)], ['Hints used', String(s.hintsUsed)], ['Time', s.activeMinutes < 1 ? 'under a minute' : `about ${s.activeMinutes} min`], ...(L.stats ? L.stats(s) : [])];
     return el('dl', { class: 'ms-stats' }, items.map(([k, v]) => el('div', null, el('dt', null, k), el('dd', null, v))));
   }
 

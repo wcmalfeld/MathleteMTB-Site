@@ -43,8 +43,18 @@ Lessons using the kit:
 - [Introduction to Physics](INTRO-TO-PHYSICS-LESSON.md) (Module 1)
 - [Newton's Laws of Motion](NEWTONS-LAWS-LESSON.md) (Module 7)
 
-Mission-board labs (Algebra 2) use `missions.js` (`mountMissions`) and `missions.css` (prefix `ms-`) instead of `mountLesson`, plus `controls.js` (slider, segmented control, status):
+Mission-board labs (Algebra 2) use `missions.js` (`mountMissions`) and `missions.css` (prefix `ms-`) instead of `mountLesson`. They also use:
+- `controls.js`: slider, segmented control, status chip
+- `plot.js`: any window, series, polygons, bands, lines, markers, dragging
+
+`missions.js` supports:
+- one practice set for the whole lab, or one per mission
+- `ctx.live()` blocks, which redraw after an answer
+- `summaryExtra` and `stats` hooks, for extra report figures
+
+The mission-board labs:
 - [Race-Day Workshop](RACE-DAY-WORKSHOP.md)
 - [Ride Systems Lab](RIDE-SYSTEMS-LAB.md)
+- [Bike Park Blueprint Lab](BIKE-PARK-BLUEPRINT-LAB.md)
 
-A change to the kit affects all four.
+A change to the kit affects all five labs and lessons.

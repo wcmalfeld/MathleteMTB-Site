@@ -7,7 +7,7 @@ import { el, put, button, reducedMotion } from '../../lesson-kit/dom.js';
 import { slider, segs, status } from '../../lesson-kit/controls.js';
 import { TRAIL, RELATIVE, BASE, BASE_GEAR, BASE_DRIVE, FRONT_TEETH, REAR_TEETH, CADENCE, CIRCUMFERENCE, drivetrain,
   transform, sameTransform, transformEquation, describeTransform, crossing, CROSSING, round, nf } from '../logic/models.js';
-import { plot, dragX, dragY } from './plot.js';
+import { plot, dragX, dragY } from '../../lesson-kit/plot.js';
 import { drivetrainDrawing, trailMap } from './visuals.js';
 
 const r2 = x => nf(round(x, 2)), r3 = x => nf(round(x, 3));

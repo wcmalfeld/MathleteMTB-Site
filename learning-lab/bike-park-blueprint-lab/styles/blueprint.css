@@ -1,0 +1,105 @@
+/* ============================================================
+   Bike Park Blueprint Lab (Algebra 2, Linear Systems and Matrices): its
+   own matrices, graphs, console and art. Loaded after the lesson kit's
+   stylesheets (lesson-kit.css, then missions.css for the shell, plots and
+   colour tokens). Everything here is scoped under .bpl.
+   Colours: crew hours blue (--in), machine hours gold (--unk), soil
+   green (--ok); solutions and matches green, conflicts orange (--warn).
+   ============================================================ */
+
+/* ---------- matrices ---------- */
+.bpl .bp-mwrap { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; vertical-align: middle; }
+.bpl .bp-mname { font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: 20px; color: var(--ink); white-space: nowrap; }
+.bpl .bp-mscroll { overflow-x: auto; max-width: 100%; }
+.bpl .bp-matrix { border-collapse: separate; border-spacing: 0; font-family: var(--f-mono); font-size: 15px; color: var(--ink);
+  border-left: 2px solid var(--soft); border-right: 2px solid var(--soft); border-radius: 6px; padding: 2px 0; }
+.bpl .bp-matrix td { padding: 6px 12px; text-align: right; min-width: 2.6em; white-space: nowrap; }
+.bpl .bp-matrix td.is-const { border-left: 2px dashed var(--soft); color: var(--unk); }
+.bpl .bp-matrix td.is-picked { background: rgba(232, 188, 78, 0.22); outline: 1px solid var(--unk); }
+.bpl .bp-matrix td.is-target { background: rgba(227, 106, 64, 0.16); }
+.bpl .bp-matrix td.is-source { background: rgba(142, 197, 224, 0.14); }
+.bpl .bp-matrix th { font-family: var(--f-mono); font-size: 11px; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); padding: 2px 8px; }
+.bpl .bp-rowlab { text-align: left; white-space: nowrap; }
+.bpl .bp-collab { text-align: right; }
+.bpl .bp-mcap { caption-side: top; text-align: left; font-size: 12px; color: var(--soft); padding-bottom: 4px; }
+.bpl .bp-mdims { font-family: var(--f-mono); font-size: 12px; color: var(--soft); white-space: nowrap; }
+.bpl .bp-cellbtn { min-width: 32px; min-height: 32px; padding: 2px 6px; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.bpl .bp-cellbtn:hover { background: var(--tint); }
+.bpl .bp-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.bpl .bp-opsym { font-family: var(--f-mono); font-size: 22px; color: var(--soft); }
+.bpl .bp-scalar { font-family: var(--f-mono); font-size: 24px; color: var(--unk); }
+
+/* ---------- graphs ---------- */
+.bpl .bp-line--crew { stroke: var(--in); }
+.bpl .bp-line--machine { stroke: var(--unk); }
+.bpl .bp-line--soil { stroke: var(--ok); }
+.bpl .bp-line--same { stroke: var(--unk); stroke-width: 7; opacity: 0.45; }
+.bpl .bp-mark--plan { fill: var(--ice); }
+.bpl .bp-mark--hit, .bpl .bp-mark--meet { fill: var(--ok); }
+.bpl .bp-mark--pair { fill: var(--soft); }
+.bpl .bp-mark--bad { fill: var(--warn); }
+.bpl .bp-mark--dot { fill: rgba(236, 239, 231, 0.55); stroke: none; }
+.bpl .bp-region { fill: rgba(108, 195, 122, 0.18); }
+.bpl .bp-read { display: grid; gap: 8px; align-content: start; }
+.bpl .bp-read p { margin: 0; overflow-wrap: anywhere; }
+.bpl .bp-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 0; list-style: none; font-family: var(--f-mono); font-size: 13px; color: var(--text); }
+.bpl .bp-legend li::before { content: ''; display: inline-block; width: 18px; height: 3px; margin-right: 6px; vertical-align: middle; }
+.bpl .bp-legend .is-crew::before { background: var(--in); }
+.bpl .bp-legend .is-machine::before { background: var(--unk); }
+.bpl .bp-legend .is-soil::before { background: var(--ok); }
+.bpl .bp-toggle[aria-pressed="true"] { border-color: var(--ink); }
+.bpl .bp-diagnose { display: grid; gap: 16px; }
+@media (min-width: 980px) { .bpl .bp-diagnose { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.bpl .bp-diag { margin-top: 8px; padding: 8px; border: 1px solid var(--rule); background: var(--deep); }
+.bpl .bp-wait { margin: 8px 0 0; padding: 12px; border: 1px dashed var(--rule); }
+.bpl .bp-method { display: grid; gap: 10px; margin-bottom: 8px; padding: 12px; border: 1px solid var(--rule); background: var(--deep); }
+
+/* ---------- elimination console ---------- */
+.bpl .bp-console { padding: 0; }
+.bpl .bp-console-top { display: flex; flex-wrap: wrap; gap: 10px 24px; padding: 14px 16px 0; }
+.bpl .bp-console-body { display: grid; gap: 8px; }
+.bpl .bp-ops { display: grid; gap: 10px; }
+.bpl .bp-opline { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; }
+.bpl .bp-inline { display: inline-grid; gap: 4px; }
+.bpl .bp-select { min-width: 72px; }
+.bpl .bp-small-input { width: 90px; }
+.bpl .bp-guide { margin: 0; padding: 10px 12px; border-left: 4px solid var(--ice); background: var(--panel-2); }
+.bpl .bp-msg { padding: 8px 10px; border: 1px solid var(--rule); font-size: 14px; color: var(--text); }
+.bpl .bp-msg--warn { border-color: var(--warn); color: var(--warn); }
+
+/* ---------- workbench, calculator, solver ---------- */
+.bpl .bp-workbench, .bpl .bp-dimcheck, .bpl .bp-solverbox { display: grid; gap: 12px; padding: 16px; }
+.bpl .bp-work { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.bpl .bp-calc { display: grid; gap: 12px; }
+.bpl .bp-dimchain { margin: 0; font-family: var(--f-mono); font-size: 15px; color: var(--ink); overflow-wrap: anywhere; }
+.bpl .bp-dimchain span { color: var(--soft); }
+.bpl .bp-dots { font-size: 13.5px; }
+.bpl .bp-total { color: var(--unk); font-size: 20px; }
+.bpl .bp-fields { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: end; }
+.bpl .bp-mgrid { display: grid; gap: 8px; }
+.bpl .bp-solver { display: grid; gap: 12px; }
+
+/* ---------- opening art ---------- */
+.bpl .bp-art { display: block; width: 100%; height: auto; }
+.bpl .bp-art-bg { fill: #10243A; }
+.bpl .bp-art-grid { stroke: rgba(142, 197, 224, 0.12); }
+.bpl .bp-art-contour { fill: none; stroke: rgba(236, 239, 231, 0.14); }
+.bpl .bp-art-trail { fill: none; stroke: var(--dirt); stroke-width: 8; stroke-linecap: round; }
+.bpl .bp-art-berm { fill: none; stroke: var(--ice); stroke-width: 6; stroke-linecap: round; }
+.bpl .bp-art-jump { fill: var(--dirt-2); stroke: var(--ink); stroke-width: 1.5; }
+.bpl .bp-art-rock { fill: #8D9690; stroke: #10243A; stroke-width: 1.5; }
+.bpl .bp-art-track { fill: #222; }
+.bpl .bp-art-cab { fill: var(--unk); }
+.bpl .bp-art-arm { fill: none; stroke: var(--unk); stroke-width: 6; stroke-linejoin: round; }
+.bpl .bp-art-bucket { fill: var(--metal); }
+.bpl .bp-art-tool { fill: none; stroke: var(--metal); stroke-width: 3; stroke-linecap: round; }
+.bpl .bp-art-screen { fill: rgba(5, 12, 20, 0.85); stroke: rgba(142, 197, 224, 0.5); }
+.bpl .bp-art-num { fill: var(--ink); font-family: var(--f-mono); font-size: 16px; }
+.bpl .bp-art-bracket { fill: none; stroke: var(--soft); stroke-width: 2; }
+.bpl .bp-art-ok { fill: var(--ok); }
+
+@media (max-width: 640px) {
+  .bpl .bp-matrix { font-size: 13.5px; }
+  .bpl .bp-matrix td { padding: 5px 8px; min-width: 2em; }
+  .bpl .bp-mname { font-size: 17px; }
+}

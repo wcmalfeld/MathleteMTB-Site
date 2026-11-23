@@ -186,6 +186,32 @@ const RIDE_IDEAS = {
 };
 const rideQuestionSkills = Object.fromEntries(Object.entries(rideKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => RIDE_IDEAS[i] || []))]]));
 
+// Bike Park Blueprint Lab (Algebra 2, Unit 3: Linear Systems and Matrices):
+// same pattern (learning-lab/bike-park-blueprint-lab/logic/questions.js).
+import { questionKinds as parkKinds } from '../../learning-lab/bike-park-blueprint-lab/logic/questions.js';
+const SE = 'alg2.systems-of-equations.', TV = 'alg2.three-variable-systems.', MO = 'alg2.matrix-operations.', AM = 'alg2.applications-of-matrices.';
+const PARK_IDEAS = {
+  graphing:          [SE + 'graph-systems', SE + 'solve-two-variable'],
+  substitution:      [SE + 'substitution', SE + 'solve-two-variable'],
+  elimination:       [SE + 'elimination', SE + 'solve-two-variable'],
+  classify:          [SE + 'classify-systems'],
+  'three-var':       [TV + 'solve-three', TV + 'eliminate-to-two'],
+  gaussian:          [TV + 'row-operations'],
+  augmented:         [TV + 'augmented-matrix'],
+  'add-sub':         [MO + 'add-scale'],
+  scalar:            [MO + 'add-scale'],
+  multiply:          [MO + 'multiply-matrices'],
+  dimensions:        [MO + 'dimensions'],
+  'matrix-equation': [AM + 'matrix-equations'],
+  inverse:           [MO + 'determinant-inverse', AM + 'matrix-equations'],
+  applications:      [AM + 'organize-data'],
+  model:             [SE + 'model-systems', TV + 'model-three'],
+  interpret:         [SE + 'interpret-solution'],
+  verify:            [SE + 'interpret-solution'],
+  optimize:          [SE + 'systems-of-inequalities']
+};
+const parkQuestionSkills = Object.fromEntries(Object.entries(parkKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => PARK_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -281,6 +307,29 @@ export const ACTIVITIES = [
     parts: ['4 missions', 'GPS trail explorer', 'Drivetrain simulator', 'Trail transformation studio', 'Inverse trail explorer', 'Engineer the Ride (14)', 'Optional function mixer'],
     skills: [...new Set(Object.values(rideQuestionSkills).flat())],
     tracking: { gameId: 'ride-systems-lab', questions: rideQuestionSkills }
+  },
+  {
+    id: 'bike-park-blueprint-lab',
+    title: 'Bike Park Blueprint Lab',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/bike-park-blueprint-lab/',
+    image: null,
+    home: 'alg2.systems-of-equations',
+    summary: 'Design a bike park with a trail crew: solve two- and three-variable systems for the build plan, run Gaussian elimination in a row-operation console, cost the whole park with matrix multiplication, and solve AX = B with an inverse.',
+    objectives: [
+      'Write and solve two-variable systems by graphing, substitution and elimination',
+      'Tell one solution, no solution and infinitely many apart',
+      'Solve three-variable systems with augmented matrices and row operations',
+      'Add, subtract, scale and multiply matrices, checking dimensions',
+      'Write a system as AX = B and solve it with an inverse when det ≠ 0'
+    ],
+    difficulty: ['intermediate', 'advanced'],
+    minutes: '20-25 min',
+    parts: ['4 missions', 'Blueprint graph', 'Matrix elimination console', 'Matrix cost calculator', 'Matrix equation solver', 'Final Build Plan (10)', 'Optional park optimizer'],
+    skills: [...new Set(Object.values(parkQuestionSkills).flat())],
+    tracking: { gameId: 'bike-park-blueprint-lab', questions: parkQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------
