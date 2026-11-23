@@ -4,16 +4,11 @@
 // and completing the square all derive from the coefficients, and every
 // root is verified by substitution. Pure; no DOM.
 
-import { Frac, show } from '../../lesson-kit/frac.js';
+import { Frac, show, squareFree } from '../../lesson-kit/frac.js';
 export { Frac, show };
 const F = x => Frac.of(x);
 
-// |M| = s²·n with n square-free.
-function squareFree(M) {
-  let s = 1, n = Math.abs(M);
-  for (let p = 2; p * p <= n; p++) while (n % (p * p) === 0) { n /= p * p; s *= p; }
-  return { s, n };
-}
+
 
 export function quad(a, b, c) {
   a = F(a); b = F(b); c = F(c);

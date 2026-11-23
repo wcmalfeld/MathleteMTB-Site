@@ -40,7 +40,7 @@ Disclaimer: the board, the decoder and the models file all say that every curve 
 
 ## The math
 
-- `logic/poly.js` holds exact polynomial algebra. Coefficients are fractions (`lesson-kit/frac.js`), stored lowest power first, with zero coefficients kept so missing powers never get lost. It covers:
+- `logic/poly.js` re-exports the kit's exact polynomial algebra (`lesson-kit/poly.js`, moved there for the Enduro Route lab). Coefficients are fractions (`lesson-kit/frac.js`), stored lowest power first, with zero coefficients kept so missing powers never get lost. It covers:
   - add, subtract, multiply, scale, exact evaluation (Horner), and building from roots with multiplicity
   - long division, with every step, checked by d·q + r = p
   - synthetic division, checked against the Remainder Theorem
@@ -69,7 +69,7 @@ Re-run in the Supabase SQL Editor:
 learning-lab/pump-track-lab/
   index.html, main.js            the page and its connection to the site
   pump-track.js                  config + the four mission pages
-  logic/poly.js                  exact polynomial algebra, division, features, text
+  logic/poly.js                  re-exports lesson-kit/poly.js (exact polynomial algebra)
   logic/models.js                Flow Line A, multiplicity model, profiles, validated sets
   logic/questions.js             every question, ideas, misconceptions, questionKinds()
   components/labs.js             the eleven interactives

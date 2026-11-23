@@ -46,7 +46,8 @@ Lessons using the kit:
 Mission-board labs (Algebra 2) use `missions.js` (`mountMissions`) and `missions.css` (prefix `ms-`) instead of `mountLesson`. They also use:
 - `controls.js`: slider, segmented control, status chip
 - `plot.js`: any window, series, polygons, bands, lines, markers, dragging
-- `frac.js`: exact fractions, and `show()`, which prints a fraction as a decimal when it terminates (−0.04, not −1/25)
+- `frac.js`: exact fractions, `show()`, which prints a fraction as a decimal when it terminates (−0.04, not −1/25), and `squareFree()` for simplifying square roots
+- `poly.js`: exact polynomials (arithmetic, long and synthetic division, roots, features, text), used by the Pump Track and Enduro Route labs
 
 `missions.js` supports:
 - one practice set for the whole lab, or one per mission
@@ -59,5 +60,6 @@ The mission-board labs:
 - [Bike Park Blueprint Lab](BIKE-PARK-BLUEPRINT-LAB.md)
 - [Trail Dynamics Lab](TRAIL-DYNAMICS-LAB.md)
 - [Pump Track Profile Lab](PUMP-TRACK-LAB.md)
+- [Enduro Route Intelligence Lab](ENDURO-ROUTE-LAB.md)
 
-A change to the kit affects all seven labs and lessons. Run every lab's browser run-through after changing `missions.js` or `missions.css`.
+A change to the kit affects all eight labs and lessons. Run every lab's browser run-through after changing `missions.js` or `missions.css`.

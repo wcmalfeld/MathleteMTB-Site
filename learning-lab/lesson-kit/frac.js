@@ -1,8 +1,8 @@
 // Lesson kit: exact fractions. Whole-number numerator and denominator,
 // always reduced, denominator positive, so lab maths never picks up
 // floating-point noise (−3/4 stays −3/4, 0.1 + 0.2 is exactly 3/10).
-// Used by the Bike Park Blueprint Lab (matrices) and the Trail Dynamics
-// Lab (quadratics). Pure; no DOM.
+// Used by the Bike Park Blueprint Lab (matrices), the Trail Dynamics Lab
+// (quadratics) and the polynomial and rational labs. Pure; no DOM.
 
 const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
 
@@ -53,3 +53,10 @@ export function show(v) {
   return (x < 0 ? '−' : '') + t.replace('-', '');
 }
 export const gcdInt = gcd;
+
+// |M| = s²·n with n square-free (for simplifying square roots: √M = s√n).
+export function squareFree(M) {
+  let s = 1, n = Math.abs(M);
+  for (let p = 2; p * p <= n; p++) while (n % (p * p) === 0) { n /= p * p; s *= p; }
+  return { s, n };
+}

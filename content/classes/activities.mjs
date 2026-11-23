@@ -265,6 +265,39 @@ const PUMP_IDEAS = {
 };
 const pumpQuestionSkills = Object.fromEntries(Object.entries(pumpKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => PUMP_IDEAS[i] || []))]]));
 
+// Enduro Route Intelligence Lab question skills, from the lab's own idea tags
+// (learning-lab/enduro-route-lab/logic/questions.js).
+import { questionKinds as enduroKinds } from '../../learning-lab/enduro-route-lab/logic/questions.js';
+const GRF = 'alg2.graphing-rational-functions.', REX = 'alg2.rational-expressions.', RQA = 'alg2.rational-equations-applications.', RAF = 'alg2.radical-functions.', ASY = 'alg2.asymptotes.', RDE = 'alg2.radical-equations.', RE1 = 'alg2.rational-equations.';
+const ENDURO_IDEAS = {
+  evaluate:            [GRF + 'evaluate-rational'],
+  domain:              [GRF + 'rational-domain', RE1 + 'excluded-values'],
+  simplify:            [REX + 'simplify-rational'],
+  add:                 [REX + 'add-subtract'],
+  subtract:            [REX + 'add-subtract'],
+  multiply:            [REX + 'multiply-divide'],
+  divide:              [REX + 'multiply-divide'],
+  vertical:            [ASY + 'vertical-asymptotes'],
+  horizontal:          [ASY + 'horizontal-asymptotes'],
+  hole:                [GRF + 'intercepts-holes'],
+  transform:           [GRF + 'reciprocal-transformations'],
+  'rational-eq':       [RQA + 'solve-rational-eq', RE1 + 'clear-denominators'],
+  context:             [RQA + 'rational-models', RQA + 'average-speed'],
+  inverse:             [RQA + 'inverse-variation'],
+  'radical-eval':      [RAF + 'evaluate-radicals'],
+  'radical-domain':    [RAF + 'radical-domain'],
+  'sqrt-graph':        [RAF + 'graph-radicals'],
+  'cube-root':         [RAF + 'graph-radicals'],
+  'radical-transform': [RAF + 'radical-transformations'],
+  exponents:           [RAF + 'rational-exponent-form', RDE + 'rational-exponents'],
+  'radical-simplify':  [RAF + 'simplify-radicals'],
+  'radical-eq':        [RDE + 'isolate-and-square'],
+  extraneous:          [RDE + 'extraneous'],
+  'radical-model':     [RAF + 'radical-models'],
+  slant:               [ASY + 'slant-asymptotes']
+};
+const enduroQuestionSkills = Object.fromEntries(Object.entries(enduroKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => ENDURO_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -429,6 +462,29 @@ export const ACTIVITIES = [
     parts: ['4 missions', 'Flow line decoder', 'Expansion workbench and factor builder', 'Synthetic division console', 'Final Track Analysis (12)', 'Optional complex-zeros extension'],
     skills: [...new Set(Object.values(pumpQuestionSkills).flat())],
     tracking: { gameId: 'pump-track-lab', questions: pumpQuestionSkills }
+  },
+  {
+    id: 'enduro-route-lab',
+    title: 'Enduro Route Intelligence Lab',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/enduro-route-lab/',
+    image: null,
+    home: 'alg2.graphing-rational-functions',
+    summary: 'Model enduro stage times with rational functions: domain, asymptotes and holes, adding, subtracting, multiplying and dividing rational expressions, and solving for a target time. Then survey trail distances and wheel geometry with radical functions, transformations, rational exponents and extraneous solutions.',
+    objectives: [
+      'Model inverse variation and stage times with rational functions, and read their domain, range and asymptotes',
+      'Add, subtract, multiply, divide and simplify rational expressions, and find removable discontinuities',
+      'Solve rational equations and reject candidates outside the context',
+      'Model distances and a wheel with radical functions; find domain, range and transformations',
+      'Convert rational exponents, solve radical equations, and identify extraneous solutions'
+    ],
+    difficulty: ['intermediate', 'advanced'],
+    minutes: '25-30 min',
+    parts: ['4 missions', 'Race clock and asymptote explorer', 'Split-time simulator and rational workbench', 'Trail survey and radical equation solver', 'Wheel explorer and radical profile studio', 'Final Route Analysis (12)', 'Optional route data diagnostic'],
+    skills: [...new Set(Object.values(enduroQuestionSkills).flat())],
+    tracking: { gameId: 'enduro-route-lab', questions: enduroQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------

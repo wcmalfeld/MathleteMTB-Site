@@ -1,0 +1,111 @@
+/* ============================================================
+   Enduro Route Intelligence Lab (Algebra 2, Rational and Radical
+   Functions): its own maps, timers, survey triangle, wheel and graph
+   colours. Loaded after the lesson kit's stylesheets (lesson-kit.css,
+   then missions.css for the shell, plots and tokens). Everything here
+   is scoped under .erl.
+   Colours: rational curves gold (--unk); radical curves blue (--in);
+   asymptotes dashed orange (--ice); valid points green (--ok); rejected
+   and missing points warn. Flow section green, technical orange.
+   ============================================================ */
+
+/* ---------- maps and timers ---------- */
+.erl .er-map, .erl .er-survey, .erl .er-art { display: block; width: 100%; height: auto; }
+.erl .er-map-bg { fill: #141C18; }
+.erl .er-route { fill: none; stroke: rgba(236, 239, 231, 0.25); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.erl .er-route-done { fill: none; stroke: var(--unk); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.erl .er-route--flow { stroke: var(--ok); }
+.erl .er-route--tech { stroke: var(--ice); }
+.erl .er-flow-text { fill: var(--ok); }
+.erl .er-tech-text { fill: var(--ice); }
+.erl .er-flag { fill: var(--ink); }
+.erl .er-bike circle { fill: none; stroke: var(--ink); stroke-width: 2.5; }
+.erl .er-bike path { fill: none; stroke: var(--ice); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.erl .er-bike .er-head { fill: var(--ink); stroke: none; }
+.erl .er-watch { fill: rgba(5, 10, 8, 0.9); stroke: var(--unk); stroke-width: 1.5; }
+.erl .er-watch-num { fill: var(--unk); font-family: var(--f-mono); font-size: 22px; font-weight: 600; }
+.erl .er-timers { display: grid; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 10px; }
+.erl .er-timer { display: grid; gap: 2px; padding: 10px 12px; border: 1px solid var(--rule); background: var(--deep); }
+.erl .er-timer-h { font-family: var(--f-mono); font-size: 12.5px; color: var(--soft); }
+.erl .er-timer b { font-family: var(--f-mono); font-size: 22px; color: var(--ink); }
+.erl .er-timer--flow { border-color: var(--ok); }
+.erl .er-timer--tech { border-color: var(--ice); }
+.erl .er-terms { display: grid; gap: 10px; margin: 0 0 12px; }
+@media (min-width: 860px) { .erl .er-terms { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.erl .er-terms div { padding: 12px 14px; border: 1px solid var(--rule); background: var(--deep); }
+.erl .er-terms dt { font-weight: 700; color: var(--ink); }
+.erl .er-terms dd { margin: 4px 0 0; color: var(--text); }
+
+/* ---------- survey triangle ---------- */
+.erl .er-run { stroke: var(--soft); stroke-width: 4; }
+.erl .er-rise { stroke: var(--ice); stroke-width: 4; }
+.erl .er-diag { stroke: var(--in); stroke-width: 5; }
+.erl .er-right { fill: none; stroke: var(--soft); stroke-width: 1.5; }
+.erl .er-rise-text { fill: var(--ice); }
+.erl .er-diag-text { fill: var(--in); }
+.erl .er-tripod path { stroke: var(--soft); stroke-width: 2; }
+.erl .er-tripod rect { fill: var(--unk); }
+
+/* ---------- wheel ---------- */
+.erl .er-wheel-box { max-width: 340px; margin-inline: auto; }
+.erl .er-wheel { display: block; width: 100%; height: auto; }
+.erl .er-tire { fill: none; stroke: #2B2B28; stroke-width: 16; }
+.erl .er-rim { fill: none; stroke: var(--soft); stroke-width: 3; }
+.erl .er-spoke { stroke: rgba(236, 239, 231, 0.2); stroke-width: 1; }
+.erl .er-axis { stroke: rgba(236, 239, 231, 0.35); stroke-width: 1; stroke-dasharray: 4 4; }
+.erl .er-upper { fill: none; stroke: var(--in); stroke-width: 4; }
+.erl .er-hub { fill: var(--unk); }
+.erl .er-level { stroke: var(--ice); stroke-width: 2; stroke-dasharray: 6 4; }
+.erl .er-drop { stroke: var(--unk); stroke-width: 2; stroke-dasharray: 4 3; }
+.erl .er-point { fill: var(--unk); stroke: var(--deep); stroke-width: 2; }
+.erl .er-point--sol { fill: var(--ok); }
+
+/* ---------- graphs ---------- */
+.erl .er-line--t { stroke: var(--unk); stroke-width: 3.5; }
+.erl .er-line--d { stroke: var(--in); stroke-width: 3.5; }
+.erl .er-line--c { stroke: #C59BEB; stroke-width: 3; }
+.erl .er-line--ghost { stroke: rgba(236, 239, 231, 0.35); stroke-width: 2.5; stroke-dasharray: 6 4; }
+.erl .er-asym { stroke: var(--ice); stroke-width: 2; stroke-dasharray: 7 5; }
+.erl .er-target { stroke: var(--ok); stroke-width: 2.5; stroke-dasharray: 8 4; }
+.erl .er-band--context { fill: rgba(127, 201, 143, 0.10); }
+.erl .er-mark--now { fill: var(--ice); }
+.erl .er-mark--ok { fill: var(--ok); }
+.erl .er-mark--reject { fill: var(--warn); }
+.erl .er-mark--mirror { fill: rgba(236, 239, 231, 0.45); }
+.erl .er-mark--hole { fill: var(--deep); stroke: var(--warn); stroke-width: 3; }
+.erl .er-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 6px 0 0; padding: 0; list-style: none; font-family: var(--f-mono); font-size: 13px; color: var(--text); }
+.erl .er-legend li::before { content: ''; display: inline-block; width: 18px; height: 4px; margin-right: 6px; vertical-align: middle; }
+.erl .er-legend .is-parent::before { background: rgba(236, 239, 231, 0.45); }
+.erl .er-legend .is-g::before { background: var(--in); }
+.erl .er-legend .is-t::before { background: var(--unk); }
+.erl .er-legend .is-c::before { background: #C59BEB; }
+
+/* ---------- readouts, steps, tools ---------- */
+.erl .er-read { display: grid; gap: 8px; align-content: start; }
+.erl .er-read p { margin: 0; overflow-wrap: anywhere; }
+.erl .er-eqn { font-size: 18px; color: var(--unk); overflow-wrap: anywhere; }
+.erl .er-out { color: var(--unk); }
+.erl .er-points { margin: 0; padding-left: 20px; font-size: 14.5px; }
+.erl .er-points li { margin: 3px 0; }
+.erl .er-toggle, .erl .er-math { text-transform: none; letter-spacing: 0; }
+.erl .er-toggle[aria-pressed="true"] { border-color: var(--unk); color: var(--ink); background: rgba(232, 193, 74, 0.14); }
+.erl .er-bench, .erl .er-solver, .erl .er-ctl { display: grid; gap: 12px; }
+.erl .er-solver-box { display: grid; gap: 10px; padding: 16px; }
+.erl .er-steps { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+.erl .er-steps li { overflow-wrap: anywhere; }
+.erl .er-steps li.is-last { color: var(--unk); font-weight: 600; }
+
+/* ---------- opening art ---------- */
+.erl .er-art-bg { fill: #141C18; }
+.erl .er-hill { fill: #1E2B22; }
+.erl .er-art-screen { fill: rgba(5, 10, 8, 0.88); stroke: rgba(142, 197, 224, 0.5); }
+.erl .er-art-axis { fill: none; stroke: var(--soft); stroke-width: 1.5; }
+.erl .er-art-asym { fill: none; stroke: var(--ice); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.erl .er-art-trace { fill: none; stroke: var(--unk); stroke-width: 3; }
+.erl .er-art-tri { fill: rgba(142, 197, 224, 0.15); stroke: var(--in); stroke-width: 2; }
+
+@media (max-width: 640px) {
+  .erl .er-eqn { font-size: 15.5px; }
+  .erl .er-timers { grid-template-columns: minmax(0, 1fr); }
+  .erl .er-solver-box { padding: 12px; }
+}
