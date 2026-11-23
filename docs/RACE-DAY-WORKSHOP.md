@@ -116,7 +116,7 @@ In the Supabase SQL Editor, re-run (each is safe to re-run):
 ```
 learning-lab/race-day-workshop/
   index.html, main.js        the page and its connection to the site
-  workshop.js                mount(): shell, routing, board, missions, final, report
+  workshop.js                config + the three mission pages (runs in lesson-kit/missions.js, the shared mission-board shell)
   logic/models.js            the maths and the validated number sets
   logic/questions.js         every question, ideas, misconceptions, questionKinds()
   components/labs.js         sag calculator, tolerance gauge, race clock, survey, debugger

@@ -43,6 +43,8 @@ Lessons using the kit:
 - [Introduction to Physics](INTRO-TO-PHYSICS-LESSON.md) (Module 1)
 - [Newton's Laws of Motion](NEWTONS-LAWS-LESSON.md) (Module 7)
 
-Also used by the [Race-Day Workshop](RACE-DAY-WORKSHOP.md) (Algebra 2): its
-questions, checking, progress and DOM helpers, with its own mission-board
-shell instead of `mountLesson`. A change to the kit affects all three.
+Mission-board labs (Algebra 2) use `missions.js` (`mountMissions`) and `missions.css` (prefix `ms-`) instead of `mountLesson`, plus `controls.js` (slider, segmented control, status):
+- [Race-Day Workshop](RACE-DAY-WORKSHOP.md)
+- [Ride Systems Lab](RIDE-SYSTEMS-LAB.md)
+
+A change to the kit affects all four.

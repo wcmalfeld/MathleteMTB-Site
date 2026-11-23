@@ -1,0 +1,118 @@
+/* ============================================================
+   Ride Systems Lab (Algebra 2, Functions): its own graphs, drawings and
+   interactives. Loaded after the lesson kit's stylesheets (lesson-kit.css,
+   then missions.css for the mission-board shell and its colour tokens).
+   Everything here is scoped under .rsl.
+   Colours, used the same way in every graph:
+     input (distance, cadence)  --in  blue      output / result  --unk gold
+     original function          pale            transformed      gold
+     climbs / valid             --ok  green     descents / not    --warn orange
+   ============================================================ */
+
+/* ---------- plots ---------- */
+.rsl .rs-plot { display: block; width: 100%; height: auto; }
+.rsl .rs-grid { stroke: rgba(236, 239, 231, 0.07); }
+.rsl .rs-axis { stroke: var(--soft); stroke-width: 1.5; }
+.rsl .rs-line { fill: none; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.rsl .rs-line--e { stroke: var(--ink); }
+.rsl .rs-line--faded { stroke: rgba(236, 239, 231, 0.25); stroke-width: 2; }
+.rsl .rs-line--up { stroke: var(--ok); stroke-width: 4; }
+.rsl .rs-line--down { stroke: var(--warn); stroke-width: 4; stroke-dasharray: 9 4; }
+.rsl .rs-line--orig { stroke: rgba(236, 239, 231, 0.45); stroke-width: 2.5; stroke-dasharray: 6 4; }
+.rsl .rs-line--new { stroke: var(--unk); stroke-width: 3.5; }
+.rsl .rs-line--target { stroke: var(--in); stroke-width: 7; opacity: 0.35; }
+.rsl .rs-line--inv { stroke: var(--in); stroke-width: 3.5; }
+.rsl .rs-line--ground { stroke: var(--dirt); stroke-width: 4; }
+.rsl .rs-line--deck { stroke: var(--in); stroke-width: 2.5; stroke-dasharray: 4 3; }
+.rsl .rs-band--domain { fill: rgba(142, 197, 224, 0.12); }
+.rsl .rs-band--range { fill: rgba(232, 188, 78, 0.12); }
+.rsl .rs-hline, .rsl .rs-vline { stroke-width: 2; }
+.rsl .rs-hline--test, .rsl .rs-vline--ok { stroke: var(--unk); stroke-dasharray: 7 4; }
+.rsl .rs-hline--warn, .rsl .rs-vline--warn { stroke: var(--warn); stroke-dasharray: 7 4; }
+.rsl .rs-hline--zero { stroke: rgba(236, 239, 231, 0.25); }
+.rsl .rs-hl-label { fill: var(--unk); }
+.rsl .rs-guide { fill: none; stroke: var(--in); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.rsl .rs-guide--rev { stroke: var(--unk); }
+.rsl .rs-mark { stroke: var(--deep); stroke-width: 2.5; fill: var(--ink); }
+.rsl .rs-mark--sample { fill: var(--ink); stroke-width: 1; }
+.rsl .rs-mark--now { fill: var(--ice); }
+.rsl .rs-mark--hit { fill: var(--unk); }
+.rsl .rs-mark--bad { fill: var(--warn); }
+.rsl .rs-mark--max { fill: var(--ok); }
+.rsl .rs-mark--min { fill: var(--in); }
+.rsl .rs-out { color: var(--unk); }
+
+/* ---------- trail map ---------- */
+.rsl .rs-map { display: block; width: 100%; height: auto; margin-top: 8px; }
+.rsl .rs-contour { fill: none; stroke: rgba(236, 239, 231, 0.07); }
+.rsl .rs-singletrack { fill: none; stroke: var(--dirt); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.rsl .rs-pin { fill: var(--ink); stroke: var(--deep); stroke-width: 2; }
+.rsl .rs-pin--end { fill: var(--ice); }
+.rsl .rs-rider { fill: var(--ice); stroke: var(--deep); stroke-width: 3; }
+.rsl .rs-rider-dot { fill: var(--deep); }
+.rsl .rs-samples { margin-top: 4px; }
+.rsl .rs-samples summary { cursor: pointer; font-size: 14px; color: var(--soft); min-height: 32px; display: flex; align-items: center; }
+.rsl .rs-data td, .rsl .rs-data th { padding-right: 12px; }
+
+/* ---------- readouts ---------- */
+.rsl .rs-read { display: grid; gap: 8px; align-content: start; }
+.rsl .rs-read p { margin: 0; }
+.rsl .rs-runs { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font-family: var(--f-mono); font-size: 14px; }
+.rsl .rs-runs .is-up { color: var(--ok); }
+.rsl .rs-runs .is-down { color: var(--warn); }
+.rsl .rs-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 0; list-style: none; font-size: 13px; color: var(--soft); }
+.rsl .rs-legend li::before { content: ''; display: inline-block; width: 18px; height: 3px; margin-right: 6px; vertical-align: middle; background: currentColor; }
+.rsl .rs-legend .is-orig::before { background: rgba(236, 239, 231, 0.45); }
+.rsl .rs-legend .is-new::before { background: var(--unk); }
+.rsl .rs-legend .is-target::before { background: var(--in); height: 6px; opacity: 0.6; }
+.rsl .rs-legend .is-ground::before { background: var(--dirt); }
+.rsl .rs-legend .is-deck::before { background: var(--in); }
+.rsl .rs-eqn { font-size: 20px; color: var(--unk); }
+.rsl .rs-two-eq { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.rsl .rs-two-eq p { padding: 10px 12px; border: 1px solid var(--rule); background: var(--deep); }
+.rsl .rs-two-eq p.is-active { border-color: var(--unk); }
+.rsl .rs-result { font-family: var(--f-mono); font-size: 18px; color: var(--ink); }
+.rsl .rs-result b { color: var(--unk); }
+.rsl .rs-select { width: 100%; max-width: 320px; }
+.rsl .rs-noinv { padding: 18px; border: 1px dashed var(--warn); color: var(--warn); font-size: 14px; }
+.rsl .rs-inv-h { margin: 12px 0 4px; }
+
+/* ---------- drivetrain ---------- */
+.rsl .rs-drive { display: block; width: 100%; height: auto; }
+.rsl .rs-tire { fill: none; stroke: #050706; stroke-width: 14; }
+.rsl .rs-rim { fill: none; stroke: var(--metal); stroke-width: 2.5; }
+.rsl .rs-spoke { stroke: rgba(154, 165, 156, 0.4); stroke-width: 1.2; }
+.rsl .rs-valve { fill: var(--ice); }
+.rsl .rs-chain { fill: none; stroke: var(--metal); stroke-width: 5; stroke-dasharray: 6 4; }
+.rsl .rs-ring { fill: #2A332E; stroke: var(--unk); stroke-width: 2; }
+.rsl .rs-cog { fill: #2A332E; stroke: var(--in); stroke-width: 2; }
+.rsl .rs-crank { stroke: var(--ink); stroke-width: 9; stroke-linecap: round; }
+.rsl .rs-crank--far { stroke: var(--metal-2); stroke-width: 7; }
+.rsl .rs-pedal { fill: var(--ice); }
+.rsl .rs-hub { fill: var(--metal); stroke: var(--deep); stroke-width: 2; }
+.rsl .rs-ground { stroke: var(--dirt); stroke-width: 3; }
+.rsl .rs-speedrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 6px 0 10px; }
+.rsl .rs-speed { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 44px; line-height: 1; color: var(--unk); font-variant-numeric: tabular-nums; }
+.rsl .rs-pipe { display: grid; gap: 8px; }
+.rsl .rs-pipe-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: 6px; }
+.rsl .rs-pipe-box { display: grid; gap: 2px; padding: 8px 12px; border: 1px solid var(--rule); background: var(--deep); min-width: 110px; }
+.rsl .rs-pipe-box b { font-family: var(--f-mono); font-size: 16px; color: var(--ink); }
+.rsl .rs-pipe-box.is-in { border-color: var(--in); }
+.rsl .rs-pipe-box.is-mid { border-color: var(--metal-2); }
+.rsl .rs-pipe-box.is-out { border-color: var(--unk); }
+.rsl .rs-pipe-box.is-out b { color: var(--unk); }
+.rsl .rs-pipe-arrow { display: grid; place-items: center; padding: 0 4px; font-family: var(--f-mono); font-size: 12px; color: var(--soft); text-align: center; }
+.rsl .rs-pipe-arrow span:first-child { font-size: 18px; color: var(--ink); }
+
+/* ---------- opening art ---------- */
+.rsl .rs-open-art { display: block; width: 100%; height: auto; }
+.rsl .rs-art-bg { fill: #18201C; }
+.rsl .rs-art-screen { fill: #0B0F0D; stroke: rgba(142, 197, 224, 0.4); }
+.rsl .rs-art-trace { fill: none; stroke: var(--in); stroke-width: 3; stroke-linejoin: round; }
+.rsl .rs-art-ok { fill: var(--ok); }
+
+@media (max-width: 640px) {
+  .rsl .rs-pipe-box { min-width: 0; flex: 1 1 40%; }
+  .rsl .rs-pipe-arrow { flex: 1 1 100%; grid-auto-flow: column; justify-content: start; gap: 8px; }
+  .rsl .rs-eqn { font-size: 17px; }
+}

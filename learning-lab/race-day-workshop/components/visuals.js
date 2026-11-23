@@ -3,7 +3,7 @@
 
 import { svg } from '../../lesson-kit/dom.js';
 
-const t = (x, y, text, cls, extra) => svg('text', { x, y, class: cls || 'rd-svg-label', ...(extra || {}) }, text);
+const t = (x, y, text, cls, extra) => svg('text', { x, y, class: cls || 'ms-svg-label', ...(extra || {}) }, text);
 
 // ------------------------------------------------------------ the shock
 // Two views of one rear shock: fully extended, and with the rider on it.
@@ -16,7 +16,7 @@ export function shockDiagram(r) {
   const draw = (y, exposed, label, cls) => {
     const end = x0 + eye + body + exposed;
     return svg('g', { class: cls },
-      t(x0 - 4, y - 32, label, 'rd-svg-kicker'),
+      t(x0 - 4, y - 32, label, 'ms-svg-kicker'),
       svg('circle', { cx: x0, cy: y, r: eye - 4, class: 'rd-sh-eye' }),
       svg('rect', { x: x0 + eye - 4, y: y - 22, width: body, height: 44, rx: 6, class: 'rd-sh-body' }),
       svg('rect', { x: x0 + eye + body - 4, y: y - 9, width: exposed + 4, height: 18, class: 'rd-sh-shaft' }),
@@ -37,7 +37,7 @@ export function shockDiagram(r) {
 function dim(x1, x2, y, label, cls, below) {
   return svg('g', { class: cls },
     svg('line', { x1, y1: y, x2, y2: y }), svg('line', { x1, y1: y - 6, x2: x1, y2: y + 6 }), svg('line', { x1: x2, y1: y - 6, x2, y2: y + 6 }),
-    t((x1 + x2) / 2, below ? y + 22 : y - 8, label, 'rd-svg-label rd-mid'));
+    t((x1 + x2) / 2, below ? y + 22 : y - 8, label, 'ms-svg-label ms-mid'));
 }
 
 // A 0–50% bar with the window shaded and the reading marked.
@@ -47,8 +47,8 @@ export function sagBar(r) {
     'aria-label': `Sag ${fmt(r.pct, 1)}%: ${r.within ? 'inside' : 'outside'} the ${r.lo}–${r.hi}% window.` });
   s.append(svg('rect', { x: L, y: 24, width: R - L, height: 14, class: 'rd-bar-track' }),
     svg('rect', { x: X(r.lo), y: 20, width: X(r.hi) - X(r.lo), height: 22, class: 'rd-bar-zone' }),
-    t(X(r.lo), 14, r.lo + '%', 'rd-svg-label rd-mid'), t(X(r.hi), 14, r.hi + '%', 'rd-svg-label rd-mid'));
-  [0, 10, 20, 30, 40, 50].forEach(p => s.append(t(X(p), 62, p + '%', 'rd-svg-small rd-mid')));
+    t(X(r.lo), 14, r.lo + '%', 'ms-svg-label ms-mid'), t(X(r.hi), 14, r.hi + '%', 'ms-svg-label ms-mid'));
+  [0, 10, 20, 30, 40, 50].forEach(p => s.append(t(X(p), 62, p + '%', 'ms-svg-small ms-mid')));
   const x = X(r.pct);
   s.append(svg('path', { d: `M${x} 46 l -8 12 h 16 Z`, class: r.within ? 'rd-marker rd-marker--ok' : 'rd-marker rd-marker--warn' }),
     svg('line', { x1: x, y1: 18, x2: x, y2: 44, class: r.within ? 'rd-needle rd-needle--ok' : 'rd-needle rd-needle--warn' }));
@@ -70,15 +70,15 @@ export function toleranceLine(p, mid, tol, within) {
   for (let v = GAUGE.min; v <= GAUGE.max; v += 1) {
     const big = v % 5 === 0;
     s.append(svg('line', { x1: X(v), y1: y - (big ? 8 : 4), x2: X(v), y2: y + (big ? 8 : 4), class: 'rd-tick' }));
-    if (big) s.append(t(X(v), y + 26, v + '%', 'rd-svg-small rd-mid'));
+    if (big) s.append(t(X(v), y + 26, v + '%', 'ms-svg-small ms-mid'));
   }
-  s.append(svg('line', { x1: X(mid), y1: y - 22, x2: X(mid), y2: y + 14, class: 'rd-target' }), t(X(mid), y - 28, `target ${mid}%`, 'rd-svg-label rd-mid'));
+  s.append(svg('line', { x1: X(mid), y1: y - 22, x2: X(mid), y2: y + 14, class: 'rd-target' }), t(X(mid), y - 28, `target ${mid}%`, 'ms-svg-label ms-mid'));
   // distance bracket
   const a = X(Math.min(p, mid)), b = X(Math.max(p, mid));
   s.append(svg('line', { x1: a, y1: y + 40, x2: b, y2: y + 40, class: within ? 'rd-dev rd-dev--ok' : 'rd-dev rd-dev--warn' }));
   const x = X(Math.min(GAUGE.max, Math.max(GAUGE.min, p)));
   s.append(svg('circle', { cx: x, cy: y, r: 11, class: within ? 'rd-knob rd-knob--ok' : 'rd-knob rd-knob--warn' }),
-    t(x, y - 18 + (Math.abs(x - X(mid)) < 60 ? -18 : 0), fmt(p, 1) + '%', 'rd-svg-label rd-mid rd-strong'));
+    t(x, y - 18 + (Math.abs(x - X(mid)) < 60 ? -18 : 0), fmt(p, 1) + '%', 'ms-svg-label ms-mid ms-strong'));
   return s;
 }
 
@@ -96,11 +96,11 @@ export function stageMap(run, at) {
   const total = pathLength(pts), split = run.d1 / run.total;
   const p1 = pointAt(pts, split * total);
   s.append(svg('path', { d: 'M' + slice(pts, 0, split * total).map(p => p.join(' ')).join(' L '), class: 'rd-course rd-course--s1' }),
-    svg('circle', { cx: pts[0][0], cy: pts[0][1], r: 6, class: 'rd-cp' }), t(pts[0][0], pts[0][1] + 26, 'START', 'rd-svg-kicker rd-mid'),
-    svg('rect', { x: p1[0] - 5, y: p1[1] - 5, width: 10, height: 10, class: 'rd-cp rd-cp--split' }), t(p1[0], p1[1] - 16, `SPLIT · ${fmt(run.d1)} km`, 'rd-svg-kicker rd-mid'),
-    svg('circle', { cx: pts[pts.length - 1][0], cy: pts[pts.length - 1][1], r: 6, class: 'rd-cp rd-cp--end' }), t(pts[pts.length - 1][0] - 6, pts[pts.length - 1][1] - 16, 'FINISH', 'rd-svg-kicker rd-end'),
-    t(30, 210, `Section 1 · ${fmt(run.d1)} km @ ${fmt(run.v1)} km/h`, 'rd-svg-small'),
-    t(330, 210, `Section 2 · ${fmt(run.d2)} km @ ${fmt(run.v)} km/h`, 'rd-svg-small'));
+    svg('circle', { cx: pts[0][0], cy: pts[0][1], r: 6, class: 'rd-cp' }), t(pts[0][0], pts[0][1] + 26, 'START', 'ms-svg-kicker ms-mid'),
+    svg('rect', { x: p1[0] - 5, y: p1[1] - 5, width: 10, height: 10, class: 'rd-cp rd-cp--split' }), t(p1[0], p1[1] - 16, `SPLIT · ${fmt(run.d1)} km`, 'ms-svg-kicker ms-mid'),
+    svg('circle', { cx: pts[pts.length - 1][0], cy: pts[pts.length - 1][1], r: 6, class: 'rd-cp rd-cp--end' }), t(pts[pts.length - 1][0] - 6, pts[pts.length - 1][1] - 16, 'FINISH', 'ms-svg-kicker ms-end'),
+    t(30, 210, `Section 1 · ${fmt(run.d1)} km @ ${fmt(run.v1)} km/h`, 'ms-svg-small'),
+    t(330, 210, `Section 2 · ${fmt(run.d2)} km @ ${fmt(run.v)} km/h`, 'ms-svg-small'));
   // Rider: position by time (section 1 at v1, then section 2 at v).
   const tNow = at * run.time;
   const dist = tNow <= run.t1 ? run.v1 * tNow : run.d1 + run.v * (tNow - run.t1);
@@ -129,8 +129,8 @@ export function timeBudget(run) {
   s.append(svg('rect', { x: X(0), y: 14, width: X(m1) - X(0), height: 24, class: 'rd-bud-1' }),
     svg('rect', { x: X(m1), y: 14, width: X(m1 + m2) - X(m1), height: 24, class: run.meets ? 'rd-bud-2 rd-bud-2--ok' : 'rd-bud-2 rd-bud-2--warn' }),
     svg('line', { x1: X(mt), y1: 6, x2: X(mt), y2: 46, class: 'rd-target' }),
-    t(X(mt), 62, `allowed ${fmt(mt, 1)} min`, 'rd-svg-small rd-mid'),
-    t(X(m1 / 2), 31, 'S1', 'rd-svg-kicker rd-mid rd-dark'), X(m1 + m2) - X(m1) > 30 ? t(X(m1 + m2 / 2), 31, 'S2', 'rd-svg-kicker rd-mid rd-dark') : null);
+    t(X(mt), 62, `allowed ${fmt(mt, 1)} min`, 'ms-svg-small ms-mid'),
+    t(X(m1 / 2), 31, 'S1', 'ms-svg-kicker ms-mid ms-dark'), X(m1 + m2) - X(m1) > 30 ? t(X(m1 + m2 / 2), 31, 'S2', 'ms-svg-kicker ms-mid ms-dark') : null);
   return s;
 }
 
@@ -141,8 +141,8 @@ export function surveyTriangle(v, up) {
     'aria-label': v.real ? `Side profile: ${v.a} m horizontal, ${v.c} m straight line, ${up ? 'climbing' : 'dropping'} ${fmt(v.rise, 1)} m.` : `Side profile: a ${v.c} m straight line can’t span ${v.a} m horizontally, so there is no real elevation change.` });
   [0, 1, 2, 3].forEach(i => s.append(svg('line', { x1: 0, y1: 40 + i * 60, x2: 620, y2: 40 + i * 60, class: 'rd-grid' })));
   if (!v.real) {
-    s.append(svg('line', { x1: 60, y1: 200, x2: 560, y2: 200, class: 'rd-leg' }), t(310, 226, `horizontal a = ${v.a} m`, 'rd-svg-label rd-mid'),
-      svg('line', { x1: 60, y1: 200, x2: 60 + 500 * v.c / v.a, y2: 200, class: 'rd-hyp rd-hyp--bad' }), t(310, 110, `c = ${v.c} m is shorter than a: h² = c² − a² < 0`, 'rd-svg-label rd-mid rd-warn-text'));
+    s.append(svg('line', { x1: 60, y1: 200, x2: 560, y2: 200, class: 'rd-leg' }), t(310, 226, `horizontal a = ${v.a} m`, 'ms-svg-label ms-mid'),
+      svg('line', { x1: 60, y1: 200, x2: 60 + 500 * v.c / v.a, y2: 200, class: 'rd-hyp rd-hyp--bad' }), t(310, 110, `c = ${v.c} m is shorter than a: h² = c² − a² < 0`, 'ms-svg-label ms-mid rd-warn-text'));
     return s;
   }
   // Scale so the triangle fits: horizontal up to 480 px, vertical up to 170 px.
@@ -161,10 +161,10 @@ export function surveyTriangle(v, up) {
     svg('line', { x1: S[0], y1: S[1], x2: F[0], y2: F[1], class: 'rd-hyp' }),
     svg('path', { d: up ? `M${corner[0] - 14} ${corner[1]} v -14 h 14` : `M${corner[0] - 14} ${corner[1]} v 14 h 14`, class: 'rd-right-angle' }),
     svg('circle', { cx: S[0], cy: S[1], r: 6, class: 'rd-cp' }), svg('circle', { cx: F[0], cy: F[1], r: 6, class: 'rd-cp rd-cp--end' }),
-    t(S[0] - 10, S[1] + (up ? 24 : -14), 'A (start)', 'rd-svg-kicker'), t(F[0] + 10, F[1] + 4, 'B', 'rd-svg-kicker'),
-    t((S[0] + corner[0]) / 2, corner[1] + (up ? 22 : -10), `a = ${v.a} m`, 'rd-svg-label rd-mid'),
-    t(corner[0] + 10, (corner[1] + F[1]) / 2 + 4, `h = ${up ? '+' : '−'}${fmt(v.rise, 1)} m`, 'rd-svg-label rd-strong'),
-    t((S[0] + F[0]) / 2 - 20, (S[1] + F[1]) / 2 - 12, `c = ${v.c} m`, 'rd-svg-label rd-end'));
+    t(S[0] - 10, S[1] + (up ? 24 : -14), 'A (start)', 'ms-svg-kicker'), t(F[0] + 10, F[1] + 4, 'B', 'ms-svg-kicker'),
+    t((S[0] + corner[0]) / 2, corner[1] + (up ? 22 : -10), `a = ${v.a} m`, 'ms-svg-label ms-mid'),
+    t(corner[0] + 10, (corner[1] + F[1]) / 2 + 4, `h = ${up ? '+' : '−'}${fmt(v.rise, 1)} m`, 'ms-svg-label ms-strong'),
+    t((S[0] + F[0]) / 2 - 20, (S[1] + F[1]) / 2 - 12, `c = ${v.c} m`, 'ms-svg-label ms-end'));
   return s;
 }
 

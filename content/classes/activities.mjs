@@ -164,6 +164,28 @@ const RACE_DAY_IDEAS = {
 };
 const raceDayQuestionSkills = Object.fromEntries(Object.entries(raceDayKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => RACE_DAY_IDEAS[i] || []))]]));
 
+// Ride Systems Lab (Algebra 2, Unit 2: Functions): same pattern
+// (learning-lab/ride-systems-lab/logic/questions.js).
+import { questionKinds as rideKinds } from '../../learning-lab/ride-systems-lab/logic/questions.js';
+const FN = 'alg2.function-notation.', DR = 'alg2.domain-and-range.', CF = 'alg2.composite-functions.', TF = 'alg2.transformations-of-functions.', IF = 'alg2.inverse-functions.';
+const RIDE_IDEAS = {
+  notation:       [FN + 'interpret-notation'],
+  evaluate:       [FN + 'evaluate-functions', FN + 'read-graphs-tables'],
+  'input-output': [FN + 'input-output'],
+  'domain-range': [DR + 'range-from-graph', DR + 'domain-in-context'],
+  graph:          [FN + 'increasing-decreasing', FN + 'read-graphs-tables'],
+  compose:        [CF + 'compose', CF + 'decompose'],
+  order:          [CF + 'composition-order'],
+  transform:      [TF + 'describe-transformations'],
+  'transform-v':  [TF + 'shifts', TF + 'stretches-reflections'],
+  'transform-h':  [TF + 'shifts', TF + 'stretches-reflections'],
+  inverse:        [IF + 'find-inverse', IF + 'verify-inverse'],
+  'one-to-one':   [IF + 'one-to-one', IF + 'horizontal-line-test'],
+  restrict:       [IF + 'restrict-domain', DR + 'domain-restrictions'],
+  operations:     [CF + 'operations-on-functions']
+};
+const rideQuestionSkills = Object.fromEntries(Object.entries(rideKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => RIDE_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -236,6 +258,29 @@ export const ACTIVITIES = [
     parts: ['3 missions', 'Sag calculator and tolerance gauge', 'Race clock simulator', 'Trail survey simulator', 'Algebra debugger', 'Race-Day Certification (6)', 'Optional complex-number extension'],
     skills: [...new Set(Object.values(raceDayQuestionSkills).flat())],
     tracking: { gameId: 'race-day-workshop', questions: raceDayQuestionSkills }
+  },
+  {
+    id: 'ride-systems-lab',
+    title: 'Ride Systems Lab',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/ride-systems-lab/',
+    image: null,
+    home: 'alg2.function-notation',
+    summary: 'Become a performance engineer: read a trail’s elevation profile as a function, chain drivetrain functions from cadence to speed, transform the profile, and work backward with inverse functions, then Engineer the Ride.',
+    objectives: [
+      'Explain what makes a relationship a function, and name its input and output',
+      'Evaluate functions from equations, tables and graphs, and find domain and range',
+      'Compose two functions, and explain why the order matters',
+      'Describe how shifts, stretches and reflections change a graph',
+      'Find and use an inverse, and restrict a domain so one exists'
+    ],
+    difficulty: ['intermediate', 'advanced'],
+    minutes: '20-25 min',
+    parts: ['4 missions', 'GPS trail explorer', 'Drivetrain simulator', 'Trail transformation studio', 'Inverse trail explorer', 'Engineer the Ride (14)', 'Optional function mixer'],
+    skills: [...new Set(Object.values(rideQuestionSkills).flat())],
+    tracking: { gameId: 'ride-systems-lab', questions: rideQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------

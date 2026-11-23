@@ -1,0 +1,130 @@
+/* ============================================================
+   Lesson kit: the mission-board shell (missions.js). Loaded after
+   lesson-kit.css and before a lab's own stylesheet. Scoped under .lsn,
+   prefix ms-. Used by the Race-Day Workshop and the Ride Systems Lab.
+   Colour meaning, used the same way in every mission lab:
+     --in   current inputs (blue)      --unk  unknowns / targets (gold)
+     --ok   valid / solutions (green)  --warn outside / false (orange)
+   ============================================================ */
+
+.lsn { --in: #8EC5E0; --unk: #E8BC4E; --ok: #6CC37A; --warn: #F28A62; --metal: #9AA59C; --metal-2: #5E6A62; --panel-2: #141A17; }
+
+.lsn .ms-titlebar { text-decoration: none; }
+.lsn .ms-titlebar:hover { color: var(--ice); }
+.lsn .ms-meter { display: flex; align-items: center; gap: 10px; }
+.lsn .ms-pips { display: flex; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.lsn .ms-pips li { width: 22px; height: 8px; border: 1px solid var(--rule); background: transparent; }
+.lsn .ms-pips li.is-part { background: rgba(232, 188, 78, 0.45); }
+.lsn .ms-pips li.is-done { background: var(--ok); border-color: var(--ok); }
+.lsn .ms-pips .ms-pip-flag { width: auto; height: auto; border: 0; font-size: 13px; line-height: 1; color: var(--soft); background: transparent; }
+.lsn .ms-pips .ms-pip-flag.is-part { color: var(--unk); background: transparent; }
+.lsn .ms-pips .ms-pip-flag.is-done { color: var(--ok); background: transparent; }
+.lsn .ms-exit { border: 1px solid var(--rule); padding: 6px 12px; }
+.lsn .ms-open-grid { display: grid; gap: 28px; align-items: center; padding: 18px 0 10px; }
+.lsn .ms-open-h span { color: var(--ice); }
+.lsn .ms-open-h { margin-bottom: 20px; }
+.lsn .ms-enter { margin: 8px 0 10px; font-size: 17px; letter-spacing: 0.06em; text-transform: uppercase; min-height: 52px; padding: 12px 26px; }
+.lsn .ms-open-art { border: 1px solid var(--rule); background: var(--deep); overflow: hidden; }
+.lsn .ms-photo { margin: 0; }
+.lsn .ms-photo img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); background: var(--deep); }
+.lsn .ms-photo figcaption { margin-top: 6px; }
+.lsn .ms-photo--hero img { aspect-ratio: 1280 / 852; object-fit: cover; border: 0; }
+.lsn .ms-brief-grid { display: grid; gap: 18px; align-items: start; }
+.lsn .ms-overall { margin: 0 0 20px; }
+.lsn .ms-overall-bar { height: 10px; background: var(--rule-soft); border: 1px solid var(--rule); }
+.lsn .ms-overall-bar span { display: block; height: 100%; background: var(--ok); transition: width 0.4s ease; }
+.lsn .ms-missions { display: grid; gap: 14px; margin: 0 0 18px; padding: 0; list-style: none; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); }
+.lsn .ms-mcard { display: flex; flex-direction: column; gap: 6px; padding: 18px; background: var(--panel); border: 1px solid var(--rule); border-top: 4px solid var(--in); }
+.lsn .ms-mcard.is-done { border-top-color: var(--ok); }
+.lsn .ms-mcard--final { border-top-color: var(--ice); background: linear-gradient(180deg, rgba(227, 106, 64, 0.08), transparent 60%), var(--panel); }
+.lsn .ms-mcard--final.is-locked { border-top-color: var(--rule); }
+.lsn .ms-mcard--final.is-done { border-top-color: var(--ok); }
+.lsn .ms-mcard-n { margin: 0; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--soft); }
+.lsn .ms-mcard-h { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 32px; line-height: 1; text-transform: uppercase; color: var(--ink); }
+.lsn .ms-mcard-t { margin: 0; }
+.lsn .ms-mcard-status { margin: auto 0 4px; padding-top: 6px; font-family: var(--f-mono); font-size: 13px; color: var(--ink); }
+.lsn .ms-mcard.is-done .ms-mcard-status { color: var(--ok); }
+.lsn .ms-mcard .ls-btn { align-self: flex-start; }
+.lsn .ms-extra { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; }
+.lsn .ms-extra p { margin-bottom: 0; }
+.lsn .ms-refs { margin-top: 8px; padding: 12px 16px; border: 1px solid var(--rule); }
+.lsn .ms-refs summary { cursor: pointer; font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); }
+.lsn .ms-refs ul { margin: 6px 0 0; padding-left: 20px; }
+.lsn .ms-refs li { margin: 4px 0; }
+.lsn .ms-mission { max-width: 1180px; }
+.lsn .ms-focus { margin: 0 0 6px; font-family: var(--f-mono); font-size: 13px; color: var(--in); }
+.lsn .ms-brief { max-width: 56rem; }
+.lsn .ms-module { margin-bottom: 22px; }
+.lsn .ms-module > * + * { margin-top: 14px; }
+.lsn .ms-h2 { font-size: clamp(28px, 3.6vw, 40px); }
+.lsn .ms-h3 { margin-top: 22px; color: var(--unk); text-transform: uppercase; letter-spacing: 0.06em; font-size: 15px; font-family: var(--f-mono); }
+.lsn .ms-ask { margin: 14px 0 0; background: var(--card); }
+.lsn .ms-unknown { color: var(--unk); font-family: var(--f-mono); }
+.lsn .ms-explain { padding: 10px 16px; background: var(--panel-2); border: 1px solid var(--rule); border-left: 4px solid var(--info); }
+.lsn .ms-explain summary { cursor: pointer; font-weight: 600; color: var(--ink); min-height: 32px; display: flex; align-items: center; }
+.lsn .ms-explain .ls-steps { margin-top: 10px; }
+.lsn .ms-sim { margin: 18px 0 0; padding: 0; border: 1px solid rgba(142, 197, 224, 0.35); background: var(--deep); }
+.lsn .ms-sim-h { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--rule); font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--in); }
+.lsn .ms-sim-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px rgba(108, 195, 122, 0.2); }
+.lsn .ms-lab { display: grid; gap: 18px; padding: 16px; }
+.lsn .ms-lab-panel { display: grid; gap: 10px; align-content: start; }
+.lsn .ms-figure { width: 100%; }
+.lsn .ms-figure svg { display: block; width: 100%; height: auto; }
+.lsn .ms-figure--drag { touch-action: none; cursor: ew-resize; }
+.lsn .ms-live-eq { margin: 0; font-family: var(--f-mono); font-size: 16px; color: var(--ink); overflow-wrap: anywhere; }
+.lsn .ms-in { color: var(--in); font-weight: 500; }
+.lsn .ms-ok { color: var(--ok); }
+.lsn .ms-warn { color: var(--warn); }
+.lsn .ms-mono { font-family: var(--f-mono); }
+.lsn .ms-readout td, .lsn .ms-readout th { padding-top: 7px; padding-bottom: 7px; }
+.lsn .ms-status { display: inline-block; padding: 2px 8px; border: 1px solid currentColor; font-family: var(--f-mono); font-size: 12.5px; white-space: nowrap; }
+.lsn .ms-status--ok { color: var(--ok); }
+.lsn .ms-status--warn { color: var(--warn); }
+.lsn .ms-steps { margin: 0; padding-left: 22px; font-family: var(--f-mono); font-size: 14.5px; color: var(--text); }
+.lsn .ms-steps li { margin: 4px 0; }
+.lsn .ms-svg-label { fill: var(--text); font-family: var(--f-mono); font-size: 13px; }
+.lsn .ms-svg-small { fill: var(--soft); font-family: var(--f-mono); font-size: 11.5px; }
+.lsn .ms-svg-kicker { fill: var(--soft); font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.1em; }
+.lsn .ms-mid { text-anchor: middle; }
+.lsn .ms-end { text-anchor: end; }
+.lsn .ms-strong { fill: var(--ink); font-weight: 500; }
+.lsn .ms-dark { fill: var(--deep); }
+.lsn .ms-score { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-top: 14px; }
+.lsn .ms-score-n { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 46px; line-height: 1; color: var(--unk); }
+.lsn .ms-score .ls-small { margin: 0; }
+.lsn .ms-left { margin: 0 0 22px; padding: 0; list-style: none; display: grid; gap: 8px; }
+.lsn .ms-left li { padding: 10px 14px; border: 1px solid var(--rule); }
+.lsn .ms-left li.is-done { color: var(--ok); }
+.lsn .ms-retry { padding: 18px 20px; border: 1px solid var(--warn); background: rgba(242, 138, 98, 0.06); margin-bottom: 18px; }
+.lsn .ms-ready { padding: 26px 24px; margin: 0 0 22px; border: 1px solid var(--ok); border-top: 6px solid var(--ok);
+  background: linear-gradient(135deg, rgba(108, 195, 122, 0.12), transparent 55%), var(--panel); }
+.lsn .ms-ready .ls-kicker { color: var(--ok); }
+.lsn .ms-ready-h { color: var(--ink); }
+.lsn .ms-ready-h:focus { outline: none; }
+.lsn .ms-stats { display: grid; gap: 10px; margin: 16px 0; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+.lsn .ms-stats div { padding: 10px 12px; background: var(--deep); border: 1px solid var(--rule); }
+.lsn .ms-stats dt { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); }
+.lsn .ms-stats dd { margin: 4px 0 0; font-family: var(--f-mono); font-size: 18px; color: var(--ink); }
+.lsn .ms-report th:first-child { white-space: normal; }
+.lsn .ms-miscon { margin: 0; padding-left: 20px; }
+.lsn .ms-miscon li { margin: 6px 0; }
+.lsn .ms-report-actions { margin-top: 10px; }
+
+.lsn .ms-crumbs ol { display: flex; flex-wrap: wrap; gap: 4px 8px; margin: 14px 0 0; padding: 0; list-style: none; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--soft); }
+.lsn .ms-crumbs li + li::before { content: '→'; margin-right: 8px; color: var(--rule); }
+.lsn .ms-crumbs a { color: var(--soft); }
+.lsn .ms-crumbs a:hover { color: var(--ice); }
+.lsn .ms-crumbs [aria-current] { color: var(--ink); }
+
+@media (min-width: 940px) { .lsn .ms-open-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); } }
+@media (min-width: 860px) { .lsn .ms-brief-grid { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); } }
+@media (min-width: 980px) { .lsn .ms-lab { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); align-items: start; } .lsn .ms-lab--stack { grid-template-columns: minmax(0, 1fr); } }
+@media (min-width: 980px) { .lsn .ms-lab-panel--row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; } }
+@media (max-width: 640px) {
+  .lsn .ms-lab { padding: 12px; }
+  .lsn .ms-mcard-h { font-size: 28px; }
+  .lsn .ms-live-eq { font-size: 14.5px; }
+  .lsn .ms-pips li { width: 14px; }
+  .lsn .ls-top-right { width: 100%; justify-content: space-between; }
+}
+@media (prefers-reduced-motion: reduce) { .lsn .ms-overall-bar span { transition: none; } }

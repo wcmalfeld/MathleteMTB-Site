@@ -176,31 +176,36 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   check('The Lab’s original Jump Lab game is untouched and still listed', existsSync(root + 'learning-lab/jump-lab/index.html') && tools.some(t => t.id === 'jump-lab' && t.status === 'live'));
 }
 
-// ---- Race-Day Workshop (Algebra 2; standalone module on the lesson kit; tests: scripts/test-race-day-workshop.mjs) ----
+// ---- Mission-board labs on the lesson kit's missions.js shell (Algebra 2) ----
+// tests: scripts/test-race-day-workshop.mjs, scripts/test-ride-systems-lab.mjs
 {
-  const dir = 'learning-lab/race-day-workshop/';
-  const html = read(dir + 'index.html');
-  const css = read(dir + 'styles/race-day-workshop.css').replace(/\/\*[\s\S]*?\*\//g, '');
-  const flat = css.replace(/@media[^{]*\{([\s\S]*?\})\s*\}/g, '$1');
-  const leaking = flat.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@') && !/^(from|to|\d+%)$/.test(sel)).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith('.rdw'));
-  check('Race-Day Workshop styles are all scoped under .rdw, braces balanced', leaking.length === 0 && (css.match(/\{/g) || []).length === (css.match(/\}/g) || []).length, leaking.slice(0, 5).join(' | '));
-  const js = execSync(`find ${root + dir} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
-  const coupled = js.filter(f => !f.endsWith('/main.js') && /MathleteProgress|MathleteAuth|supabase|tools-config/.test(readFileSync(f, 'utf8')));
-  check('Race-Day Workshop module doesn’t depend on the site (only its page connects it)', coupled.length === 0 && !/site\.css|site-nav|site\.js/.test(html), coupled.join(', '));
-  check('Race-Day Workshop page loads progress tracking in order, then the kit styles, then the module', ['js/supabase-config.js', 'js/auth.js', 'js/progress.js', 'src="main.js'].map(x => html.indexOf(x)).every((v, i, a) => v > 0 && (i === 0 || v > a[i - 1])) && html.indexOf('lesson-kit.css') > 0 && html.indexOf('lesson-kit.css') < html.indexOf('styles/race-day-workshop.css'));
-  const unsafe = js.filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(/.test(readFileSync(f, 'utf8')));
-  check('Race-Day Workshop never builds HTML from strings', unsafe.length === 0, unsafe.join(', '));
-  const { questionKinds } = await import('../' + dir + 'logic/questions.js');
-  const kinds = Object.keys(questionKinds()).map(k => 'race-day-workshop:' + k).sort();
-  const cur = read('supabase/curriculum.sql');
-  const sqlKinds = [...new Set([...cur.matchAll(/\('(race-day-workshop:[a-z0-9-]+)', 'race-day-workshop'/g)].map(m => m[1]))].sort();
-  check(`Race-Day Workshop question kinds are registered in supabase/curriculum.sql (${kinds.length})`, kinds.length > 0 && kinds.join() === sqlKinds.join(), `lab: ${kinds.length} | sql: ${sqlKinds.length}`);
-  check('Race-Day Workshop sits in Algebra 2 → Equations and Inequalities → Solving Equations and Modeling Constraints',
-    read('classes/algebra-2/solving-equations-and-modeling-constraints/index.html').includes('href="learning-lab/race-day-workshop/?from=') &&
-    read('classes/algebra-2/absolute-value-equations/index.html').includes('learning-lab/race-day-workshop/'));
-  const rw = read('supabase/rewards.sql');
-  check('Race-Day Workshop earns lab XP on certification, and its final counts as an assessment', /\('race-day-workshop',\s+'Race-Day Workshop',\s+'lab',\s+'alg2',\s+'session'/.test(rw) && rw.includes("('race-day-workshop.final', 'race-day-workshop'"));
-  check('Race-Day Workshop names the sag window’s source and says it isn’t setup advice', read(dir + 'workshop.js').includes('tech.ridefox.com') && /not a setup recommendation/.test(read(dir + 'workshop.js')));
+  const LABS = [
+    { id: 'race-day-workshop', name: 'Race-Day Workshop', root: '.rdw', css: 'race-day-workshop.css', entry: 'workshop.js', home: 'classes/algebra-2/solving-equations-and-modeling-constraints/index.html', also: 'classes/algebra-2/absolute-value-equations/index.html', final: 'race-day-workshop.final' },
+    { id: 'ride-systems-lab', name: 'Ride Systems Lab', root: '.rsl', css: 'ride-systems.css', entry: 'ride-systems.js', home: 'classes/algebra-2/function-notation/index.html', also: 'classes/algebra-2/inverse-functions/index.html', final: 'ride-systems-lab.final' }
+  ];
+  const cur = read('supabase/curriculum.sql'), rw = read('supabase/rewards.sql');
+  for (const Lb of LABS) {
+    const dir = 'learning-lab/' + Lb.id + '/', html = read(dir + 'index.html');
+    const css = read(dir + 'styles/' + Lb.css).replace(/\/\*[\s\S]*?\*\//g, '');
+    const flat = css.replace(/@media[^{]*\{([\s\S]*?\})\s*\}/g, '$1');
+    const leaking = flat.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@') && !/^(from|to|\d+%)$/.test(sel)).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith(Lb.root));
+    check(`${Lb.name} styles are all scoped under ${Lb.root}, braces balanced`, leaking.length === 0 && (css.match(/\{/g) || []).length === (css.match(/\}/g) || []).length, leaking.slice(0, 5).join(' | '));
+    const js = execSync(`find ${root + dir} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
+    const coupled = js.filter(f => !f.endsWith('/main.js') && /MathleteProgress|MathleteAuth|supabase|tools-config/.test(readFileSync(f, 'utf8')));
+    check(`${Lb.name} module doesn’t depend on the site (only its page connects it)`, coupled.length === 0 && !/site\.css|site-nav|site\.js/.test(html), coupled.join(', '));
+    check(`${Lb.name} page loads progress tracking in order, then the kit and mission-shell styles, then its own, then the module`, ['js/supabase-config.js', 'js/auth.js', 'js/progress.js', 'src="main.js'].map(x => html.indexOf(x)).every((v, i, a) => v > 0 && (i === 0 || v > a[i - 1])) && html.indexOf('lesson-kit.css') > 0 && html.indexOf('lesson-kit.css') < html.indexOf('lesson-kit/missions.css') && html.indexOf('lesson-kit/missions.css') < html.indexOf('styles/' + Lb.css));
+    check(`${Lb.name} runs on the shared mission shell`, read(dir + Lb.entry).includes("from '../lesson-kit/missions.js'"));
+    const unsafe = js.filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(/.test(readFileSync(f, 'utf8')));
+    check(`${Lb.name} never builds HTML from strings`, unsafe.length === 0, unsafe.join(', '));
+    const { questionKinds } = await import('../' + dir + 'logic/questions.js');
+    const kinds = Object.keys(questionKinds()).map(k => Lb.id + ':' + k).sort();
+    const sqlKinds = [...new Set([...cur.matchAll(new RegExp(`\\('(${Lb.id}:[a-z0-9-]+)', '${Lb.id}'`, 'g'))].map(m => m[1]))].sort();
+    check(`${Lb.name} question kinds are registered in supabase/curriculum.sql (${kinds.length})`, kinds.length > 0 && kinds.join() === sqlKinds.join(), `lab: ${kinds.length} | sql: ${sqlKinds.length}`);
+    check(`${Lb.name} is linked from its Algebra 2 home topic and a related one`, read(Lb.home).includes(`href="learning-lab/${Lb.id}/?from=`) && read(Lb.also).includes(`learning-lab/${Lb.id}/`));
+    check(`${Lb.name} earns lab XP on certification, and its final counts as an assessment`, new RegExp(`\\('${Lb.id}',\\s+'${Lb.name}',\\s+'lab',\\s+'alg2',\\s+'session'`).test(rw) && rw.includes(`('${Lb.final}', '${Lb.id}'`));
+  }
+  check('Race-Day Workshop names the sag window’s source and says it isn’t setup advice', read('learning-lab/race-day-workshop/workshop.js').includes('tech.ridefox.com') && /not a setup recommendation/.test(read('learning-lab/race-day-workshop/workshop.js')));
+  check('Ride Systems Lab says its trail data is simulated and its drivetrain idealized', /simulated, not surveyed/.test(read('learning-lab/ride-systems-lab/ride-systems.js')) && /idealized/.test(read('learning-lab/ride-systems-lab/components/labs.js')));
 }
 
 // ---- Carve Lab (Mathlete Ski; standalone module; tests: scripts/test-carve-lab.mjs) ----
@@ -286,8 +291,10 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   const jsIn = d => execSync(`find ${root + d} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
   const kitCss = scoped('learning-lab/lesson-kit/lesson-kit.css');
   check('Lesson kit styles are all scoped under .lsn, braces balanced', kitCss.ok && kitCss.leaking.length === 0, kitCss.leaking.slice(0, 5).join(' | '));
+  const msCss = scoped('learning-lab/lesson-kit/missions.css');
+  check('Lesson kit mission-board styles (missions.css) are all scoped under .lsn, braces balanced', msCss.ok && msCss.leaking.length === 0, msCss.leaking.slice(0, 5).join(' | '));
   const kitJs = jsIn('learning-lab/lesson-kit/');
-  const kitCoupled = kitJs.filter(f => /MathleteProgress|MathleteAuth|supabase|tools-config|newtons-laws|intro-to-physics|race-day-workshop/.test(readFileSync(f, 'utf8')));
+  const kitCoupled = kitJs.filter(f => /MathleteProgress|MathleteAuth|supabase|tools-config|newtons-laws|intro-to-physics|race-day-workshop|ride-systems/.test(readFileSync(f, 'utf8')));
   check('Lesson kit doesn’t depend on the site or on any one lesson', kitCoupled.length === 0, kitCoupled.join(', '));
   const curriculumSql = read('supabase/curriculum.sql');
   const LESSONS = [
