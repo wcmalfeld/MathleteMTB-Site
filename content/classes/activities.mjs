@@ -212,6 +212,31 @@ const PARK_IDEAS = {
 };
 const parkQuestionSkills = Object.fromEntries(Object.entries(parkKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => PARK_IDEAS[i] || []))]]));
 
+// Trail Dynamics Lab (Algebra 2, Unit 4: Quadratic Functions): same pattern
+// (learning-lab/trail-dynamics-lab/logic/questions.js).
+import { questionKinds as trailKinds } from '../../learning-lab/trail-dynamics-lab/logic/questions.js';
+const QG = 'alg2.quadratic-graphs.', VF = 'alg2.vertex-form.', CTS = 'alg2.completing-the-square.', QF = 'alg2.quadratic-formula.', CS = 'alg2.complex-solutions.';
+const TRAIL_IDEAS = {
+  recognize:         [QG + 'recognize-quadratic'],
+  features:          [QG + 'key-features'],
+  standard:          [QG + 'graph-forms', QG + 'convert-forms'],
+  vertex:            [VF + 'read-vertex-form', VF + 'write-vertex-form'],
+  factored:          [QG + 'graph-forms', QG + 'convert-forms'],
+  transform:         [QG + 'transformations'],
+  factoring:         [QG + 'factor-zeros'],
+  'complete-square': [CTS + 'complete-square', CTS + 'convert-to-vertex'],
+  'square-root':     [CTS + 'square-root-property'],
+  formula:           [QF + 'use-formula', QF + 'derive-formula'],
+  discriminant:      [QF + 'discriminant'],
+  complex:           [CS + 'complex-roots', CS + 'conjugate-pairs', CS + 'graph-meaning'],
+  model:             [QG + 'quadratic-models'],
+  interpret:         [QF + 'interpret-solutions'],
+  'domain-range':    [QG + 'domain-range'],
+  system:            ['alg2.systems-of-equations.linear-quadratic'],
+  'complex-arith':   ['alg2.complex-numbers.complex-arithmetic', 'alg2.complex-numbers.define-i']
+};
+const trailQuestionSkills = Object.fromEntries(Object.entries(trailKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => TRAIL_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -330,6 +355,29 @@ export const ACTIVITIES = [
     parts: ['4 missions', 'Blueprint graph', 'Matrix elimination console', 'Matrix cost calculator', 'Matrix equation solver', 'Final Build Plan (10)', 'Optional park optimizer'],
     skills: [...new Set(Object.values(parkQuestionSkills).flat())],
     tracking: { gameId: 'bike-park-blueprint-lab', questions: parkQuestionSkills }
+  },
+  {
+    id: 'trail-dynamics-lab',
+    title: 'Trail Dynamics Lab',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/trail-dynamics-lab/',
+    image: null,
+    home: 'alg2.quadratic-graphs',
+    summary: 'Model stopping distance as a quadratic and solve it backwards, rebuild a jump in standard, vertex and factored form, then find landing heights with square roots, completing the square, the quadratic formula and the discriminant, all the way to complex roots.',
+    objectives: [
+      'Model and interpret quadratic relationships, and reject solutions outside the domain',
+      'Convert between standard, vertex and factored form and read each one’s features',
+      'Solve by square roots, factoring, completing the square and the quadratic formula',
+      'Use the discriminant to predict the number and type of solutions',
+      'Interpret complex solutions, and solve a linear–quadratic system'
+    ],
+    difficulty: ['intermediate', 'advanced'],
+    minutes: '20-25 min',
+    parts: ['3 missions', 'Stopping distance simulator', 'Jump equation decoder and tuner', 'Trajectory height analyzer', 'Final Course Analysis (12)', 'Optional complex-number practice'],
+    skills: [...new Set(Object.values(trailQuestionSkills).flat())],
+    tracking: { gameId: 'trail-dynamics-lab', questions: trailQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------

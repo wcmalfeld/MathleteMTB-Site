@@ -1,0 +1,92 @@
+/* ============================================================
+   Trail Dynamics Lab (Algebra 2, Quadratic Functions): its own scenes,
+   graph colours and builder. Loaded after the lesson kit's stylesheets
+   (lesson-kit.css, then missions.css for the shell, plots and tokens).
+   Everything here is scoped under .tdl.
+   Colours: reaction distance blue (--in), braking orange (--ice); the
+   jump gold (--unk); vertex gold, zeros green, target lines orange/blue.
+   ============================================================ */
+
+/* ---------- braking ---------- */
+.tdl .td-brake, .tdl .td-jump, .tdl .td-art { display: block; width: 100%; height: auto; }
+.tdl .td-hill { fill: #1E2B22; }
+.tdl .td-trailline { stroke: var(--dirt); stroke-width: 5; }
+.tdl .td-zone { stroke-width: 9; stroke-linecap: round; }
+.tdl .td-zone--react { stroke: var(--in); }
+.tdl .td-zone--brake { stroke: var(--ice); }
+.tdl .td-tick { stroke: var(--soft); stroke-width: 2; }
+.tdl .td-tick--stop { stroke: var(--ink); stroke-width: 3; }
+.tdl .td-react-text { fill: var(--in); }
+.tdl .td-brake-text { fill: var(--ice); }
+.tdl .td-sign { fill: var(--unk); stroke: var(--deep); stroke-width: 1.5; }
+.tdl .td-bike circle { fill: none; stroke: var(--ink); stroke-width: 2.5; }
+.tdl .td-bike path { fill: none; stroke: var(--ice); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.tdl .td-bike .td-head { fill: var(--ink); stroke: none; }
+.tdl .td-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
+.tdl .td-speedo-box { width: 140px; }
+.tdl .td-speedo { display: block; width: 100%; height: auto; }
+.tdl .td-speedo-track { fill: none; stroke: var(--rule); stroke-width: 10; stroke-linecap: round; }
+.tdl .td-speedo-fill { fill: none; stroke: var(--unk); stroke-width: 10; stroke-linecap: round; }
+.tdl .td-speedo-num { fill: var(--ink); font-family: var(--f-display); font-weight: 800; font-size: 30px; }
+.tdl .td-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 0; list-style: none; font-family: var(--f-mono); font-size: 13px; color: var(--text); }
+.tdl .td-legend li::before { content: ''; display: inline-block; width: 18px; height: 4px; margin-right: 6px; vertical-align: middle; }
+.tdl .td-legend .is-react::before { background: var(--in); }
+.tdl .td-legend .is-brake::before { background: var(--ice); }
+.tdl .td-legend .is-a::before { background: var(--ok); }
+.tdl .td-legend .is-b::before { background: #C59BEB; }
+.tdl .td-legend .is-k::before { background: var(--unk); }
+.tdl .td-legend--curves { margin-top: 4px; }
+.tdl .td-terms { display: grid; gap: 10px; margin: 0; }
+@media (min-width: 860px) { .tdl .td-terms { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.tdl .td-terms div { padding: 12px 14px; border: 1px solid var(--rule); background: var(--deep); }
+.tdl .td-terms dt { font-weight: 700; color: var(--ink); }
+.tdl .td-terms dd { margin: 4px 0 0; color: var(--text); }
+
+/* ---------- graphs ---------- */
+.tdl .td-line--a { stroke: var(--ok); stroke-width: 2.5; opacity: 0.6; }
+.tdl .td-line--b { stroke: #C59BEB; stroke-width: 2.5; opacity: 0.6; }
+.tdl .td-line--a.is-on, .tdl .td-line--b.is-on { stroke-width: 4; opacity: 1; }
+.tdl .td-line--k { stroke: var(--unk); stroke-width: 3.5; }
+.tdl .td-line--jump { stroke: var(--unk); stroke-width: 3.5; }
+.tdl .td-line--orig { stroke: rgba(236, 239, 231, 0.4); stroke-width: 2.5; stroke-dasharray: 6 4; }
+.tdl .td-line--ramp { stroke: var(--in); stroke-width: 3; }
+.tdl .td-mark--now { fill: var(--ice); }
+.tdl .td-mark--vertex { fill: var(--unk); }
+.tdl .td-mark--zero, .tdl .td-mark--hit { fill: var(--ok); }
+.tdl .td-mark--c { fill: var(--in); }
+.tdl .td-axis { stroke: var(--unk); stroke-dasharray: 5 4; }
+.tdl .td-vline { stroke: var(--soft); stroke-dasharray: 4 4; }
+.tdl .td-ground-ref { stroke: rgba(236, 239, 231, 0.3); }
+.tdl .td-target { stroke: var(--ice); stroke-width: 2.5; stroke-dasharray: 8 4; }
+.tdl .td-target--none { stroke: var(--warn); }
+.tdl .td-out { color: var(--unk); }
+.tdl .td-read { display: grid; gap: 8px; align-content: start; }
+.tdl .td-read p { margin: 0; overflow-wrap: anywhere; }
+.tdl .td-eqn { font-size: 19px; color: var(--unk); }
+.tdl .td-points { margin: 0; padding-left: 20px; font-size: 14.5px; }
+.tdl .td-points li { margin: 3px 0; }
+.tdl .td-forms { display: grid; gap: 10px; }
+.tdl .td-graphbox { margin-top: 10px; padding: 8px; border: 1px solid var(--rule); background: var(--deep); }
+.tdl .td-wait, .tdl .td-noscene { margin: 10px 0 0; padding: 12px; border: 1px dashed var(--rule); }
+
+/* ---------- side-view jump ---------- */
+.tdl .td-ground { fill: #1E2B22; }
+.tdl .td-groundline { stroke: var(--dirt); stroke-width: 4; }
+.tdl .td-lip { fill: var(--dirt-2); stroke: var(--lip); stroke-width: 1.5; }
+.tdl .td-path { fill: none; stroke: var(--unk); stroke-width: 2.5; stroke-dasharray: 6 5; }
+
+/* ---------- complete-the-square builder ---------- */
+.tdl .td-builder { display: grid; gap: 10px; padding: 14px 16px; border: 1px solid rgba(142, 197, 224, 0.35); background: var(--deep); }
+.tdl .td-build-steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+.tdl .td-build-steps li { color: var(--soft); }
+.tdl .td-build-steps li.is-done { color: var(--ink); }
+.tdl .td-build-steps li.is-done b { color: var(--ok); }
+
+/* ---------- opening art ---------- */
+.tdl .td-art-bg { fill: #141C18; }
+.tdl .td-art-screen { fill: rgba(5, 10, 8, 0.85); stroke: rgba(142, 197, 224, 0.5); }
+.tdl .td-art-trace { fill: none; stroke: var(--ice); stroke-width: 3; }
+.tdl .td-art-axis { fill: none; stroke: var(--soft); stroke-width: 1.5; }
+.tdl .td-art-ok { fill: var(--unk); }
+
+@media (max-width: 640px) { .tdl .td-eqn { font-size: 16px; } }
