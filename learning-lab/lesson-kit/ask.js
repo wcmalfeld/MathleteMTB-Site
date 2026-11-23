@@ -6,9 +6,10 @@
 //
 // ask(q, { progress, key, onDone(result) }) -> element
 //   q: { id, type, prompt, options | answer+tolerance+unit+traps | fields, hints, solution, skills }
+//   type: 'choice' (one answer), 'multi' (tick all that apply), 'number', 'fields'
 
 import { el, clear, button, id as uid } from './dom.js';
-import { checkNumber, checkFields, checkChoice } from './validate.js';
+import { checkFields, checkChoice, checkMulti } from './validate.js';
 import { fmt } from './format.js';
 
 const digitsFor = tol => (tol >= 1 ? 0 : tol >= 0.1 ? 1 : 2);
@@ -33,6 +34,13 @@ export function ask(q, o) {
     read = () => { const c = fs.querySelector('input:checked'); return c ? c.value : null; };
     lock = () => fs.querySelectorAll('input').forEach(i => { i.disabled = true; });
     answerText = v => (q.options.find(x => x.id === v) || {}).text || '';
+  } else if (q.type === 'multi') {
+    const fs = el('fieldset', { class: 'ls-choices', 'aria-labelledby': promptId }, el('legend', { class: 'ls-sr' }, 'Tick every answer that applies'),
+      q.options.map(op => { const oid = uid('o'); return el('label', { for: oid, class: 'ls-choice' }, el('input', { type: 'checkbox', id: oid, value: op.id }), el('span', null, op.text)); }));
+    area.append(el('p', { class: 'ls-small' }, 'Tick every answer that applies.'), fs);
+    read = () => [...fs.querySelectorAll('input:checked')].map(i => i.value);
+    lock = () => fs.querySelectorAll('input').forEach(i => { i.disabled = true; });
+    answerText = v => q.options.filter(x => v.includes(x.id)).map(x => x.text).join('; ');
   } else {
     const fields = q.type === 'number' ? [{ id: 'v', label: q.label || 'Your answer', answer: q.answer, tolerance: q.tolerance, unit: q.unit, traps: q.traps }] : q.fields;
     const inputs = {};
@@ -86,6 +94,7 @@ export function ask(q, o) {
   function hint() { P.hint(q.id, key); drawHints(); }
   function correctText() {
     if (q.type === 'choice') return (q.options.find(x => x.correct) || {}).text || '';
+    if (q.type === 'multi') return q.options.filter(x => x.correct).map(x => x.text).join('; ');
     return q._fields.map(f => (q._fields.length > 1 ? f.label + ': ' : '') + fmt(f.answer, digitsFor(f.tolerance)) + (f.unit ? ' ' + f.unit : '')).join('; ');
   }
   function finish(right, revealed, silent) {
@@ -98,6 +107,7 @@ export function ask(q, o) {
   }
   function grade(ans) {
     if (q.type === 'choice') return checkChoice(q.options, ans);
+    if (q.type === 'multi') return checkMulti(q.options, ans);
     const r = checkFields(q._fields, ans);
     return q.type === 'number' ? { ...r.fields[0], fields: r.fields } : r;
   }

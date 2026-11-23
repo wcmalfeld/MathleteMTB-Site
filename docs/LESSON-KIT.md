@@ -17,7 +17,7 @@ arrived. A new lesson should only need content and its own interactives.
 |---|---|
 | `lesson.js` | `mountLesson(element, LESSON, opts)`: the shell. The block types and the `LESSON` shape are documented at the top. |
 | `progress.js` | `createProgress({ lesson, … })`: answers, attempts, hints, first tries, rounds, written work, level, time, and `getData`/`setData` for activity state. Stored in localStorage as `mathlete-<lesson id>:v1:<student>`. |
-| `ask.js`, `validate.js` | One question (choice, number, several numbers, optional working box) and deterministic answer checking with traps. |
+| `ask.js`, `validate.js` | One question (choice, tick all that apply, number, several numbers, optional working box) and deterministic answer checking with traps. Numbers can be typed with units (%, mm, km/h, min, m, N, …). |
 | `graph.js`, `draw.js`, `dom.js`, `format.js` | An interactive graph, the rider and arrows, DOM helpers (never `innerHTML`), and display rounding. |
 | `lesson-kit.css` | The shared look. Everything is scoped under `.lsn` with an `ls-` prefix. |
 
@@ -42,3 +42,7 @@ arrived. A new lesson should only need content and its own interactives.
 Lessons using the kit:
 - [Introduction to Physics](INTRO-TO-PHYSICS-LESSON.md) (Module 1)
 - [Newton's Laws of Motion](NEWTONS-LAWS-LESSON.md) (Module 7)
+
+Also used by the [Race-Day Workshop](RACE-DAY-WORKSHOP.md) (Algebra 2): its
+questions, checking, progress and DOM helpers, with its own mission-board
+shell instead of `mountLesson`. A change to the kit affects all three.

@@ -192,6 +192,11 @@ export const COURSES = [
     concepts: ['Functions', 'Quadratics', 'Polynomials', 'Rational functions', 'Logarithms', 'Sequences', 'Probability'],
     units: [
       { slug: 'equations-and-inequalities', title: 'Equations and Inequalities', topics: [
+        T('solving-equations-and-modeling-constraints', 'Solving Equations and Modeling Constraints', 'Turn real constraints into equations and inequalities, solve them, check every candidate, and decide what the answer means.',
+          'Race prep runs on constraints: sag inside a 25–30% window, a stage time to beat, a climb you can only measure from the side. Each one is an equation or inequality to solve.',
+          ['model-with-equations: Translate a real situation into an equation or inequality', 'compound-inequalities: Solve compound inequalities and write them in interval notation', 'rational-inequalities: Solve a rational inequality using the sign of the variable',
+           'check-solutions: Check a solution by substituting it into the original equation', 'interpret-solutions: Decide what a solution means in context, and whether it makes sense', 'domain-restrictions: Apply domain restrictions to a model', 'no-real-solution: Recognize when an equation has no real solution'],
+          { prereq: ['alg1.multi-step-equations'] }),
         T('linear-equations-review', 'Linear Equations Review', 'Solve linear equations and inequalities fluently, including literal equations.',
           null,
           ['solve-linear: Solve multi-step linear equations', 'solve-linear-inequalities: Solve linear inequalities', 'rearrange-formulas: Rearrange formulas for a variable']),

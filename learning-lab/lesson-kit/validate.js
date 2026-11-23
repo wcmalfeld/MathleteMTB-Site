@@ -8,7 +8,7 @@ const close = (a, b, tol) => Math.abs(a - b) <= tol;
 // 3, -3, −3, 9.19, .5, 1,000, 3/4. Returns { ok, value } or { ok: false, empty|unreadable }.
 export function parseNumber(raw) {
   const s = String(raw == null ? '' : raw).trim().replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/,(?=\d{3}(\D|$))/g, '').replace(/,/g, '.')
-    .replace(/(°|deg|degrees|m\/s²|m\/s\^2|m\/s|ms-2|m|n|newtons?|×|x|times)$/i, '');
+    .replace(/(°|deg|degrees|m\/s²|m\/s\^2|m\/s|ms-2|km\/h|kmh|kph|%|percent|mm|km|m|min|mins|minutes|n|newtons?|×|x|times)$/i, '');
   if (!s) return { ok: false, empty: true };
   const num = t => /^[+-]?(\d+\.?\d*|\.\d+)$/.test(t) ? Number(t) : NaN;
   const m = s.match(/^([+-]?)\(?([+-]?[\d.]+)\/([\d.]+)\)?$/);
@@ -39,6 +39,19 @@ export function checkFields(fields, inputs) {
   const each = fields.map(f => ({ id: f.id, label: f.label, ...checkNumber(f, (inputs || {})[f.id]) }));
   const firstWrong = each.find(e => !e.correct && e.message && e.code !== 'empty');
   return { correct: each.every(e => e.correct), fields: each, code: each.every(e => e.correct) ? 'correct' : (firstWrong ? firstWrong.code : 'wrong'), message: firstWrong ? firstWrong.message : null };
+}
+
+// Select all that apply: right only when exactly the correct options are
+// ticked. The feedback names the first wrong pick (its own message) or says
+// one is missing.
+export function checkMulti(options, chosen) {
+  const picked = new Set(chosen || []);
+  if (!picked.size) return { correct: false, code: 'empty', message: 'Tick at least one answer first.' };
+  const wrongPick = options.find(o => picked.has(o.id) && !o.correct);
+  const missed = options.filter(o => o.correct && !picked.has(o.id));
+  if (!wrongPick && !missed.length) return { correct: true, code: 'correct', message: null };
+  if (wrongPick) return { correct: false, code: wrongPick.code || 'wrong', message: wrongPick.feedback || null };
+  return { correct: false, code: 'missed', message: missed.length === 1 ? 'Everything you ticked is right, but one more answer belongs.' : 'Everything you ticked is right, but more answers belong.' };
 }
 
 export function checkChoice(options, chosen) {

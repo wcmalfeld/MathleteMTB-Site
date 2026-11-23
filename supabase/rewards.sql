@@ -80,6 +80,7 @@ create table if not exists public.reward_activities (
 insert into public.reward_activities (game_id, name, kind, course_id, completion, min_attempts, min_questions, min_solved) values
   ('slope-lab',           'Slope & Linear Relationships Lab', 'lab',    'alg1',  'session', 5, 0, 0),
   ('jump-trajectory-lab', 'Jump Trajectory Lab',              'lab',    'alg1',  'session', 3, 0, 0),
+  ('race-day-workshop',   'Race-Day Workshop',                'lab',    'alg2',  'session', 5, 0, 0),
   ('jump-lab',            'Jump Lab',                         'lab',    'phys1', 'solved',  0, 0, 3),
   ('berm-lab',            'Berm Lab',                         'lab',    'phys1', 'session', 3, 0, 0),
   ('carve-lab',           'Carve Lab',                        'lab',    null,    'session', 3, 0, 0),
@@ -103,7 +104,8 @@ create table if not exists public.reward_assessments (
 insert into public.reward_assessments (id, game_id, name, question_ids) values
   ('slope-lab.transfer', 'slope-lab', 'Slope Lab: Transfer Challenge', array['slope-lab:t1','slope-lab:t2','slope-lab:t3','slope-lab:t4','slope-lab:t5','slope-lab:t6','slope-lab:t7','slope-lab:t8']),
   ('intro-to-physics.kc', 'intro-to-physics', 'Introduction to Physics: Knowledge Check', array['intro-to-physics:kc-1','intro-to-physics:kc-2','intro-to-physics:kc-3','intro-to-physics:kc-4','intro-to-physics:kc-5','intro-to-physics:kc-6','intro-to-physics:kc-7','intro-to-physics:kc-8']),
-  ('newtons-laws.kc', 'newtons-laws', 'Newton’s Laws: Knowledge Check', array['newtons-laws:kc-1','newtons-laws:kc-2','newtons-laws:kc-3','newtons-laws:kc-4','newtons-laws:kc-5','newtons-laws:kc-6','newtons-laws:kc-7','newtons-laws:kc-8'])
+  ('newtons-laws.kc', 'newtons-laws', 'Newton’s Laws: Knowledge Check', array['newtons-laws:kc-1','newtons-laws:kc-2','newtons-laws:kc-3','newtons-laws:kc-4','newtons-laws:kc-5','newtons-laws:kc-6','newtons-laws:kc-7','newtons-laws:kc-8']),
+  ('race-day-workshop.final', 'race-day-workshop', 'Race-Day Workshop: Race-Day Certification', array['race-day-workshop:final-a-min','race-day-workshop:final-a-max','race-day-workshop:final-a-abs','race-day-workshop:final-a-eval','race-day-workshop:final-b-speed','race-day-workshop:final-c-elev'])
 on conflict (id) do nothing;
 
 -- The Slope Lab's question ids carry their level (f = foundations, a =

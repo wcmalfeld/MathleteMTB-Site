@@ -5,7 +5,8 @@
 // JavaScript); this script adds the rest from window.MATHLETE_GALLERY.
 //
 //  - Crossfades every 5.5 s, looping. Prev / next arrows, dots, swipe, and
-//    the arrow keys when the carousel has focus.
+//    the arrow keys when the carousel has focus. (More than 10 photos: a
+//    "7 / 27" counter in place of the dots.)
 //  - Pauses while the pointer is over it, while anything in it has focus,
 //    when the tab is hidden, and when the visitor presses Pause. Rotation
 //    never steals focus, and it's silent for screen readers; manual moves
@@ -14,7 +15,7 @@
 //  - Only the current and next photos are loaded.
 (function () {
   'use strict';
-  var INTERVAL = 5500, SWIPE = 40;
+  var INTERVAL = 5500, SWIPE = 40, MAX_DOTS = 10;
   var photos = window.MATHLETE_GALLERY || [];
   var root = document.querySelector('[data-carousel]');
   if (!root || photos.length < 2) return;
@@ -45,8 +46,12 @@
   var prev = make('button', 'carousel-btn carousel-prev', { type: 'button', 'aria-label': 'Previous photo' });
   var next = make('button', 'carousel-btn carousel-next', { type: 'button', 'aria-label': 'Next photo' });
   prev.textContent = '‹'; next.textContent = '›';
-  var dots = make('div', 'carousel-dots', { role: 'group', 'aria-label': 'Choose a photo' });
-  var dotBtns = photos.map(function (p, i) {
+  // Dots for a short gallery; past MAX_DOTS they'd overflow (a phone fits about
+  // 12), so a quiet "7 / 27" counter stands in and the arrows and swipe do the rest.
+  var useDots = photos.length <= MAX_DOTS;
+  var dots = useDots ? make('div', 'carousel-dots', { role: 'group', 'aria-label': 'Choose a photo' })
+                     : make('p', 'carousel-count', { 'aria-hidden': 'true' });
+  var dotBtns = !useDots ? [] : photos.map(function (p, i) {
     var d = make('button', 'carousel-dot', { type: 'button', 'aria-label': 'Photo ' + (i + 1) + ': ' + (p.alt || '') });
     d.addEventListener('click', function () { go(i, true); });
     dots.appendChild(d); return d;
@@ -64,6 +69,7 @@
     cur = (i + slides.length) % slides.length;
     load(cur); load((cur + 1) % slides.length);
     slides.forEach(function (s, k) { s.classList.toggle('is-current', k === cur); s.setAttribute('aria-hidden', String(k !== cur)); });
+    if (!useDots) dots.textContent = (cur + 1) + ' / ' + slides.length;
     dotBtns.forEach(function (d, k) { if (k === cur) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); });
     if (byUser) live.textContent = 'Photo ' + (cur + 1) + ' of ' + slides.length + ': ' + (photos[cur].alt || '');
     schedule();

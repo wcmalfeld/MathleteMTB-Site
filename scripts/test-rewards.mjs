@@ -70,7 +70,9 @@ const has = async (who, a) => (await db.query(`select 1 from public.reward_user_
 const ledgerSum = async (who, type) => (await db.query(`select coalesce(sum(xp), 0)::int s, count(*)::int n from public.reward_ledger where user_id = $1 ${type ? `and event_type = '${type}'` : ''}`, [U[who].id])).rows[0];
 // Noon in Denver on day d (UTC−6 or −7): 19:00Z is safely midday.
 const at = (d, hh = 19) => `${d}T${String(hh).padStart(2, '0')}:00:00Z`;
-const daysAgo = n => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
+// Local calendar dates in the zone the summary is asked for; a UTC
+// date would be a day ahead in the evening and make this test fail after 5 pm.
+const daysAgo = (n, tz = 'America/Denver') => new Date(Date.now() - n * 86400000).toLocaleDateString('en-CA', { timeZone: tz });
 
 // --- history before rewards.sql exists, replayed when it's installed ---
 await answer('old', 'slope-lab:f1', true, at('2026-09-01'));
@@ -193,7 +195,7 @@ ok('nobody can call the award function from the browser', !(await tryAs('ben', `
 // Recent activity for the summary’s "today" view.
 await answer('dee', 'slope-lab:f1', true, new Date().toISOString());
 ok('rewards need an active account (no access: no summary)', !(await tryAs('dee', `select public.rewards_summary()`)).ok);
-await goalDay('ben', daysAgo(1));
+await goalDay('ben', daysAgo(1, 'America/New_York'));
 let sum = (await as('ben', `select public.rewards_summary('America/New_York') s`)).rows[0].s;
 ok('summary: today’s streak is still alive after yesterday’s goal (not shown broken mid-day)', sum.streak.state === 'alive' && sum.streak.current >= 1, JSON.stringify(sum.streak));
 ok('summary adopts the browser’s timezone', sum.timezone === 'America/New_York');

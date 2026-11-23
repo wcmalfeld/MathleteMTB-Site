@@ -143,6 +143,27 @@ const INTRO_IDEAS = {
 };
 const introQuestionSkills = Object.fromEntries(Object.entries(introKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => INTRO_IDEAS[i] || []))]]));
 
+// Race-Day Workshop (Algebra 2, Unit 1): the workshop lists its own question
+// ids and the ideas each practises (learning-lab/race-day-workshop/logic/questions.js);
+// here those ideas become curriculum skills.
+import { questionKinds as raceDayKinds } from '../../learning-lab/race-day-workshop/logic/questions.js';
+const EI = 'alg2.solving-equations-and-modeling-constraints.';
+const RACE_DAY_IDEAS = {
+  formula:         ['alg2.linear-equations-review.rearrange-formulas', 'alg2.linear-equations-review.solve-linear'],
+  model:           [EI + 'model-with-equations'],
+  'abs-eq':        ['alg2.absolute-value-equations.solve-abs-equations', 'alg2.absolute-value-equations.tolerance-problems'],
+  'abs-ineq':      ['alg2.absolute-value-equations.solve-abs-inequalities', 'alg2.absolute-value-equations.tolerance-problems'],
+  compound:        [EI + 'compound-inequalities'],
+  'rational-eq':   ['alg2.rational-equations.clear-denominators', 'alg2.rational-equations-applications.average-speed'],
+  'rational-ineq': [EI + 'rational-inequalities'],
+  'radical-eq':    ['alg2.radical-equations.isolate-and-square'],
+  verify:          [EI + 'check-solutions', 'alg2.radical-equations.extraneous'],
+  domain:          [EI + 'domain-restrictions', 'alg2.rational-equations.excluded-values'],
+  interpret:       [EI + 'interpret-solutions'],
+  complex:         [EI + 'no-real-solution', 'alg2.complex-numbers.define-i', 'alg2.complex-solutions.graph-meaning']
+};
+const raceDayQuestionSkills = Object.fromEntries(Object.entries(raceDayKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => RACE_DAY_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -191,6 +212,30 @@ export const ACTIVITIES = [
     parts: ['Jump simulator', 'Learning modules (5)', 'Equation decoder', 'Missions (6)'],
     skills: [...new Set(Object.values(jumpQuestionSkills).flat())],
     tracking: { gameId: 'jump-trajectory-lab', questions: jumpQuestionSkills }
+  },
+  {
+    id: 'race-day-workshop',
+    title: 'Race-Day Workshop',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/race-day-workshop/',
+    image: null,
+    home: 'alg2.solving-equations-and-modeling-constraints',
+    summary: 'Join an enduro team’s technical crew: check suspension sag with formulas and absolute value, work out the speed a stage needs with rational equations, and survey a climb with a radical equation, then pass the Race-Day Certification.',
+    objectives: [
+      'Translate race-prep problems into equations and inequalities',
+      'Rearrange a formula to isolate an unknown',
+      'Use absolute value as distance from a target, and rewrite it as a compound inequality',
+      'Solve rational equations and inequalities with a domain restriction',
+      'Solve radical equations and check for extraneous solutions',
+      'Decide whether a solution makes sense in context'
+    ],
+    difficulty: ['intermediate', 'advanced'],
+    minutes: '20-25 min',
+    parts: ['3 missions', 'Sag calculator and tolerance gauge', 'Race clock simulator', 'Trail survey simulator', 'Algebra debugger', 'Race-Day Certification (6)', 'Optional complex-number extension'],
+    skills: [...new Set(Object.values(raceDayQuestionSkills).flat())],
+    tracking: { gameId: 'race-day-workshop', questions: raceDayQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------

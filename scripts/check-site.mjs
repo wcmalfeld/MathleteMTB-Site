@@ -176,6 +176,33 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   check('The Lab’s original Jump Lab game is untouched and still listed', existsSync(root + 'learning-lab/jump-lab/index.html') && tools.some(t => t.id === 'jump-lab' && t.status === 'live'));
 }
 
+// ---- Race-Day Workshop (Algebra 2; standalone module on the lesson kit; tests: scripts/test-race-day-workshop.mjs) ----
+{
+  const dir = 'learning-lab/race-day-workshop/';
+  const html = read(dir + 'index.html');
+  const css = read(dir + 'styles/race-day-workshop.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  const flat = css.replace(/@media[^{]*\{([\s\S]*?\})\s*\}/g, '$1');
+  const leaking = flat.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@') && !/^(from|to|\d+%)$/.test(sel)).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith('.rdw'));
+  check('Race-Day Workshop styles are all scoped under .rdw, braces balanced', leaking.length === 0 && (css.match(/\{/g) || []).length === (css.match(/\}/g) || []).length, leaking.slice(0, 5).join(' | '));
+  const js = execSync(`find ${root + dir} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
+  const coupled = js.filter(f => !f.endsWith('/main.js') && /MathleteProgress|MathleteAuth|supabase|tools-config/.test(readFileSync(f, 'utf8')));
+  check('Race-Day Workshop module doesn’t depend on the site (only its page connects it)', coupled.length === 0 && !/site\.css|site-nav|site\.js/.test(html), coupled.join(', '));
+  check('Race-Day Workshop page loads progress tracking in order, then the kit styles, then the module', ['js/supabase-config.js', 'js/auth.js', 'js/progress.js', 'src="main.js'].map(x => html.indexOf(x)).every((v, i, a) => v > 0 && (i === 0 || v > a[i - 1])) && html.indexOf('lesson-kit.css') > 0 && html.indexOf('lesson-kit.css') < html.indexOf('styles/race-day-workshop.css'));
+  const unsafe = js.filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(/.test(readFileSync(f, 'utf8')));
+  check('Race-Day Workshop never builds HTML from strings', unsafe.length === 0, unsafe.join(', '));
+  const { questionKinds } = await import('../' + dir + 'logic/questions.js');
+  const kinds = Object.keys(questionKinds()).map(k => 'race-day-workshop:' + k).sort();
+  const cur = read('supabase/curriculum.sql');
+  const sqlKinds = [...new Set([...cur.matchAll(/\('(race-day-workshop:[a-z0-9-]+)', 'race-day-workshop'/g)].map(m => m[1]))].sort();
+  check(`Race-Day Workshop question kinds are registered in supabase/curriculum.sql (${kinds.length})`, kinds.length > 0 && kinds.join() === sqlKinds.join(), `lab: ${kinds.length} | sql: ${sqlKinds.length}`);
+  check('Race-Day Workshop sits in Algebra 2 → Equations and Inequalities → Solving Equations and Modeling Constraints',
+    read('classes/algebra-2/solving-equations-and-modeling-constraints/index.html').includes('href="learning-lab/race-day-workshop/?from=') &&
+    read('classes/algebra-2/absolute-value-equations/index.html').includes('learning-lab/race-day-workshop/'));
+  const rw = read('supabase/rewards.sql');
+  check('Race-Day Workshop earns lab XP on certification, and its final counts as an assessment', /\('race-day-workshop',\s+'Race-Day Workshop',\s+'lab',\s+'alg2',\s+'session'/.test(rw) && rw.includes("('race-day-workshop.final', 'race-day-workshop'"));
+  check('Race-Day Workshop names the sag window’s source and says it isn’t setup advice', read(dir + 'workshop.js').includes('tech.ridefox.com') && /not a setup recommendation/.test(read(dir + 'workshop.js')));
+}
+
 // ---- Carve Lab (Mathlete Ski; standalone module; tests: scripts/test-carve-lab.mjs) ----
 {
   const dir = 'learning-lab/carve-lab/';
@@ -230,7 +257,18 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   const home = read('index.html');
   check('Gallery: at least two photos, each with alt text, all in assets/gallery/', G.length >= 2 && G.every(p => p.alt && p.alt.length > 10 && /^assets\/gallery\/[a-z0-9-]+\.jpe?g$/.test(p.src) && existsSync(root + p.src)), G.map(p => p.src).join(', '));
   check('Gallery photos are web-sized (under 400 KB)', G.every(p => statSync(root + p.src).size < 400 * 1024));
-  const gps = G.filter(p => /Exif|GPS/.test(readFileSync(root + p.src).subarray(0, 65536).toString('latin1'))).map(p => p.src);
+  // Walk the JPEG's header segments (up to the image data) for an EXIF/XMP block;
+  // searching the raw bytes can match "GPS" by chance inside the compressed image.
+  const hasMeta = (b) => {
+    for (let i = 2; i + 4 <= b.length && b[i] === 0xFF;) {
+      const m = b[i + 1], len = b.readUInt16BE(i + 2);
+      if (m === 0xDA) return false;
+      if (m === 0xE1 && /^(Exif|http:\/\/ns\.adobe)/.test(b.subarray(i + 4, i + 4 + 32).toString('latin1'))) return true;
+      i += 2 + len;
+    }
+    return false;
+  };
+  const gps = G.filter(p => hasMeta(readFileSync(root + p.src))).map(p => p.src);
   check('Gallery photos carry no EXIF/GPS metadata (location stripped)', gps.length === 0, gps.join(', '));
   const firstImg = (home.match(/class="carousel-slide[^"]*"><img src="([^"]+)" alt="([^"]+)"/) || []);
   check('Home page: the carousel sits beside the logo, its first photo matches the gallery', /class="hero-brand">\s*<h1 class="lab-home-title">/.test(home) && firstImg[1] === G[0].src && firstImg[2] === G[0].alt);
@@ -249,7 +287,7 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   const kitCss = scoped('learning-lab/lesson-kit/lesson-kit.css');
   check('Lesson kit styles are all scoped under .lsn, braces balanced', kitCss.ok && kitCss.leaking.length === 0, kitCss.leaking.slice(0, 5).join(' | '));
   const kitJs = jsIn('learning-lab/lesson-kit/');
-  const kitCoupled = kitJs.filter(f => /MathleteProgress|MathleteAuth|supabase|tools-config|newtons-laws|intro-to-physics/.test(readFileSync(f, 'utf8')));
+  const kitCoupled = kitJs.filter(f => /MathleteProgress|MathleteAuth|supabase|tools-config|newtons-laws|intro-to-physics|race-day-workshop/.test(readFileSync(f, 'utf8')));
   check('Lesson kit doesn’t depend on the site or on any one lesson', kitCoupled.length === 0, kitCoupled.join(', '));
   const curriculumSql = read('supabase/curriculum.sql');
   const LESSONS = [
