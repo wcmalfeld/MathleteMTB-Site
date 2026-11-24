@@ -353,17 +353,24 @@ export const COURSES = [
       ] },
       { slug: 'probability-and-statistics', title: 'Probability and Statistics', topics: [
         T('probability', 'Probability', 'Find probabilities of single and compound events, including independent events.',
-          null,
-          ['basic-probability: Find theoretical and experimental probabilities', 'compound-events: Find probabilities of compound events', 'independent-events: Decide whether events are independent']),
+          'What fraction of simulated stage attempts hit the target split, or were on a dry course, or both? The addition rule counts the overlap once.',
+          ['basic-probability: Find theoretical and experimental probabilities', 'compound-events: Find probabilities of compound events', 'independent-events: Decide whether events are independent',
+           'sample-spaces: Describe sample spaces, unions, intersections and complements', 'mutually-exclusive: Identify mutually exclusive events', 'addition-rule: Use the addition rule',
+           'multiplication-rule: Use the multiplication rule for independent events']),
         T('conditional-probability', 'Conditional Probability', 'Find P(A | B) from tables and diagrams.',
           'Given a rider finished in the top 10, how likely were they on a lighter bike? Two-way tables answer it.',
-          ['two-way-tables: Use two-way tables', 'conditional-formula: Use P(A | B) = P(A and B) / P(B)', 'interpret-conditional: Interpret conditional probabilities']),
+          ['two-way-tables: Use two-way tables', 'conditional-formula: Use P(A | B) = P(A and B) / P(B)', 'interpret-conditional: Interpret conditional probabilities',
+           'joint-marginal: Find joint and marginal relative frequencies']),
         T('combinations-and-permutations', 'Combinations and Permutations', 'Count arrangements and selections.',
           'How many podium orders are possible from 12 racers? How many ways to choose 3 trails from 8?',
           ['counting-principle: Use the fundamental counting principle', 'permutations: Count permutations', 'combinations: Count combinations']),
         T('statistical-analysis', 'Statistical Analysis', 'Use the normal distribution, sampling and margin of error to draw conclusions.',
           'Are your new tires really faster? Compare lap times with an eye on variation.',
-          ['normal-distribution: Use the normal distribution and z-scores', 'sampling-methods: Evaluate sampling methods and bias', 'margin-of-error: Interpret margin of error'])
+          ['normal-distribution: Use the normal distribution and z-scores', 'sampling-methods: Evaluate sampling methods and bias', 'margin-of-error: Interpret margin of error',
+           'center-spread: Compare center and spread with mean, median, range, IQR and standard deviation', 'empirical-rule: Apply the empirical rule', 'percentiles: Find and interpret percentiles',
+           'populations-samples: Distinguish populations and samples, and estimate proportions', 'sampling-distributions: Describe sampling distributions and standard error',
+           'study-design: Distinguish surveys, observational studies and randomized experiments', 'randomization-tests: Use a randomization simulation to judge statistical significance',
+           'evaluate-claims: Evaluate statistical claims, including causation'])
       ] }
     ]
   },

@@ -1,0 +1,111 @@
+/* ============================================================
+   Enduro Race Intelligence Lab (Algebra 2, Probability and Statistics):
+   its own tables, dot grids, plots and art. Loaded after the lesson kit's
+   stylesheets (lesson-kit.css, then missions.css for the shell, plots and
+   tokens). Everything here is scoped under .ril.
+   Colours: dry / hit / flow green (--ok); wet / miss / technical blue
+   (--in); highlights gold (--unk); crews Alpha gold, Bravo purple.
+   ============================================================ */
+
+/* ---------- tables ---------- */
+.ril .ri-two-way td { padding: 4px; vertical-align: middle; text-align: center; }
+.ril .ri-cell { width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid var(--rule); background: var(--deep); color: var(--ink); font-family: var(--f-mono); font-size: 15px; cursor: pointer; }
+.ril .ri-cell:hover, .ril .ri-cell:focus-visible { border-color: var(--unk); }
+.ril .ri-cell.is-on { border-color: var(--unk); background: rgba(232, 193, 74, 0.18); }
+.ril .ri-cell--m { color: var(--soft); }
+.ril .ri-table td, .ril .ri-table th { overflow-wrap: anywhere; }
+.ril .ri-table thead th, .ril .ri-two-way thead th { text-transform: none; letter-spacing: 0; }
+.ril .ri-terms { display: grid; gap: 10px; margin: 0 0 12px; }
+@media (min-width: 860px) { .ril .ri-terms { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.ril .ri-terms div { padding: 12px 14px; border: 1px solid var(--rule); background: var(--deep); }
+.ril .ri-terms dt { font-weight: 700; color: var(--ink); }
+.ril .ri-terms dd { margin: 4px 0 0; color: var(--text); }
+.ril .ri-data p { margin: 4px 0; overflow-wrap: anywhere; }
+.ril .ri-points { margin: 0 0 12px; padding-left: 20px; }
+.ril .ri-points li { margin: 4px 0; }
+
+/* ---------- dot grids ---------- */
+.ril .ri-grid-box { max-width: 520px; }
+.ril .ri-grid, .ril .ri-tree, .ril .ri-dotplot, .ril .ri-art { display: block; width: 100%; height: auto; }
+.ril .ri-dot { fill: rgba(236, 239, 231, 0.18); }
+.ril .ri-dot--dry { fill: rgba(127, 201, 143, 0.35); }
+.ril .ri-dot--wet { fill: rgba(142, 197, 224, 0.35); }
+.ril .ri-dot--on.ri-dot--dry, .ril .ri-dot--on.ri-dot--wet { fill: var(--unk); }
+.ril .ri-dot--flow { fill: var(--ok); }
+.ril .ri-dot--tech { fill: var(--in); }
+.ril .ri-dot--flow-faint { fill: rgba(127, 201, 143, 0.2); }
+.ril .ri-dot--tech-faint { fill: rgba(142, 197, 224, 0.2); }
+.ril .ri-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 6px 0 0; padding: 0; list-style: none; font-family: var(--f-mono); font-size: 13px; color: var(--text); }
+.ril .ri-legend li::before { content: ''; display: inline-block; width: 11px; height: 11px; margin-right: 6px; border-radius: 50%; vertical-align: middle; }
+.ril .ri-legend .is-dry::before, .ril .ri-legend .is-flow::before { background: var(--ok); }
+.ril .ri-legend .is-wet::before, .ril .ri-legend .is-tech::before { background: var(--in); }
+.ril .ri-legend .is-on::before { background: var(--unk); }
+.ril .ri-legend .is-plain::before { background: rgba(236, 239, 231, 0.25); }
+
+/* ---------- filter bars ---------- */
+.ril .ri-hbars { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 10px; }
+.ril .ri-hbars li { display: grid; grid-template-columns: 11em minmax(0, 1fr) 3em; gap: 10px; align-items: center; font-family: var(--f-mono); font-size: 13.5px; color: var(--text); }
+.ril .ri-hbars li.is-out { opacity: 0.35; }
+.ril .ri-hbar-track { height: 18px; background: rgba(236, 239, 231, 0.06); }
+.ril .ri-hbar { display: block; height: 100%; }
+.ril .ri-hbar.is-hit { background: var(--ok); }
+.ril .ri-hbar.is-miss { background: var(--ice); }
+.ril .ri-hbars b { color: var(--ink); text-align: right; }
+
+/* ---------- tree ---------- */
+.ril .ri-branch { stroke: rgba(236, 239, 231, 0.4); stroke-width: 2.5; }
+.ril .ri-branch.is-on { stroke: var(--unk); stroke-width: 4; }
+.ril .ri-node { fill: var(--ink); }
+.ril .ri-tree-on { fill: var(--unk); }
+
+/* ---------- plots ---------- */
+.ril .ri-plots { display: grid; gap: 14px; }
+.ril .ri-plot-h { margin: 0 0 4px; font-family: var(--f-mono); font-size: 13px; color: var(--soft); }
+.ril .ri-axis { stroke: var(--soft); stroke-width: 1.5; }
+.ril .ri-pt { fill: var(--ink); }
+.ril .ri-pt--a { fill: var(--unk); }
+.ril .ri-pt--b { fill: #C59BEB; }
+.ril .ri-pt--p { fill: var(--ice); }
+.ril .ri-mean { stroke: var(--ice); stroke-width: 2; stroke-dasharray: 5 4; }
+.ril .ri-mean-text { fill: var(--ice); }
+.ril .ms-poly.ri-pt--a { fill: rgba(232, 193, 74, 0.7); }
+.ril .ms-poly.ri-pt--b { fill: rgba(197, 155, 235, 0.7); }
+.ril .ri-bar--hit { fill: rgba(127, 201, 143, 0.7); }
+.ril .ri-bar--miss { fill: rgba(240, 146, 74, 0.75); }
+.ril .ri-bar--out { fill: rgba(236, 239, 231, 0.10); }
+.ril .ri-mark--none { fill: none; }
+.ril .ri-area { fill: rgba(232, 193, 74, 0.35); }
+.ril .ri-line--curve { stroke: var(--ink); stroke-width: 2.5; }
+.ril .ri-mean-line { stroke: var(--ice); stroke-width: 2; }
+.ril .ri-sd-line { stroke: rgba(236, 239, 231, 0.3); stroke-dasharray: 4 4; }
+.ril .ri-x-line { stroke: var(--unk); stroke-width: 2.5; }
+.ril .ri-int { stroke: rgba(142, 197, 224, 0.6); stroke-width: 6; stroke-linecap: round; }
+.ril .ri-int.is-on { stroke: var(--unk); stroke-width: 8; }
+.ril .ri-mark--now { fill: var(--unk); }
+.ril .ri-mark--p { fill: var(--in); }
+.ril .ri-practice { margin-top: 6px; }
+
+/* ---------- readouts ---------- */
+.ril .ri-read { display: grid; gap: 8px; align-content: start; }
+.ril .ri-read p { margin: 0; overflow-wrap: anywhere; }
+.ril .ri-eqn { font-size: 18px; color: var(--unk); }
+.ril .ri-out { color: var(--unk); }
+.ril .ri-toggle, .ril .ri-math { text-transform: none; letter-spacing: 0; }
+.ril .ri-toggle[aria-pressed="true"] { border-color: var(--unk); color: var(--ink); background: rgba(232, 193, 74, 0.14); }
+.ril .ri-wait { margin: 0; padding: 14px; border: 1px dashed var(--rule); }
+
+/* ---------- opening art ---------- */
+.ril .ri-art-bg { fill: #141C18; }
+.ril .ri-hill { fill: #1E2B22; }
+.ril .ri-post { fill: var(--soft); }
+.ril .ri-banner { fill: var(--ice); }
+.ril .ri-banner-text { fill: #10150F; }
+.ril .ri-bike circle { fill: none; stroke: var(--ink); stroke-width: 2.5; }
+.ril .ri-bike path { fill: none; stroke: var(--ice); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.ril .ri-bike .ri-head { fill: var(--ink); stroke: none; }
+.ril .ri-screen { fill: rgba(5, 10, 8, 0.88); stroke: rgba(142, 197, 224, 0.5); }
+.ril .ri-board { fill: var(--ink); font-family: var(--f-mono); font-size: 15px; }
+.ril .ri-art-hi { fill: var(--unk); }
+.ril .ri-art-curve { fill: none; stroke: var(--unk); stroke-width: 3; }
+
+@media (max-width: 640px) { .ril .ri-eqn { font-size: 15.5px; } .ril .ri-cell { font-size: 14px; padding: 6px; } }

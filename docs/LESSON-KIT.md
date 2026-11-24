@@ -62,5 +62,6 @@ The mission-board labs:
 - [Pump Track Profile Lab](PUMP-TRACK-LAB.md)
 - [Enduro Route Intelligence Lab](ENDURO-ROUTE-LAB.md)
 - [Suspension & Systems Lab](SUSPENSION-SYSTEMS-LAB.md)
+- [Enduro Race Intelligence Lab](RACE-INTELLIGENCE-LAB.md)
 
-A change to the kit affects all nine labs and lessons. Run every lab's browser run-through after changing `missions.js` or `missions.css`.
+A change to the kit affects all ten labs and lessons. Run every lab's browser run-through after changing `missions.js` or `missions.css`.

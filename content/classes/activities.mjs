@@ -335,6 +335,46 @@ const SUSPENSION_IDEAS = {
 };
 const suspensionQuestionSkills = Object.fromEntries(Object.entries(suspensionKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => SUSPENSION_IDEAS[i] || []))]]));
 
+// Enduro Race Intelligence Lab question skills, from the lab's own idea tags
+// (learning-lab/race-intelligence-lab/logic/questions.js).
+import { questionKinds as raceKinds } from '../../learning-lab/race-intelligence-lab/logic/questions.js';
+const PRB = 'alg2.probability.', CPR = 'alg2.conditional-probability.', CMB = 'alg2.combinations-and-permutations.', STA = 'alg2.statistical-analysis.';
+const RACE_IDEAS = {
+  'sample-space':       [PRB + 'sample-spaces'],
+  'mutually-exclusive': [PRB + 'mutually-exclusive'],
+  'not-exclusive':      [PRB + 'addition-rule', PRB + 'compound-events'],
+  addition:             [PRB + 'addition-rule'],
+  multiplication:       [PRB + 'multiplication-rule', PRB + 'compound-events'],
+  conditional:          [CPR + 'conditional-formula'],
+  independent:          [PRB + 'independent-events'],
+  dependent:            [PRB + 'independent-events'],
+  'two-way':            [CPR + 'two-way-tables'],
+  joint:                [CPR + 'joint-marginal'],
+  marginal:             [CPR + 'joint-marginal'],
+  'conditional-rf':     [CPR + 'interpret-conditional'],
+  mean:                 [STA + 'center-spread'],
+  median:               [STA + 'center-spread'],
+  range:                [STA + 'center-spread'],
+  sd:                   [STA + 'center-spread'],
+  histogram:            [STA + 'center-spread'],
+  normal:               [STA + 'normal-distribution'],
+  empirical:            [STA + 'empirical-rule'],
+  'z-score':            [STA + 'normal-distribution'],
+  percentile:           [STA + 'percentiles'],
+  'pop-sample':         [STA + 'populations-samples'],
+  'random-sampling':    [STA + 'sampling-methods'],
+  proportion:           [STA + 'populations-samples'],
+  'sampling-dist':      [STA + 'sampling-distributions'],
+  'standard-error':     [STA + 'sampling-distributions'],
+  moe:                  [STA + 'margin-of-error'],
+  'study-design':       [STA + 'study-design'],
+  randomized:           [STA + 'study-design'],
+  significance:         [STA + 'randomization-tests'],
+  claims:               [STA + 'evaluate-claims'],
+  counting:             [CMB + 'permutations', CMB + 'combinations']
+};
+const raceQuestionSkills = Object.fromEntries(Object.entries(raceKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => RACE_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -545,6 +585,29 @@ export const ACTIVITIES = [
     parts: ['3 missions', 'Suspension decay simulator', 'Event growth simulator and target calculator', 'Decibel analyzer and logarithm workbench', 'Final Engineering Report (12)', 'Optional advanced engineering bench'],
     skills: [...new Set(Object.values(suspensionQuestionSkills).flat())],
     tracking: { gameId: 'suspension-systems-lab', questions: suspensionQuestionSkills }
+  },
+  {
+    id: 'race-intelligence-lab',
+    title: 'Enduro Race Intelligence Lab',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/race-intelligence-lab/',
+    image: null,
+    home: 'alg2.statistical-analysis',
+    summary: 'Analyse simulated enduro race data: two-way tables, the addition rule, conditional probability and independence; mean, median, standard deviation, the normal model and z-scores; random samples, standard error and margin of error; and a seeded randomization test for an experiment.',
+    objectives: [
+      'Use two-way tables for joint, marginal and conditional probabilities, the addition rule and independence',
+      'Compare distributions by center and spread, and use the normal model, empirical rule, z-scores and percentiles',
+      'Distinguish populations and samples, and estimate a proportion with standard error and margin of error',
+      'Distinguish surveys, observational studies and randomized experiments, and judge significance by simulation',
+      'Evaluate statistical claims, including why association isn’t causation'
+    ],
+    difficulty: ['intermediate', 'advanced'],
+    minutes: '30-35 min',
+    parts: ['4 missions', 'Race outcome explorer and conditional filter', 'Consistency analyzer and bell curve', 'Survey simulator and margin of error explorer', 'Treatment shuffle simulator', 'Final Race Intelligence Report (14)', 'Optional podium probability challenge'],
+    skills: [...new Set(Object.values(raceQuestionSkills).flat())],
+    tracking: { gameId: 'race-intelligence-lab', questions: raceQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------
