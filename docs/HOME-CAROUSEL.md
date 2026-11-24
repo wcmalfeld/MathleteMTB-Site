@@ -1,13 +1,13 @@
 # Home page photo carousel
 
-Built from `PRDs/photoCarousel.md`. It's a 16:9 photo window beside the
+Built from `PRDs/photoCarousel.md`. It's a 3:4 (portrait) photo window beside the
 logo on the home page (`index.html`), and drops below the logo on screens
 narrower than 860 px.
 
 | File | What it does |
 |---|---|
 | `js/gallery-config.js` | The list of photos: `src`, `alt`, and an optional `position`. Edit this to add, remove or reorder photos. |
-| `assets/gallery/` | The photos: 16:9 JPEGs, about 1280 × 720 and under 400 KB. |
+| `assets/gallery/` | The photos: 3:4 portrait JPEGs, up to 900 × 1200 and under 300 KB. |
 | `js/carousel.js` | The component. No dependencies. |
 | `css/carousel.css` | Its look, plus the logo-and-carousel row. Loaded only on the home page. |
 
@@ -25,7 +25,7 @@ narrower than 860 px.
 
 ## Adding a photo
 
-1. Crop it to 16:9 (about 1280 × 720) and save it as a JPEG under 400 KB.
+1. Crop it to 3:4 (up to 900 × 1200) and save it as a JPEG under 300 KB.
    **Strip its location data.** Phone photos carry GPS coordinates, and the
    site check fails on any gallery photo with EXIF/GPS. Re-exporting from
    Preview with "Remove location info", or any editor's "save for web",

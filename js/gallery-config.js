@@ -4,8 +4,8 @@
    are listed, in this order. Nothing else needs to change.
 
    Each photo:
-     src:  a 16:9 landscape JPEG in assets/gallery/ (about 1280 × 720,
-           under ~300 KB). Crop it to 16:9 before adding it, and strip its
+     src:  a 3:4 portrait JPEG in assets/gallery/ (about 900 × 1200,
+           under ~300 KB). Crop it to 3:4 before adding it, and strip its
            location data: phone photos carry GPS coordinates.
      alt:  what the photo shows, for screen readers.
      position (optional): CSS object-position if the crop needs nudging,

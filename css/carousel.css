@@ -1,20 +1,20 @@
 /* ============================================================
    HOME PAGE PHOTO CAROUSEL (js/carousel.js, js/gallery-config.js)
-   Beside the logo on wide screens, below it on narrow ones. A 16:9 window
+   Beside the logo on wide screens, below it on narrow ones. A 3:4 (portrait) window
    with a crossfade; the controls stay quiet until the carousel is hovered
    or focused. Loaded only by index.html, after site.css and lab.css.
    ============================================================ */
 .hero-brand { display: flex; align-items: center; gap: clamp(24px, 4vw, 56px); margin: 8px 0 28px; }
 .hero-brand .lab-home-title { flex: 0 1 560px; min-width: 0; }
 .hero-brand .hero-logo { margin: 0; }
-.hero-brand .carousel { flex: 1 1 0; max-width: 600px; min-width: 0; }
+.hero-brand .carousel { flex: 0 1 340px; max-width: 340px; min-width: 0; }
 @media (max-width: 860px) {
   .hero-brand { flex-direction: column; align-items: flex-start; gap: 22px; }
   .hero-brand .lab-home-title { flex: none; width: 100%; }
-  .hero-brand .carousel { flex: none; width: 100%; max-width: 600px; }
+  .hero-brand .carousel { flex: none; width: 100%; max-width: 340px; }
 }
 
-.carousel { position: relative; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: rgba(236, 239, 231, 0.04); touch-action: pan-y; }
+.carousel { position: relative; aspect-ratio: 3 / 4; border-radius: 8px; overflow: hidden; background: rgba(236, 239, 231, 0.04); touch-action: pan-y; }
 .carousel-track { position: absolute; inset: 0; margin: 0; padding: 0; }
 .carousel-slide { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity 0.9s ease; }
 .carousel-slide:first-child { opacity: 1; }                        /* before (or without) JavaScript */

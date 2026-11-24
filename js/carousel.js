@@ -29,7 +29,7 @@
     var slide = i === 0 && first ? first : make('figure', 'carousel-slide');
     var img = slide.querySelector('img');
     if (!img) {
-      img = make('img', null, { alt: p.alt || '', width: '1280', height: '720', decoding: 'async' });
+      img = make('img', null, { alt: p.alt || '', width: '900', height: '1200', decoding: 'async' });
       img.setAttribute('data-src', p.src);
       slide.appendChild(img);
       track.appendChild(slide);
