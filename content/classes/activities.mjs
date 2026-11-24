@@ -298,6 +298,43 @@ const ENDURO_IDEAS = {
 };
 const enduroQuestionSkills = Object.fromEntries(Object.entries(enduroKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => ENDURO_IDEAS[i] || []))]]));
 
+// Suspension & Systems Lab question skills, from the lab's own idea tags
+// (learning-lab/suspension-systems-lab/logic/questions.js).
+import { questionKinds as suspensionKinds } from '../../learning-lab/suspension-systems-lab/logic/questions.js';
+const EXF = 'alg2.exponential-functions.', EGD = 'alg2.exponential-growth-and-decay.', LOG = 'alg2.logarithms.', LPR = 'alg2.logarithmic-properties.', APP = 'alg2.applications.', GSQ = 'alg2.geometric-sequences.';
+const SUSPENSION_IDEAS = {
+  recognize:      [EGD + 'compare-models', GSQ + 'arith-or-geom'],
+  factors:        [EGD + 'growth-factor'],
+  growth:         [EGD + 'growth-decay-models'],
+  decay:          [EGD + 'growth-decay-models'],
+  geometric:      [GSQ + 'common-ratio'],
+  recursive:      [GSQ + 'recursive-geometric'],
+  explicit:       [GSQ + 'geometric-rule'],
+  'exp-graph':    [EXF + 'graph-exponentials', EXF + 'exp-domain-asymptote'],
+  'exp-transform':[EXF + 'exponential-transformations'],
+  compare:        [EGD + 'compare-models'],
+  'base-e':       [EXF + 'base-e'],
+  continuous:     [EXF + 'continuous-models'],
+  'solve-exp':    [LPR + 'solve-exp-log'],
+  'log-notation': [LOG + 'evaluate-logs'],
+  conversion:     [LOG + 'log-exponential-forms'],
+  'common-log':   [LOG + 'natural-common-logs'],
+  'natural-log':  [LOG + 'natural-common-logs'],
+  'log-graph':    [LOG + 'graph-logs', LOG + 'log-domain'],
+  product:        [LPR + 'expand-condense'],
+  quotient:       [LPR + 'expand-condense'],
+  power:          [LPR + 'expand-condense'],
+  'change-base':  [LPR + 'change-of-base'],
+  'solve-log':    [LPR + 'solve-exp-log'],
+  inverse:        [LOG + 'log-inverse'],
+  suspension:     [EGD + 'growth-decay-models', APP + 'model-data'],
+  event:          [EGD + 'growth-decay-models'],
+  sound:          [APP + 'sound-level', APP + 'log-scales'],
+  time:           [EGD + 'solve-for-time', APP + 'doubling-half-life'],
+  series:         ['alg2.series.geometric-series']
+};
+const suspensionQuestionSkills = Object.fromEntries(Object.entries(suspensionKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => SUSPENSION_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -485,6 +522,29 @@ export const ACTIVITIES = [
     parts: ['4 missions', 'Race clock and asymptote explorer', 'Split-time simulator and rational workbench', 'Trail survey and radical equation solver', 'Wheel explorer and radical profile studio', 'Final Route Analysis (12)', 'Optional route data diagnostic'],
     skills: [...new Set(Object.values(enduroQuestionSkills).flat())],
     tracking: { gameId: 'enduro-route-lab', questions: enduroQuestionSkills }
+  },
+  {
+    id: 'suspension-systems-lab',
+    title: 'Suspension & Systems Lab',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/suspension-systems-lab/',
+    image: null,
+    home: 'alg2.exponential-growth-and-decay',
+    summary: 'Model a shock’s shrinking rebound peaks as a geometric sequence and a continuous e-based envelope, forecast a trail festival’s registrations, and use logarithms, log properties and change of base to decode decibels and solve for time.',
+    objectives: [
+      'Tell exponential from linear change, and identify initial values and growth or decay factors',
+      'Write geometric sequences explicitly and recursively, and connect them to continuous models with base e',
+      'Transform exponential graphs and find their asymptotes, domain and range',
+      'Convert between exponential and logarithmic form, and use log properties and change of base',
+      'Solve exponential and logarithmic equations, and interpret logarithmic scales like decibels'
+    ],
+    difficulty: ['intermediate', 'advanced'],
+    minutes: '20-25 min',
+    parts: ['3 missions', 'Suspension decay simulator', 'Event growth simulator and target calculator', 'Decibel analyzer and logarithm workbench', 'Final Engineering Report (12)', 'Optional advanced engineering bench'],
+    skills: [...new Set(Object.values(suspensionQuestionSkills).flat())],
+    tracking: { gameId: 'suspension-systems-lab', questions: suspensionQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------

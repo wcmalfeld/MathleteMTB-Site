@@ -1,0 +1,94 @@
+/* ============================================================
+   Suspension & Systems Lab (Algebra 2, Exponential and Logarithmic
+   Functions): its own shock, meter, dashboard and graph colours.
+   Loaded after the lesson kit's stylesheets (lesson-kit.css, then
+   missions.css for the shell, plots and tokens). Scoped under .ssl.
+   Colours: decay envelopes blue (--in); growth gold (--unk); decibels
+   green (--ok); linear comparisons dashed orange (--ice).
+   ============================================================ */
+
+/* ---------- shock and meter ---------- */
+.ssl .ss-shock-box { max-width: 160px; margin-inline: auto; }
+.ssl .ss-shock, .ssl .ss-meter, .ssl .ss-art { display: block; width: 100%; height: auto; }
+.ssl .ss-panel-bg { fill: #141C18; }
+.ssl .ss-eyelet { fill: none; stroke: var(--soft); stroke-width: 4; }
+.ssl .ss-body { fill: #2B3530; stroke: var(--soft); stroke-width: 1.5; }
+.ssl .ss-shaft { fill: #C9D1CB; }
+.ssl .ss-spring { fill: none; stroke: var(--ice); stroke-width: 5; stroke-linecap: round; }
+.ssl .ss-decay-visual { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 700px) { .ssl .ss-decay-visual { grid-template-columns: 120px minmax(0, 1fr); align-items: center; } }
+.ssl .ss-meter-box { max-width: 300px; margin-inline: auto; }
+.ssl .ss-meter-track { fill: none; stroke: var(--rule); stroke-width: 14; }
+.ssl .ss-meter-fill { fill: none; stroke: var(--ok); stroke-width: 14; }
+.ssl .ss-meter-tick { stroke: var(--soft); stroke-width: 2; }
+.ssl .ss-needle { stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+.ssl .ss-hub { fill: var(--ink); }
+.ssl .ss-meter-num { fill: var(--ink); font-family: var(--f-mono); font-size: 20px; font-weight: 600; }
+
+/* ---------- capacity bar ---------- */
+.ssl .ss-cap { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--rule); background: var(--deep); margin-bottom: 10px; }
+.ssl .ss-cap-top { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: 13px; color: var(--soft); }
+.ssl .ss-cap-top b { color: var(--ink); font-size: 18px; }
+.ssl .ss-cap-track { height: 12px; background: var(--rule); }
+.ssl .ss-cap-fill { height: 100%; background: var(--unk); }
+.ssl .ss-cap-fill.is-over { background: var(--warn); }
+.ssl .ss-over { margin: 0; color: var(--warn); }
+
+/* ---------- graphs ---------- */
+.ssl .ss-line--osc { stroke: var(--ice); stroke-width: 2; }
+.ssl .ss-line--env { stroke: var(--in); stroke-width: 3; }
+.ssl .ss-line--lin { stroke: var(--ice); stroke-width: 2.5; stroke-dasharray: 7 5; }
+.ssl .ss-line--grow { stroke: var(--unk); stroke-width: 3.5; }
+.ssl .ss-line--db { stroke: var(--ok); stroke-width: 3.5; }
+.ssl .ss-line--ghost { stroke: rgba(236, 239, 231, 0.35); stroke-width: 2.5; stroke-dasharray: 6 4; }
+.ssl .ss-line--mirror { stroke: rgba(236, 239, 231, 0.25); stroke-width: 1.5; stroke-dasharray: 3 4; }
+.ssl .ss-zero { stroke: rgba(236, 239, 231, 0.35); }
+.ssl .ss-asym { stroke: var(--ice); stroke-width: 2; stroke-dasharray: 7 5; }
+.ssl .ss-settle { stroke: var(--ok); stroke-width: 2; stroke-dasharray: 8 4; }
+.ssl .ss-cap-line { stroke: var(--warn); stroke-width: 3; }
+.ssl .ss-band--settled { fill: rgba(127, 201, 143, 0.12); }
+.ssl .ss-band--impossible { fill: rgba(240, 146, 74, 0.10); }
+.ssl .ss-band--outside { fill: rgba(236, 239, 231, 0.06); }
+.ssl .ss-mark--now { fill: var(--unk); }
+.ssl .ss-mark--peak { fill: var(--in); }
+.ssl .ss-mark--below { fill: var(--ok); }
+.ssl .ss-mark--lin { fill: var(--ice); }
+.ssl .ss-mark--grow { fill: var(--unk); }
+.ssl .ss-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 6px 0 0; padding: 0; list-style: none; font-family: var(--f-mono); font-size: 13px; color: var(--text); }
+.ssl .ss-legend li::before { content: ''; display: inline-block; width: 18px; height: 4px; margin-right: 6px; vertical-align: middle; }
+.ssl .ss-legend .is-env::before { background: var(--in); }
+.ssl .ss-legend .is-lin::before { background: var(--ice); }
+.ssl .ss-legend .is-grow::before { background: var(--unk); }
+.ssl .ss-legend .is-ghost::before { background: rgba(236, 239, 231, 0.45); }
+.ssl .ss-legend .is-outside::before { background: rgba(236, 239, 231, 0.18); height: 10px; }
+
+/* ---------- readouts and tools ---------- */
+.ssl .ss-read, .ssl .ss-bench, .ssl .ss-ctl { display: grid; gap: 8px; align-content: start; }
+.ssl .ss-read p { margin: 0; overflow-wrap: anywhere; }
+.ssl .ss-eqn { font-size: 18px; color: var(--unk); overflow-wrap: anywhere; }
+.ssl .ss-out { color: var(--unk); }
+.ssl .ss-points { margin: 0; padding-left: 20px; font-size: 14.5px; }
+.ssl .ss-points li { margin: 3px 0; }
+.ssl .ss-table td, .ssl .ss-table th { overflow-wrap: anywhere; }
+.ssl .ss-toggle, .ssl .ss-math { text-transform: none; letter-spacing: 0; }
+.ssl .ss-toggle[aria-pressed="true"] { border-color: var(--unk); color: var(--ink); background: rgba(232, 193, 74, 0.14); }
+.ssl .ss-convert { display: grid; gap: 10px; align-items: center; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 700px) { .ssl .ss-convert { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); } }
+.ssl .ss-convert > div { padding: 12px 14px; border: 1px solid var(--rule); background: var(--deep); }
+.ssl .ss-tag { font-family: var(--f-mono); font-size: 12px; color: var(--soft); }
+.ssl .ss-arrow { font-size: 26px; color: var(--unk); text-align: center; border: 0; background: none; }
+.ssl .ss-terms { display: grid; gap: 10px; margin: 0 0 12px; }
+@media (min-width: 860px) { .ssl .ss-terms { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.ssl .ss-terms div { padding: 12px 14px; border: 1px solid var(--rule); background: var(--deep); }
+.ssl .ss-terms dt { font-weight: 700; color: var(--ink); }
+.ssl .ss-terms dd { margin: 4px 0 0; color: var(--text); }
+
+/* ---------- opening art ---------- */
+.ssl .ss-art-bg { fill: #141C18; }
+.ssl .ss-art-screen { fill: rgba(5, 10, 8, 0.88); stroke: rgba(142, 197, 224, 0.5); }
+.ssl .ss-art-axis { fill: none; stroke: var(--soft); stroke-width: 1.2; }
+.ssl .ss-art-osc { fill: none; stroke: var(--ice); stroke-width: 2.5; }
+.ssl .ss-art-env { fill: none; stroke: var(--in); stroke-width: 2; stroke-dasharray: 5 4; }
+.ssl .ss-art-bar { fill: var(--unk); }
+
+@media (max-width: 640px) { .ssl .ss-eqn { font-size: 15.5px; } }
