@@ -48,5 +48,5 @@ function exitLink() {
 mount(document.getElementById('race-intelligence-lab'), {
   onAttempt, onComplete, backLink: exitLink(),
   courseLink: { href: '../../classes/algebra-2/', label: 'Algebra 2' },
-  breadcrumb: [{ label: 'Classes', href: '../../classes/' }, { label: 'Algebra 2', href: '../../classes/algebra-2/' }, { label: 'Statistical Analysis', href: '../../classes/algebra-2/statistical-analysis/' }, { label: 'Enduro Race Intelligence Lab' }]
+  breadcrumb: [{ label: 'Courses', href: '../../classes/' }, { label: 'Algebra 2', href: '../../classes/algebra-2/' }, { label: 'Statistical Analysis', href: '../../classes/algebra-2/statistical-analysis/' }, { label: 'Enduro Race Intelligence Lab' }]
 });

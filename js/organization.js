@@ -810,7 +810,7 @@
 
   // Recommended topics: pick topics from the courses your licence includes.
   function drawTopics(data) {
-    var w = section('Recommended topics', 'Highlighted for your students on their dashboard and in Classes. Mathlete’s curriculum itself stays the same.');
+    var w = section('Recommended topics', 'Highlighted for your students on their dashboard and in Courses. Mathlete’s curriculum itself stays the same.');
     var courses = (window.MATHLETE_COURSE_TOPICS || []).filter(function (c) {
       var r = data.resources.filter(function (x) { return x.id === 'course.' + c.id; })[0];
       return r && r.entitled;

@@ -48,5 +48,5 @@ function exitLink() {
 mount(document.getElementById('bike-park-blueprint-lab'), {
   onAttempt, onComplete, backLink: exitLink(),
   courseLink: { href: '../../classes/algebra-2/', label: 'Algebra 2' },
-  breadcrumb: [{ label: 'Classes', href: '../../classes/' }, { label: 'Algebra 2', href: '../../classes/algebra-2/' }, { label: 'Linear Systems and Matrices', href: '../../classes/algebra-2/systems-of-equations/' }, { label: 'Bike Park Blueprint Lab' }]
+  breadcrumb: [{ label: 'Courses', href: '../../classes/' }, { label: 'Algebra 2', href: '../../classes/algebra-2/' }, { label: 'Linear Systems and Matrices', href: '../../classes/algebra-2/systems-of-equations/' }, { label: 'Bike Park Blueprint Lab' }]
 });

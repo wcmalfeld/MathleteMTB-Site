@@ -48,5 +48,5 @@ function exitLink() {
 mount(document.getElementById('pump-track-lab'), {
   onAttempt, onComplete, backLink: exitLink(),
   courseLink: { href: '../../classes/algebra-2/', label: 'Algebra 2' },
-  breadcrumb: [{ label: 'Classes', href: '../../classes/' }, { label: 'Algebra 2', href: '../../classes/algebra-2/' }, { label: 'Polynomial Graphs', href: '../../classes/algebra-2/polynomial-graphs/' }, { label: 'Pump Track Profile Lab' }]
+  breadcrumb: [{ label: 'Courses', href: '../../classes/' }, { label: 'Algebra 2', href: '../../classes/algebra-2/' }, { label: 'Polynomial Graphs', href: '../../classes/algebra-2/polynomial-graphs/' }, { label: 'Pump Track Profile Lab' }]
 });

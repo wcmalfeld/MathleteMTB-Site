@@ -48,5 +48,5 @@ function exitLink() {
 mount(document.getElementById('trail-dynamics-lab'), {
   onAttempt, onComplete, backLink: exitLink(),
   courseLink: { href: '../../classes/algebra-2/', label: 'Algebra 2' },
-  breadcrumb: [{ label: 'Classes', href: '../../classes/' }, { label: 'Algebra 2', href: '../../classes/algebra-2/' }, { label: 'Quadratic Functions', href: '../../classes/algebra-2/quadratic-graphs/' }, { label: 'Trail Dynamics Lab' }]
+  breadcrumb: [{ label: 'Courses', href: '../../classes/' }, { label: 'Algebra 2', href: '../../classes/algebra-2/' }, { label: 'Quadratic Functions', href: '../../classes/algebra-2/quadratic-graphs/' }, { label: 'Trail Dynamics Lab' }]
 });

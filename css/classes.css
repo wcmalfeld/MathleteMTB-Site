@@ -18,7 +18,7 @@
 
 /* ---------- course cards ---------- */
 .cls-courses { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); }
-.cls-course { display: grid; height: 100%; background: var(--cream); border: 1px solid var(--rule); border-top: 3px solid var(--moss); }
+.cls-course { display: grid; grid-template-rows: auto 1fr; height: 100%; background: var(--cream); border: 1px solid var(--rule); border-top: 3px solid var(--moss); }
 .cls-course:hover { border-color: var(--ink); border-top-color: var(--blaze); }
 .cls-course-art { display: block; background: var(--lab-deep); border-bottom: 1px solid var(--rule); }
 .cls-course-body { display: flex; flex-direction: column; gap: 12px; padding: 22px 24px 24px; }
@@ -33,6 +33,9 @@
 .cls-course .button { align-self: flex-start; margin-top: auto; }
 .cls-head .cls-course-count { margin-top: 18px; }
 .cls-art { display: block; width: 100%; height: auto; max-height: 150px; }
+/* A photo cover (content/classes: course.cover), shown whole: covers carry their own title. */
+.cls-course-art--cover { border-bottom: 0; }
+.cls-cover { display: block; width: 100%; height: auto; }   /* its own width/height attributes set the shape */
 .cls-art text { font-family: var(--f-mono); font-size: 10px; fill: var(--ink-soft); }
 .cls-art-ground { fill: rgba(141, 186, 116, 0.12); }
 .cls-art-line { fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }

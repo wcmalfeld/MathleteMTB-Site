@@ -48,5 +48,5 @@ function exitLink() {
 mount(document.getElementById('enduro-route-lab'), {
   onAttempt, onComplete, backLink: exitLink(),
   courseLink: { href: '../../classes/algebra-2/', label: 'Algebra 2' },
-  breadcrumb: [{ label: 'Classes', href: '../../classes/' }, { label: 'Algebra 2', href: '../../classes/algebra-2/' }, { label: 'Graphing Rational Functions', href: '../../classes/algebra-2/graphing-rational-functions/' }, { label: 'Enduro Route Intelligence Lab' }]
+  breadcrumb: [{ label: 'Courses', href: '../../classes/' }, { label: 'Algebra 2', href: '../../classes/algebra-2/' }, { label: 'Graphing Rational Functions', href: '../../classes/algebra-2/graphing-rational-functions/' }, { label: 'Enduro Route Intelligence Lab' }]
 });

@@ -30,6 +30,9 @@ export const COURSES = [
   // ======================================================== ALGEBRA 1
   {
     id: 'alg1', slug: 'algebra-1', name: 'Algebra 1', order: 1, art: 'climb',
+    // A course can have a photo cover instead of its line drawing (any shape; shown whole), in assets/classes/.
+    cover: { src: 'assets/classes/algebra-1-cover.jpg', width: 1200, height: 800,
+      alt: 'Algebra 1 cover: a rider flips a mountain bike at sunset above a dirt jump, with the parabola y = −x² + 2x + 3 traced along the jump and its vertex (1, 4) marked' },
     card: 'Explore equations, variables, functions, graphs, and linear relationships through trail gradients, speed, distance, elevation, and riding scenarios.',
     description: 'Learn the fundamentals of algebra through real-world mountain biking problems involving speed, elevation, distance, jumps, and trail design.',
     intro: 'Explore Algebra 1 through the world of mountain biking. Learn how equations, graphs, and mathematical relationships help explain speed, elevation, jumps, and trail design.',
@@ -186,6 +189,8 @@ export const COURSES = [
   // ======================================================== ALGEBRA 2
   {
     id: 'alg2', slug: 'algebra-2', name: 'Algebra 2', order: 2, art: 'jump',
+    cover: { src: 'assets/classes/algebra-2-cover.jpg', width: 1200, height: 800,
+      alt: 'Algebra 2 cover: an enduro racer rides a narrow rock chute between granite boulders, beside an exponential curve and the topics exponentials and logs, polynomials, rational functions and complex numbers' },
     card: 'Explore advanced algebra, quadratic functions, polynomials, exponential relationships, and mathematical modeling through jump trajectories, suspension behavior, speed, and performance data.',
     description: 'Build on Algebra 1 by exploring more advanced equations, functions, polynomials, and mathematical relationships.',
     intro: 'Explore Algebra 2 through jump trajectories, suspension, speed and performance data: the same functions engineers and coaches use to describe how bikes and riders behave.',
@@ -378,6 +383,8 @@ export const COURSES = [
   // ======================================================== GEOMETRY
   {
     id: 'geo', slug: 'geometry', name: 'Geometry', order: 3, art: 'frame',
+    cover: { src: 'assets/classes/geometry-cover.jpg', width: 1200, height: 1029,
+      alt: 'Geometry cover: a mountain bike in front of a dirt jump, with triangle ABC drawn on its frame and a 64° head angle marked, beside the topics angles and triangles, circles, area and volume, and proofs' },
     card: 'Explore angles, triangles, circles, transformations, area, volume, and spatial reasoning through bike design, trail construction, jump shapes, and mountain bike geometry.',
     description: 'Discover how geometry explains mountain bike design, trail construction, angles, jumps, distances, and three-dimensional objects.',
     intro: 'Explore Geometry through bike frames, wheels, berms and jumps. Angles, triangles and circles are in every part of the bike and every feature on the trail.',
@@ -537,6 +544,8 @@ export const COURSES = [
   // ======================================================== PRECALCULUS
   {
     id: 'precalc', slug: 'precalculus', name: 'Precalculus', order: 4, art: 'wheel',
+    cover: { src: 'assets/classes/precalculus-cover.jpg', width: 1200, height: 675,
+      alt: 'Pre-Calculus cover: a mountain bike wheel in dry grass, with a unit-circle triangle drawn from the hub showing angle θ, cos θ, sin θ and the point (cos θ, sin θ), beside the topics functions, trigonometry, the unit circle, and sequences and series' },
     card: 'Explore advanced functions, trigonometry, periodic behavior, vectors, and mathematical modeling through jumps, trail profiles, rotational movement, and mountain biking physics.',
     description: 'Explore advanced mathematical relationships, trigonometry, functions, and mathematical modeling through the physics and geometry of mountain biking.',
     intro: 'Explore Precalculus through jumps, wheels and trail profiles: rotation is trigonometry, speed off a lip is a vector, and a rolling wheel traces a parametric curve.',

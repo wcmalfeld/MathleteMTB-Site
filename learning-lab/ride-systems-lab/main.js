@@ -48,5 +48,5 @@ function exitLink() {
 mount(document.getElementById('ride-systems-lab'), {
   onAttempt, onComplete, backLink: exitLink(),
   courseLink: { href: '../../classes/algebra-2/', label: 'Algebra 2' },
-  breadcrumb: [{ label: 'Classes', href: '../../classes/' }, { label: 'Algebra 2', href: '../../classes/algebra-2/' }, { label: 'Functions', href: '../../classes/algebra-2/function-notation/' }, { label: 'Ride Systems Lab' }]
+  breadcrumb: [{ label: 'Courses', href: '../../classes/' }, { label: 'Algebra 2', href: '../../classes/algebra-2/' }, { label: 'Functions', href: '../../classes/algebra-2/function-notation/' }, { label: 'Ride Systems Lab' }]
 });
