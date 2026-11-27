@@ -1,0 +1,160 @@
+/* ============================================================
+   Uplift (Algebra 1, Systems of Equations): Operations HQ, the departments,
+   the pricing graph, the fleet rack, invoices, the scaler, the mixing
+   station, the crew simulator and the command center. Loaded after the
+   lesson kit, the Dream Line styles (workbench, badges, tutor panel), Map
+   the Line's (grid, plotter, tables) and Frame the Line's (line plotter).
+   Scoped under .upl.
+   Colours: Plan A / Crew A / trail bikes blue (--in); Plan B / Crew B /
+   downhill bikes gold (--unk); the intersection and "ready" green (--ok);
+   misses orange (--warn).
+   ============================================================ */
+.upl { --clayc: #B4683F; --sandc: #E3C48A; }
+
+/* ---------- tiles, checks, steps ---------- */
+.upl .upl-tiles { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); margin: 8px 0 10px; }
+.upl .upl-tile { padding: 10px 12px; background: #0A0F0C; border: 1px solid rgba(142, 197, 224, 0.35); border-radius: 10px; min-width: 0; }
+.upl .upl-tile p { margin: 0; overflow-wrap: anywhere; }
+.upl .upl-tile-k { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--in); }
+.upl .upl-tile-v { font-family: var(--f-mono); font-size: 18px; color: var(--ink); }
+.upl .upl-tile.is-best { border-color: rgba(108, 195, 122, 0.7); }
+.upl .upl-tile.is-best .upl-tile-v { color: var(--ok); }
+.upl .upl-tile.is-meet { border-color: rgba(108, 195, 122, 0.7); }
+.upl .upl-checks { list-style: none; margin: 8px 0; padding: 0; display: grid; gap: 4px; font-family: var(--f-mono); font-size: 13px; color: var(--soft); }
+.upl .upl-checks li { overflow-wrap: anywhere; }
+.upl .upl-checks li.is-ok { color: var(--ok); }
+.upl .upl-checks li.is-off { color: var(--soft); }
+.upl .upl-steps { margin: 10px 0; padding-left: 1.6em; display: grid; gap: 6px; }
+.upl .upl-steps li { display: grid; gap: 2px; }
+.upl .upl-step-eq { font-family: var(--f-mono); font-size: 16px; color: var(--ink); overflow-wrap: anywhere; }
+.upl .upl-step-note { font-size: 13px; color: var(--soft); }
+.upl .upl-steps li.is-new .upl-step-eq { color: var(--unk); }
+@media (prefers-reduced-motion: no-preference) { .upl .upl-steps li.is-new { animation: upl-in 0.35s ease-out; } }
+@keyframes upl-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.upl .upl-verify { padding: 10px 12px; border: 1px solid rgba(108, 195, 122, 0.45); border-radius: 10px; }
+.upl .upl-verify p { margin: 2px 0; }
+.upl .dl-wb-formula, .upl .dl-wb-sub, .upl .ms-live-eq, .upl .ls-eq-main { white-space: pre-line; }
+.upl .upl-edit { margin: 10px 0; }
+.upl .upl-edit > summary { cursor: pointer; color: var(--in); font-size: 14px; }
+.upl .upl-verdict { color: var(--ink); }
+.upl .upl-iso { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.upl .upl-kind { font-family: var(--f-display); font-weight: 800; font-size: 22px; text-transform: uppercase; margin: 8px 0 4px; }
+.upl .upl-kind.is-one { color: var(--ok); } .upl .upl-kind.is-none { color: var(--warn); } .upl .upl-kind.is-infinite { color: var(--unk); }
+
+/* ---------- graphs ---------- */
+.upl .ms-line.upl-a { stroke: var(--in); stroke-width: 3.5; }
+.upl .ms-line.upl-b { stroke: var(--unk); stroke-width: 3.5; }
+.upl .ms-line.upl-b.is-same { stroke-dasharray: 10 8; stroke-width: 5; }
+.upl .ms-mark.upl-mark-a { fill: var(--in); }
+.upl .ms-mark.upl-mark-b { fill: var(--unk); }
+.upl .ms-mark.upl-meet { fill: var(--ok); stroke: var(--deep, #0E1310); stroke-width: 3; }
+.upl .ms-vline.upl-now { stroke: rgba(236, 239, 231, 0.45); stroke-dasharray: 4 5; }
+.upl .mt-line.is-a { stroke: var(--in); }
+.upl .mt-line.is-b { stroke: var(--unk); }
+.upl .mt-line.is-same { stroke-dasharray: 10 8; stroke-width: 5; }
+.upl .mt-line-label { font-family: var(--f-mono); font-size: 13px; fill: var(--ink); }
+.upl .mt-line-label.is-a { fill: var(--in); } .upl .mt-line-label.is-b { fill: var(--unk); }
+.upl .upl-fig svg { width: 100%; height: auto; }
+
+/* ---------- fleet ---------- */
+.upl .upl-rack { display: grid; grid-template-columns: repeat(auto-fill, minmax(34px, 1fr)); gap: 4px; padding: 10px; background: #0A0F0C; border-radius: 10px; }
+.upl .upl-bike { width: 100%; height: auto; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.upl .upl-bike.is-trail { stroke: var(--in); }
+.upl .upl-bike.is-dh { stroke: var(--unk); }
+
+/* ---------- workshop ---------- */
+.upl .upl-workshop { display: grid; gap: 14px; }
+.upl .upl-invoices { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+.upl .upl-invoice { padding: 12px 14px; background: #ECEFE7; color: #1A1F1C; border-radius: 6px; font-size: 14px; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4); }
+.upl .upl-inv-h { margin: 0 0 6px; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+.upl .upl-inv-t { width: 100%; border-collapse: collapse; }
+.upl .upl-inv-t td { padding: 4px 0; border-bottom: 1px dashed rgba(26, 31, 28, 0.3); }
+.upl .upl-inv-t td:last-child { text-align: right; }
+.upl .upl-inv-total td { font-weight: 700; border-bottom: none; }
+.upl .upl-shelf { display: grid; gap: 4px; max-width: 420px; }
+.upl .upl-shop { display: block; width: 100%; height: auto; max-height: 160px; border-radius: 8px; }
+.upl .upl-shop.is-big { max-height: none; aspect-ratio: 3 / 2; }
+.upl .upl-shop-bg { fill: #1B2420; } .upl .upl-shelf-b, .upl .upl-bench { fill: #8C6A45; }
+.upl .upl-tire { fill: none; stroke: #2B2B2B; stroke-width: 7; } .upl .upl-box { fill: var(--in); opacity: 0.7; } .upl .upl-box.is-b { fill: var(--unk); }
+.upl .upl-tool { fill: none; stroke: var(--soft); stroke-width: 4; stroke-linecap: round; }
+.upl .upl-stack { padding: 10px 12px; background: #0A0F0C; border-radius: 10px; }
+.upl .upl-stack .ms-live-eq { margin: 4px 0; }
+.upl .upl-k { display: inline-block; min-width: 3.2em; color: var(--unk); font-family: var(--f-mono); font-size: 13px; }
+.upl .upl-sum { border-top: 2px solid var(--soft); padding-top: 6px; }
+
+/* ---------- mixing station ---------- */
+.upl .upl-mix { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 10px; align-items: end; }
+.upl .upl-pile p { margin: 2px 0; font-size: 13px; }
+.upl .upl-pile-art { height: 70px; clip-path: polygon(50% 0, 100% 100%, 0 100%); background: linear-gradient(90deg, var(--clayc) 0 var(--clay), var(--sandc) var(--clay) 100%); }
+.upl .upl-tub { position: relative; height: 150px; border: 3px solid var(--soft); border-top: none; border-radius: 0 0 14px 14px; overflow: hidden; background: #0A0F0C; }
+.upl .upl-tub-sand { position: absolute; left: 0; right: 0; bottom: 0; background: var(--sandc); transition: height 0.2s; }
+.upl .upl-tub-clay { position: absolute; left: 0; right: 0; bottom: 0; background: var(--clayc); transition: height 0.2s; }
+.upl .upl-tub-line { position: absolute; left: 0; right: 0; border-top: 2px dashed var(--ok); font-family: var(--f-mono); font-size: 11px; color: var(--ok); padding-left: 4px; }
+@media (prefers-reduced-motion: reduce) { .upl .upl-tub-sand, .upl .upl-tub-clay, .upl .upl-prog-fill, .upl .upl-bar-fill { transition: none; } }
+
+/* ---------- crew bars ---------- */
+.upl .upl-bar { display: grid; grid-template-columns: 4.5em 1fr auto; align-items: center; gap: 8px; margin: 6px 0; font-size: 13px; }
+.upl .upl-bar-track { height: 14px; background: #0A0F0C; border-radius: 7px; overflow: hidden; }
+.upl .upl-bar-fill { display: block; height: 100%; transition: width 0.2s; }
+.upl .upl-bar.is-a .upl-bar-fill { background: var(--in); } .upl .upl-bar.is-b .upl-bar-fill { background: var(--unk); }
+
+/* ---------- Operations HQ ---------- */
+.upl .upl-hq { margin: 0 0 18px; padding: 16px; background: var(--panel-2); border: 1px solid rgba(236, 239, 231, 0.12); border-radius: 14px; }
+.upl .upl-dests { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); margin: 8px 0 12px; }
+.upl .upl-dest { display: grid; gap: 4px; text-align: left; padding: 8px; background: #0A0F0C; color: var(--text); border: 2px solid rgba(236, 239, 231, 0.14); border-radius: 12px; cursor: pointer; font: inherit; }
+.upl .upl-dest:hover { border-color: rgba(142, 197, 224, 0.5); }
+.upl .upl-dest:focus-visible { outline: 3px solid var(--in); outline-offset: 2px; }
+.upl .upl-dest.is-on { border-color: var(--unk); }
+.upl .upl-dest-n { font-family: var(--f-display); font-weight: 800; font-size: 18px; text-transform: uppercase; color: var(--ink); }
+.upl .upl-dest-b { font-size: 13px; color: var(--soft); }
+.upl .upl-scene { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 8px; }
+.upl .upl-scene.is-big { aspect-ratio: auto; height: clamp(110px, 20vw, 200px); }
+.upl .upl-hq-hero { position: relative; margin: 6px 0 10px; }
+.upl .upl-hq-name { position: absolute; left: 14px; bottom: 8px; margin: 0; font-family: var(--f-display); font-weight: 800; font-size: clamp(18px, 4vw, 30px); color: #fff; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
+.upl .upl-progress { margin: 10px 0 14px; }
+.upl .upl-prog-track { height: 12px; background: #0A0F0C; border-radius: 6px; overflow: hidden; }
+.upl .upl-prog-fill { display: block; height: 100%; background: var(--ok); transition: width 0.3s; }
+.upl .upl-depts { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+.upl .upl-dept { display: grid; grid-template-rows: auto 1fr; background: #0A0F0C; border: 1px solid rgba(236, 239, 231, 0.12); border-radius: 12px; overflow: hidden; }
+.upl .upl-dept.is-done { border-color: rgba(108, 195, 122, 0.6); }
+.upl .upl-dept-img, .upl .upl-dept > .upl-shop { display: block; width: 100%; height: 140px; object-fit: cover; max-height: 140px; aspect-ratio: auto; border-radius: 0; }
+.upl .upl-dept-in { padding: 10px 12px; }
+.upl .upl-dept-h { margin: 0 0 6px; font-family: var(--f-display); font-weight: 800; font-size: 18px; text-transform: uppercase; color: var(--ink); }
+.upl .upl-dept-ok { color: var(--ok); font-family: var(--f-mono); font-size: 12px; font-weight: 400; text-transform: none; }
+.upl .upl-dept-dl { margin: 0; display: grid; gap: 4px; font-size: 13px; }
+.upl .upl-dept-dl div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 6px; }
+.upl .upl-dept-dl dt { color: var(--soft); }
+.upl .upl-dept-dl dd { margin: 0; font-family: var(--f-mono); color: var(--ink); overflow-wrap: anywhere; }
+.upl .upl-dept-dl dd.is-off { font-family: inherit; color: var(--soft); opacity: 0.7; font-style: italic; }
+.upl .upl-photo { margin: 0 0 12px; }
+.upl .upl-photo img { display: block; width: 100%; height: auto; max-height: 320px; object-fit: cover; border-radius: 10px; }
+
+/* ---------- scenes ---------- */
+.upl .upl-sky-rain { fill: #16302A; } .upl .upl-canopy { fill: #2C6B47; } .upl .upl-canopy.is-b { fill: #1F5538; } .upl .upl-trunk { fill: #4A3524; } .upl .upl-fern { fill: #24503A; }
+.upl .upl-trail { fill: none; stroke: #C8A574; stroke-width: 4; stroke-dasharray: 8 6; }
+.upl .upl-sky-alp { fill: #22344A; } .upl .upl-peak { fill: #5E6E7A; } .upl .upl-snow { fill: #ECEFE7; } .upl .upl-cable { stroke: #ECEFE7; stroke-width: 1.5; } .upl .upl-cabin { fill: var(--warn); } .upl .upl-meadow { fill: #4D7A45; }
+.upl .upl-sky-bc { fill: #1D2B33; } .upl .upl-ridge { fill: #2F4038; } .upl .upl-pine { fill: #235038; } .upl .upl-pine.is-b { fill: #1A3F2C; } .upl .upl-van { fill: #ECEFE7; } .upl .upl-wheel { fill: #111; }
+
+/* ---------- opening art ---------- */
+.upl .upl-art { display: block; width: 100%; height: auto; }
+.upl .upl-art-bg { fill: #0A0F0C; }
+.upl .upl-art-panel { fill: #141A17; stroke: rgba(236, 239, 231, 0.14); }
+.upl .upl-art-axis { stroke: rgba(236, 239, 231, 0.5); stroke-width: 2; fill: none; }
+.upl .upl-art-a { stroke: var(--in); stroke-width: 4; } .upl .upl-art-b { stroke: var(--unk); stroke-width: 4; }
+.upl .upl-art-meet { fill: var(--ok); stroke: #0A0F0C; stroke-width: 3; }
+.upl .upl-art-k { fill: var(--in); font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.12em; }
+.upl .upl-art-txt { fill: var(--text); font-family: var(--f-mono); font-size: 14px; }
+.upl .upl-art-txt.is-a { fill: var(--in); } .upl .upl-art-txt.is-b { fill: var(--unk); }
+
+/* ---------- command center ---------- */
+.upl .upl-cc-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); margin: 12px 0; }
+.upl .upl-cc-dept { padding: 12px 14px; background: #0A0F0C; border: 1px solid rgba(236, 239, 231, 0.12); border-radius: 12px; min-width: 0; }
+.upl .upl-cc-dept.is-locked { opacity: 0.7; }
+.upl .upl-open { margin: 14px 0; padding: 18px; border: 2px solid var(--ok); border-radius: 14px; background: rgba(108, 195, 122, 0.08); }
+.upl .upl-open-h { margin: 0 0 8px; font-family: var(--f-display); font-weight: 800; font-size: clamp(26px, 6vw, 44px); line-height: 1; color: var(--ok); }
+.upl .upl-cert { font-family: var(--f-mono); letter-spacing: 0.1em; color: var(--unk); }
+
+@media (max-width: 560px) {
+  .upl .upl-mix { grid-template-columns: 1fr 1fr; }
+  .upl .upl-tub { grid-column: 1 / -1; }
+}

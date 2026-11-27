@@ -71,7 +71,7 @@ export function reportBlocks(ctx, s, cfg) {
       cfg.nextUnit ? el('p', { class: 'ls-small' }, cfg.nextUnit) : null) : null,
     cfg.park || null,
     el('div', { class: 'ls-actions dl-report-btns' },
-      el('a', { class: 'ls-btn ls-btn--quiet', href: '#board' }, 'Revisit a stage'),
+      el('a', { class: 'ls-btn ls-btn--quiet', href: '#board' }, cfg.revisitLabel || 'Revisit a stage'),
       s.unlocked ? button(cfg.retryLabel || 'Retry the certification', () => { P.setData('finalRound', P.getData('finalRound', 1) + (s.final.done ? 1 : 0)); location.hash = '#final'; }, 'ls-btn--quiet') : null,
       el('a', { class: 'ls-btn ls-btn--primary', href: cfg.buttons.view[1] }, cfg.buttons.view[0])));
 }

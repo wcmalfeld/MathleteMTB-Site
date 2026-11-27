@@ -11,7 +11,7 @@ import { mapArt } from './visuals.js';
 const fmt = v => (v < 0 ? '−' + String(-v) : String(v));
 
 // spec: { x: [lo, hi], y: [lo, hi], sx?, sy? (value per grid interval), profile? (axes at the edges, data units),
-//         xLabel?, yLabel?, map? (mountain art), quadrants?, points: [{ x, y, label, cls }], line?: [[x, y], [x, y]], path?: [[x, y]…], onPick?(x, y), label? }
+//         xLabel?, yLabel?, map? (mountain art), quadrants?, points: [{ x, y, label, cls }], line?: [[x, y], [x, y]], lines?: [{ pts, cls, label }], path?: [[x, y]…], onPick?(x, y), label? }
 export function gridSvg(spec) {
   const prof = !!spec.profile, sx = spec.sx || 1, sy = spec.sy || 1;
   const [x0, x1] = spec.x, [y0, y1] = spec.y;
@@ -43,6 +43,8 @@ export function gridSvg(spec) {
   if (sx !== 1 || sy !== 1) s.appendChild(svg('text', { class: 'mt-scale', x: L + 4, y: T + 12 }, `Scale: each ↔ ${fmt(sx)}${spec.unit ? ' ' + spec.unit : ''}, each ↕ ${fmt(sy)}${spec.unit ? ' ' + spec.unit : ''}`));
   if (spec.path) s.appendChild(svg('path', { class: 'mt-path' + (spec.pathCls ? ' ' + spec.pathCls : ''), d: 'M' + spec.path.map(([a, b]) => X(a) + ' ' + Y(b)).join(' L') }));
   if (spec.line) s.appendChild(svg('path', { class: 'mt-line', d: `M${X(spec.line[0][0])} ${Y(spec.line[0][1])} L${X(spec.line[1][0])} ${Y(spec.line[1][1])}` }));
+  // lines: several lines at once (a system of equations): [{ pts: [[x, y], [x, y]], cls, label }]
+  for (const l of spec.lines || []) { s.appendChild(svg('path', { class: 'mt-line ' + (l.cls || ''), d: `M${X(l.pts[0][0])} ${Y(l.pts[0][1])} L${X(l.pts[1][0])} ${Y(l.pts[1][1])}` })); if (l.label) s.appendChild(svg('text', { class: 'mt-line-label ' + (l.cls || ''), x: X(l.pts[1][0]) - 4, y: Y(l.pts[1][1]) - 8, 'text-anchor': 'end' }, l.label)); }
   for (const p of spec.points || []) {
     const g = svg('g', { class: 'mt-pt ' + (p.cls || ''), transform: `translate(${X(p.x)} ${Y(p.y)})` }, svg('circle', { r: p.r || 7 }));
     if (p.label) g.appendChild(svg('text', { class: 'mt-pt-label', x: 10, y: -10 }, p.label));

@@ -476,6 +476,26 @@ const FILM_EXTRA = {
 };
 const filmQuestionSkills = Object.fromEntries(Object.entries(filmKinds()).map(([q, ideas]) => [q, [...new Set([...ideas.flatMap(i => FILM_IDEAS[i] || []), ...(FILM_EXTRA[q] || [])])]]));
 
+// Uplift: tracked ideas -> curriculum skills (learning-lab/uplift/logic/questions.js).
+import { questionKinds as upliftKinds } from '../../learning-lab/uplift/logic/questions.js';
+const GSY = 'alg1.graphing-systems.', SUB = 'alg1.substitution.', ELI = 'alg1.elimination.', APS = 'alg1.applications-of-systems.';
+const UPLIFT_IDEAS = {
+  'graph-solve':   [GSY + 'solve-by-graphing'],
+  'num-solutions': [GSY + 'number-of-solutions'],
+  interpret:       [GSY + 'interpret-intersection'],
+  substitute:      [SUB + 'solve-by-substitution'],
+  'choose-var':    [SUB + 'choose-variable'],
+  verify:          [SUB + 'check-system-solution'],
+  eliminate:       [ELI + 'solve-by-elimination'],
+  scale:           [ELI + 'scale-equations'],
+  method:          [ELI + 'choose-method'],
+  model:           [APS + 'model-with-systems'],
+  'break-even':    [APS + 'break-even'],
+  mixture:         [APS + 'mixture-and-rate'],
+  rate:            [APS + 'mixture-and-rate']
+};
+const upliftQuestionSkills = Object.fromEntries(Object.entries(upliftKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => UPLIFT_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -805,6 +825,37 @@ export const ACTIVITIES = [
       'alg1.function-notation': { route: 'direct', label: 'Stage 6: Direct the Film' }
     },
     tracking: { gameId: 'frame-the-line', questions: filmQuestionSkills }
+  },
+
+  {
+    id: 'uplift',
+    title: 'Uplift',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/uplift/',
+    image: null,
+    home: 'alg1.graphing-systems',
+    summary: 'The Ultimate Bike Park Operations Challenge: run a fictional mountain bike destination. Compare shuttle plans on a live pricing graph, stock the rental fleet by substitution, price workshop parts by elimination, then mix trail dirt, race two trail crews and solve break-even problems with whichever method fits.',
+    objectives: [
+      'Solve systems by graphing, and recognize one, no or infinitely many solutions',
+      'Interpret an intersection in context',
+      'Solve by substitution, choosing which variable to isolate, and check a solution in both equations',
+      'Solve by elimination, multiplying equations to line up coefficients',
+      'Choose between graphing, substitution and elimination',
+      'Write and solve systems for break-even, mixture and rate problems'
+    ],
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    minutes: '40-55 min',
+    parts: ['4 stages', 'Operations HQ', 'Live pricing graph', 'Substitution and elimination workbenches', 'Dirt mixing station', 'Crew progress simulator', 'Mountain Operations Certification (10)', 'Opening Day Command Center'],
+    skills: [...new Set(Object.values(upliftQuestionSkills).flat())],
+    stages: {
+      'alg1.graphing-systems': { route: 'shuttle', label: 'Stage 1: The Uplift Showdown' },
+      'alg1.substitution': { route: 'fleet', label: 'Stage 2: Build the Rental Fleet' },
+      'alg1.elimination': { route: 'workshop', label: 'Stage 3: Stock the Workshop' },
+      'alg1.applications-of-systems': { route: 'mountain', label: 'Stage 4: Run the Mountain' }
+    },
+    tracking: { gameId: 'uplift', questions: upliftQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------
