@@ -58,6 +58,31 @@ const SLOPE_QUESTIONS = {
 const slopeQuestionSkills = Object.fromEntries(Object.entries(SLOPE_QUESTIONS).map(([q, obj]) =>
   [q, [...new Set([...(SLOPE_OBJECTIVES[obj] || []), ...(SLOPE_EXTRA[q] || [])])]]));
 
+// Map the Line (the Slope Lab, extended to all of Unit 3): its own question
+// kinds and ideas (learning-lab/slope-lab/logic/questions.js). The original
+// 32 questions keep the finer mapping above; ids are lower case, as recorded.
+import { questionKinds as mapKinds } from '../../learning-lab/slope-lab/logic/questions.js';
+const CP = 'alg1.coordinate-plane.', GOP = 'alg1.graphing-ordered-pairs.', PNS = 'alg1.positive-and-negative-slope.', LR = 'alg1.linear-relationships.', PR = 'alg1.proportional-relationships.';
+const MAP_IDEAS = {
+  axes:              [CP + 'read-axes'],
+  quadrants:         [CP + 'read-axes'],
+  'read-points':     [CP + 'name-points'],
+  scales:            [CP + 'scales'],
+  plot:              [GOP + 'plot-points', GOP + 'table-to-graph'],
+  'read-graph':      [GOP + 'table-to-graph', CP + 'name-points'],
+  patterns:          [GOP + 'describe-patterns'],
+  slope:             [S + 'slope-as-rate', S + 'calculate-two-points'],
+  grade:             [S + 'real-world-slope'],
+  'slope-sign':      [S + 'interpret-sign', PNS + 'classify-slope', PNS + 'direction'],
+  'constant-rate':   [LR + 'constant-rate'],
+  linear:            [LR + 'linear-from-table'],
+  representations:   [LR + 'compare-representations'],
+  proportional:      [PR + 'proportional-or-not', PR + 'write-y-equals-kx'],
+  'k-value':         [PR + 'constant-of-proportionality']
+};
+const legacySlope = Object.fromEntries(Object.entries(slopeQuestionSkills).map(([q, ss]) => [q.toLowerCase(), ss]));
+const mapQuestionSkills = Object.fromEntries(Object.entries(mapKinds()).map(([q, ideas]) => [q, legacySlope[q] || [...new Set([...ideas.flatMap(i => MAP_IDEAS[i] || []), ...(/^(tr-und|fc-und)$/.test(q) ? [PNS + 'undefined-slope'] : [])])]]));
+
 // Jump Trajectory Lab: the lab lists its own question kinds and the ideas
 // each practises; here those ideas become curriculum skills.
 import { questionKinds as jumpKinds } from '../../learning-lab/jump-trajectory-lab/logic/problems.js';
@@ -421,30 +446,68 @@ const PRO_IDEAS = {
 };
 const proQuestionSkills = Object.fromEntries(Object.entries(proKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => PRO_IDEAS[i] || []))]]));
 
+// Frame the Line: tracked ideas -> curriculum skills
+// (learning-lab/frame-the-line/logic/questions.js), plus a few questions that
+// practise a more specific skill than their idea.
+import { questionKinds as filmKinds } from '../../learning-lab/frame-the-line/logic/questions.js';
+const WLE = 'alg1.writing-linear-equations.', SIF = 'alg1.slope-intercept-form.', PSF = 'alg1.point-slope-form.', GLE = 'alg1.graphing-linear-equations.', DRA = 'alg1.domain-and-range.', FNO = 'alg1.function-notation.';
+const FILM_IDEAS = {
+  'write-eq':    [WLE + 'from-context'],
+  'slope-int':   [SIF + 'identify-m-and-b'],
+  'context-mb':  [SIF + 'interpret-m-and-b'],
+  rearrange:     [SIF + 'rewrite-to-slope-intercept'],
+  'point-slope': [PSF + 'write-point-slope'],
+  convert:       [PSF + 'convert-forms'],
+  graph:         [GLE + 'graph-slope-intercept'],
+  intercepts:    [GLE + 'graph-intercepts'],
+  'hv-lines':    [GLE + 'horizontal-vertical'],
+  domain:        [DRA + 'reasonable-domain'],
+  range:         [DRA + 'find-domain-range'],
+  interval:      [DRA + 'interval-notation'],
+  'is-function': [FNO + 'is-it-a-function'],
+  evaluate:      [FNO + 'evaluate-f-of-x'],
+  'fn-context':  [FNO + 'interpret-notation']
+};
+const FILM_EXTRA = {
+  'w-sp-b': [WLE + 'from-slope-and-point'], 'w-sp-eq': [WLE + 'from-slope-and-point'],
+  'w-2p-m': [WLE + 'from-two-points'], 'w-2p-b': [WLE + 'from-two-points'], 'w-2p-eq': [WLE + 'from-two-points'], 'wx-m': [WLE + 'from-two-points'], 'wx-eq': [WLE + 'from-two-points'], 'fa-2pt': [WLE + 'from-two-points'],
+  'ps-choose-a': [PSF + 'choose-a-form'], 'ps-choose-b': [PSF + 'choose-a-form'],
+  'dr-g-dom': [DRA + 'find-domain-range'], 'dr-dots': [DRA + 'find-domain-range'], 'dr-table': [DRA + 'find-domain-range']
+};
+const filmQuestionSkills = Object.fromEntries(Object.entries(filmKinds()).map(([q, ideas]) => [q, [...new Set([...ideas.flatMap(i => FILM_IDEAS[i] || []), ...(FILM_EXTRA[q] || [])])]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
-    title: 'Slope & Linear Relationships Lab',
+    title: 'Map the Line',
     type: 'lab',
     status: 'live',
     access: 'public',
     route: 'learning-lab/slope-lab/',
     image: null,
     home: 'alg1.slope-and-rate-of-change',
-    summary: 'Design trails in the Trail Designer, then learn slope from rise and run, graphs, tables and y = mx + b, with practice at three levels and a no-bikes transfer challenge.',
+    summary: 'The MTB Ride Data Lab (the Slope & Linear Relationships Lab, extended): map a trail network on the coordinate plane, plot GPS and elevation data, measure slope and grade with the rise-over-run visualizer, read climbs, descents and flats, tell linear from nonlinear data, and discover y = kx at a steady pace. Includes the original slope practice bank and transfer challenge.',
     objectives: [
-      'Understand slope as rise over run, a rate of change',
-      'Calculate slope from two points, a graph and a table',
-      'Tell decimal slope, percentage grade and angle apart',
-      'Read and write y = mx + b for a trail',
-      'Use slope outside mountain biking'
+      'Read and plot coordinates in all four quadrants, including maps with different axis scales',
+      'Plot tables of values, read elevation profiles, and describe patterns',
+      'Calculate slope and percentage grade from points, tables, graphs and words',
+      'Interpret positive, negative, zero and undefined slope',
+      'Recognize constant rates of change and connect words, tables, graphs and equations',
+      'Identify proportional relationships, find k, and tell proportional from linear'
     ],
-    difficulty: ['beginner', 'intermediate'],
-    minutes: '45-60 min',
-    parts: ['Interactive lab', 'Guided lessons', 'Practice (24 questions)', 'Transfer challenge (8 questions)'],
-    // Every skill the lab practises: everything its questions map to.
-    skills: [...new Set(Object.values(slopeQuestionSkills).flat())],
-    tracking: { gameId: 'slope-lab', questions: slopeQuestionSkills }
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    minutes: '40-55 min',
+    parts: ['6 stages', 'Mountain map and GPS plotting', 'Linked map and elevation profile', 'Rise-over-run visualizer', 'Trail profile designer', 'Ride data dashboard', 'Ultimate Ride Analysis Challenge (14)', 'Original practice bank (32)'],
+    skills: [...new Set(Object.values(mapQuestionSkills).flat())],
+    stages: {
+      'alg1.coordinate-plane': { route: 'scout', label: 'Stage 1: Scout the Mountain' },
+      'alg1.graphing-ordered-pairs': { route: 'plot', label: 'Stage 2: Plot Your Line' },
+      'alg1.slope-and-rate-of-change': { route: 'grade', label: 'Stage 3: Measure the Grade' },
+      'alg1.positive-and-negative-slope': { route: 'terrain', label: 'Stage 4: Read the Terrain' },
+      'alg1.linear-relationships': { route: 'data', label: 'Stage 5: Analyze Rider Data' },
+      'alg1.proportional-relationships': { route: 'flow', label: 'Stage 6: Find Your Flow' }
+    },
+    tracking: { gameId: 'slope-lab', questions: mapQuestionSkills }
   },
   {
     id: 'jump-trajectory-lab',
@@ -709,6 +772,39 @@ export const ACTIVITIES = [
       'alg1.inequalities': { route: 'operations', label: 'Stage 5: Park Operations' }
     },
     tracking: { gameId: 'dream-line-goes-pro', questions: proQuestionSkills }
+  },
+
+  {
+    id: 'frame-the-line',
+    title: 'Frame the Line',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/frame-the-line/',
+    image: null,
+    home: 'alg1.writing-linear-equations',
+    summary: 'The MTB Film Studio: produce a fictional mountain bike film and model it with linear equations. Write the budget from descriptions, points, tables and graphs, read slope-intercept and point-slope forms, graph the budget and storage models, set the production limits with domain and range, and direct the film with function notation.',
+    objectives: [
+      'Write linear equations from a description, a slope and a point, two points, a table and a graph',
+      'Identify and interpret the slope and y-intercept, and rewrite equations in slope-intercept form',
+      'Write equations in point-slope form, convert between forms, and choose a useful form',
+      'Graph lines from slope and intercept or from intercepts, including horizontal and vertical lines',
+      'Find reasonable domains and ranges, discrete or continuous, in interval and inequality notation',
+      'Evaluate and interpret function notation, and decide whether a relation is a function'
+    ],
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    minutes: '45-55 min',
+    parts: ['6 stages', 'Film production studio', 'Budget explorer', 'Point-slope builder', 'Vertical line test', 'Director’s dashboard', 'Film Producer Certification (12)', 'Your MTB Film production board'],
+    skills: [...new Set(Object.values(filmQuestionSkills).flat())],
+    stages: {
+      'alg1.writing-linear-equations': { route: 'plan', label: 'Stage 1: Plan the Production' },
+      'alg1.slope-intercept-form': { route: 'budget', label: 'Stage 2: Understand the Budget' },
+      'alg1.point-slope-form': { route: 'checkpoint', label: 'Stage 3: Calculate Mid-Project Costs' },
+      'alg1.graphing-linear-equations': { route: 'graph', label: 'Stage 4: Build the Production Graph' },
+      'alg1.domain-and-range': { route: 'limits', label: 'Stage 5: Manage the Production Limits' },
+      'alg1.function-notation': { route: 'direct', label: 'Stage 6: Direct the Film' }
+    },
+    tracking: { gameId: 'frame-the-line', questions: filmQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------

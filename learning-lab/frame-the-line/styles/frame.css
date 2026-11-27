@@ -1,0 +1,103 @@
+/* ============================================================
+   Frame the Line (Algebra 1, Linear Equations and Functions): the film
+   studio, the explorers, figures and the production board. Loaded after
+   the lesson kit's stylesheets, the Dream Line styles (workbench, badges,
+   tutor panel) and Map the Line's (grid, plotter, tables). Scoped under .ftl.
+   Colours: your line / budget blue (--in); intercepts and checkpoints gold
+   (--unk); correct green (--ok); misses orange (--warn); the camera's REC red.
+   ============================================================ */
+.ftl { --rec: #E5484D; }
+
+/* ---------- tiles ---------- */
+.ftl .ftl-tiles { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); margin: 8px 0 12px; }
+.ftl .ftl-tile { padding: 10px 12px; background: #0A0F0C; border: 1px solid rgba(142, 197, 224, 0.35); border-radius: 10px; min-width: 0; }
+.ftl .ftl-tile p { margin: 0; overflow-wrap: anywhere; }
+.ftl .ftl-tile-k { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--in); }
+.ftl .ftl-tile-v { font-family: var(--f-mono); font-size: 17px; color: var(--ink); }
+.ftl .ftl-tile.is-ok { border-color: rgba(108, 195, 122, 0.6); }
+.ftl .ftl-tile.is-ok .ftl-tile-v { color: var(--ok); }
+.ftl .ftl-tile.is-off .ftl-tile-v { color: var(--soft); font-size: 14px; }
+
+/* ---------- plot series and marks ---------- */
+.ftl .ms-line.ftl-yours { stroke: var(--in); stroke-width: 3.5; }
+.ftl .ms-line.ftl-cmp { stroke: var(--unk); stroke-width: 2.5; stroke-dasharray: 8 6; }
+.ftl .ms-line.ftl-cmp.is-1 { stroke: var(--warn); }
+.ftl .ms-line.ftl-seg, .ftl .ms-line.ftl-rel-line { stroke: var(--in); stroke-width: 3; }
+.ftl .ms-mark.ftl-closed { fill: var(--in); stroke: var(--deep); stroke-width: 2; }
+.ftl .ms-mark.ftl-open { fill: var(--deep, #0E1310); stroke: var(--in); stroke-width: 3; }
+.ftl .ms-mark.ftl-int { fill: var(--unk); }
+.ftl .ms-mark.ftl-on { fill: var(--unk); stroke: var(--deep); stroke-width: 2; }
+.ftl .ms-mark.ftl-hit { fill: var(--warn); }
+.ftl .ms-vline.ftl-test { stroke: var(--ok); stroke-width: 3; stroke-dasharray: none; }
+.ftl .ms-vline.ftl-test.is-bad { stroke: var(--warn); }
+.ftl .ms-band.ftl-band, .ftl .ftl-band { fill: rgba(142, 197, 224, 0.08); }
+.ftl .ftl-legend { list-style: none; margin: 10px 0; padding: 0; display: grid; gap: 4px; font-family: var(--f-mono); font-size: 13px; }
+.ftl .ftl-legend li::before { content: ''; display: inline-block; width: 18px; height: 0; border-top: 3px dashed var(--unk); margin-right: 8px; vertical-align: middle; }
+.ftl .ftl-legend li.is-1::before { border-top-color: var(--warn); }
+.ftl .ftl-legend li.is-yours::before { border-top: 3px solid var(--in); }
+
+/* ---------- relations (vertical line test) ---------- */
+.ftl .ftl-rels { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); margin: 8px 0; }
+.ftl .ftl-rel { margin: 0; padding: 8px; background: #0A0F0C; border-radius: 10px; }
+.ftl .ftl-rel figcaption { font-family: var(--f-mono); font-size: 12px; color: var(--soft); margin-bottom: 4px; }
+.ftl .ftl-rel svg, .ftl .ftl-vlt svg { width: 100%; height: auto; }
+
+/* ---------- point-slope builder, director's dashboard ---------- */
+.ftl .ftl-build .ms-live-eq { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.ftl .ftl-blank { width: 5.5em; text-align: center; padding: 4px 6px; }
+.ftl .ftl-blank.is-bad { border-color: var(--warn); }
+.ftl .ftl-conv li { font-family: var(--f-mono); }
+.ftl .ftl-director { display: grid; gap: 10px; }
+.ftl .ftl-reveal { padding: 10px 12px; border: 1px solid rgba(232, 188, 78, 0.45); border-radius: 10px; }
+.ftl .ftl-reveal p { margin: 6px 0 0; }
+
+/* ---------- the studio ---------- */
+.ftl .ftl-studio { margin: 0 0 18px; padding: 16px; background: var(--panel-2); border: 1px solid rgba(236, 239, 231, 0.12); border-radius: 14px; }
+.ftl .ftl-concepts { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); margin: 8px 0 14px; }
+.ftl .ftl-concept { display: grid; gap: 4px; text-align: left; padding: 8px; background: #0A0F0C; color: var(--text); border: 2px solid rgba(236, 239, 231, 0.14); border-radius: 12px; cursor: pointer; font: inherit; }
+.ftl .ftl-concept:hover { border-color: rgba(142, 197, 224, 0.5); }
+.ftl .ftl-concept:focus-visible { outline: 3px solid var(--in); outline-offset: 2px; }
+.ftl .ftl-concept.is-on { border-color: var(--unk); }
+.ftl .ftl-concept-n { font-family: var(--f-display); font-weight: 800; font-size: 18px; color: var(--ink); text-transform: uppercase; letter-spacing: 0.02em; }
+.ftl .ftl-concept-b { font-size: 13px; color: var(--soft); }
+.ftl .ftl-two { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.ftl .ftl-timeline { list-style: none; margin: 6px 0 14px; padding: 0; display: grid; gap: 6px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr)); }
+.ftl .ftl-timeline li { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: #0A0F0C; color: var(--soft); font-size: 13px; border: 1px solid transparent; }
+.ftl .ftl-timeline li.is-done { color: var(--ok); border-color: rgba(108, 195, 122, 0.45); }
+.ftl .ftl-timeline li.is-now { color: var(--ink); border-color: var(--rec); }
+.ftl .ftl-tl-dot { flex: none; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; border: 2px solid currentColor; font-size: 11px; }
+.ftl .ftl-timeline li.is-now .ftl-tl-dot { background: var(--rec); border-color: var(--rec); }
+.ftl .ftl-plan { display: grid; gap: 4px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+
+/* ---------- scenes ---------- */
+.ftl .ftl-scene { display: block; width: 100%; height: auto; border-radius: 8px; }
+.ftl .ftl-sky-desert { fill: #3A2216; } .ftl .ftl-sun { fill: #F2B35A; }
+.ftl .ftl-rock { fill: #B4532F; } .ftl .ftl-rock-2 { fill: #7E3720; }
+.ftl .ftl-sky-forest { fill: #12261D; } .ftl .ftl-tree { fill: #24553A; } .ftl .ftl-tree.is-b { fill: #1B4430; }
+.ftl .ftl-ground { fill: #2E2A1E; } .ftl .ftl-boardwalk { fill: none; stroke: #B48A55; stroke-width: 4; }
+.ftl .ftl-sky-slope { fill: #1C2433; } .ftl .ftl-dirt { fill: #8A5A36; } .ftl .ftl-ramp { fill: #C29A63; }
+.ftl .ftl-arc { fill: none; stroke: var(--unk); stroke-width: 2; stroke-dasharray: 5 5; }
+.ftl .ftl-drone { fill: var(--ink); } .ftl .ftl-drone-arms { stroke: var(--ink); stroke-width: 2; }
+.ftl .ftl-trail { fill: none; stroke: #F4D7A8; stroke-width: 2.5; stroke-dasharray: 6 5; }
+.ftl .ftl-frame { fill: none; stroke: rgba(255, 255, 255, 0.85); stroke-width: 3; }
+.ftl .ftl-rec { fill: var(--rec); }
+
+/* ---------- opening art ---------- */
+.ftl .ftl-art { display: block; width: 100%; height: auto; }
+.ftl .ftl-art-bg { fill: #0A0F0C; }
+.ftl .ftl-art-panel, .ftl .ftl-art-screen { fill: #141A17; stroke: rgba(236, 239, 231, 0.14); }
+.ftl .ftl-art-axis { stroke: rgba(236, 239, 231, 0.5); stroke-width: 2; fill: none; }
+.ftl .ftl-art-line { stroke: var(--in); stroke-width: 3.5; }
+.ftl .ftl-art-pt { fill: var(--in); }
+.ftl .ftl-art-txt, .ftl .ftl-art-v { fill: var(--text); font-family: var(--f-mono); font-size: 13px; }
+.ftl .ftl-art-k { fill: var(--in); font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.12em; }
+.ftl .ftl-art-rec { fill: var(--rec); font-family: var(--f-mono); font-size: 13px; letter-spacing: 0.08em; }
+.ftl .ftl-art-dot { fill: none; stroke: rgba(236, 239, 231, 0.5); stroke-width: 2; }
+.ftl .ftl-art-dot.is-done { fill: var(--ok); stroke: var(--ok); }
+
+/* ---------- production board ---------- */
+.ftl .ftl-board-head { position: relative; margin-bottom: 12px; }
+.ftl .ftl-scene.is-big { max-height: 260px; object-fit: cover; }
+.ftl .ftl-film-title { margin: 10px 0 0; font-family: var(--f-display); font-weight: 800; font-size: clamp(24px, 5vw, 40px); line-height: 1.05; color: var(--ink); letter-spacing: 0.02em; overflow-wrap: anywhere; }
+.ftl .ftl-checks li.is-off { color: var(--soft); opacity: 0.75; }
+.ftl .ftl-fig svg { width: 100%; height: auto; }

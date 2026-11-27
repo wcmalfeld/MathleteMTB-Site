@@ -1,0 +1,119 @@
+/* ============================================================
+   Map the Line (Algebra 1, Linear Relationships): the coordinate grid and
+   map, profiles, tables, the plotter, the visualizer, the dashboard and
+   the report. Loaded after the lesson kit's stylesheets and the Dream Line
+   styles (shared workbench, badges, tutor panel). Everything here is
+   scoped under .mtl.
+   Colours: point A / rise gold (--unk); point B / run blue (--in);
+   correct green (--ok); descents and misses orange (--warn).
+   ============================================================ */
+
+/* ---------- coordinate grid ---------- */
+.mtl .mt-grid { display: block; width: 100%; height: auto; max-width: 640px; }
+.mtl .mt-grid.is-pick { cursor: crosshair; }
+.mtl .mt-gl { stroke: rgba(236, 239, 231, 0.1); stroke-width: 1; }
+.mtl .mt-axis { fill: none; stroke: var(--ink); stroke-width: 2; }
+.mtl .mt-tick { fill: var(--soft); font-family: var(--f-mono); font-size: 11px; }
+.mtl .mt-origin { fill: var(--ink); }
+.mtl .mt-axlabel, .mtl .mt-axname { fill: var(--text); font-family: var(--f-mono); font-size: 12px; }
+.mtl .mt-axname { font-style: italic; font-size: 14px; }
+.mtl .mt-scale { fill: var(--unk); font-family: var(--f-mono); font-size: 11px; }
+.mtl .mt-quad-label { fill: rgba(232, 188, 78, 0.35); font-family: var(--f-display); font-weight: 800; font-size: 30px; }
+.mtl .mt-path { fill: none; stroke: var(--unk); stroke-width: 3; stroke-linejoin: round; stroke-dasharray: 7 6; }
+.mtl .mt-line { stroke: var(--in); stroke-width: 3; }
+.mtl .mt-pt circle { fill: var(--ink); stroke: var(--deep); stroke-width: 2; }
+.mtl .mt-pt.is-feature circle { fill: rgba(236, 239, 231, 0.75); }
+.mtl .mt-pt.is-on circle { fill: var(--unk); r: 9; }
+.mtl .mt-pt.is-placed circle { fill: var(--in); }
+.mtl .mt-pt.is-ok circle { fill: var(--ok); }
+.mtl .mt-pt[role="button"] { cursor: pointer; }
+.mtl .mt-pt[role="button"]:focus { outline: none; }
+.mtl .mt-pt[role="button"]:focus-visible circle, .mtl .mt-pt[role="button"]:hover circle { stroke: var(--ice); stroke-width: 3; }
+.mtl .mt-pt-label { fill: var(--ink); font-family: var(--f-mono); font-size: 12px; paint-order: stroke; stroke: var(--deep); stroke-width: 3px; }
+.mtl .mt-drop { animation: mt-drop 0.6s ease-out; }
+@keyframes mt-drop { from { transform: translate(0, -30px); opacity: 0; } to { opacity: 1; } }
+
+/* ---------- map art ---------- */
+.mtl .mt-map-bg { fill: #1E3326; }
+.mtl .mt-contour { fill: none; stroke: rgba(201, 177, 120, 0.22); stroke-width: 1.4; }
+.mtl .mt-river { fill: none; stroke: rgba(142, 197, 224, 0.4); stroke-width: 5; stroke-linecap: round; }
+.mtl .mt-tree { fill: #2B4A32; }
+
+/* ---------- profiles and two-point plots ---------- */
+.mtl .mt-prof-line { stroke: var(--ok); }
+.mtl .mt-prof-line.is-bent { stroke: var(--warn); }
+.mtl .mt-prof-line.is-b { stroke: var(--in); }
+.mtl .mt-dashed { stroke-dasharray: 6 5; }
+.mtl .mt-prof-pt { fill: var(--ink); }
+.mtl .mt-prof-on { fill: var(--unk); }
+.mtl .mt-vmiss { stroke: var(--warn); stroke-dasharray: 5 4; }
+.mtl .mt-seg { stroke: var(--ink); }
+.mtl .mt-run { stroke: var(--in); stroke-dasharray: 6 4; }
+.mtl .mt-rise { stroke: var(--unk); stroke-dasharray: 6 4; }
+.mtl .mt-pt-a { fill: var(--unk); }
+.mtl .mt-pt-b { fill: var(--in); }
+.mtl .mt-origin-mark { fill: var(--ok); }
+.mtl .mt-origin-miss { fill: none; stroke: var(--warn); stroke-width: 3; }
+.mtl .mt-fig { margin: 10px 0; }
+.mtl .mt-two { display: grid; gap: 14px; }
+.mtl .mt-four { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 10px 0; }
+.mtl .mt-four-cell { margin: 0; padding: 6px; border: 1px solid var(--rule); background: var(--deep); }
+.mtl .mt-four-cell figcaption { font-family: var(--f-mono); font-size: 13px; color: var(--unk); }
+
+/* ---------- tables ---------- */
+.mtl .mt-table-wrap { margin: 10px 0; max-width: 520px; }
+.mtl .mt-table td, .mtl .mt-table th { text-align: center; }
+.mtl .mt-table thead th { text-transform: none; letter-spacing: 0; font-family: var(--f-mono); }
+.mtl .mt-missing { color: var(--warn); font-weight: 700; }
+.mtl .mt-diff { color: var(--unk); }
+.mtl .mt-mini-table { display: inline-grid; gap: 2px; font-family: var(--f-mono); font-size: 14px; }
+
+/* ---------- plotter and readouts ---------- */
+.mtl .mt-type { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0; font-family: var(--f-mono); }
+.mtl .mt-xy { width: 84px; }
+.mtl .mt-pts { display: flex; flex-wrap: wrap; gap: 6px 12px; list-style: none; margin: 6px 0; padding: 0; font-family: var(--f-mono); }
+.mtl .mt-pts li { display: flex; align-items: center; gap: 6px; }
+.mtl .mt-btn-sm { min-height: 34px; padding: 3px 10px; font-size: 13px; text-transform: none; letter-spacing: 0; }
+.mtl .mt-btn-sm[aria-pressed="true"] { border-color: var(--unk); color: var(--ink); background: rgba(232, 188, 78, 0.14); }
+.mtl .mt-feature-btns { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.mtl .mt-read { display: grid; gap: 8px; align-content: start; }
+.mtl .mt-read p { margin: 0; overflow-wrap: anywhere; }
+.mtl .mt-und { color: var(--warn); }
+.mtl .mt-checks { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; color: var(--soft); }
+.mtl .mt-checks li.is-ok { color: var(--ok); }
+.mtl .mt-challenges { padding: 12px 16px; border-top: 1px solid var(--rule); }
+.mtl .mt-sections { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 10px 0; padding: 0; font-family: var(--f-mono); font-size: 13px; }
+.mtl .mt-sections li { padding: 4px 10px; border: 1px solid currentColor; }
+.mtl .mt-sections .is-up { color: var(--ok); }
+.mtl .mt-sections .is-flat { color: var(--soft); }
+.mtl .mt-sections .is-down { color: var(--warn); }
+
+/* ---------- dashboard ---------- */
+.mtl .mt-dash { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); padding: 14px 16px 0; }
+.mtl .mt-tile { padding: 10px 12px; background: #0A0F0C; border: 1px solid rgba(142, 197, 224, 0.4); border-radius: 10px; }
+.mtl .mt-tile p { margin: 0; }
+.mtl .mt-tile-k { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--in); }
+.mtl .mt-tile-v { font-family: var(--f-mono); font-size: 20px; color: var(--ink); }
+
+/* ---------- bank and report ---------- */
+.mtl .mt-bank > * + * { margin-top: 10px; }
+.mtl .mt-bank .ls-segs { flex-wrap: wrap; max-width: 100%; }
+.mtl .mt-report > * + * { margin-top: 14px; }
+
+/* ---------- opening art ---------- */
+.mtl .mt-art { display: block; width: 100%; height: auto; }
+.mtl .mt-art-bg { fill: #121A15; }
+.mtl .mt-art-grid { stroke: rgba(236, 239, 231, 0.08); }
+.mtl .mt-art-axis { stroke: var(--ink); stroke-width: 2; }
+.mtl .mt-art-route { fill: none; stroke: var(--unk); stroke-width: 3.5; stroke-linejoin: round; }
+.mtl .mt-art-pt { fill: var(--ink); }
+.mtl .mt-art-panel { fill: #0E1511; stroke: var(--rule); }
+.mtl .mt-art-fill { fill: rgba(108, 195, 122, 0.18); }
+.mtl .mt-art-tri { fill: none; stroke: var(--in); stroke-width: 2; stroke-dasharray: 6 4; }
+.mtl .mt-art-txt { fill: var(--soft); font-family: var(--f-mono); font-size: 12px; }
+.mtl .mt-art-screen { fill: #0A0F0C; stroke: rgba(142, 197, 224, 0.5); stroke-width: 2; }
+.mtl .mt-art-k { fill: var(--in); font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em; }
+.mtl .mt-art-v { fill: var(--ink); font-family: var(--f-mono); font-size: 24px; }
+
+@media (min-width: 900px) { .mtl .mt-two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
+@media (prefers-reduced-motion: reduce) { .mtl .mt-drop { animation: none; } }

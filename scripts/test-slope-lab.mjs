@@ -1,16 +1,15 @@
 #!/usr/bin/env node
-// Tests for the Slope & Linear Relationships Lab (learning-lab/slope-lab/):
-// the math, answer checking, every question's answer (re-derived from its
-// numbers), and progress tracking. No browser needed:
+// Tests for the Slope Lab's original engine and question bank
+// (learning-lab/slope-lab/: logic/slope.js, logic/validate.js and the 32
+// questions in content/questions.js), which Map the Line keeps as its
+// practice bank and transfer challenge. The rest of Map the Line is tested
+// by scripts/test-map-the-line.mjs. No browser needed:
 //   node scripts/test-slope-lab.mjs
 
 const base = new URL('../learning-lab/slope-lab/', import.meta.url);
 const S = await import(new URL('logic/slope.js', base));
 const V = await import(new URL('logic/validate.js', base));
 const { QUESTIONS, OBJECTIVES } = await import(new URL('content/questions.js', base));
-const { TOPICS, CHALLENGES, PREDICTIONS } = await import(new URL('content/lessons.js', base));
-const { createProgress } = await import(new URL('logic/progress.js', base));
-const SEL = await import(new URL('logic/select.js', base));
 
 let pass = 0, fail = 0;
 const ok = (name, cond, detail) => { cond ? pass++ : fail++; if (!cond || process.argv.includes('-v')) console.log(`${cond ? 'PASS' : 'FAIL'}  ${name}${!cond && detail !== undefined ? '  -> ' + JSON.stringify(detail) : ''}`); };
@@ -117,50 +116,6 @@ ok('not all multiple choice: number, fields, choice and plot all used', ['number
 ok('every objective has at least two questions', Object.keys(OBJECTIVES).every(o => QUESTIONS.filter(q => q.objective === o).length >= 2), Object.keys(OBJECTIVES).map(o => [o, QUESTIONS.filter(q => q.objective === o).length]));
 ok('question ids are unique', new Set(QUESTIONS.map(q => q.id)).size === QUESTIONS.length);
 ok('F5 uses the PRD hint sequence', QUESTIONS.find(q => q.id === 'F5').hints.join('|') === 'Which two quantities do we need to compare?|Remember that slope is rise divided by run.|Divide 90 by 450.|Convert the decimal into a percentage.');
-
-// ---- explore content is consistent with the math ----
-const c3 = CHALLENGES.find(c => c.id === 'c3');
-ok('Challenge 3: the stated steeper trail is steeper', (S.slopeOf(c3.trails[1].rise, c3.trails[1].run) > S.slopeOf(c3.trails[0].rise, c3.trails[0].run)) === (c3.answer === 'B'));
-ok('Predictions match the math', PREDICTIONS.every(p => { const a = S.slopeOf(p.before.rise, p.before.run), b = S.slopeOf(p.after.rise, p.after.run); return p.answer === (S.close(a, b) ? 'same' : b > a ? 'steeper' : 'less'); }));
-ok('Worked example: 120 over 600 is 0.2 and 20%', TOPICS.find(t => t.id === 'worked').points[0].includes('0.2') && S.gradeFromSlope(S.slopeOf(120, 600)) === 20);
-
-// ---- progress ----
-const events = { attempts: [], progress: 0, complete: [] };
-const store = {}; const mem = { load: k => store[k] ? JSON.parse(store[k]) : null, save: (k, v) => { store[k] = JSON.stringify(v); }, remove: k => { delete store[k]; } };
-let pr = createProgress({ storage: mem, studentId: 's1', onAttempt: a => events.attempts.push(a), onProgress: () => events.progress++, onComplete: s => events.complete.push(s) });
-const F3 = QUESTIONS.find(q => q.id === 'F3');
-pr.hint(F3); pr.recordAttempt(F3, '5', false); pr.recordAttempt(F3, '0.2', true); pr.recordAttempt(F3, '0.3', false);
-let r = pr.question('F3');
-ok('progress: attempts, first try, hints; finished questions stay finished', r.attempts === 2 && r.correct && r.firstTry === false && r.hints === 1 && r.answers.length === 2);
-ok('progress: attempt records go to the host callback with the question', events.attempts.length === 2 && events.attempts[1].correct && events.attempts[1].prompt === F3.prompt && events.attempts[1].studentId === 's1' && events.attempts[1].hintsUsed === 1);
-pr = createProgress({ storage: mem, studentId: 's1' });
-ok('progress: survives a reload (same storage)', pr.question('F3').attempts === 2);
-ok('progress: separate per student', createProgress({ storage: mem, studentId: 's2' }).question('F3') === null);
-let s = pr.summary();
-ok('summary: needed more attempts counted, not mastered', s.practice[1].attempted === 1 && s.practice[1].moreAttempts === 1 && s.practice[1].firstTry === 0 && !('mastered' in s));
-pr = createProgress({ storage: mem, studentId: 's1', onComplete: x => events.complete.push(x) });
-for (const q of QUESTIONS.filter(q => q.set === 'transfer')) pr.recordAttempt(q, 'x', false);
-ok('summary: not complete with only the transfer challenge', !pr.summary().complete && events.complete.length === 0);
-for (const q of QUESTIONS.filter(q => q.set === 'practice' && q.level === 1)) { pr.recordAttempt(q, 'x', false); }
-ok('summary: complete once a level and the transfer challenge are tried; onComplete fires once', pr.summary().complete && events.complete.length === 1 && !!pr.state.completedAt);
-pr.recordAttempt(QUESTIONS.find(q => q.id === 'A1'), '2', true);
-ok('onComplete does not fire twice', events.complete.length === 1);
-ok('needs-work lists objectives mostly missed', pr.summary().needsWork.length > 0);
-pr.reveal(QUESTIONS.find(q => q.id === 'A2'));
-ok('reveal marks it finished, not correct', pr.question('A2').revealed && !pr.question('A2').correct);
-pr.resetQuestions(QUESTIONS.filter(q => q.level === 1 && q.set === 'practice').map(q => q.id));
-ok('reset a level clears just that level', pr.summary().practice[1].attempted === 0 && pr.summary().transfer.attempted === 8);
-pr.reset();
-ok('reset clears everything', pr.summary().transfer.attempted === 0 && !pr.state.completedAt);
-const memOnly = createProgress({ storage: 'memory' });
-memOnly.visit('learn');
-ok('memory storage works without a browser', memOnly.summary().visited.learn);
-ok('recommendation: start at Foundations, then move up after 6 of 8 first try', (() => {
-  const p = createProgress({ storage: 'memory' });
-  if (SEL.recommendLevel(p.summary()) !== 1) return false;
-  QUESTIONS.filter(q => q.set === 'practice' && q.level === 1).forEach((q, i) => p.recordAttempt(q, 'x', i < 6));
-  return SEL.recommendLevel(p.summary()) === 2;
-})());
 
 console.log(`\n${pass}/${pass + fail} passed`);
 process.exit(fail ? 1 : 0);

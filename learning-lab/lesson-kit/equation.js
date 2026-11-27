@@ -265,3 +265,59 @@ export function relationAt(text, values, opts) {
   return evaluate(R.parts[0], values).sub(evaluate(R.parts[1], values));
 }
 export { S as showNumber };
+
+// ---------------------------------------------------------------- lines in two variables
+// A linear equation in x and y (any letters), checked for equivalence (the
+// same line: L − R proportional) and, optionally, for the form asked for.
+// spec = { answer: 'C - 3060 = 420(d - 3)', y: 'c', x: 'd', form?: 'slope-intercept' | 'point-slope' | 'standard',
+//          point?: [x1, y1] (point-slope must use this point), traps?: [{ eq, code, message }] }
+function linePoly(R) { return padd(toPoly(R.parts[0]), toPoly(R.parts[1]), -1); }
+function padd(A, B, sign) { const out = new Map(A); for (const [k, c] of B) { const v = (out.get(k) || new Frac(0)).add(sign < 0 ? c.neg() : c); if (v.zero) out.delete(k); else out.set(k, v); } return out; }
+function sameLine(A, B) {
+  if (!A || !B || A.size !== B.size || !A.size) return false;
+  let ratio = null;
+  for (const [k, c] of A) { if (!B.has(k)) return false; const r = c.div(B.get(k)); if (ratio && !ratio.eq(r)) return false; ratio = r; }
+  return true;
+}
+// m and b of a line in x and y, or { vertical: x } / null
+export function lineOf(text, x, y) {
+  const P = linePoly(parseRelation(text)), a = P.get(x + ':1') || new Frac(0), c = P.get(y + ':1') || new Frac(0), k = P.get('') || new Frac(0);
+  if (c.zero) return a.zero ? null : { vertical: k.neg().div(a) };
+  return { m: a.neg().div(c), b: k.neg().div(c) };
+}
+const isAlone = (n, v) => n.t === 'var' && n.name === v;
+export function checkLine(spec, raw) {
+  const text = String(raw == null ? '' : raw).trim();
+  if (!text) return { correct: false, code: 'empty', message: 'Type an equation first.' };
+  let R; try { R = parseRelation(text); } catch (e) { return { correct: false, code: 'unreadable', message: e.message }; }
+  if (R.parts.length !== 2 || R.rels[0] !== '=') return { correct: false, code: 'unreadable', message: 'Write one equation with an = sign.' };
+  const x = spec.x, y = spec.y, used = varsOf(R), extra = used.filter(v => v !== x && v !== y);
+  if (extra.length) return { correct: false, code: 'unreadable', message: `Use the letters ${y.toUpperCase()} and ${x}: ${extra.join(', ')} isn’t one of them.` };
+  const mine = linePoly(R); if (!mine || [...mine.keys()].some(k => k && k !== x + ':1' && k !== y + ':1')) return { correct: false, code: 'unreadable', message: 'That isn’t a straight-line equation.' };
+  const A = parseRelation(spec.answer), theirs = linePoly(A);
+  if (sameLine(mine, theirs)) {
+    const [L, Rt] = R.parts, side = isAlone(L, y) ? Rt : isAlone(Rt, y) ? L : null;
+    if (spec.form === 'slope-intercept' && !(side && !variables(side).includes(y))) return { correct: false, code: 'unreadable', message: `That’s the right line, but write it in slope-intercept form: ${y.toUpperCase()} = m${x} + b.` };
+    if (spec.form === 'point-slope') {
+      const ok = [[L, Rt], [Rt, L]].some(([a, b]) => { const pa = toPoly(a), pb = toPoly(b); if (!pa || !pb) return false;
+        const yOk = pa.size <= 2 && (pa.get(y + ':1') || new Frac(0)).eq(1) && [...pa.keys()].every(k => k === '' || k === y + ':1');
+        const grouped = b.t === 'bin' && b.op === '*' && (b.a.t === 'group' || b.b.t === 'group');
+        if (!yOk || !grouped) return false;
+        if (spec.point) { const y1 = (pa.get('') || new Frac(0)).neg(), g = b.a.t === 'group' ? b.a.a : b.b.a, pg = toPoly(g), x1 = (pg.get('') || new Frac(0)).neg(); return y1.eq(spec.point[1]) && x1.eq(spec.point[0]); }
+        return true; });
+      if (!ok) return { correct: false, code: 'unreadable', message: spec.point ? `That’s the right line, but write it in point-slope form using the point (${spec.point[0]}, ${spec.point[1]}): ${y.toUpperCase()} − ${spec.point[1]} = m(${x} − ${spec.point[0]}).` : 'That’s the right line, but write it in point-slope form: y − y₁ = m(x − x₁).' };
+    }
+    return { correct: true, code: 'correct' };
+  }
+  for (const t of spec.traps || []) { try { if (sameLine(mine, linePoly(parseRelation(t.eq)))) return { correct: false, code: t.code || 'wrong', message: t.message || null }; } catch (e) { /* skip */ } }
+  // Diagnose: right slope, wrong intercept, or the reverse.
+  try {
+    const me = lineOf(text, x, y), them = lineOf(spec.answer, x, y);
+    if (me && them && !me.vertical && !them.vertical) {
+      if (me.m.eq(them.m)) return { correct: false, code: 'intercept', message: 'The slope is right, but the line is in the wrong place: check the intercept (the value when ' + x + ' = 0).' };
+      if (me.b.eq(them.b)) return { correct: false, code: 'slope', message: 'The intercept is right, but check the slope (the change in ' + y.toUpperCase() + ' for each 1 of ' + x + ').' };
+      if (me.m.eq(them.m.neg())) return { correct: false, code: 'sign', message: 'Check the sign of the slope: does the line go up or down?' };
+    }
+  } catch (e) { /* ignore */ }
+  return { correct: false, code: 'wrong', message: null };
+}

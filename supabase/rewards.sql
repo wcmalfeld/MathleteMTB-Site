@@ -78,10 +78,11 @@ create table if not exists public.reward_activities (
   active        boolean not null default true
 );
 insert into public.reward_activities (game_id, name, kind, course_id, completion, min_attempts, min_questions, min_solved) values
-  ('slope-lab',           'Slope & Linear Relationships Lab', 'lab',    'alg1',  'session', 5, 0, 0),
+  ('slope-lab',           'Map the Line',                     'lab',    'alg1',  'session', 5, 0, 0),
   ('jump-trajectory-lab', 'Jump Trajectory Lab',              'lab',    'alg1',  'session', 3, 0, 0),
   ('dream-line-project',  'The Dream Line Project',           'lab',    'alg1',  'session', 5, 0, 0),
   ('dream-line-goes-pro', 'The Dream Line Goes Pro',          'lab',    'alg1',  'session', 5, 0, 0),
+  ('frame-the-line',      'Frame the Line',                   'lab',    'alg1',  'session', 5, 0, 0),
   ('race-day-workshop',   'Race-Day Workshop',                'lab',    'alg2',  'session', 5, 0, 0),
   ('ride-systems-lab',    'Ride Systems Lab',                 'lab',    'alg2',  'session', 5, 0, 0),
   ('bike-park-blueprint-lab', 'Bike Park Blueprint Lab',      'lab',    'alg2',  'session', 5, 0, 0),
@@ -112,10 +113,12 @@ create table if not exists public.reward_assessments (
 );
 insert into public.reward_assessments (id, game_id, name, question_ids) values
   ('slope-lab.transfer', 'slope-lab', 'Slope Lab: Transfer Challenge', array['slope-lab:t1','slope-lab:t2','slope-lab:t3','slope-lab:t4','slope-lab:t5','slope-lab:t6','slope-lab:t7','slope-lab:t8']),
+  ('slope-lab.final', 'slope-lab', 'Map the Line: The Ultimate Ride Analysis Challenge', array['slope-lab:fa-map','slope-lab:fa-quad','slope-lab:fb-profile','slope-lab:fb-high','slope-lab:fc-pos','slope-lab:fc-neg','slope-lab:fc-zero','slope-lab:fc-und','slope-lab:fd-lin','slope-lab:fd-rate','slope-lab:fd-eq','slope-lab:fe-speed','slope-lab:fe-grade','slope-lab:fe-pump']),
   ('intro-to-physics.kc', 'intro-to-physics', 'Introduction to Physics: Knowledge Check', array['intro-to-physics:kc-1','intro-to-physics:kc-2','intro-to-physics:kc-3','intro-to-physics:kc-4','intro-to-physics:kc-5','intro-to-physics:kc-6','intro-to-physics:kc-7','intro-to-physics:kc-8']),
   ('newtons-laws.kc', 'newtons-laws', 'Newton’s Laws: Knowledge Check', array['newtons-laws:kc-1','newtons-laws:kc-2','newtons-laws:kc-3','newtons-laws:kc-4','newtons-laws:kc-5','newtons-laws:kc-6','newtons-laws:kc-7','newtons-laws:kc-8']),
   ('dream-line-project.final', 'dream-line-project', 'The Dream Line Project: Final Algebra Certification', array['dream-line-project:fa-build','dream-line-project:fa-parts','dream-line-project:fb-sub','dream-line-project:fb-neg','dream-line-project:fb-frac','dream-line-project:fc-order','dream-line-project:fc-error','dream-line-project:fd-class','dream-line-project:fd-prop','dream-line-project:fd-apply']),
   ('dream-line-goes-pro.final', 'dream-line-goes-pro', 'The Dream Line Goes Pro: Final Park Engineer Certification', array['dream-line-goes-pro:fa-solve','dream-line-goes-pro:fa-check','dream-line-goes-pro:fb-build','dream-line-goes-pro:fb-solve','dream-line-goes-pro:fc-solve','dream-line-goes-pro:fc-type','dream-line-goes-pro:fd-form','dream-line-goes-pro:fd-use','dream-line-goes-pro:fe-solve','dream-line-goes-pro:fe-graph']),
+  ('frame-the-line.final', 'frame-the-line', 'Frame the Line: Film Producer Certification', array['frame-the-line:fa-2pt','frame-the-line:fa-desc','frame-the-line:fb-mb','frame-the-line:fb-mean','frame-the-line:fc-ps','frame-the-line:fc-conv','frame-the-line:fd-ints','frame-the-line:fd-hv','frame-the-line:fe-dom','frame-the-line:fe-range','frame-the-line:ff-eval','frame-the-line:ff-func']),
   ('race-day-workshop.final', 'race-day-workshop', 'Race-Day Workshop: Race-Day Certification', array['race-day-workshop:final-a-min','race-day-workshop:final-a-max','race-day-workshop:final-a-abs','race-day-workshop:final-a-eval','race-day-workshop:final-b-speed','race-day-workshop:final-c-elev']),
   ('ride-systems-lab.final', 'ride-systems-lab', 'Ride Systems Lab: Engineer the Ride', array['ride-systems-lab:fa-input','ride-systems-lab:fa-eval','ride-systems-lab:fa-domain','ride-systems-lab:fa-range','ride-systems-lab:fa-inc','ride-systems-lab:fa-dec','ride-systems-lab:fb-ratio','ride-systems-lab:fb-wheel','ride-systems-lab:fb-k','ride-systems-lab:fb-speed','ride-systems-lab:fc-parts','ride-systems-lab:fc-effect','ride-systems-lab:fd-cadence','ride-systems-lab:fd-why']),
   ('bike-park-blueprint-lab.final', 'bike-park-blueprint-lab', 'Bike Park Blueprint Lab: The Final Build Plan', array['bike-park-blueprint-lab:fa-vars','bike-park-blueprint-lab:fa-solve','bike-park-blueprint-lab:fa-meaning','bike-park-blueprint-lab:fa-verify','bike-park-blueprint-lab:fb-aug','bike-park-blueprint-lab:fb-solve','bike-park-blueprint-lab:fb-meaning','bike-park-blueprint-lab:fc-qm','bike-park-blueprint-lab:fc-cost','bike-park-blueprint-lab:fc-budget']),

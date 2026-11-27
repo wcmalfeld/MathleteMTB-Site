@@ -141,22 +141,11 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   check('Learning and Coaching pages call only their own database functions', crossed.length === 0 && academic.length === 0, crossed.concat(academic).join(', '));
 }
 
-// ---- Slope & Linear Relationships Lab (standalone module; tests: scripts/test-slope-lab.mjs) ----
+// ---- Map the Line (the Slope & Linear Relationships Lab, extended): checked with the mission-board labs below ----
 {
-  const dir = 'learning-lab/slope-lab/';
-  const html = read(dir + 'index.html');
-  const css = read(dir + 'styles/slope-lab.css').replace(/\/\*[\s\S]*?\*\//g, '');
-  const leaking = css.split('}').map(r => r.split('{')[0].trim()).filter(sel => sel && !sel.startsWith('@')).flatMap(sel => sel.split(',').map(x => x.trim())).filter(x => x && !x.startsWith('.slab'));
-  check('Slope lab styles are all scoped under .slab (nothing leaks into other pages)', leaking.length === 0, leaking.slice(0, 5).join(' | '));
-  // The module stays independent: only its page (index.html + main.js) talks to the site.
-  const js = execSync(`find ${root + dir} -name '*.js'`, { encoding: 'utf8' }).trim().split('\n');
-  const coupled = js.filter(f => !f.endsWith('/main.js') && /MathleteProgress|MathleteAuth|supabase|tools-config/.test(readFileSync(f, 'utf8')));
-  check('Slope lab module doesn’t depend on the site (only its page connects it)', coupled.length === 0 && !/site\.css|site-nav|site\.js/.test(html), coupled.join(', '));
-  check('Slope lab page loads progress tracking in order, then the module', ['js/supabase-config.js', 'js/auth.js', 'js/progress.js', 'src="main.js'].map(x => html.indexOf(x)).every((v, i, a) => v > 0 && (i === 0 || v > a[i - 1])));
-  const unsafe = js.filter(f => /\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write|eval\(/.test(readFileSync(f, 'utf8')));
-  check('Slope lab never builds HTML from strings', unsafe.length === 0, unsafe.join(', '));
-  check('Slope lab is listed: indexable, and linked from Algebra 1 → Slope and Rate of Change', !html.includes('noindex') &&
-    existsSync(root + 'classes/algebra-1/slope-and-rate-of-change/index.html') && read('classes/algebra-1/slope-and-rate-of-change/index.html').includes('href="learning-lab/slope-lab/?from='));
+  const html = read('learning-lab/slope-lab/index.html');
+  check('Map the Line keeps the Slope Lab’s address, is indexable, and is linked from Algebra 1 → Slope and Rate of Change', !html.includes('noindex') && read('classes/algebra-1/slope-and-rate-of-change/index.html').includes('href="learning-lab/slope-lab/?from='));
+  check('The old Slope Lab shell is gone (one lab, not two), but its question bank, checker and engine remain', !existsSync(root + 'learning-lab/slope-lab/slope-lab.js') && !existsSync(root + 'learning-lab/slope-lab/components/explore.js') && existsSync(root + 'learning-lab/slope-lab/content/questions.js') && existsSync(root + 'learning-lab/slope-lab/logic/validate.js'));
 }
 
 // ---- Jump Trajectory Lab (standalone module; tests: scripts/test-jump-lab.mjs) ----
@@ -189,7 +178,9 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
     { id: 'suspension-systems-lab', name: 'Suspension & Systems Lab', root: '.ssl', css: 'suspension.css', entry: 'suspension.js', home: 'classes/algebra-2/exponential-growth-and-decay/index.html', also: 'classes/algebra-2/logarithms/index.html', final: 'suspension-systems-lab.final' },
     { id: 'race-intelligence-lab', name: 'Enduro Race Intelligence Lab', root: '.ril', css: 'race-intelligence.css', entry: 'race-intelligence.js', home: 'classes/algebra-2/statistical-analysis/index.html', also: 'classes/algebra-2/conditional-probability/index.html', final: 'race-intelligence-lab.final' },
     { id: 'dream-line-project', name: 'The Dream Line Project', root: '.dlp', css: 'dream-line.css', entry: 'dream-line.js', home: 'classes/algebra-1/variables-and-expressions/index.html', also: 'classes/algebra-1/order-of-operations/index.html', final: 'dream-line-project.final', course: 'alg1' },
-    { id: 'dream-line-goes-pro', name: 'The Dream Line Goes Pro', root: '.dgp', css: 'goes-pro.css', entry: 'goes-pro.js', home: 'classes/algebra-1/one-step-equations/index.html', also: 'classes/algebra-1/inequalities/index.html', final: 'dream-line-goes-pro.final', course: 'alg1' }
+    { id: 'dream-line-goes-pro', name: 'The Dream Line Goes Pro', root: '.dgp', css: 'goes-pro.css', entry: 'goes-pro.js', home: 'classes/algebra-1/one-step-equations/index.html', also: 'classes/algebra-1/inequalities/index.html', final: 'dream-line-goes-pro.final', course: 'alg1' },
+    { id: 'slope-lab', name: 'Map the Line', root: '.mtl', css: 'map-the-line.css', entry: 'map-the-line.js', home: 'classes/algebra-1/slope-and-rate-of-change/index.html', also: 'classes/algebra-1/proportional-relationships/index.html', final: 'slope-lab.final', course: 'alg1' },
+    { id: 'frame-the-line', name: 'Frame the Line', root: '.ftl', css: 'frame.css', entry: 'frame-the-line.js', home: 'classes/algebra-1/writing-linear-equations/index.html', also: 'classes/algebra-1/function-notation/index.html', final: 'frame-the-line.final', course: 'alg1' }
   ];
   const cur = read('supabase/curriculum.sql'), rw = read('supabase/rewards.sql');
   for (const Lb of LABS) {
@@ -231,6 +222,11 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   check('The Dream Line Goes Pro reads the Unit 1 park without writing it, and shares Unit 1’s components', (t => /loadProject/.test(t) && !/setData\('park'/.test(t))(read('learning-lab/dream-line-goes-pro/goes-pro.js') + read('learning-lab/dream-line-goes-pro/logic/project.js')) && read('learning-lab/dream-line-goes-pro/goes-pro.js').includes("from '../dream-line-project/components/shared.js'") && read('learning-lab/dream-line-goes-pro/index.html').includes('../dream-line-project/styles/dream-line.css'));
   check('Equations and inequalities are solved once, in the kit (lesson-kit/equation.js), with no eval', !/\beval\(|new Function/.test(read('learning-lab/lesson-kit/equation.js')) && read('learning-lab/dream-line-goes-pro/logic/questions.js').includes("from '../../lesson-kit/equation.js'"));
   check('Each Unit 2 topic page opens The Dream Line Goes Pro at its own stage', [['one-step-equations', 'garage'], ['multi-step-equations', 'crew'], ['variables-on-both-sides', 'showdown'], ['literal-equations', 'formula'], ['inequalities', 'operations']].every(([t, r]) => read('classes/algebra-1/' + t + '/index.html').includes('#' + r + '"')));
+  check('Map the Line labels its data fictional, says grades aren’t design standards, and never treats a vertical line as a trail', /fictional and invented for teaching/.test(read('learning-lab/slope-lab/logic/data.js')) && /not professional trail-design standards/.test(read('learning-lab/slope-lab/logic/data.js')) && /isn’t a rideable vertical trail/.test(read('learning-lab/slope-lab/map-the-line.js')));
+  check('Map the Line migrates the old lab’s saved answers and records the original bank under its old ids', /function migrate/.test(read('learning-lab/slope-lab/map-the-line.js')) && read('learning-lab/slope-lab/components/legacy.js').includes("from '../logic/validate.js'") && /q\.id\.toLowerCase\(\)/.test(read('learning-lab/slope-lab/components/legacy.js')));
+  check('Frame the Line labels its money fictional and its storage model simplified, keeps riders fictional, and asks for no video uploads', (t => /fictional classroom production credits/.test(t) && /storage model is simplified/.test(t) && /riders are fictional/.test(t))(read('learning-lab/frame-the-line/logic/film.js')) && /No video editing or uploads/.test(read('learning-lab/frame-the-line/components/labs.js')) && !/type: ?'file'|<input[^>]*type="file"/.test(read('learning-lab/frame-the-line/components/labs.js')));
+  check('Each Unit 4 topic page opens Frame the Line at its own stage', [['writing-linear-equations', 'plan'], ['slope-intercept-form', 'budget'], ['point-slope-form', 'checkpoint'], ['graphing-linear-equations', 'graph'], ['domain-and-range', 'limits'], ['function-notation', 'direct']].every(([t, r]) => read('classes/algebra-1/' + t + '/index.html').includes('frame-the-line/?from=classes%2Falgebra-1%2F' + t + '%2F#' + r + '"')));
+  check('Each Unit 3 topic page opens Map the Line at its own stage', [['coordinate-plane', 'scout'], ['graphing-ordered-pairs', 'plot'], ['slope-and-rate-of-change', 'grade'], ['positive-and-negative-slope', 'terrain'], ['linear-relationships', 'data'], ['proportional-relationships', 'flow']].every(([t, r]) => read('classes/algebra-1/' + t + '/index.html').includes('slope-lab/?from=classes%2Falgebra-1%2F' + t + '%2F#' + r + '"')));
   check('Exact fractions live once, in the kit (lesson-kit/frac.js)', read('learning-lab/bike-park-blueprint-lab/logic/matrix.js').includes("from '../../lesson-kit/frac.js'") && read('learning-lab/trail-dynamics-lab/logic/quadratic.js').includes("from '../../lesson-kit/frac.js'") && read('learning-lab/lesson-kit/poly.js').includes("from './frac.js'") && !/class Frac/.test(read('learning-lab/bike-park-blueprint-lab/logic/matrix.js')));
   check('The kit’s plotter is shared, not copied (no lab keeps its own plot.js)', !existsSync(root + 'learning-lab/ride-systems-lab/components/plot.js') && !existsSync(root + 'learning-lab/bike-park-blueprint-lab/components/plot.js'));
   check('Ride Systems Lab says its trail data is simulated and its drivetrain idealized', /simulated, not surveyed/.test(read('learning-lab/ride-systems-lab/ride-systems.js')) && /idealized/.test(read('learning-lab/ride-systems-lab/components/labs.js')));
@@ -322,7 +318,7 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   const msCss = scoped('learning-lab/lesson-kit/missions.css');
   check('Lesson kit mission-board styles (missions.css) are all scoped under .lsn, braces balanced', msCss.ok && msCss.leaking.length === 0, msCss.leaking.slice(0, 5).join(' | '));
   const kitJs = jsIn('learning-lab/lesson-kit/');
-  const kitCoupled = kitJs.filter(f => /MathleteProgress|MathleteAuth|supabase|tools-config|newtons-laws|intro-to-physics|race-day-workshop|ride-systems|bike-park|trail-dynamics|pump-track|enduro-route|suspension-systems|race-intelligence|dream-line|goes-pro/.test(readFileSync(f, 'utf8')));
+  const kitCoupled = kitJs.filter(f => /MathleteProgress|MathleteAuth|supabase|tools-config|newtons-laws|intro-to-physics|race-day-workshop|ride-systems|bike-park|trail-dynamics|pump-track|enduro-route|suspension-systems|race-intelligence|dream-line|goes-pro|slope-lab|map-the-line|frame-the-line/.test(readFileSync(f, 'utf8')));
   check('Lesson kit doesn’t depend on the site or on any one lesson', kitCoupled.length === 0, kitCoupled.join(', '));
   const curriculumSql = read('supabase/curriculum.sql');
   const LESSONS = [
@@ -395,12 +391,10 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   check('Classes progress returns recent first tries (module mastery can improve)', /'recent_ok', x\.recent_ok/.test(read('supabase/curriculum.sql')) && read('js/classes.js').includes('recent_ok'));
   const lab = ACTIVITIES.find(a => a.id === 'slope-lab');
   const { QUESTIONS: LABQ } = await import('../learning-lab/slope-lab/content/questions.js');
-  const labMap = Object.fromEntries(LABQ.map(q => [q.id, q.objective]));
-  const tracked = Object.keys(lab.tracking.questions);
-  check('Slope lab: every lab question is linked to curriculum skills, and no others', tracked.length === LABQ.length && LABQ.every(q => lab.tracking.questions[q.id] && lab.tracking.questions[q.id].length));
+  check('Map the Line: every original Slope Lab question is still linked to curriculum skills (lower-case ids, as recorded)', LABQ.every(q => (lab.tracking.questions[q.id.toLowerCase()] || []).length));
   const activitiesText = read('content/classes/activities.mjs');
   const objMismatch = LABQ.filter(q => !new RegExp(`\\b${q.id}: '${q.objective}'`).test(activitiesText)).map(q => q.id);
-  check('Slope lab: question objectives in activities.mjs match the lab', objMismatch.length === 0, objMismatch.join(', '));
+  check('Map the Line: original question objectives in activities.mjs match the bank', objMismatch.length === 0, objMismatch.join(', '));
   check('Classes progress function exists in supabase/curriculum.sql', read('js/classes.js').includes("rpc('curriculum_progress'") && read('supabase/curriculum.sql').includes('function public.curriculum_progress('));
   check('Classes pages never build HTML from strings', !/\.(innerHTML|outerHTML)\s*=|insertAdjacentHTML|document\.write/.test(read('js/classes.js')));
   const emptyWithCard = model.topics.filter(t => !t.activities.length && read(t.href + 'index.html').includes('class="cls-activity"')).map(t => t.id);

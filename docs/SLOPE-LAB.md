@@ -1,5 +1,8 @@
 # Slope & Linear Relationships Lab
 
+> **Update (2026-11-26):** the Slope Lab is now **[Map the Line](MAP-THE-LINE.md)**, extended to all six Algebra 1 Unit 3 topics at the same address and id. The original Learn / Explore / Practice shell described below was replaced; its 32 questions, checker and slope engine are kept (the practice bank and transfer challenge), and saved progress carries over.
+
+
 A standalone learning module built from [SlopeRelationshipsLab.md](SlopeRelationshipsLab.md).
 It lives in `learning-lab/slope-lab/` and depends on nothing else on the
 site: no login, no site navigation, no shared styles.
