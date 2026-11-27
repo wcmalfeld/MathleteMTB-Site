@@ -4,6 +4,7 @@
 // 9/5. Pure; no DOM. First used by the Dream Line Project.
 //
 //   parse('3(18 + 2²) + 12')          -> tree (throws ExprError with a friendly message)
+//   parse(text, { keepCase: true })    keep capital letters (formulas like G = 100R/L); by default letters are lower-cased
 //   evaluate(tree, { t: 3, b: 2 })     -> Frac
 //   value('4(3) + 3(2) + 5')           -> Frac (parse + evaluate)
 //   toText(tree)                       -> '3(18 + 2²) + 12'  (× ÷ − and superscripts)
@@ -29,7 +30,7 @@ export class ExprError extends Error {}
 const OPEN = { '(': ')', '[': ']', '{': '}' }, CLOSE = { ')': '(', ']': '[', '}': '{' };
 
 // ---------------------------------------------------------------- tokens
-export function tokenize(raw) {
+export function tokenize(raw, opts = {}) {
   const s = String(raw == null ? '' : raw)
     .replace(/[−–—]/g, '-').replace(/[×·∙✕]/g, '*').replace(/÷/g, '/')
     .replace(/²/g, '^2').replace(/³/g, '^3').replace(/\*\*/g, '^');
@@ -43,7 +44,7 @@ export function tokenize(raw) {
       if (/^\d*\.\d*\./.test(s.slice(i))) throw new ExprError('A number can only have one decimal point.');
       out.push({ k: 'num', s: m[1] }); i += m[1].length; continue;
     }
-    if (/[a-zA-Z]/.test(c)) { out.push({ k: 'var', s: c.toLowerCase() }); i++; continue; }
+    if (/[a-zA-Z]/.test(c)) { out.push({ k: 'var', s: opts.keepCase ? c : c.toLowerCase() }); i++; continue; }
     if ('+-*/^'.includes(c)) { out.push({ k: 'op', s: c }); i++; continue; }
     if (OPEN[c]) { out.push({ k: 'open', s: c }); i++; continue; }
     if (CLOSE[c]) { out.push({ k: 'close', s: c }); i++; continue; }
@@ -56,10 +57,10 @@ export function tokenize(raw) {
 // ---------------------------------------------------------------- parser
 // expr := term (('+'|'-') term)*        term := unary (('*'|'/') unary | implicit unary)*
 // unary := ('-'|'+') unary | power      power := primary ('^' unary)?
-export function parse(raw) {
+export function parse(raw, opts = {}) {
   // Keep which division symbol each '/' was written with, in order.
   const divSyms = [...String(raw == null ? '' : raw).replace(/[−–—]/g, '-')].filter(c => c === '/' || c === '÷');
-  const toks = tokenize(raw);
+  const toks = tokenize(raw, opts);
   if (!toks.length) throw new ExprError('Type an expression first.');
   let i = 0, d = 0;
   const peek = () => toks[i], eat = () => toks[i++];
@@ -174,7 +175,7 @@ export function toText(n, parentPrec = 0, right = false) {
         const e = n.b.t === 'num' && /^\d$/.test(n.b.src || '') ? SUP[n.b.src] : '^' + toText(n.b, 5);
         return wrap(toText(n.a, 5) + e, 4);
       }
-      if (n.implicit) return wrap(toText(n.a, 2) + toText(n.b, 3, true), 2);
+      if (n.implicit) return wrap((n.a.t === 'num' ? numText(n.a) : toText(n.a, 2)) + toText(n.b, 3, true), 2);
       const sym = n.op === '*' ? ' × ' : n.op === '/' ? (n.sym === '/' ? '/' : ' ÷ ') : n.op === '-' ? ' − ' : ' + ';
       return wrap(toText(n.a, p) + sym + toText(n.b, p, true), p);
     }

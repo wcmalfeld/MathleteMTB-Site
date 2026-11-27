@@ -27,7 +27,7 @@ export function afterRender() {
 
 // ------------------------------------------------------------ Math Workbench
 export function workbench(ctx, key) {
-  const W = WORKBENCH[key], P = ctx.progress;
+  const W = typeof key === 'string' ? WORKBENCH[key] : key, P = ctx.progress;   // a key into this lab's content, or a content object
   const body = el('div', { class: 'dl-wb-body' });
   const draw = mode => {
     const X = W[mode];

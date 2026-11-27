@@ -131,7 +131,9 @@ const levelRange = ls => { const o = Object.keys(LEVELS).filter(l => ls.includes
 // An activity card. `from` is the topic page, passed so the activity can link back.
 function activityCard(a, topic, model) {
   const home = model.topicById.get(a.home);
-  const href = a.route + '?from=' + encodeURIComponent(topic.href);
+  // An activity may open at the stage for this topic: stages: { topicId: { route, label } }.
+  const stage = a.stages && a.stages[topic.id];
+  const href = a.route + '?from=' + encodeURIComponent(topic.href) + (stage ? '#' + stage.route : '');
   const here = a.skills.filter(s => topic.skills.some(k => k.id === s)).map(s => model.skillById.get(s).title);
   return `
       <article class="cls-activity" data-activity="${esc(a.id)}">
@@ -144,6 +146,7 @@ function activityCard(a, topic, model) {
         </dl>
         ${a.parts ? `<ul class="pill-row" aria-label="What’s inside">${a.parts.map(p => `<li class="pill pill--moss">${esc(p)}</li>`).join('')}</ul>` : ''}
         ${here.length ? `<p class="cls-activity-skills"><b>Practises here:</b> ${here.map(esc).join('; ')}</p>` : ''}
+        ${stage ? `<p class="cls-activity-skills"><b>Opens at:</b> ${esc(stage.label)} &middot; <a href="${esc(a.route + '?from=' + encodeURIComponent(topic.href))}">or start from the beginning</a></p>` : ''}
         <p class="cls-activity-status" data-activity-status="${esc(a.tracking ? a.tracking.gameId : a.id)}" hidden></p>
         <a class="button" href="${esc(href)}">${a.type === 'lesson' ? 'Start the lesson' : 'Launch ' + (a.type === 'lab' ? 'lab' : 'activity')} <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> ${esc(a.title)}</span></a>
       </article>`;

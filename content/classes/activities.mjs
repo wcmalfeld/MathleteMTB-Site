@@ -397,6 +397,30 @@ const DREAM_IDEAS = {
 };
 const dreamQuestionSkills = Object.fromEntries(Object.entries(dreamKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => DREAM_IDEAS[i] || []))]]));
 
+// The Dream Line Goes Pro: tracked ideas -> curriculum skills
+// (learning-lab/dream-line-goes-pro/logic/questions.js).
+import { questionKinds as proKinds } from '../../learning-lab/dream-line-goes-pro/logic/questions.js';
+const OSE = 'alg1.one-step-equations.', MSE = 'alg1.multi-step-equations.', VBS = 'alg1.variables-on-both-sides.', LIT = 'alg1.literal-equations.', INQ = 'alg1.inequalities.';
+const PRO_IDEAS = {
+  inverse:            [OSE + 'inverse-operations'],
+  check:              [OSE + 'check-solutions'],
+  'write-one':        [OSE + 'write-one-step'],
+  'multi-step':       [MSE + 'solve-multi-step'],
+  distribute:         [MSE + 'distribute-and-combine'],
+  'write-multi':      [MSE + 'model-and-solve'],
+  'both-sides':       [VBS + 'collect-variables'],
+  special:            [VBS + 'special-cases'],
+  'when-equal':       [VBS + 'catch-up-problems'],
+  rearrange:          [LIT + 'solve-for-variable', LIT + 'rearrange-formulas'],
+  'use-formula':      [LIT + 'use-rearranged'],
+  inequality:         [INQ + 'solve-inequalities'],
+  flip:               [INQ + 'solve-inequalities'],
+  'graph-inequality': [INQ + 'graph-inequalities'],
+  compound:           [INQ + 'compound-inequalities'],
+  constraints:        [INQ + 'model-constraints']
+};
+const proQuestionSkills = Object.fromEntries(Object.entries(proKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => PRO_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -654,6 +678,37 @@ export const ACTIVITIES = [
     parts: ['4 stages', 'Park design canvas and build plan', 'Expression builder and anatomy', 'Prediction-first evaluation challenges', 'Shaper’s Calculation Board', 'Number-set diagram and properties workshop', 'Final Algebra Certification (10)', 'Finished park blueprint'],
     skills: [...new Set(Object.values(dreamQuestionSkills).flat())],
     tracking: { gameId: 'dream-line-project', questions: dreamQuestionSkills }
+  },
+
+  {
+    id: 'dream-line-goes-pro',
+    title: 'The Dream Line Goes Pro',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/dream-line-goes-pro/',
+    image: null,
+    home: 'alg1.one-step-equations',
+    summary: 'The Dream Line Project, engineered: solve for missing setup measurements on an equation balance, plan construction with multi-step equations, compare park designs with variables on both sides, rearrange speed, trail-grade and suspension-sag formulas, and keep the park within its budget and design limits with inequalities.',
+    objectives: [
+      'Solve one-step equations with inverse operations, and check solutions by substitution',
+      'Solve multi-step equations with distribution and like terms, and write them from situations',
+      'Solve equations with variables on both sides, including no-solution and identity cases',
+      'Rearrange real formulas (d = rt, G = 100R/L, P = 100S/T) and use them with units',
+      'Solve, graph and interpret inequalities, including sign reversal and compound inequalities'
+    ],
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    minutes: '40-55 min',
+    parts: ['5 stages', 'Equation balance and multi-step solver', 'Design Showdown graph', 'Formula Garage', 'Number Line Studio', 'Final Park Engineer Certification (10)', 'Continues your Unit 1 park'],
+    skills: [...new Set(Object.values(proQuestionSkills).flat())],
+    stages: {
+      'alg1.one-step-equations': { route: 'garage', label: 'Stage 1: The Setup Garage' },
+      'alg1.multi-step-equations': { route: 'crew', label: 'Stage 2: The Build Crew' },
+      'alg1.variables-on-both-sides': { route: 'showdown', label: 'Stage 3: The Design Showdown' },
+      'alg1.literal-equations': { route: 'formula', label: 'Stage 4: The Formula Garage' },
+      'alg1.inequalities': { route: 'operations', label: 'Stage 5: Park Operations' }
+    },
+    tracking: { gameId: 'dream-line-goes-pro', questions: proQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------

@@ -24,6 +24,7 @@ import { workbench, predict, predictionStats, writtenResponse, WRITTEN, contribu
   elevationViz, fractionMapper, decimalStrip, challengeCard, markerGroups, numberSetDiagram, commutativeDemo, associativeDemo, identityDemo, inverseDemo,
   distributiveDemo, likeTermsDemo, tutorOf, TUTOR_DEFAULTS, jump, afterRender } from './components/labs.js';
 import { openingArt } from './components/visuals.js';
+import { tutorPanel as sharedTutorPanel, reportBlocks } from './components/shared.js';
 
 export const VERSION = '1.0.0';
 export const ID = 'dream-line-project';
@@ -205,67 +206,12 @@ const SECTIONS = {
   materials: [['dl-mt-1', 'The inventory calculation'], ['dl-mt-2', 'Calculation board'], ['dl-mt-3', 'Parentheses change everything'], ['dl-mt-4', 'Fraction bar'], ['dl-mt-5', 'Catch the crew’s mistake'], ['dl-mt-6', 'Another inventory sheet']],
   toolkit: [['dl-tk-1', 'Number sorting'], ['dl-tk-2', 'Properties workshop'], ['dl-tk-3', 'Identify the property'], ['dl-tk-4', 'New workshop cards']]
 };
-function tutorPanel(ctx) {
-  const P = ctx.progress, T = tutorOf(P);
-  const toggle = (k, label, help) => {
-    const cid = 'dl-tut-' + k, cb = el('input', { type: 'checkbox', id: cid });
-    cb.checked = !!T[k];
-    cb.addEventListener('change', () => { P.setData('tutor', { ...tutorOf(P), [k]: cb.checked }); });
-    return el('div', { class: 'dl-tut-opt' }, el('label', { class: 'dl-check', for: cid }, cb, ' ', el('b', null, label)), el('p', { class: 'ls-small' }, help));
-  };
-  const written = Object.entries(P.state.written).filter(([k, v]) => !k.includes(':working') && String(v).trim());
-  return el('details', { class: 'ls-card dl-tutor' }, el('summary', null, el('span', { class: 'dl-wb-tag' }, 'For tutors'), ' Tutor mode'),
-    el('p', { class: 'ls-small' }, 'Settings apply on this device and never reset progress. Solutions shown early count as help in the report, not as independent work.'),
-    el('div', { class: 'dl-tut-grid' },
-      toggle('predict', 'Require predictions', 'Prediction-first steps must be committed before the calculation unlocks.'),
-      toggle('hints', 'Show hints', 'Turn off to hide the hint buttons.'),
-      toggle('reveal', 'Allow solutions any time', 'Show the solution button before two tries.')),
-    el('p', { class: 'ls-kicker' }, 'Go to a challenge'),
-    el('div', { class: 'dl-tut-jumps' }, MISSIONS.map(m => el('div', null, el('p', { class: 'dl-tut-m' }, `Stage ${m.n}: ${m.short}`),
-      el('ul', null, SECTIONS[m.id].map(([id, label]) => el('li', null, el('a', { href: '#' + m.id, onclick: () => { jump.target = id; } }, label))))))),
-    el('p', { class: 'ls-kicker' }, 'Written responses'),
-    written.length ? el('ul', { class: 'dl-tut-written' }, written.map(([k, v]) => el('li', null, el('b', null, (WRITTEN[k] || k) + (P.getData('review:' + k, false) ? ' · flagged for review' : '') + ': '), String(v))))
-      : el('p', { class: 'ls-small' }, 'No written responses yet.'));
-}
+const tutorPanel = ctx => sharedTutorPanel(ctx, { missions: MISSION_LIST, sections: SECTIONS, written: WRITTEN, questions: QUESTIONS });
 
 // ================================================================ the results screen additions
-function objectiveRows(P) {
-  const K = KINDS, rows = OBJECTIVES.map(o => ({ ...o, answered: 0, firstTry: 0, right: 0, hints: 0, revealed: 0, help: 0 }));
-  for (const [k, r] of Object.entries(P.state.questions)) {
-    if (!(r.attempts > 0 || r.revealed)) continue;
-    const ideas = K[k.split('|')[0]] || [];
-    for (const o of rows) if (ideas.some(i => o.ideas.includes(i))) {
-      o.answered++; if (r.firstTry && !r.hints && !r.revealed) o.firstTry++;
-      if (r.correct && !r.revealed) o.right++; if (r.correct && !r.revealed && (!r.firstTry || r.hints)) o.help++;
-      o.hints += r.hints; if (r.revealed) o.revealed++;
-    }
-  }
-  return rows;
-}
-function reportExtra(ctx, s) {
-  const P = ctx.progress, rows = objectiveRows(P), recs = Object.entries(P.state.questions).filter(([, r]) => r.attempts > 0 || r.revealed);
-  const indep = recs.filter(([, r]) => r.firstTry && !r.hints && !r.revealed).length, helped = recs.filter(([, r]) => r.correct && !r.revealed && (!r.firstTry || r.hints)).length, shown = recs.filter(([, r]) => r.revealed).length;
-  const review = recs.filter(([, r]) => r.revealed || r.attempts >= 3).slice(0, 10).map(([k]) => { const id = k.split('|')[0], qd = QUESTIONS[id]; return qd ? qd.prompt : (k.includes('|r') ? 'Final certification: ' + id : 'Independent challenge: ' + id); });
-  const pr = predictionStats(P), cert = s.certification;
-  const pct = (a, b) => (b ? Math.round(100 * a / b) + '%' : '—');
-  const unlocked = s.unlocked;
-  const go = h => () => { location.hash = h; };
-  return el('div', null,
-    ctx.card('Accuracy by learning objective', 'The four subtopics',
-      el('div', { class: 'ls-table-wrap' }, el('table', { class: 'ls-table ms-report' }, el('thead', null, el('tr', null, ['Objective', 'Answered', 'Independent (first try, no hints)', 'Right after help', 'Solutions shown'].map(h => el('th', { scope: 'col' }, h)))),
-        el('tbody', null, rows.map(o => el('tr', null, el('th', { scope: 'row' }, o.name), el('td', { class: 'ms-mono' }, String(o.answered)), el('td', { class: 'ms-mono' }, o.answered ? `${o.firstTry} (${pct(o.firstTry, o.answered)})` : '—'), el('td', { class: 'ms-mono' }, String(o.help)), el('td', { class: 'ms-mono' }, String(o.revealed))))))),
-      el('dl', { class: 'ms-stats' }, [['Answered independently', String(indep)], ['Right after hints or retries', String(helped)], ['Solutions shown', String(shown)], ['Predictions made', String(pr.made)], ['Predictions in range', pr.judged ? `${pr.right} of ${pr.judged}` : '—'],
-        ['Certification', cert ? `${cert.right} of ${cert.total}, ${cert.firstTry} independent` : unlocked ? 'unlocked' : 'locked']].map(([k, v]) => el('div', null, el('dt', null, k), el('dd', null, v)))),
-      el('p', { class: 'ls-small' }, 'Independent means right on the first try with no hints. Answers reached after hints, retries or a shown solution are practice with help, not demonstrated mastery, and a correct prediction is never counted as mastery.')),
-    review.length ? ctx.card('For review', 'Questions needing more practice', el('ul', { class: 'ms-miscon' }, review.map(t => el('li', null, t)))) : null,
-    s.practice.length ? ctx.card('Suggested next', 'Where to go next', el('ul', { class: 'ms-miscon' }, s.practice.map(i => { const m = MISSIONS.find(mm => mm.graded.some(id => (KINDS[id] || []).includes(i))); return el('li', null, IDEAS[i], m ? [' · ', el('a', { href: '#' + m.id }, 'revisit Stage ' + m.n + ': ' + m.short)] : null); })),
-      el('p', { class: 'ls-small' }, 'Next in Algebra 1: Solving Equations and Inequalities, where these expressions become equations.')) : null,
-    parkMini(ctx, MISSION_LIST, { kicker: 'Your final park blueprint', edit: false }),
-    el('div', { class: 'ls-actions dl-report-btns' },
-      el('a', { class: 'ls-btn ls-btn--quiet', href: '#board' }, 'Revisit a stage'),
-      unlocked ? button('Retry the certification', () => { P.setData('finalRound', P.getData('finalRound', 1) + (s.final.done ? 1 : 0)); go('#final')(); }, 'ls-btn--quiet') : null,
-      el('a', { class: 'ls-btn ls-btn--primary', href: '#extension' }, 'View my dream park')));
-}
+const reportExtra = (ctx, s) => reportBlocks(ctx, s, { objectives: OBJECTIVES, objectivesTitle: 'The four subtopics', kinds: KINDS, questions: QUESTIONS, ideas: IDEAS, missions: MISSIONS,
+  nextUnit: 'Next in Algebra 1: Solving Equations and Inequalities, where these expressions become equations (The Dream Line Goes Pro).',
+  park: parkMini(ctx, MISSION_LIST, { kicker: 'Your final park blueprint', edit: false }), buttons: { view: ['View my dream park', '#extension'] } });
 
 // ================================================================ the lab config
 const KINDS = questionKinds();

@@ -1,0 +1,148 @@
+/* ============================================================
+   The Dream Line Goes Pro (Algebra 1, Solving Equations and Inequalities).
+   Loaded after the lesson kit's stylesheets and Unit 1's dream-line.css
+   (shared park map, workbench, badges, tutor panel). Everything here is
+   scoped under .dgp.
+   Colours: Design A / left side gold (--unk); Design B / right side blue
+   (--in); valid green (--ok); invalid / tipped orange (--warn).
+   ============================================================ */
+
+/* ---------- solver and balance ---------- */
+.dgp .gp-eq-now { margin: 10px 0 4px; padding: 16px 14px; background: var(--deep); border: 1px solid var(--rule); font-family: var(--f-mono); font-size: clamp(22px, 4.4vw, 32px); color: var(--ink); overflow-wrap: anywhere; }
+.dgp .gp-applied { min-height: 1.3em; margin: 0 0 8px; font-family: var(--f-mono); font-size: 15px; color: var(--in); overflow-wrap: anywhere; }
+.dgp .gp-balance-box { max-width: 560px; }
+.dgp .gp-balance { display: block; width: 100%; height: auto; }
+.dgp .gp-bal-beam { transition: transform 0.45s ease; }
+.dgp .gp-bal-beam rect { fill: #9AA59C; }
+.dgp .gp-bal-stand { fill: #5E6A62; }
+.dgp .gp-bal-base { fill: #5E6A62; }
+.dgp .gp-bal-pivot { fill: var(--unk); }
+.dgp .gp-bal-string { stroke: rgba(236, 239, 231, 0.45); stroke-width: 1.5; fill: none; }
+.dgp .gp-bal-pan { fill: rgba(142, 197, 224, 0.16); stroke: var(--in); stroke-width: 2; }
+.dgp .gp-bal-text { fill: var(--ink); font-family: var(--f-mono); }
+.dgp .gp-bal-rel { fill: var(--ok); font-family: var(--f-mono); font-size: 26px; }
+.dgp .gp-balance.is-tilted .gp-bal-rel { fill: var(--warn); }
+.dgp .gp-balance.is-tilted .gp-bal-pan { stroke: var(--warn); }
+.dgp .gp-moves { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.dgp .gp-move { min-height: 46px; padding: 8px 14px; border: 1px solid rgba(142, 197, 224, 0.5); background: rgba(142, 197, 224, 0.06); color: var(--ink); font: inherit; font-size: 15px; text-align: left; cursor: pointer; }
+.dgp .gp-move:hover, .dgp .gp-move:focus-visible { border-color: var(--unk); color: var(--unk); }
+.dgp .gp-steps { margin: 0; padding-left: 22px; font-family: var(--f-mono); font-size: 14px; color: var(--text); }
+.dgp .gp-steps li { margin: 6px 0; display: grid; gap: 2px; }
+.dgp .gp-step-op { color: var(--soft); font-family: var(--f-body); }
+.dgp .gp-step-applied { color: var(--in); }
+.dgp .gp-step-res { color: var(--ink); }
+
+/* ---------- number lines ---------- */
+.dgp .gp-nl { display: block; width: 100%; height: auto; }
+.dgp .gp-nl-axis { fill: none; stroke: var(--soft); stroke-width: 2; }
+.dgp .gp-nl-tick { stroke: var(--soft); stroke-width: 1.5; }
+.dgp .gp-nl-num { fill: var(--text); font-family: var(--f-mono); font-size: 13px; }
+.dgp .gp-nl-shade { stroke: var(--unk); stroke-width: 7; stroke-linecap: butt; }
+.dgp .gp-nl-arrow { fill: none; stroke: var(--unk); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.dgp .gp-nl-dot { fill: var(--deep); stroke: var(--unk); stroke-width: 3.5; }
+.dgp .gp-nl-dot.is-closed { fill: var(--unk); }
+.dgp .gp-nl-ctl { display: grid; gap: 10px; margin: 10px 0; }
+.dgp .gp-nl-ctl .ls-segs { flex-wrap: wrap; max-width: 100%; }
+.dgp .gp-flip-a { fill: var(--unk); }
+.dgp .gp-flip-b { fill: var(--in); }
+
+/* ---------- read-outs, cards, checks ---------- */
+.dgp .gp-read { display: grid; gap: 8px; align-content: start; }
+.dgp .gp-read p { margin: 0; overflow-wrap: anywhere; }
+.dgp .gp-cards { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.dgp .gp-card { padding: 12px 14px; background: var(--deep); border: 1px solid var(--rule); border-top: 4px solid var(--soft); }
+.dgp .gp-card p { margin: 2px 0; }
+.dgp .gp-card.is-a { border-top-color: var(--unk); }
+.dgp .gp-card.is-b { border-top-color: var(--in); }
+.dgp .gp-card-h { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); }
+.dgp .gp-card-v { font-family: var(--f-mono); font-size: 20px; color: var(--ink); }
+.dgp .gp-checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.dgp .gp-checks li { color: var(--soft); }
+.dgp .gp-checks li.is-ok { color: var(--ok); }
+.dgp .gp-checks li.is-bad { color: var(--warn); }
+.dgp .gp-defs { margin: 0; padding-left: 20px; }
+.dgp .gp-reveal { margin-top: 10px; padding: 12px 14px; border-left: 4px solid var(--ok); background: var(--panel-2); }
+.dgp .gp-reveal > * + * { margin-top: 6px; }
+.dgp .gp-unit1 { margin: -10px 0 18px; }
+
+/* ---------- plots ---------- */
+.dgp .gp-line-a { stroke: var(--unk); }
+.dgp .gp-line-b { stroke: var(--in); }
+.dgp .gp-line-b.is-same { stroke-dasharray: 10 8; stroke-width: 5; }
+.dgp .gp-vline { stroke: rgba(236, 239, 231, 0.3); stroke-dasharray: 4 4; }
+.dgp .gp-mark-a { fill: var(--unk); }
+.dgp .gp-mark-b { fill: var(--in); }
+.dgp .gp-mark-x { fill: var(--ok); }
+
+/* ---------- budget and packages ---------- */
+.dgp .gp-budget-track { display: flex; height: 40px; border: 1px solid var(--rule); background: rgba(236, 239, 231, 0.04); font-family: var(--f-mono); font-size: 12px; overflow: hidden; }
+.dgp .gp-budget-track > span { display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden; color: #10150F; }
+.dgp .gp-budget-fixed { background: var(--soft); }
+.dgp .gp-budget-var { background: var(--unk); }
+.dgp .gp-budget-left { background: rgba(108, 195, 122, 0.35); color: var(--ink); }
+.dgp .gp-budget-track.is-over { border-color: var(--warn); }
+.dgp .gp-budget-track.is-over .gp-budget-var { background: var(--warn); }
+.dgp .gp-packs { display: grid; gap: 12px; }
+.dgp .gp-pack-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.dgp .gp-pack-h { width: 100%; margin: 0; font-family: var(--f-mono); font-size: 13px; color: var(--soft); }
+.dgp .gp-pack { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 8px; border: 2px solid var(--rule); background: var(--deep); }
+.dgp .gp-pack.is-jump { border-color: rgba(232, 188, 78, 0.5); }
+.dgp .gp-pack.is-service { border-color: rgba(142, 197, 224, 0.5); }
+.dgp .gp-pack-x { padding: 2px 6px; font-family: var(--f-mono); font-size: 13px; background: rgba(232, 188, 78, 0.2); color: var(--ink); }
+.dgp .gp-pack-x.is-split { background: var(--unk); color: #10150F; }
+.dgp .gp-pack-fixed { width: 12px; height: 12px; border-radius: 50%; background: rgba(142, 197, 224, 0.5); }
+.dgp .gp-pack-fixed.is-split { background: var(--in); }
+
+/* ---------- formula tools ---------- */
+.dgp .gp-trail { stroke: #9C7650; stroke-width: 10; stroke-linecap: round; }
+.dgp .gp-trail-tick { stroke: var(--ink); stroke-width: 1.5; }
+.dgp .gp-rider { fill: var(--unk); }
+.dgp .gp-prof-ground { fill: rgba(156, 118, 80, 0.35); }
+.dgp .gp-prof-trail { stroke: var(--ok); stroke-width: 4; fill: none; }
+.dgp .gp-prof-trail.is-over { stroke: var(--warn); }
+.dgp .gp-prof-run { stroke: var(--in); stroke-width: 2.5; }
+.dgp .gp-prof-rise { stroke: var(--unk); stroke-width: 2.5; }
+.dgp .gp-shock { display: block; width: 100%; height: auto; }
+.dgp .gp-shock-body { fill: #3B4540; stroke: #707B74; }
+.dgp .gp-shock-can { fill: #4A3F2C; stroke: #8C6B45; }
+.dgp .gp-shock-seal { fill: #1A1F1C; }
+.dgp .gp-shock-shaft { fill: #C9D1CC; }
+.dgp .gp-shock-mount, .dgp .gp-shock-eye { fill: #3B4540; stroke: #707B74; stroke-width: 2; }
+.dgp .gp-shock-ring { fill: var(--warn); }
+.dgp .gp-shock-dim { stroke: var(--in); stroke-width: 2; fill: none; }
+.dgp .gp-shock-dimS { stroke: var(--warn); stroke-width: 2; fill: none; }
+.dgp .gp-studio > div > * + * { margin-top: 10px; }
+.dgp .gp-studio .ls-segs { flex-wrap: wrap; max-width: 100%; }
+.dgp .gp-formula-now { margin: 10px 0; padding: 14px; background: var(--deep); border: 1px solid var(--rule); font-family: var(--f-mono); font-size: clamp(22px, 4.4vw, 30px); color: var(--ink); }
+
+/* ---------- approval ---------- */
+.dgp .gp-approve th, .dgp .gp-approve td { text-align: center; }
+.dgp .gp-approve thead th { text-transform: none; letter-spacing: 0; font-family: var(--f-mono); }
+.dgp .gp-pad { padding: 16px; }
+.dgp .gp-pad > * + * { margin-top: 10px; }
+.dgp .gp-approve th[scope="row"] { text-align: left; }
+.dgp .gp-cell { font-family: var(--f-mono); font-size: 16px; color: var(--soft); }
+.dgp .gp-cell.is-ok { color: var(--ok); }
+.dgp .gp-cell.is-bad { color: var(--warn); }
+
+/* ---------- opening art ---------- */
+.dgp .gp-art { display: block; width: 100%; height: auto; }
+.dgp .gp-art-sky { fill: #15201C; }
+.dgp .gp-art-far { fill: #1D2B24; }
+.dgp .gp-art-hill { fill: #2A3B2E; }
+.dgp .gp-art-wood { fill: #B08A55; stroke: #6E4A24; stroke-width: 3; }
+.dgp .gp-art-deck { fill: #8C6B45; }
+.dgp .gp-art-line { fill: none; stroke: var(--unk); stroke-width: 3; stroke-dasharray: 8 7; }
+.dgp .gp-art-dirt { fill: #9C7650; stroke: #5A4129; stroke-width: 1.5; }
+.dgp .gp-art-stake path { stroke: #C08A4E; stroke-width: 2.5; }
+.dgp .gp-art-stake .gp-art-flag { fill: var(--ice); stroke: none; }
+.dgp .gp-art-note rect { fill: rgba(5, 10, 8, 0.86); stroke: rgba(142, 197, 224, 0.5); }
+.dgp .gp-art-note text { fill: var(--ink); font-family: var(--f-mono); font-size: 17px; }
+
+@media (max-width: 640px) {
+  .dgp .gp-eq-now { padding: 12px 10px; }
+  .dgp .gp-move { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dgp .gp-bal-beam { transition: none; }
+}
