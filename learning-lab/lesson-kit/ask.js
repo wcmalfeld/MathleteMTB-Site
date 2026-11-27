@@ -6,11 +6,15 @@
 //
 // ask(q, { progress, key, onDone(result) }) -> element
 //   q: { id, type, prompt, options | answer+tolerance+unit+traps | fields, hints, solution, skills }
-//   type: 'choice' (one answer), 'multi' (tick all that apply), 'number', 'fields'
+//   type: 'choice' (one answer), 'multi' (tick all that apply), 'number', 'fields',
+//         'expression' (typed algebra checked by expr.js: answer, vars, form, traps, tiles)
+//   q.inline: choices laid out in a row (tokens of an expression, lines of working)
+//   o.revealAnytime: the solution can be shown before two tries (a tutor's choice)
 
 import { el, clear, button, id as uid } from './dom.js';
 import { checkFields, checkChoice, checkMulti } from './validate.js';
 import { fmt } from './format.js';
+import { checkExpression, parse as parseExpr, toText as exprText } from './expr.js';
 
 const digitsFor = tol => (tol >= 1 ? 0 : tol >= 0.1 ? 1 : 2);
 
@@ -28,19 +32,35 @@ export function ask(q, o) {
   const area = el('div', { class: 'ls-answer' });
   if (q.type === 'choice') {
     const name = uid('c');
-    const fs = el('fieldset', { class: 'ls-choices', 'aria-labelledby': promptId }, el('legend', { class: 'ls-sr' }, 'Choose one'),
+    const fs = el('fieldset', { class: 'ls-choices' + (q.inline ? ' ls-choices--inline' : ''), 'aria-labelledby': promptId }, el('legend', { class: 'ls-sr' }, 'Choose one'),
       q.options.map(op => { const oid = uid('o'); return el('label', { for: oid, class: 'ls-choice' }, el('input', { type: 'radio', id: oid, name, value: op.id }), el('span', null, op.text)); }));
     area.appendChild(fs);
     read = () => { const c = fs.querySelector('input:checked'); return c ? c.value : null; };
     lock = () => fs.querySelectorAll('input').forEach(i => { i.disabled = true; });
     answerText = v => (q.options.find(x => x.id === v) || {}).text || '';
   } else if (q.type === 'multi') {
-    const fs = el('fieldset', { class: 'ls-choices', 'aria-labelledby': promptId }, el('legend', { class: 'ls-sr' }, 'Tick every answer that applies'),
+    const fs = el('fieldset', { class: 'ls-choices' + (q.inline ? ' ls-choices--inline' : ''), 'aria-labelledby': promptId }, el('legend', { class: 'ls-sr' }, 'Tick every answer that applies'),
       q.options.map(op => { const oid = uid('o'); return el('label', { for: oid, class: 'ls-choice' }, el('input', { type: 'checkbox', id: oid, value: op.id }), el('span', null, op.text)); }));
     area.append(el('p', { class: 'ls-small' }, 'Tick every answer that applies.'), fs);
     read = () => [...fs.querySelectorAll('input:checked')].map(i => i.value);
     lock = () => fs.querySelectorAll('input').forEach(i => { i.disabled = true; });
     answerText = v => q.options.filter(x => v.includes(x.id)).map(x => x.text).join('; ');
+  } else if (q.type === 'expression') {
+    const iid = uid('x'), pid = uid('xp');
+    const input = el('input', { id: iid, type: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', class: 'ls-input ls-expr-input', 'aria-describedby': pid });
+    const preview = el('p', { class: 'ls-small ls-expr-preview', id: pid, 'aria-live': 'polite' });
+    const sync = () => { let t = ''; try { t = input.value.trim() ? 'Reads as: ' + exprText(parseExpr(input.value)) : ''; } catch (e) { t = ''; } preview.textContent = t; };
+    input.addEventListener('input', sync);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
+    const insert = t => { if (input.readOnly) return; const a = input.selectionStart ?? input.value.length, b = input.selectionEnd ?? a; input.setRangeText(t, a, b, 'end'); input.focus(); sync(); };
+    const tiles = q.tiles ? el('div', { class: 'ls-expr-tiles', role: 'group', 'aria-label': 'Expression blocks' },
+      q.tiles.map(t => el('button', { type: 'button', class: 'ls-expr-tile', onclick: () => insert(t === '×' ? '×' : t === '−' ? '−' : t) }, t)),
+      el('button', { type: 'button', class: 'ls-expr-tile ls-expr-tile--key', 'aria-label': 'Delete the last character', onclick: () => { if (input.readOnly) return; input.value = input.value.slice(0, -1); sync(); input.focus(); } }, '⌫'),
+      el('button', { type: 'button', class: 'ls-expr-tile ls-expr-tile--key', onclick: () => { if (input.readOnly) return; input.value = ''; sync(); input.focus(); } }, 'Clear')) : null;
+    area.append(...[el('div', { class: 'ls-field ls-field--wide' }, el('label', { for: iid }, q.label || 'Your expression'), input), tiles, preview].filter(Boolean));
+    read = () => input.value;
+    lock = () => { input.readOnly = true; if (tiles) tiles.querySelectorAll('button').forEach(b => { b.disabled = true; }); };
+    answerText = v => String(v || '').trim();
   } else {
     const fields = q.type === 'number' ? [{ id: 'v', label: q.label || 'Your answer', answer: q.answer, tolerance: q.tolerance, unit: q.unit, traps: q.traps }] : q.fields;
     const inputs = {};
@@ -89,12 +109,13 @@ export function ask(q, o) {
     hs.slice(0, n).forEach((h, i) => hintsEl.appendChild(el('li', null, el('b', null, `Hint ${i + 1}: `), h)));
     hintBtn.textContent = n >= hs.length ? 'No more hints' : n ? `Next hint (${hs.length - n} left)` : 'Get a hint';
     hintBtn.disabled = n >= hs.length;
-    showBtn.hidden = r.correct || r.revealed || !(r.attempts >= 2 || (hs.length && n >= hs.length));
+    showBtn.hidden = r.correct || r.revealed || !(o.revealAnytime || r.attempts >= 2 || (hs.length && n >= hs.length));
   }
   function hint() { P.hint(q.id, key); drawHints(); }
   function correctText() {
     if (q.type === 'choice') return (q.options.find(x => x.correct) || {}).text || '';
     if (q.type === 'multi') return q.options.filter(x => x.correct).map(x => x.text).join('; ');
+    if (q.type === 'expression') { try { return exprText(parseExpr(q.answer)); } catch (e) { return q.answer; } }
     return q._fields.map(f => (q._fields.length > 1 ? f.label + ': ' : '') + fmt(f.answer, digitsFor(f.tolerance)) + (f.unit ? ' ' + f.unit : '')).join('; ');
   }
   function finish(right, revealed, silent) {
@@ -108,6 +129,7 @@ export function ask(q, o) {
   function grade(ans) {
     if (q.type === 'choice') return checkChoice(q.options, ans);
     if (q.type === 'multi') return checkMulti(q.options, ans);
+    if (q.type === 'expression') return checkExpression(q, ans);
     const r = checkFields(q._fields, ans);
     return q.type === 'number' ? { ...r.fields[0], fields: r.fields } : r;
   }

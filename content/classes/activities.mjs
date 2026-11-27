@@ -375,6 +375,28 @@ const RACE_IDEAS = {
 };
 const raceQuestionSkills = Object.fromEntries(Object.entries(raceKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => RACE_IDEAS[i] || []))]]));
 
+// The Dream Line Project: tracked ideas -> curriculum skills
+// (learning-lab/dream-line-project/logic/questions.js).
+import { questionKinds as dreamKinds } from '../../learning-lab/dream-line-project/logic/questions.js';
+const VAE = 'alg1.variables-and-expressions.', EVE = 'alg1.evaluating-expressions.', OOO = 'alg1.order-of-operations.', PRN = 'alg1.properties-of-real-numbers.';
+const DREAM_IDEAS = {
+  'write-expr':         [VAE + 'write-expressions'],
+  parts:                [VAE + 'identify-parts'],
+  interpret:            [VAE + 'interpret-expressions'],
+  substitute:           [EVE + 'substitute-values'],
+  negatives:            [EVE + 'evaluate-with-negatives'],
+  'fractions-decimals': [EVE + 'evaluate-with-negatives'],
+  formulas:             [EVE + 'evaluate-formulas'],
+  order:                [OOO + 'apply-order'],
+  grouping:             [OOO + 'grouping-symbols'],
+  errors:               [OOO + 'spot-errors'],
+  'number-sets':        [PRN + 'classify-numbers'],
+  properties:           [PRN + 'name-properties'],
+  distributive:         [PRN + 'distributive-property'],
+  'like-terms':         [PRN + 'distributive-property']
+};
+const dreamQuestionSkills = Object.fromEntries(Object.entries(dreamKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => DREAM_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -608,6 +630,30 @@ export const ACTIVITIES = [
     parts: ['4 missions', 'Race outcome explorer and conditional filter', 'Consistency analyzer and bell curve', 'Survey simulator and margin of error explorer', 'Treatment shuffle simulator', 'Final Race Intelligence Report (14)', 'Optional podium probability challenge'],
     skills: [...new Set(Object.values(raceQuestionSkills).flat())],
     tracking: { gameId: 'race-intelligence-lab', questions: raceQuestionSkills }
+  },
+
+  {
+    id: 'dream-line-project',
+    title: 'The Dream Line Project',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/dream-line-project/',
+    image: null,
+    home: 'alg1.variables-and-expressions',
+    summary: 'Design your own mountain bike park, then use algebra to plan it: write and take apart the build-plan expression, substitute crew-hours, elevations, fractions and decimals, simplify the inventory with the order of operations, and use number sets and the properties of real numbers to simplify the builder’s calculations.',
+    objectives: [
+      'Translate written descriptions into expressions, and identify variables, coefficients, constants and terms',
+      'Substitute values and evaluate expressions with integers, negatives, fractions and decimals',
+      'Apply the order of operations with parentheses, brackets, exponents and fraction bars, and find calculation mistakes',
+      'Classify numbers as natural, whole, integer, rational or irrational',
+      'Use the commutative, associative, identity, inverse and distributive properties, and combine like terms'
+    ],
+    difficulty: ['beginner', 'intermediate'],
+    minutes: '35-50 min',
+    parts: ['4 stages', 'Park design canvas and build plan', 'Expression builder and anatomy', 'Prediction-first evaluation challenges', 'Shaper’s Calculation Board', 'Number-set diagram and properties workshop', 'Final Algebra Certification (10)', 'Finished park blueprint'],
+    skills: [...new Set(Object.values(dreamQuestionSkills).flat())],
+    tracking: { gameId: 'dream-line-project', questions: dreamQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------

@@ -25,7 +25,10 @@
 //   summaryExtra?(progress) -> { … }   extra fields merged into the summary (e.g. row operations performed)
 //   stats?(summary) -> [[label, value]] extra tiles on the completion and report stats
 // }
-// ctx (passed to pages): { progress, cleanup, rerender, q(id, { def, key, kicker }), card, eq, explain, note, sim, para, h3,
+//   board.extra?(ctx, summary) -> element   shown on the board above the mission cards (e.g. the lab's own workspace)
+//   report.extra?(ctx, summary) -> element  shown on the report under the stats
+//   tutor?(progress) -> { adapt(def, id) -> def, reveal }   a lab's tutor settings, applied to every question
+// ctx (passed to pages): { progress, cleanup, rerender, refresh, q(id, { def, key, kicker }), card, eq, explain, note, sim, para, h3,
 //   practiceBox(missionId?)   the current mission's practice set, with a "new numbers" button
 //   live(draw)                an element redrawn after every answer (e.g. reveal a graph once a question is done) }
 // Pass mark: a round passes when every question is answered and at least
@@ -173,9 +176,12 @@ export function mountMissions(target, L, opts = {}) {
   const sim = (title, node) => el('figure', { class: 'ms-sim' }, el('figcaption', { class: 'ms-sim-h' }, el('span', { class: 'ms-sim-dot', 'aria-hidden': 'true' }), title), node);
   const h3 = text => el('h3', { class: 'ls-h3 ms-h3' }, text);
   function q(id, o = {}) {
-    const def = o.def || QUESTIONS[id];
+    // L.tutor(progress) -> { adapt(def) -> def, reveal: bool }: a lab's tutor settings (e.g. hide hints, allow the solution any time).
+    const T = L.tutor ? L.tutor(P) || {} : {};
+    let def = o.def || QUESTIONS[id];
+    if (T.adapt) def = T.adapt(def, id);
     return el('div', { class: 'ls-card ls-ask-card ms-ask' }, el('p', { class: 'ls-kicker' }, o.kicker || 'Your turn'),
-      ask({ ...def, id }, { progress: P, key: o.key || null, onDone: refresh }));
+      ask({ ...def, id }, { progress: P, key: o.key || null, onDone: refresh, revealAnytime: !!T.reveal }));
   }
   let currentMission = null;
   function practiceBox(mid) {
@@ -185,7 +191,7 @@ export function mountMissions(target, L, opts = {}) {
         PR.note ? el('span', { class: 'ls-small' }, PR.note) : null));
   }
   const live = draw => { const box = el('div', { class: 'ms-live' }); const r = () => put(box, draw()); r(); refreshers.push(r); return box; };
-  const ctx = { progress: P, cleanup: fn => cleanups.push(fn), rerender: () => rerender(), q, card, eq, explain, note, sim, para, h3, practiceBox, live };
+  const ctx = { progress: P, cleanup: fn => cleanups.push(fn), rerender: () => rerender(), refresh: () => refresh(), q, card, eq, explain, note, sim, para, h3, practiceBox, live };
 
   function missionHead(m) {
     return el('header', { class: 'ls-section-head ms-mission-head' },
@@ -235,6 +241,7 @@ export function mountMissions(target, L, opts = {}) {
         el('p', { class: 'ls-hook' }, B.hook)),
       el('div', { class: 'ms-overall' }, el('div', { class: 'ms-overall-bar', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': pct, 'aria-label': NOUN[0].toUpperCase() + NOUN.slice(1) + ' progress' }, el('span', { style: { width: pct + '%' } })),
         el('p', { class: 'ls-small' }, `${s.missionsDone} of ${N} missions · ${s.certified ? 'certified' : s.unlocked ? 'final unlocked' : 'final locked'} · ${s.questionsAnswered} questions answered, ${s.firstTryRight} right first try`)),
+      B.extra ? B.extra(ctx, s) : null,
       el('ol', { class: 'ms-missions' + (N === 4 ? ' ms-missions--five' : '') }, MISSIONS.map(missionCard),
         el('li', { class: 'ms-mcard ms-mcard--final' + (s.unlocked ? '' : ' is-locked') + (s.certified ? ' is-done' : '') },
           el('p', { class: 'ms-mcard-n' }, 'Final'), el('h2', { class: 'ms-mcard-h' }, FINAL.title),
@@ -324,6 +331,7 @@ export function mountMissions(target, L, opts = {}) {
       el('header', { class: 'ls-section-head' }, el('p', { class: 'ls-kicker' }, (L.report && L.report.kicker) || 'Report'), el('h1', { class: 'ls-h1' }, s.certified ? FINAL.doneTitle : 'Your progress'),
         el('p', { class: 'ls-hook' }, `What you’ve practised so far. This shows practice, not mastery: one ${NOUN} is a start, not a finish.`)),
       card(null, null, stats(s, s.certification)),
+      L.report && L.report.extra ? L.report.extra(ctx, s) : null,
       card('By idea', 'Skills practised',
         el('div', { class: 'ls-table-wrap' }, el('table', { class: 'ls-table ms-report' },
           el('thead', null, el('tr', null, ['Idea', 'Answered', 'First try', 'Hints', 'Solutions shown', ''].map(h => el('th', { scope: 'col' }, h)))), el('tbody', null, rows))),
