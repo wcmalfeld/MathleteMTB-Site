@@ -17,7 +17,7 @@
 // engines. js/classes.js adds a signed-in student's progress on top.
 // check-site.mjs fails if any of these files is out of date.
 
-import { writeFileSync, mkdirSync, readdirSync, rmSync, existsSync, statSync } from 'node:fs';
+import { writeFileSync, readFileSync, mkdirSync, readdirSync, rmSync, existsSync, statSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { loadClasses, ACTIVITY_TYPES, LEVELS, STATUSES, CATEGORIES } from '../content/classes/model.mjs';
 import { LESSON_STEPS, LEVELS_OF_WORK } from '../content/classes/physics.mjs';
@@ -153,7 +153,7 @@ function activityCard(a, topic, model) {
 }
 
 // ---------- pages ----------
-function courseCards(list) {
+function courseCards(list, h = 'h2') {
   return list.map(c => {
     const topics = c.units.reduce((n, u) => n + u.topics.length, 0);
     const acts = c.activityIds.size;
@@ -161,7 +161,7 @@ function courseCards(list) {
     <li><article class="cls-course">
       <a class="cls-course-art${c.cover ? ' cls-course-art--cover' : ''}" href="${c.href}" tabindex="-1" aria-hidden="true">${courseArt(c)}</a>
       <div class="cls-course-body">
-        <h2 class="cls-course-name"><a href="${c.href}">${esc(c.name)}</a></h2>
+        <${h} class="cls-course-name"><a href="${c.href}">${esc(c.name)}</a></${h}>
         <p class="cls-course-desc">${esc(c.card)}</p>
         <ul class="pill-row" aria-label="Concepts">${c.concepts.map(x => `<li class="pill">${esc(x)}</li>`).join('')}</ul>
         <p class="cls-course-count">${plural(c.units.length, 'unit')} &middot; ${plural(topics, 'topic')} &middot; ${acts ? plural(acts, 'learning activity', 'learning activities') : 'activities in development'}</p>
@@ -666,6 +666,10 @@ export function render() {
   const model = loadClasses();
   if (model.errors.length) throw new Error('content/classes has problems:\n  ' + model.errors.join('\n  '));
   const pages = { 'classes/index.html': landing(model), [model.pathway.href + 'index.html']: pathwayPage(model) };
+  // The home page's Courses section: the same cards, between its BUILD markers.
+  const home = readFileSync(new URL('../index.html', import.meta.url), 'utf8'), re = /(<!-- BUILD:home-courses -->)[\s\S]*?(\n\s*<!-- \/BUILD:home-courses -->)/;
+  if (!re.test(home)) throw new Error('index.html is missing the <!-- BUILD:home-courses --> markers');
+  pages['index.html'] = home.replace(re, (m, a, b) => a + courseCards(model.courses.filter(c => !c.pathway), 'h3') + b);
   for (const c of model.courses) {
     pages[c.href + 'index.html'] = coursePage(c, model);
     for (const u of c.units) for (const t of u.topics) pages[t.href + 'index.html'] = topicPage(t, model);
@@ -693,5 +697,5 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     mkdirSync(root + p.replace(/[^/]+$/, ''), { recursive: true });
     writeFileSync(root + p, html); n++;
   }
-  console.log(`wrote ${n} files (classes/, supabase/curriculum.sql, docs/PHYSICS-ROADMAP.md)`);
+  console.log(`wrote ${n} files (classes/, supabase/curriculum.sql, docs/PHYSICS-ROADMAP.md, the home page’s course cards)`);
 }

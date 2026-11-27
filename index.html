@@ -21,6 +21,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/site.css?v=16">
 <link rel="stylesheet" href="css/lab.css?v=10">
+<link rel="stylesheet" href="css/classes.css?v=6">
 <link rel="stylesheet" href="css/carousel.css?v=4">
 </head>
 <body class="lab">
@@ -79,6 +80,136 @@
     </div>
   </div>
 </header>
+
+<section class="section" id="courses" aria-labelledby="courses-title">
+  <div class="wrap">
+    <div class="lab-section-head">
+      <h2 class="label" id="courses-title">Courses</h2>
+      <a class="read-link" href="classes/">All courses <span aria-hidden="true">&rarr;</span></a>
+    </div>
+    <!-- The course cards (between the BUILD markers) are written by
+         node scripts/build-classes.mjs from content/classes/curriculum.mjs. -->
+    <ul class="cls-courses"><!-- BUILD:home-courses -->
+    <li><article class="cls-course">
+      <a class="cls-course-art cls-course-art--cover" href="classes/algebra-1/" tabindex="-1" aria-hidden="true"><img class="cls-cover" src="assets/classes/algebra-1-cover.jpg" alt="" width="1200" height="800" loading="lazy" decoding="async"></a>
+      <div class="cls-course-body">
+        <h3 class="cls-course-name"><a href="classes/algebra-1/">Algebra 1</a></h3>
+        <p class="cls-course-desc">Explore equations, variables, functions, graphs, and linear relationships through trail gradients, speed, distance, elevation, and riding scenarios.</p>
+        <ul class="pill-row" aria-label="Concepts"><li class="pill">Expressions</li><li class="pill">Equations</li><li class="pill">Linear functions</li><li class="pill">Systems</li><li class="pill">Exponents</li><li class="pill">Quadratics</li><li class="pill">Statistics</li></ul>
+        <p class="cls-course-count">9 units &middot; 42 topics &middot; 4 learning activities</p>
+        <p class="cls-course-progress" data-course-progress="alg1" data-topics="42" hidden></p>
+        <a class="button" href="classes/algebra-1/">Enter Algebra 1 <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </article></li>
+    <li><article class="cls-course">
+      <a class="cls-course-art cls-course-art--cover" href="classes/algebra-2/" tabindex="-1" aria-hidden="true"><img class="cls-cover" src="assets/classes/algebra-2-cover.jpg" alt="" width="1200" height="800" loading="lazy" decoding="async"></a>
+      <div class="cls-course-body">
+        <h3 class="cls-course-name"><a href="classes/algebra-2/">Algebra 2</a></h3>
+        <p class="cls-course-desc">Explore advanced algebra, quadratic functions, polynomials, exponential relationships, and mathematical modeling through jump trajectories, suspension behavior, speed, and performance data.</p>
+        <ul class="pill-row" aria-label="Concepts"><li class="pill">Functions</li><li class="pill">Quadratics</li><li class="pill">Polynomials</li><li class="pill">Rational functions</li><li class="pill">Logarithms</li><li class="pill">Sequences</li><li class="pill">Probability</li></ul>
+        <p class="cls-course-count">9 units &middot; 43 topics &middot; 8 learning activities</p>
+        <p class="cls-course-progress" data-course-progress="alg2" data-topics="43" hidden></p>
+        <a class="button" href="classes/algebra-2/">Enter Algebra 2 <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </article></li>
+    <li><article class="cls-course">
+      <a class="cls-course-art cls-course-art--cover" href="classes/geometry/" tabindex="-1" aria-hidden="true"><img class="cls-cover" src="assets/classes/geometry-cover.jpg" alt="" width="1200" height="1029" loading="lazy" decoding="async"></a>
+      <div class="cls-course-body">
+        <h3 class="cls-course-name"><a href="classes/geometry/">Geometry</a></h3>
+        <p class="cls-course-desc">Explore angles, triangles, circles, transformations, area, volume, and spatial reasoning through bike design, trail construction, jump shapes, and mountain bike geometry.</p>
+        <ul class="pill-row" aria-label="Concepts"><li class="pill">Angles</li><li class="pill">Proof</li><li class="pill">Triangles</li><li class="pill">Transformations</li><li class="pill">Similarity</li><li class="pill">Circles</li><li class="pill">Area and volume</li></ul>
+        <p class="cls-course-count">9 units &middot; 43 topics &middot; 1 learning activity</p>
+        <p class="cls-course-progress" data-course-progress="geo" data-topics="43" hidden></p>
+        <a class="button" href="classes/geometry/">Enter Geometry <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </article></li>
+    <li><article class="cls-course">
+      <a class="cls-course-art cls-course-art--cover" href="classes/precalculus/" tabindex="-1" aria-hidden="true"><img class="cls-cover" src="assets/classes/precalculus-cover.jpg" alt="" width="1200" height="675" loading="lazy" decoding="async"></a>
+      <div class="cls-course-body">
+        <h3 class="cls-course-name"><a href="classes/precalculus/">Precalculus</a></h3>
+        <p class="cls-course-desc">Explore advanced functions, trigonometry, periodic behavior, vectors, and mathematical modeling through jumps, trail profiles, rotational movement, and mountain biking physics.</p>
+        <ul class="pill-row" aria-label="Concepts"><li class="pill">Functions</li><li class="pill">Trigonometry</li><li class="pill">Periodic functions</li><li class="pill">Vectors</li><li class="pill">Parametric equations</li><li class="pill">Polar</li><li class="pill">Limits</li></ul>
+        <p class="cls-course-count">9 units &middot; 41 topics &middot; activities in development</p>
+        <p class="cls-course-progress" data-course-progress="precalc" data-topics="41" hidden></p>
+        <a class="button" href="classes/precalculus/">Enter Precalculus <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </article></li>
+    <!-- /BUILD:home-courses -->
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================
+     PRIVATE TUTORING — the session photo and subject highlights.
+     PHOTO: assets/photos/tutoring-session.jpg, a screenshot of a real
+     session (source: assets/photos/MyContent/tutoringScreenshot.png;
+     collaborator avatars covered, metadata stripped).
+     ============================================================ -->
+<section class="section lab-tutoring" id="private-tutoring" aria-labelledby="private-tutoring-title">
+  <div class="wrap feature">
+    <figure class="feature-photo" data-gallery>
+      <a class="fig-frame" href="assets/photos/tutoring-session.jpg" data-lightbox data-caption="A virtual tutoring session: working out a jump’s launch speed, peak height and landing distance on a shared whiteboard"><img src="assets/photos/tutoring-session.jpg" alt="Will on video above a shared digital whiteboard, working through a mountain bike jump problem: horizontal and vertical velocity, peak height, landing time and landing distance" width="1600" height="1145" loading="lazy" decoding="async"></a>
+      <figcaption class="meta">Sessions run on Zoom with a shared digital whiteboard.</figcaption>
+    </figure>
+    <div class="prose">
+      <p class="eyebrow">Private Tutoring</p>
+      <h2 class="label" id="private-tutoring-title">Work with a tutor one-on-one</h2>
+      <p>Every tool in the Lab was built for real tutoring sessions. Every student learns differently, so in one-on-one virtual sessions we work through problems together on a shared whiteboard, visualize the hard ideas, and build the problem-solving skills that carry over to the next test and beyond.</p>
+      <div class="hero-actions step-actions">
+        <a class="button" href="book.html" data-track="book_cta_home_tutoring">Book a Session</a>
+        <a class="read-link" href="tutoring.html">How tutoring works <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section lab-tutoring lab-tutoring--subjects" id="subjects" aria-labelledby="subjects-title">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Subjects</p>
+      <h2 class="label head-title" id="subjects-title">Math, Physics &amp; SAT</h2>
+    </div>
+    <!-- Same cards as tutoring.html#subjects -->
+    <div class="subject-grid">
+      <article class="subject-card subject-card--math">
+        <p class="kicker">Middle school &ndash; Calculus</p>
+        <h3 class="subject-title">Mathematics</h3>
+        <ul class="option-points">
+          <li>Algebra</li>
+          <li>Geometry</li>
+          <li>Pre-Calculus</li>
+          <li>Calculus</li>
+          <li>General homework and exam preparation</li>
+        </ul>
+        <a class="button" href="book.html?subject=math" data-track="book_cta_subject_math">Book a Math Session</a>
+      </article>
+      <article class="subject-card subject-card--physics">
+        <p class="kicker">High school physics</p>
+        <h3 class="subject-title">Physics</h3>
+        <ul class="option-points">
+          <li>High school physics</li>
+          <li>Mechanics and motion</li>
+          <li>Forces and energy</li>
+          <li>Vectors and projectile motion</li>
+          <li>Applied mathematics and problem solving</li>
+        </ul>
+        <a class="button" href="book.html?subject=physics" data-track="book_cta_subject_physics">Book a Physics Session</a>
+      </article>
+      <article class="subject-card subject-card--sat">
+        <p class="kicker">Test prep</p>
+        <h3 class="subject-title">SAT Preparation</h3>
+        <ul class="option-points">
+          <li>SAT Math</li>
+          <li>Problem-solving strategies</li>
+          <li>Practice questions</li>
+          <li>Test-taking techniques</li>
+          <li>Identifying and improving weak areas</li>
+        </ul>
+        <a class="button" href="book.html?subject=sat" data-track="book_cta_subject_sat">Book an SAT Session</a>
+      </article>
+    </div>
+  </div>
+</section>
 
 <section class="section" id="labs" aria-labelledby="cats-title">
   <div class="wrap">
@@ -547,78 +678,6 @@
           <span class="tool-card-more">Let me know <span aria-hidden="true">&rarr;</span></span>
         </div>
       </a>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     PRIVATE TUTORING — the session photo and subject highlights.
-     PHOTO: assets/photos/tutoring-session.jpg, a screenshot of a real
-     session (source: assets/photos/MyContent/tutoringScreenshot.png;
-     collaborator avatars covered, metadata stripped).
-     ============================================================ -->
-<section class="section lab-tutoring" id="private-tutoring" aria-labelledby="private-tutoring-title">
-  <div class="wrap feature">
-    <figure class="feature-photo" data-gallery>
-      <a class="fig-frame" href="assets/photos/tutoring-session.jpg" data-lightbox data-caption="A virtual tutoring session: working out a jump’s launch speed, peak height and landing distance on a shared whiteboard"><img src="assets/photos/tutoring-session.jpg" alt="Will on video above a shared digital whiteboard, working through a mountain bike jump problem: horizontal and vertical velocity, peak height, landing time and landing distance" width="1600" height="1145" loading="lazy" decoding="async"></a>
-      <figcaption class="meta">Sessions run on Zoom with a shared digital whiteboard.</figcaption>
-    </figure>
-    <div class="prose">
-      <p class="eyebrow">Private Tutoring</p>
-      <h2 class="label" id="private-tutoring-title">Work with a tutor one-on-one</h2>
-      <p>Every tool in the Lab was built for real tutoring sessions. Every student learns differently, so in one-on-one virtual sessions we work through problems together on a shared whiteboard, visualize the hard ideas, and build the problem-solving skills that carry over to the next test and beyond.</p>
-      <div class="hero-actions step-actions">
-        <a class="button" href="book.html" data-track="book_cta_home_tutoring">Book a Session</a>
-        <a class="read-link" href="tutoring.html">How tutoring works <span aria-hidden="true">&rarr;</span></a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section lab-tutoring lab-tutoring--subjects" id="subjects" aria-labelledby="subjects-title">
-  <div class="wrap">
-    <div class="head">
-      <p class="eyebrow">Subjects</p>
-      <h2 class="label head-title" id="subjects-title">Math, Physics &amp; SAT</h2>
-    </div>
-    <!-- Same cards as tutoring.html#subjects -->
-    <div class="subject-grid">
-      <article class="subject-card subject-card--math">
-        <p class="kicker">Middle school &ndash; Calculus</p>
-        <h3 class="subject-title">Mathematics</h3>
-        <ul class="option-points">
-          <li>Algebra</li>
-          <li>Geometry</li>
-          <li>Pre-Calculus</li>
-          <li>Calculus</li>
-          <li>General homework and exam preparation</li>
-        </ul>
-        <a class="button" href="book.html?subject=math" data-track="book_cta_subject_math">Book a Math Session</a>
-      </article>
-      <article class="subject-card subject-card--physics">
-        <p class="kicker">High school physics</p>
-        <h3 class="subject-title">Physics</h3>
-        <ul class="option-points">
-          <li>High school physics</li>
-          <li>Mechanics and motion</li>
-          <li>Forces and energy</li>
-          <li>Vectors and projectile motion</li>
-          <li>Applied mathematics and problem solving</li>
-        </ul>
-        <a class="button" href="book.html?subject=physics" data-track="book_cta_subject_physics">Book a Physics Session</a>
-      </article>
-      <article class="subject-card subject-card--sat">
-        <p class="kicker">Test prep</p>
-        <h3 class="subject-title">SAT Preparation</h3>
-        <ul class="option-points">
-          <li>SAT Math</li>
-          <li>Problem-solving strategies</li>
-          <li>Practice questions</li>
-          <li>Test-taking techniques</li>
-          <li>Identifying and improving weak areas</li>
-        </ul>
-        <a class="button" href="book.html?subject=sat" data-track="book_cta_subject_sat">Book an SAT Session</a>
-      </article>
     </div>
   </div>
 </section>
