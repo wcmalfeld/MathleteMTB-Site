@@ -1,0 +1,155 @@
+/* ============================================================
+   The Split Report (Algebra 1, Data and Statistics): professional downhill
+   race control. Graphite panels, lime / electric-yellow / cyan accents and
+   big timing numerals. Loaded after the lesson kit, the Dream Line styles
+   (workbench, badges, tutor panel) and Map the Line's (tables). Scoped under
+   .spr. Rider A is lime and solid; Rider B is cyan and striped or hollow, so
+   colour is never the only difference. Positive residuals are solid with a +;
+   negative residuals are dashed with a −.
+   ============================================================ */
+.spr { --lime: #C6F432; --volt: #F5E642; --cyan: #38D9F0; --graphite: #15191C; --panel2: #0B0E10; --rA: var(--lime); --rB: var(--cyan); }
+
+/* ---------- shared bits ---------- */
+.spr .spr-tiles { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); margin: 8px 0 10px; }
+.spr .spr-tile { padding: 10px 12px; background: var(--panel2); border: 1px solid rgba(198, 244, 50, 0.28); border-radius: 8px; min-width: 0; }
+.spr .spr-tile p { margin: 0; overflow-wrap: anywhere; }
+.spr .spr-tile-k { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lime); }
+.spr .spr-tile-v { font-family: var(--f-mono); font-size: 18px; color: var(--ink); }
+.spr .spr-tlab { margin: 10px 0 4px; font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--soft); }
+.spr .spr-pick { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.spr .spr-pick .ls-btn { min-width: 44px; min-height: 40px; }
+.spr .spr-pick .ls-btn.is-on, .spr .ls-btn.is-on { border-color: var(--volt); color: var(--volt); }
+.spr .ms-live-eq { white-space: pre-line; }
+.spr .spr-num { width: 6em; }
+.spr .spr-explore { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0; }
+.spr .spr-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.spr .spr-chip { padding: 4px 9px; font-family: var(--f-mono); font-size: 15px; background: var(--panel2); border: 1px solid rgba(236, 239, 231, 0.18); border-radius: 6px; }
+.spr .spr-chip.is-mid { border-color: var(--volt); color: var(--volt); font-weight: 600; }
+.spr .spr-halves { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.spr .spr-stepper { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 10px 0; padding-left: 1.2em; font-size: 13px; color: var(--soft); }
+.spr .spr-stepper li.is-done { color: var(--ok); } .spr .spr-stepper li.is-now { color: var(--ink); font-weight: 600; }
+
+/* ---------- opening art ---------- */
+.spr .spr-art { display: block; width: 100%; height: auto; }
+.spr .spr-art-bg { fill: #0B0E10; }
+.spr .spr-art-panel { fill: #15191C; stroke: rgba(198, 244, 50, 0.25); }
+.spr .spr-art-k { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.12em; fill: var(--lime); }
+.spr .spr-art-row { fill: #0F1316; } .spr .spr-art-row.is-lead { fill: rgba(245, 230, 66, 0.16); }
+.spr .spr-art-pos, .spr .spr-art-bib { font-family: var(--f-mono); font-size: 13px; fill: #9AA39E; }
+.spr .spr-art-name { font-family: var(--f-display); font-size: 15px; letter-spacing: 0.04em; fill: #ECEFE7; }
+.spr .spr-art-time { font-family: var(--f-mono); font-size: 15px; fill: var(--volt); }
+.spr .spr-art-grid { stroke: rgba(236, 239, 231, 0.08); }
+.spr .spr-art-fit { stroke: var(--volt); stroke-width: 3; }
+.spr .spr-art-dot { fill: var(--cyan); stroke: #0B0E10; stroke-width: 2; } .spr .spr-art-dot.is-out { fill: none; stroke: var(--volt); stroke-width: 3; }
+.spr .spr-art-course { fill: none; stroke: #6B5A44; stroke-width: 7; stroke-linecap: round; }
+.spr .spr-art-gate { fill: var(--lime); } .spr .spr-art-gate-t { font-family: var(--f-mono); font-size: 10px; fill: #ECEFE7; }
+
+/* ---------- race room ---------- */
+.spr .spr-room { margin: 0 0 18px; padding: 16px; background: var(--graphite); border: 1px solid rgba(198, 244, 50, 0.22); border-radius: 14px; }
+.spr .spr-room-top { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
+.spr .spr-team { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: clamp(22px, 4vw, 34px); letter-spacing: 0.04em; color: var(--lime); }
+.spr .spr-brief { padding: 12px 14px; background: var(--panel2); border-left: 3px solid var(--volt); border-radius: 8px; }
+.spr .spr-brief p { margin: 0 0 6px; }
+.spr .spr-brief-h { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.12em; color: var(--volt); }
+.spr .spr-badges { list-style: none; display: grid; gap: 6px; margin: 10px 0; padding: 0; }
+.spr .spr-badges li { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; padding: 6px 10px; background: var(--panel2); border-radius: 6px; color: var(--soft); }
+.spr .spr-badges li.is-earned { color: var(--ink); border-left: 3px solid var(--lime); }
+.spr .spr-badges li.is-earned .spr-badge-b { color: var(--lime); }
+.spr .spr-badge-n { font-family: var(--f-mono); color: var(--volt); }
+.spr .spr-badge-b { font-size: 13px; }
+.spr .spr-tower-t td, .spr .spr-tower-t th { white-space: nowrap; }
+.spr .spr-tower-t tr.is-lead td { background: rgba(245, 230, 66, 0.1); }
+.spr .spr-time { font-family: var(--f-mono); font-variant-numeric: tabular-nums; color: var(--volt); font-size: 16px; }
+.spr .spr-career { margin: 12px 0; padding: 12px 14px; background: var(--panel2); border: 1px dashed rgba(56, 217, 240, 0.45); border-radius: 10px; }
+.spr .spr-career p { margin: 0 0 6px; }
+.spr .spr-career-k { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); }
+.spr .spr-career-n { font-family: var(--f-display); font-size: 20px; color: var(--ink); }
+.spr .spr-refs { margin: 4px 0 0; padding-left: 1.2em; font-size: 13px; }
+
+/* ---------- rider cards ---------- */
+.spr .spr-riders { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); margin: 10px 0; }
+.spr .spr-rcard { padding: 12px; background: var(--panel2); border-radius: 10px; border-top: 4px solid var(--rA); }
+.spr .spr-rcard.is-b { border-top-style: dashed; border-top-color: var(--rB); }
+.spr .spr-rcard-h { display: flex; gap: 10px; align-items: baseline; margin-bottom: 8px; }
+.spr .spr-bib { font-family: var(--f-mono); padding: 2px 8px; background: var(--volt); color: #0B0E10; border-radius: 4px; font-weight: 700; }
+.spr .spr-rname { font-family: var(--f-display); letter-spacing: 0.05em; font-size: 18px; }
+.spr .spr-runs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; }
+.spr .spr-runs li { display: flex; align-items: baseline; gap: 8px; padding: 3px 0; border-bottom: 1px solid rgba(236, 239, 231, 0.06); }
+.spr .spr-run { font-family: var(--f-mono); font-size: 11px; color: var(--soft); min-width: 4.5em; }
+.spr .spr-unit { font-size: 12px; color: var(--soft); }
+
+/* ---------- charts ---------- */
+.spr .spr-chart { display: block; width: 100%; height: auto; }
+.spr .spr-grid { stroke: rgba(236, 239, 231, 0.07); }
+.spr .spr-axis { stroke: rgba(236, 239, 231, 0.45); fill: none; }
+.spr .spr-tick { font-family: var(--f-mono); font-size: 12px; fill: #9AA39E; }
+.spr .spr-axlabel, .spr .spr-rowlabel { font-family: var(--f-ui, sans-serif); font-size: 13px; fill: #ECEFE7; }
+.spr .spr-rowlabel.is-a { fill: var(--rA); } .spr .spr-rowlabel.is-b { fill: var(--rB); }
+.spr .spr-dot circle { fill: var(--rA); stroke: #0B0E10; stroke-width: 2; cursor: pointer; }
+.spr .spr-dot.is-b circle { fill: #0B0E10; stroke: var(--rB); stroke-width: 3; }
+.spr .spr-dot.is-sim circle { stroke: var(--volt); }
+.spr .spr-dot.is-on circle { stroke: var(--volt); stroke-width: 4; }
+.spr .spr-dot:focus-visible circle, .spr .spr-part:focus-visible circle, .spr .spr-pt:focus-visible { outline: none; stroke: #fff; stroke-width: 4; }
+.spr .spr-bar { fill: var(--rA); transform-box: fill-box; transform-origin: bottom; animation: spr-grow 0.45s ease-out both; }
+.spr .spr-bar.is-b { fill: rgba(56, 217, 240, 0.35); stroke: var(--rB); stroke-width: 2; stroke-dasharray: 5 3; }
+.spr .spr-barval { font-family: var(--f-mono); font-size: 13px; fill: #ECEFE7; }
+@keyframes spr-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.spr .spr-hist-bad { padding: 28px 12px; text-align: center; background: var(--panel2); border: 1px dashed var(--warn); border-radius: 10px; }
+.spr .spr-whisker { stroke: #ECEFE7; stroke-width: 2; fill: none; }
+.spr .spr-boxrect { fill: rgba(198, 244, 50, 0.18); stroke: var(--rA); stroke-width: 2.5; transition: x 0.4s, width 0.4s; }
+.spr .spr-boxg.is-b .spr-boxrect { fill: rgba(56, 217, 240, 0.14); stroke: var(--rB); stroke-dasharray: 6 3; }
+.spr .spr-median { stroke: var(--volt); stroke-width: 4; }
+.spr .spr-part circle { fill: #0B0E10; stroke: #9AA39E; stroke-width: 2; cursor: pointer; }
+.spr .spr-part.is-on circle { stroke: var(--volt); fill: var(--volt); }
+.spr .ms-plot.is-pick { cursor: crosshair; touch-action: manipulation; }
+.spr .spr-pt { fill: var(--cyan); stroke: #0B0E10; stroke-width: 2; transition: cx 0.25s, cy 0.25s; }
+.spr .spr-pt.is-ok { fill: var(--lime); }
+.spr .spr-pt.is-bad { fill: #0B0E10; stroke: var(--warn); stroke-width: 3; stroke-dasharray: 3 2; }
+.spr .spr-pt.is-on { stroke: var(--volt); stroke-width: 4; }
+.spr .spr-pt.is-flag { fill: none; stroke: var(--volt); stroke-width: 3.5; }
+.spr .spr-pt[role="button"] { cursor: pointer; }
+.spr .spr-fit { stroke: var(--volt); }
+.spr .spr-mine { stroke: var(--cyan); stroke-dasharray: 8 5; }
+.spr .spr-band { fill: rgba(198, 244, 50, 0.09); }
+.spr .spr-res { stroke-width: 2.5; fill: none; }
+.spr .spr-res.is-pos { stroke: #F09A5A; }
+.spr .spr-res.is-neg { stroke: var(--cyan); stroke-dasharray: 4 3; }
+.spr .spr-res.is-on { stroke-width: 4.5; }
+.spr .spr-res-sign { font-family: var(--f-mono); font-size: 14px; font-weight: 700; fill: #ECEFE7; }
+.spr .spr-pred { fill: var(--volt); stroke: #0B0E10; stroke-width: 2; }
+.spr .spr-pred.is-ext { fill: none; stroke: var(--warn); stroke-width: 3; stroke-dasharray: 4 3; }
+.spr .spr-drag { touch-action: none; cursor: ns-resize; }
+.spr .spr-fit-t { color: var(--volt); }
+
+/* ---------- scatter builder ---------- */
+.spr .spr-sb-grid { display: grid; gap: 12px; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; }
+.spr .spr-sbt tr.is-hl td { background: rgba(245, 230, 66, 0.16); }
+.spr .spr-sbt tr.is-got td:last-child { color: var(--ok); }
+
+/* ---------- the report ---------- */
+.spr .spr-report { display: grid; gap: 12px; }
+.spr .spr-rep-head { padding: 14px 16px; background: var(--graphite); border-left: 4px solid var(--lime); border-radius: 10px; }
+.spr .spr-rep-head p { margin: 0; }
+.spr .spr-rep-h { font-family: var(--f-display); font-weight: 800; font-size: clamp(20px, 3.5vw, 28px); letter-spacing: 0.06em; color: var(--volt); }
+.spr .spr-rep-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+.spr .spr-rep-sec { padding: 12px 14px; background: var(--panel2); border-radius: 10px; min-width: 0; }
+.spr .spr-rep-sec.is-locked { opacity: 0.6; }
+.spr .spr-rep-t { margin: 0 0 8px; font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lime); }
+.spr .spr-rep-brief li { margin-bottom: 6px; }
+.spr .spr-cert { padding: 16px; border: 2px dashed rgba(236, 239, 231, 0.25); border-radius: 12px; }
+.spr .spr-cert.is-on { border: 2px solid var(--volt); background: rgba(245, 230, 66, 0.06); }
+.spr .spr-cert p { margin: 0 0 6px; }
+.spr .spr-cert-h { font-family: var(--f-display); font-weight: 800; letter-spacing: 0.08em; font-size: 20px; color: var(--volt); }
+
+@media (max-width: 720px) {
+  .spr .spr-room-top, .spr .spr-sb-grid { grid-template-columns: minmax(0, 1fr); }
+  .spr .spr-room { padding: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spr .spr-bar { animation: none; }
+  .spr .spr-pt, .spr .spr-boxrect { transition: none; }
+}
+@media print {
+  .spr .spr-noprint, .spr .ls-top, .spr .ms-crumbs, .spr .ls-pager { display: none; }
+  .spr .spr-report, .spr .spr-rep-sec, .spr .spr-rep-head { background: #fff; color: #000; }
+}

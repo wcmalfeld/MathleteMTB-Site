@@ -27,24 +27,12 @@ export function twoWay(t) {
 }
 
 // ---------- descriptive statistics ----------
-export const sum = a => a.reduce((s, x) => s + x, 0);
-export const mean = a => sum(a) / a.length;
-export function median(a) { const s = a.slice().sort((x, y) => x - y), n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; }
-export const range = a => Math.max(...a) - Math.min(...a);
+// Mean, median, range, quartiles (median of halves) and histograms live once,
+// in the kit (lesson-kit/stats.js), shared with the Algebra 1 statistics lab.
+import { sum, mean, median, range, quartiles, histogram } from '../../lesson-kit/stats.js';
+export { sum, mean, median, range, quartiles, histogram };
 export const popSD = a => { const m = mean(a); return Math.sqrt(sum(a.map(x => (x - m) ** 2)) / a.length); };
 export const sampleSD = a => { const m = mean(a); return Math.sqrt(sum(a.map(x => (x - m) ** 2)) / (a.length - 1)); };
-// Quartiles by the median-of-halves method (the usual school convention).
-export function quartiles(a) {
-  const s = a.slice().sort((x, y) => x - y), n = s.length, h = Math.floor(n / 2);
-  const lo = s.slice(0, h), hi = s.slice(n % 2 ? h + 1 : h);
-  return { q1: median(lo), q2: median(s), q3: median(hi), iqr: median(hi) - median(lo), min: s[0], max: s[n - 1] };
-}
-// Histogram counts for bins [lo, lo + w), …
-export function histogram(a, lo, hi, w) {
-  const n = Math.round((hi - lo) / w), out = Array.from({ length: n }, (_, i) => ({ from: lo + i * w, to: lo + (i + 1) * w, count: 0 }));
-  for (const x of a) { let i = Math.floor((x - lo) / w + 1e-9); if (i === n && Math.abs(x - hi) < 1e-9) i = n - 1; if (i >= 0 && i < n) out[i].count++; }
-  return out;
-}
 
 // ---------- the normal model ----------
 // erf by series (|x| < 2.5) and continued fraction (beyond): accurate to ~1e-12.

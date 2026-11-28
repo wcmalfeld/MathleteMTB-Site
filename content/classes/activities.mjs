@@ -526,6 +526,18 @@ const WRAP_IDEAS = {
 };
 const wrapQuestionSkills = Object.fromEntries(Object.entries(wrapKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => WRAP_IDEAS[i] || []))]]));
 
+// The Split Report: tracked ideas -> curriculum skills (learning-lab/split-report/logic/questions.js).
+import { questionKinds as splitKinds } from '../../learning-lab/split-report/logic/questions.js';
+const DRP = 'alg1.data-representation.', SCP = 'alg1.scatter-plots.', COR = 'alg1.correlation.', LBF = 'alg1.lines-of-best-fit.';
+const SPLIT_IDEAS = {
+  'choose-display': [DRP + 'choose-display'], 'dot-plot': [DRP + 'choose-display'], histogram: [DRP + 'choose-display'], 'box-plot': [DRP + 'center-and-spread'],
+  center: [DRP + 'center-and-spread'], spread: [DRP + 'center-and-spread'], compare: [DRP + 'compare-distributions'],
+  'plot-pairs': [SCP + 'make-scatter'], association: [SCP + 'describe-association'], form: [SCP + 'describe-association'], outliers: [SCP + 'outliers'],
+  'direction-strength': [COR + 'strength-direction'], 'r-meaning': [COR + 'correlation-coefficient'], 'r-outlier': [COR + 'correlation-coefficient'], causation: [COR + 'not-causation'],
+  'fit-line': [LBF + 'fit-line'], 'slope-meaning': [LBF + 'interpret-fit'], 'intercept-meaning': [LBF + 'interpret-fit'], predict: [LBF + 'predict-and-residuals'], residuals: [LBF + 'predict-and-residuals'], extrapolation: [LBF + 'predict-and-residuals']
+};
+const splitQuestionSkills = Object.fromEntries(Object.entries(splitKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => SPLIT_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -947,6 +959,36 @@ export const ACTIVITIES = [
       'alg1.factoring-quadratics': { route: 'reverse', label: 'Stage 4: Reverse Engineer the Panel' }
     },
     tracking: { gameId: 'wrap-lab', questions: wrapQuestionSkills }
+  },
+
+  {
+    id: 'split-report',
+    title: 'The Split Report',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/split-report/',
+    image: null,
+    home: 'alg1.data-representation',
+    summary: 'The MTB Race Intelligence Lab: work as a junior analyst for a fictional downhill team. Compare two riders’ practice times with dot plots, histograms and box plots, plot practice laps against sector time, interpret correlation without claiming causation, and build a race-day forecast with a line of best fit, predictions and residuals.',
+    objectives: [
+      'Choose and build dot plots, histograms and box plots, and compare two distributions by center and spread',
+      'Find the mean, median, range, quartiles (median of halves) and IQR, and explain why mean and median can differ',
+      'Plot paired data and describe direction, form, clusters and outliers; flag outliers rather than deleting them',
+      'Interpret the correlation coefficient r, see how an outlier changes it, and explain why correlation isn’t causation',
+      'Fit and interpret a line of best fit, make predictions, calculate residuals, and be cautious about extrapolation'
+    ],
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    minutes: '45-55 min',
+    parts: ['4 missions', 'Race room and timing tower', 'Dot plot, histogram and box plot tools', 'Scatter plot builder', 'Correlation explorer', 'Line-fitting tool and residual visualizer', 'Race Intelligence Analyst Certification (12)', 'Printable Race Intelligence Report'],
+    skills: [...new Set(Object.values(splitQuestionSkills).flat())],
+    stages: {
+      'alg1.data-representation': { route: 'audit', label: 'Mission 1: The Consistency Audit' },
+      'alg1.scatter-plots': { route: 'scan', label: 'Mission 2: The Pattern Scan' },
+      'alg1.correlation': { route: 'signal', label: 'Mission 3: Signal or Noise?' },
+      'alg1.lines-of-best-fit': { route: 'forecast', label: 'Mission 4: Race-Day Forecast' }
+    },
+    tracking: { gameId: 'split-report', questions: splitQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------
