@@ -1,0 +1,134 @@
+/* ============================================================
+   Project Evolve (Algebra 1, Exponents and Exponential Relationships): the
+   CAD lab, factor board, precision scale, test rig, converter, magnitude
+   ruler, growth tracker, resale simulator, dashboard and report. Loaded
+   after the lesson kit, the Dream Line styles (workbench, badges, tutor
+   panel) and Map the Line's (tables). Scoped under .pev.
+   Colours: exponential / CAD blue (--in); linear gold (--unk); targets and
+   warnings orange (--warn); done and "best" green (--ok); the launch accent.
+   ============================================================ */
+.pev { --cad: #6FB7E8; --accent: #E0632F; }
+
+/* ---------- tiles, legend, lists ---------- */
+.pev .pev-tiles { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); margin: 8px 0 10px; }
+.pev .pev-tile { padding: 10px 12px; background: #0A0F0C; border: 1px solid rgba(142, 197, 224, 0.35); border-radius: 10px; min-width: 0; }
+.pev .pev-tile p { margin: 0; overflow-wrap: anywhere; }
+.pev .pev-tile-k { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--in); }
+.pev .pev-tile-v { font-family: var(--f-mono); font-size: 17px; color: var(--ink); }
+.pev .pev-tile.is-best { border-color: rgba(108, 195, 122, 0.7); } .pev .pev-tile.is-best .pev-tile-v { color: var(--ok); }
+.pev .pev-tile.is-warn { border-color: rgba(242, 138, 98, 0.7); } .pev .pev-tile.is-warn .pev-tile-v { color: var(--warn); }
+.pev .pev-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 4px; font-family: var(--f-mono); font-size: 13px; }
+.pev .pev-legend span::before { content: ''; display: inline-block; width: 18px; height: 0; border-top: 3px solid currentColor; margin-right: 6px; vertical-align: middle; }
+.pev .pev-legend .pev-exp { color: var(--in); } .pev .pev-legend .pev-lin { color: var(--unk); }
+.pev .pev-limits { columns: 2; gap: 24px; margin: 6px 0 12px; }
+.pev .pev-two { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.pev .pev-fig svg { width: 100%; height: auto; }
+.pev .ls-eq-main, .pev .ms-live-eq, .pev .dl-wb-formula { white-space: pre-line; }
+
+/* ---------- graph series ---------- */
+.pev .ms-line.pev-exp { stroke: var(--in); stroke-width: 3.5; }
+.pev .ms-line.pev-lin { stroke: var(--unk); stroke-width: 3; stroke-dasharray: 9 6; }
+.pev .ms-line.pev-cmp { stroke: rgba(236, 239, 231, 0.45); stroke-width: 2; stroke-dasharray: 5 5; }
+.pev .ms-line.pev-cmp.is-1 { stroke: rgba(232, 188, 78, 0.55); } .pev .ms-line.pev-cmp.is-2 { stroke: rgba(242, 138, 98, 0.6); }
+.pev .ms-mark.pev-exp-pt { fill: var(--in); } .pev .ms-mark.pev-lin-pt { fill: var(--unk); }
+.pev .ms-mark.pev-cross { fill: var(--warn); stroke: #0A0F0C; stroke-width: 3; }
+.pev .ms-hline.pev-target { stroke: var(--warn); stroke-dasharray: 6 5; stroke-width: 2; }
+
+/* ---------- CAD lab ---------- */
+.pev .pev-cad-svg { display: block; width: 100%; height: auto; border-radius: 8px; }
+.pev .pev-cad-bg { fill: #0B1622; } .pev .pev-cad-grid { stroke: rgba(111, 183, 232, 0.12); stroke-width: 1; }
+.pev .pev-cell { fill: rgba(111, 183, 232, 0.25); stroke: var(--cad); stroke-width: 1.5; }
+.pev .pev-cell.is-top { fill: rgba(111, 183, 232, 0.45); }
+@media (prefers-reduced-motion: no-preference) { .pev .pev-cell { animation: pev-pop 0.3s ease-out both; } }
+@keyframes pev-pop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+/* ---------- factor board ---------- */
+.pev .pev-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px; background: #0A0F0C; border-radius: 10px; }
+.pev .pev-group { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.pev .pev-group.is-boxed { padding: 4px 6px; border: 1px dashed var(--cad); border-radius: 8px; }
+.pev .pev-chip { display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 4px; border-radius: 6px; font-family: var(--f-mono); font-style: italic; font-size: 15px; background: rgba(111, 183, 232, 0.2); color: var(--ink); border: 1px solid var(--cad); }
+.pev .pev-chip.is-b { background: rgba(232, 188, 78, 0.2); border-color: var(--unk); }
+.pev .pev-chip.is-gone { opacity: 0.35; text-decoration: line-through; border-style: dashed; }
+.pev .pev-op { font-family: var(--f-mono); font-size: 20px; color: var(--soft); }
+.pev .pev-frac { display: grid; gap: 6px; justify-items: start; padding: 10px; background: #0A0F0C; border-radius: 10px; }
+.pev .pev-bar { width: 100%; height: 2px; background: var(--ink); }
+
+/* ---------- precision scale ---------- */
+.pev .pev-scale { display: grid; gap: 4px; margin: 10px 0; }
+.pev .pev-step { display: grid; grid-template-columns: 3.4em 1fr 7.5em; align-items: center; gap: 8px; font-size: 13px; opacity: 0.7; }
+.pev .pev-step.is-on { opacity: 1; }
+.pev .pev-step-e { font-family: var(--f-mono); color: var(--ink); }
+.pev .pev-step-bar { display: block; height: 10px; border-radius: 5px; background: var(--cad); }
+.pev .pev-step.is-neg .pev-step-bar { background: rgba(111, 183, 232, 0.55); }
+.pev .pev-step.is-on .pev-step-bar { background: var(--ok); }
+.pev .pev-step-v { text-align: right; overflow-wrap: anywhere; }
+
+/* ---------- test rig ---------- */
+.pev .pev-rig { display: grid; gap: 10px; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: center; }
+.pev .pev-screen { padding: 12px; background: #050807; border: 1px solid rgba(108, 195, 122, 0.4); border-radius: 10px; }
+.pev .pev-screen p { margin: 0; }
+.pev .pev-screen-k { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.12em; color: var(--ok); }
+.pev .pev-screen-v { font-size: clamp(16px, 3vw, 22px); color: var(--ink); margin-bottom: 8px !important; overflow-wrap: anywhere; }
+
+/* ---------- magnitude ruler ---------- */
+.pev .pev-ruler { position: relative; height: 58px; margin: 14px 8px 10px; border-bottom: 2px solid var(--soft); }
+.pev .pev-tick { position: absolute; bottom: -22px; transform: translateX(-50%); font-family: var(--f-mono); font-size: 11px; color: var(--soft); }
+.pev .pev-tick::before { content: ''; position: absolute; left: 50%; top: -8px; height: 8px; border-left: 1px solid var(--soft); }
+.pev .pev-pin { position: absolute; bottom: 6px; transform: translateX(-50%); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-family: var(--f-mono); font-size: 13px; color: #0A0F0C; }
+.pev .pev-pin.is-a { background: var(--in); } .pev .pev-pin.is-b { background: var(--unk); bottom: 30px; }
+
+/* ---------- dashboard and report ---------- */
+.pev .pev-dash, .pev .pev-report { margin: 0 0 18px; padding: 16px; background: var(--panel-2); border: 1px solid rgba(236, 239, 231, 0.12); border-radius: 14px; }
+.pev .pev-report { margin: 0; }
+.pev .pev-dash-head { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+.pev .pev-dash-head .pev-bike { max-width: 340px; justify-self: end; }
+.pev .pev-dash-name, .pev .pev-report-h { margin: 4px 0; font-family: var(--f-display); font-weight: 800; font-size: clamp(22px, 4vw, 34px); line-height: 1.05; color: var(--ink); overflow-wrap: anywhere; }
+.pev .pev-phases { list-style: none; margin: 12px 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.pev .pev-phases li { padding: 10px 12px; background: #0A0F0C; border: 1px solid rgba(236, 239, 231, 0.12); border-radius: 12px; }
+.pev .pev-phases li.is-done { border-color: rgba(108, 195, 122, 0.6); }
+.pev .pev-phases li.is-now { border-color: var(--accent); }
+.pev .pev-phase-h { margin: 0 0 6px; font-family: var(--f-display); font-weight: 800; font-size: 17px; text-transform: uppercase; color: var(--ink); }
+.pev .pev-phase-dl { margin: 0; display: grid; gap: 4px; font-size: 13px; }
+.pev .pev-phase-dl div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 6px; }
+.pev .pev-phase-dl dt { color: var(--soft); }
+.pev .pev-phase-dl dd { margin: 0; font-family: var(--f-mono); color: var(--ok); overflow-wrap: anywhere; }
+.pev .pev-phase-dl dd.is-off { font-family: inherit; color: var(--soft); font-style: italic; opacity: 0.7; }
+.pev .pev-rep-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); margin: 12px 0; }
+.pev .pev-rep { padding: 12px 14px; background: #0A0F0C; border: 1px solid rgba(108, 195, 122, 0.4); border-radius: 12px; min-width: 0; }
+.pev .pev-rep.is-locked { border-color: rgba(236, 239, 231, 0.12); opacity: 0.75; }
+.pev .pev-cert { font-family: var(--f-mono); letter-spacing: 0.1em; color: var(--unk); }
+.pev .pev-scene { margin: 0 0 12px; max-width: 520px; }
+.pev .pev-photo { margin: 0 0 12px; }
+.pev .pev-photo img { display: block; width: 100%; height: auto; max-height: 360px; object-fit: cover; border-radius: 10px; }
+.pev .pev-photo figcaption { margin-top: 4px; }
+
+/* ---------- the bike ---------- */
+.pev .pev-bike { display: block; width: 100%; height: auto; }
+.pev .pev-bike-bg { fill: #121A16; } .pev .pev-bike-bg.is-prototype { fill: #0B1622; } .pev .pev-bike-bg.is-test { fill: #15181B; } .pev .pev-bike-bg.is-launch { fill: #1A1410; } .pev .pev-bike-bg.is-market { fill: #121A16; }
+.pev .pev-tire { fill: none; stroke: #1E1E1E; stroke-width: 9; } .pev .pev-rim { fill: none; stroke: #8A9590; stroke-width: 2.5; }
+.pev .pev-tire.is-cad, .pev .pev-rim.is-cad { stroke: var(--cad); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.pev .pev-spoke { stroke: rgba(200, 205, 200, 0.4); stroke-width: 1; } .pev .pev-hub { fill: #C8CDC8; }
+.pev .pev-frame { fill: none; stroke: var(--accent); stroke-width: 8; stroke-linejoin: round; stroke-linecap: round; }
+.pev .pev-frame.is-cad, .pev .pev-link.is-cad, .pev .pev-fork.is-cad { stroke: var(--cad); stroke-width: 2; }
+.pev .pev-link { fill: none; stroke: #2C2C2C; stroke-width: 6; stroke-linecap: round; }
+.pev .pev-shock { fill: #E8BC4E; } .pev .pev-shock.is-cad { fill: none; stroke: var(--cad); stroke-width: 1.5; }
+.pev .pev-fork { stroke: #2C2C2C; stroke-width: 7; stroke-linecap: round; }
+.pev .pev-hbar, .pev .pev-seat { fill: none; stroke: #2C2C2C; stroke-width: 4; stroke-linecap: round; }
+.pev .pev-dim { fill: none; stroke: var(--cad); stroke-width: 1.2; } .pev .pev-dim-t { fill: var(--cad); font-family: var(--f-mono); font-size: 12px; }
+.pev .pev-cad-grid { stroke: rgba(111, 183, 232, 0.12); }
+.pev .pev-rig-base, .pev .pev-rig-post { fill: #3A4148; } .pev .pev-rig-arm { fill: none; stroke: #5A646D; stroke-width: 6; } .pev .pev-rig-led { fill: var(--ok); }
+.pev .pev-spot { fill: rgba(224, 99, 47, 0.25); }
+.pev .pev-tag { fill: var(--unk); } .pev .pev-tag-t { fill: #0A0F0C; font-family: var(--f-mono); font-size: 14px; font-weight: 700; }
+.pev .pev-launch-t { fill: var(--ink); font-family: var(--f-display); font-weight: 800; font-size: 22px; letter-spacing: 0.06em; }
+
+/* ---------- opening art ---------- */
+.pev .pev-art { display: block; width: 100%; height: auto; }
+.pev .pev-art-bg { fill: #0A0F0C; } .pev .pev-art-panel { fill: #141A17; stroke: rgba(236, 239, 231, 0.14); }
+.pev .pev-art-axis { fill: none; stroke: rgba(236, 239, 231, 0.5); stroke-width: 2; }
+.pev .pev-art-grow { fill: none; stroke: var(--in); stroke-width: 3.5; } .pev .pev-art-decay { fill: none; stroke: var(--accent); stroke-width: 3.5; }
+.pev .pev-art-t { fill: var(--text); font-family: var(--f-mono); font-size: 13px; }
+
+@media (max-width: 560px) {
+  .pev .pev-dash-head, .pev .pev-rig { grid-template-columns: 1fr; }
+  .pev .pev-limits { columns: 1; }
+}

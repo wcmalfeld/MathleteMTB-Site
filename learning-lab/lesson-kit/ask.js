@@ -9,7 +9,9 @@
 //   type: 'choice' (one answer), 'multi' (tick all that apply), 'number', 'fields',
 //         'expression' (typed algebra checked by expr.js: answer, vars, form, traps, tiles),
 //         'equation' / 'inequality' (typed relations checked by equation.js), 'line' (a two-variable linear equation, with a form),
-//         'interval' (interval notation or an inequality, interval.js)
+//         'interval' (interval notation or an inequality, interval.js),
+//         'monomial' (one simplified term, powers.js: answer, vars, positive, traps), 'sci' (scientific notation, scinot.js: answer, form, traps),
+//         'factored' (a polynomial in factored form, factor.js: answer, vars, traps)
 //   q.inline: choices laid out in a row (tokens of an expression, lines of working)
 //   o.revealAnytime: the solution can be shown before two tries (a tutor's choice)
 
@@ -19,6 +21,9 @@ import { fmt } from './format.js';
 import { checkExpression, parse as parseExpr, toText as exprText } from './expr.js';
 import { checkEquation, checkInequality, checkLine, parseRelation, joinParts } from './equation.js';
 import { checkInterval } from './interval.js';
+import { checkMonomial } from './powers.js';
+import { checkFactored } from './factor.js';
+import { checkSci, parseSci, sciText, plainText } from './scinot.js';
 
 const digitsFor = tol => (tol >= 1 ? 0 : tol >= 0.1 ? 1 : 2);
 
@@ -51,12 +56,12 @@ export function ask(q, o) {
     read = () => [...fs.querySelectorAll('input:checked')].map(i => i.value);
     lock = () => fs.querySelectorAll('input').forEach(i => { i.disabled = true; });
     answerText = v => q.options.filter(x => v.includes(x.id)).map(x => x.text).join('; ');
-  } else if (q.type === 'expression' || q.type === 'equation' || q.type === 'inequality' || q.type === 'line' || q.type === 'interval') {
-    const rel = q.type !== 'expression' && q.type !== 'interval';
+  } else if (q.type === 'expression' || q.type === 'equation' || q.type === 'inequality' || q.type === 'line' || q.type === 'interval' || q.type === 'monomial' || q.type === 'sci' || q.type === 'factored') {
+    const rel = q.type !== 'expression' && q.type !== 'interval' && q.type !== 'monomial' && q.type !== 'sci' && q.type !== 'factored';
     const iid = uid('x'), pid = uid('xp');
     const input = el('input', { id: iid, type: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', class: 'ls-input ls-expr-input', 'aria-describedby': pid });
     const preview = el('p', { class: 'ls-small ls-expr-preview', id: pid, 'aria-live': 'polite' });
-    const sync = () => { let t = ''; try { if (input.value.trim() && q.type !== 'interval') { if (rel) { const R = parseRelation(input.value, { keepCase: true }); t = 'Reads as: ' + joinParts(R.parts.map(p => exprText(p)), R.rels); } else t = 'Reads as: ' + exprText(parseExpr(input.value, { keepCase: true })); } } catch (e) { t = ''; } preview.textContent = t; };
+    const sync = () => { let t = ''; try { if (input.value.trim() && q.type === 'sci') { const v = parseSci(input.value); t = v ? 'Reads as: ' + (v.sci ? `${plainText(v.c, false)} × 10${v.e < 0 ? '⁻' : ''}${String(Math.abs(v.e)).split('').map(c => '⁰¹²³⁴⁵⁶⁷⁸⁹'[c]).join('')}` : plainText(v.value)) : ''; } else if (input.value.trim() && q.type !== 'interval') { if (rel) { const R = parseRelation(input.value, { keepCase: true }); t = 'Reads as: ' + joinParts(R.parts.map(p => exprText(p)), R.rels); } else t = 'Reads as: ' + exprText(parseExpr(input.value, { keepCase: true })); } } catch (e) { t = ''; } preview.textContent = t; };
     input.addEventListener('input', sync);
     input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
     const insert = t => { if (input.readOnly) return; const a = input.selectionStart ?? input.value.length, b = input.selectionEnd ?? a; input.setRangeText(t, a, b, 'end'); input.focus(); sync(); };
@@ -64,7 +69,7 @@ export function ask(q, o) {
       q.tiles.map(t => el('button', { type: 'button', class: 'ls-expr-tile', onclick: () => insert(t === '×' ? '×' : t === '−' ? '−' : t) }, t)),
       el('button', { type: 'button', class: 'ls-expr-tile ls-expr-tile--key', 'aria-label': 'Delete the last character', onclick: () => { if (input.readOnly) return; input.value = input.value.slice(0, -1); sync(); input.focus(); } }, '⌫'),
       el('button', { type: 'button', class: 'ls-expr-tile ls-expr-tile--key', onclick: () => { if (input.readOnly) return; input.value = ''; sync(); input.focus(); } }, 'Clear')) : null;
-    area.append(...[el('div', { class: 'ls-field ls-field--wide' }, el('label', { for: iid }, q.label || (q.type === 'equation' || q.type === 'line' ? 'Your equation' : q.type === 'inequality' ? 'Your inequality' : q.type === 'interval' ? 'Your interval' : 'Your expression')), input), tiles, preview].filter(Boolean));
+    area.append(...[el('div', { class: 'ls-field ls-field--wide' }, el('label', { for: iid }, q.label || (q.type === 'equation' || q.type === 'line' ? 'Your equation' : q.type === 'inequality' ? 'Your inequality' : q.type === 'interval' ? 'Your interval' : q.type === 'sci' ? 'Your number' : 'Your expression')), input), tiles, preview].filter(Boolean));
     read = () => input.value;
     lock = () => { input.readOnly = true; if (tiles) tiles.querySelectorAll('button').forEach(b => { b.disabled = true; }); };
     answerText = v => String(v || '').trim();
@@ -123,6 +128,8 @@ export function ask(q, o) {
     if (q.type === 'choice') return (q.options.find(x => x.correct) || {}).text || '';
     if (q.type === 'multi') return q.options.filter(x => x.correct).map(x => x.text).join('; ');
     if (q.type === 'expression') { try { return exprText(parseExpr(q.answer)); } catch (e) { return q.answer; } }
+    if (q.type === 'monomial' || q.type === 'factored') { try { return exprText(parseExpr(q.answer)); } catch (e) { return q.answer; } }
+    if (q.type === 'sci') { const v = parseSci(String(q.answer)); return v ? (q.form === 'standard' ? plainText(v.value) : sciText(v.value)) : String(q.answer); }
     if (q.type === 'equation' || q.type === 'inequality' || q.type === 'line' || q.type === 'interval') return q.answer.replace(/-/g, '−').replace(/<=/g, '≤').replace(/>=/g, '≥');
     return q._fields.map(f => (q._fields.length > 1 ? f.label + ': ' : '') + fmt(f.answer, digitsFor(f.tolerance)) + (f.unit ? ' ' + f.unit : '')).join('; ');
   }
@@ -142,6 +149,9 @@ export function ask(q, o) {
     if (q.type === 'inequality') return checkInequality(q, ans);
     if (q.type === 'line') return checkLine(q, ans);
     if (q.type === 'interval') return checkInterval(q, ans);
+    if (q.type === 'monomial') return checkMonomial(q, ans);
+    if (q.type === 'factored') return checkFactored(q, ans);
+    if (q.type === 'sci') return checkSci(q, ans);
     const r = checkFields(q._fields, ans);
     return q.type === 'number' ? { ...r.fields[0], fields: r.fields } : r;
   }

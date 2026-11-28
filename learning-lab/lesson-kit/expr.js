@@ -15,7 +15,7 @@
 //   ready(tree) / next(tree) / reduce(tree, node)   the order of operations, one step at a time
 //
 // Input it reads: 4t + 3b + 5, 4*t, 4·t, 4×t, 48 ÷ 6 × 2, 2[7 + (3²)] ÷ 4,
-// (3/4)(2.4), 2400 + (−125.5), x^2, {…}. Implicit multiplication (4t, 3(…),
+// (3/4)(2.4), 2400 + (−125.5), x^2, x⁵, 10⁻³, {…}. Implicit multiplication (4t, 3(…),
 // (…)(…)) has the same priority as × and ÷, worked left to right.
 // Tree nodes:
 //   { t: 'num', v: Frac, src }            a number as written (src keeps '2.50' or '3/4')
@@ -27,13 +27,14 @@
 import { Frac, show } from './frac.js';
 
 export class ExprError extends Error {}
+const SUPER = { '⁻': '-', '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9' };   // x⁵ → x^5, 10⁻³ → 10^-3 (2² → 2^2, exactly as before)
 const OPEN = { '(': ')', '[': ']', '{': '}' }, CLOSE = { ')': '(', ']': '[', '}': '{' };
 
 // ---------------------------------------------------------------- tokens
 export function tokenize(raw, opts = {}) {
   const s = String(raw == null ? '' : raw)
     .replace(/[−–—]/g, '-').replace(/[×·∙✕]/g, '*').replace(/÷/g, '/')
-    .replace(/²/g, '^2').replace(/³/g, '^3').replace(/\*\*/g, '^');
+    .replace(/[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, m => '^' + [...m].map(c => SUPER[c]).join('')).replace(/\*\*/g, '^');
   const out = [];
   for (let i = 0; i < s.length;) {
     const c = s[i];

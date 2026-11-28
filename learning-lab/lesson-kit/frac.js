@@ -18,7 +18,9 @@ class Frac {
     if (x instanceof Frac) return x;
     if (Number.isInteger(x)) return new Frac(x, 1);
     if (typeof x === 'number' && isFinite(x)) {           // short decimals: 0.25, 2.3
-      const p = 10 ** Math.min(9, (String(x).split('.')[1] || '').length);
+      const [mant, ex] = String(x).split('e');              // tiny numbers print as 7.2e-7: count their places properly
+      const places = (mant.split('.')[1] || '').length - (ex ? Number(ex) : 0);
+      const p = 10 ** Math.max(0, Math.min(ex ? 15 : 9, places));
       return new Frac(Math.round(x * p), p);
     }
     throw new TypeError('not a number: ' + x);
@@ -29,8 +31,10 @@ class Frac {
     if (!t) return null;
     let m = t.match(/^([+-]?\d+)\/([+-]?\d+)$/);
     if (m) return Number(m[2]) === 0 ? null : new Frac(Number(m[1]), Number(m[2]));
-    m = t.match(/^[+-]?(\d+\.?\d*|\.\d+)$/);
-    return m ? Frac.of(Number(t)) : null;
+    m = t.match(/^([+-]?)(\d*)\.?(\d*)$/);
+    if (!m || !(m[2] + m[3])) return null;
+    if (m[3].length <= 12) return new Frac(Number((m[1] === '-' ? '-' : '') + (m[2] + m[3] || '0')), 10 ** m[3].length);   // exact: 0.00000072 = 72/10⁸
+    return Frac.of(Number(t));
   }
   add(o) { o = Frac.of(o); return new Frac(this.n * o.d + o.n * this.d, this.d * o.d); }
   sub(o) { o = Frac.of(o); return new Frac(this.n * o.d - o.n * this.d, this.d * o.d); }

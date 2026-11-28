@@ -496,6 +496,36 @@ const UPLIFT_IDEAS = {
 };
 const upliftQuestionSkills = Object.fromEntries(Object.entries(upliftKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => UPLIFT_IDEAS[i] || []))]]));
 
+// Project Evolve: tracked ideas -> curriculum skills (learning-lab/project-evolve/logic/questions.js).
+import { questionKinds as evolveKinds } from '../../learning-lab/project-evolve/logic/questions.js';
+const EXR = 'alg1.exponent-rules.', SCN = 'alg1.scientific-notation.', EXG = 'alg1.exponential-growth.', EXD = 'alg1.exponential-decay.';
+const EVOLVE_IDEAS = {
+  repeated: [EXR + 'product-quotient-rules'], product: [EXR + 'product-quotient-rules'], quotient: [EXR + 'product-quotient-rules'],
+  'power-power': [EXR + 'power-rules'], 'power-product': [EXR + 'power-rules'],
+  zero: [EXR + 'zero-negative-exponents'], negative: [EXR + 'zero-negative-exponents'],
+  'to-sci': [SCN + 'convert-notation'], 'to-standard': [SCN + 'convert-notation'],
+  'sci-multiply': [SCN + 'compute-scientific'], 'sci-divide': [SCN + 'compute-scientific'],
+  compare: [SCN + 'compare-magnitudes'], units: [SCN + 'compare-magnitudes'],
+  'growth-identify': [EXG + 'identify-growth'], 'growth-factor': [EXG + 'identify-growth'],
+  'growth-model': [EXG + 'write-growth-model'], 'growth-evaluate': [EXG + 'write-growth-model'],
+  'lin-vs-exp': [EXG + 'linear-vs-exponential'],
+  'decay-identify': [EXD + 'identify-decay'], 'decay-factor': [EXD + 'identify-decay'], 'decay-compare': [EXD + 'identify-decay'], limits: [EXD + 'identify-decay'],
+  'decay-model': [EXD + 'write-decay-model'], 'decay-evaluate': [EXD + 'write-decay-model'],
+  target: [EXD + 'half-life-style']
+};
+const evolveQuestionSkills = Object.fromEntries(Object.entries(evolveKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => EVOLVE_IDEAS[i] || []))]]));
+
+// Wrap Lab: tracked ideas -> curriculum skills (learning-lab/wrap-lab/logic/questions.js).
+import { questionKinds as wrapKinds } from '../../learning-lab/wrap-lab/logic/questions.js';
+const ASP = 'alg1.adding-and-subtracting-polynomials.', MUP = 'alg1.multiplying-polynomials.', FEX = 'alg1.factoring-expressions.', FQD = 'alg1.factoring-quadratics.';
+const WRAP_IDEAS = {
+  classify: [ASP + 'classify-polynomials'], 'like-terms': [ASP + 'add-polynomials'], add: [ASP + 'add-polynomials'], subtract: [ASP + 'subtract-polynomials'],
+  'mono-mult': [MUP + 'multiply-polynomials'], binomial: [MUP + 'multiply-binomials'], 'square-sum': [MUP + 'special-products'], 'diff-squares-x': [MUP + 'special-products'], 'poly-mult': [MUP + 'multiply-polynomials'],
+  gcf: [FEX + 'gcf'], grouping: [FEX + 'grouping'], verify: [FEX + 'check-factoring'],
+  monic: [FQD + 'factor-x2-bx-c'], 'non-monic': [FQD + 'factor-ax2-bx-c'], 'perfect-square': [FQD + 'special-patterns'], 'diff-squares': [FQD + 'special-patterns'], prime: [FQD + 'factor-x2-bx-c']
+};
+const wrapQuestionSkills = Object.fromEntries(Object.entries(wrapKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => WRAP_IDEAS[i] || []))]]));
+
 export const ACTIVITIES = [
   {
     id: 'slope-lab',
@@ -856,6 +886,67 @@ export const ACTIVITIES = [
       'alg1.applications-of-systems': { route: 'mountain', label: 'Stage 4: Run the Mountain' }
     },
     tracking: { gameId: 'uplift', questions: upliftQuestionSkills }
+  },
+
+  {
+    id: 'project-evolve',
+    title: 'Project Evolve',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/project-evolve/',
+    image: null,
+    home: 'alg1.exponent-rules',
+    summary: 'The MTB Innovation Lab: help a fictional bike company take a new gravity bike from prototype to used market. Simplify scaling expressions with the exponent rules, handle huge test datasets and tiny measurements in scientific notation, model a launch waitlist growing 20% a month, and track the bike’s modeled resale value as it decays, estimating targets from tables (no logarithms).',
+    objectives: [
+      'Use exponents as repeated multiplication, and apply the product, quotient and power rules',
+      'Simplify zero and negative integer exponents (a negative exponent is a reciprocal)',
+      'Convert between standard and scientific notation, and multiply, divide and compare in it',
+      'Write and evaluate growth models y = a(1 + r)ᵗ and tell linear from exponential growth',
+      'Write and evaluate decay models y = a(1 − r)ᵗ, telling the rate from the retention factor',
+      'Estimate when a model reaches a target from a table or graph'
+    ],
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    minutes: '35-50 min',
+    parts: ['4 stages', 'CAD scaling lab', 'Factor board', 'Test rig and converter', 'Launch growth tracker', 'Resale value simulator', 'MTB Product Innovation Certification (12)', 'Product Lifecycle Report'],
+    skills: [...new Set(Object.values(evolveQuestionSkills).flat())],
+    stages: {
+      'alg1.exponent-rules': { route: 'prototype', label: 'Stage 1: Prototype Design Lab' },
+      'alg1.scientific-notation': { route: 'testlab', label: 'Stage 2: Engineering Test Lab' },
+      'alg1.exponential-growth': { route: 'launch', label: 'Stage 3: Product Launch' },
+      'alg1.exponential-decay': { route: 'market', label: 'Stage 4: The Used Market' }
+    },
+    tracking: { gameId: 'project-evolve', questions: evolveQuestionSkills }
+  },
+
+  {
+    id: 'wrap-lab',
+    title: 'Wrap Lab',
+    type: 'lab',
+    status: 'live',
+    access: 'public',
+    route: 'learning-lab/wrap-lab/',
+    image: null,
+    home: 'alg1.adding-and-subtracting-polynomials',
+    summary: 'The Custom MTB Frame Protection Studio: design a frame protection kit for a mountain bike. Classify, add and subtract panel-area polynomials with algebra tiles, expand graphics with the area model and special products, optimize cut sheets with the GCF and grouping, and recover panel dimensions by factoring quadratics, checking every factorization by multiplying back.',
+    objectives: [
+      'Classify polynomials by degree and number of terms, and add and subtract them (distributing the negative)',
+      'Multiply monomials, binomials and polynomials, with the area model and special products',
+      'Factor out the greatest common factor and factor by grouping',
+      'Factor x² + bx + c and ax² + bx + c, perfect squares and differences of squares',
+      'Check factorizations by multiplying back, and recognize quadratics that don’t factor over the integers'
+    ],
+    difficulty: ['beginner', 'intermediate', 'advanced'],
+    minutes: '40-55 min',
+    parts: ['4 stages', 'Design studio and frame canvas', 'Algebra tile organizer', 'Binomial area model', 'GCF and grouping boards', 'Factor pair finder and tile builder', 'Custom Frame Designer Certification (12)', 'Custom MTB Armor Blueprint'],
+    skills: [...new Set(Object.values(wrapQuestionSkills).flat())],
+    stages: {
+      'alg1.adding-and-subtracting-polynomials': { route: 'design', label: 'Stage 1: Design the Protection Kit' },
+      'alg1.multiplying-polynomials': { route: 'expand', label: 'Stage 2: Expand the Graphics' },
+      'alg1.factoring-expressions': { route: 'cutsheet', label: 'Stage 3: Optimize the Cut Sheets' },
+      'alg1.factoring-quadratics': { route: 'reverse', label: 'Stage 4: Reverse Engineer the Panel' }
+    },
+    tracking: { gameId: 'wrap-lab', questions: wrapQuestionSkills }
   },
 
   // ---------- Physics (content/classes/physics.mjs) ----------
