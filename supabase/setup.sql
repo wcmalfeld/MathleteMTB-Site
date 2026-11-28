@@ -48,7 +48,7 @@ grant select on public.members to authenticated;
 --                          members row (a direct Mathlete account).
 -- has_tool_access():       a live session AND either individual access or
 --                          an active membership in an organization whose
---                          licence is current (see organizations.sql; that
+--                          license is current (see organizations.sql; that
 --                          part only applies once that file has been run).
 create or replace function public.has_live_session()
 returns boolean

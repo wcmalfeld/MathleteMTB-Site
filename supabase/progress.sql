@@ -769,7 +769,7 @@ grant select on public.game_sessions, public.question_attempts,
 --     count). Nothing is ever marked "mastered" automatically.
 --   * p_organization_id is the organization the student is working in.
 --     It is re-checked here (active membership, active organization,
---     current licence); a student who only has access through one
+--     current license); a student who only has access through one
 --     organization doesn't need to send it.
 -- Errors use PostgREST's PTxxx codes so the browser gets a real HTTP
 -- status: 403 not allowed, 409 id clash, 422 bad input, 429 slow down.

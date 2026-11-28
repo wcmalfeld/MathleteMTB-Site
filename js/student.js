@@ -215,7 +215,7 @@
     A.client().then(function (sb) { return sb.rpc('my_organizations'); }).then(function (r) {
       var orgs = r && !r.error && Array.isArray(r.data) ? r.data : [];
       var managed = orgs.filter(function (o) { return o.can_manage; });
-      if (managed.length) return showState('Manage ' + managed[0].name, 'Your account manages ' + managed.map(function (o) { return o.name; }).join(', ') + ' on Mathlete. Practice pages open for you once there’s an active licence and you’re also set up to learn.', [{ href: 'organization.html', label: 'Go to your organization', primary: true }]);
+      if (managed.length) return showState('Manage ' + managed[0].name, 'Your account manages ' + managed.map(function (o) { return o.name; }).join(', ') + ' on Mathlete. Practice pages open for you once there’s an active license and you’re also set up to learn.', [{ href: 'organization.html', label: 'Go to your organization', primary: true }]);
       if (orgs.length) return showState('Not open yet', orgs.map(function (o) { return o.name; }).join(', ') + ' hasn’t switched on Mathlete for students yet. Your account is ready: ask your school’s Mathlete administrator when access starts.', [{ href: 'index.html', label: 'Back to the Lab' }]);
       plain();
     }).catch(plain);

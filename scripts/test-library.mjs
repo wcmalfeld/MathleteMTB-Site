@@ -129,7 +129,7 @@ const a8 = await save('aInstr', base({ title: 'A staff only', visibility: 'priva
 ok('instructor publishes a school staff-only resource', a8.ok);
 ok('School A admin sees it, School A student does not', await visible('aAdmin', a8.id) && !(await visible('aStu', a8.id)));
 await db.exec(`update public.subscriptions set ends_on = current_date - 1, starts_on = current_date - 30 where organization_id = '${orgA}'`);
-ok('expired licence: School A student loses school resources', !(await visible('aStu', a1.id)) && await visible('aStu', t1.id));
+ok('expired license: School A student loses school resources', !(await visible('aStu', a1.id)) && await visible('aStu', t1.id));
 await db.exec(`update public.subscriptions set ends_on = null where organization_id = '${orgA}'`);
 
 // --- everyone else ---

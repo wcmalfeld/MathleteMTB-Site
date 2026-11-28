@@ -23,8 +23,8 @@
 --   * org-branding bucket  logos (PNG, JPEG or WebP, up to 512 KB)
 --
 -- The access rule (PRD 3.3), checked on the server:
---   active membership, active organization, active licence (org_can_learn)
---   + resource included in the licence + switched on by the organization
+--   active membership, active organization, active license (org_can_learn)
+--   + resource included in the license + switched on by the organization
 --   + its required context (sport) included and switched on
 --   + resource available (not coming soon / paused by Mathlete)
 --   + the person's role may use it (audience).
@@ -67,7 +67,7 @@ create table if not exists public.resource_relations (
   check (resource_id <> related_id)
 );
 
--- 2. What a licence includes ------------------------------------------------
+-- 2. What a license includes ------------------------------------------------
 alter table public.plans add column if not exists all_resources boolean not null default false;
 
 create table if not exists public.plan_resources (
@@ -141,7 +141,7 @@ drop policy if exists "Signed-in people read catalog relations" on public.resour
 create policy "Signed-in people read catalog relations" on public.resource_relations for select to authenticated using (true);
 
 -- 4. The access rule ---------------------------------------------------------
--- Included in the organization's current licence?
+-- Included in the organization's current license?
 create or replace function public.org_entitled(p_org uuid, p_resource text)
 returns boolean language sql stable security definer set search_path = '' as $$
   select coalesce((
@@ -209,7 +209,7 @@ $$;
 
 -- 5. What students (and the preview) see -------------------------------------
 -- p_preview: owners/admins (and Mathlete) see the student view of an
--- organization even before its licence is active.
+-- organization even before its license is active.
 create or replace function public.org_student_view(p_org uuid, p_preview boolean default false)
 returns jsonb language plpgsql stable security definer set search_path = '' as $$
 declare
@@ -290,7 +290,7 @@ end;
 $$;
 
 -- Switch an included resource on or off. Never possible for something the
--- licence doesn't include.
+-- license doesn't include.
 create or replace function public.set_resource_enabled(p_org uuid, p_resource text, p_enabled boolean)
 returns text language plpgsql security definer set search_path = '' as $$
 begin
@@ -302,7 +302,7 @@ begin
     raise sqlstate 'PT404' using message = 'No such resource.';
   end if;
   if not public.org_entitled(p_org, p_resource) then
-    raise sqlstate 'PT403' using message = 'That isn''t included in your organization''s licence. Contact Mathlete to add it.';
+    raise sqlstate 'PT403' using message = 'That isn''t included in your organization''s license. Contact Mathlete to add it.';
   end if;
   insert into public.organization_resource_settings (organization_id, resource_id, enabled, updated_by)
   values (p_org, p_resource, p_enabled, auth.uid())
@@ -312,7 +312,7 @@ begin
 end;
 $$;
 
--- Whether resources added to the licence later start switched on.
+-- Whether resources added to the license later start switched on.
 create or replace function public.set_new_resources_enabled(p_org uuid, p_enabled boolean)
 returns boolean language plpgsql security definer set search_path = '' as $$
 begin
@@ -349,7 +349,7 @@ begin
   if v_bad is not null then raise sqlstate 'PT422' using message = 'Unknown topic: ' || v_bad; end if;
   select t into v_bad from unnest(coalesce(p_topics, '{}')) t
    where not public.org_entitled(p_org, 'course.' || split_part(t, '.', 1)) limit 1;
-  if v_bad is not null then raise sqlstate 'PT403' using message = 'That course isn''t included in your licence: ' || v_bad; end if;
+  if v_bad is not null then raise sqlstate 'PT403' using message = 'That course isn''t included in your license: ' || v_bad; end if;
   delete from public.organization_recommended_topics x where x.organization_id = p_org;
   insert into public.organization_recommended_topics (organization_id, topic_id, position)
   select p_org, t, min(n)::integer from unnest(coalesce(p_topics, '{}')) with ordinality u(t, n) group by t;
@@ -370,7 +370,7 @@ begin
   if char_length(coalesce(p_description, '')) > 300 then raise sqlstate 'PT422' using message = 'Keep the description under 300 characters.'; end if;
   if cardinality(coalesce(p_items, '{}')) > 40 then raise sqlstate 'PT422' using message = 'Up to 40 resources in a collection.'; end if;
   select i into v_bad from unnest(coalesce(p_items, '{}')) i where not public.org_entitled(p_org, i) limit 1;
-  if v_bad is not null then raise sqlstate 'PT403' using message = 'Not included in your licence: ' || v_bad; end if;
+  if v_bad is not null then raise sqlstate 'PT403' using message = 'Not included in your license: ' || v_bad; end if;
   if v_id is null then
     if (select count(*) from public.organization_collections c where c.organization_id = p_org) >= 20 then
       raise sqlstate 'PT422' using message = 'Up to 20 collections.';
@@ -506,7 +506,7 @@ $$;
 create or replace function public.set_org_entitlement(p_org uuid, p_resource text, p_kind text, p_note text default null)
 returns text language plpgsql security definer set search_path = '' as $$
 begin
-  if not public.is_platform_operator() then raise sqlstate 'PT403' using message = 'Only Mathlete platform admins change what a licence includes.'; end if;
+  if not public.is_platform_operator() then raise sqlstate 'PT403' using message = 'Only Mathlete platform admins change what a license includes.'; end if;
   if not exists (select 1 from public.organizations o where o.id = p_org) then raise sqlstate 'PT404' using message = 'No such organization.'; end if;
   if not exists (select 1 from public.resources r where r.id = p_resource) then raise sqlstate 'PT404' using message = 'No such resource: ' || p_resource; end if;
   if p_kind is null then

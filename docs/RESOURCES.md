@@ -34,7 +34,7 @@ All of this is enforced by the database, not the pages.
 | Who | Sees | Can add / change |
 |---|---|---|
 | Anyone, not logged in | Published Mathlete-wide resources | Nothing |
-| Student at a school | + that school's published resources (while its licence is current) | Nothing |
+| Student at a school | + that school's published resources (while its license is current) | Nothing |
 | Tutor (`profiles.role = tutor`) | + Mathlete staff-only resources | Mathlete-wide resources as **drafts** (an admin publishes them), and staff-only ones. Can edit their own until an admin publishes them. |
 | School instructor | + their school's staff-only resources | The same, for their school |
 | School owner / admin | Everything for their school | Publish, edit and delete their school's resources. Never Mathlete-wide ones. |

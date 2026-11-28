@@ -454,7 +454,7 @@ for (const page of ['coaching.html', 'riding-goals.html', 'training.html']) {
   const unmapped = progressGames.filter(g => !privateIds.includes(g) && !new RegExp(`array\\[[^\\]]*'${g}'[^\\]]*\\]::text\\[\\]`).test(catalogSqlText));
   check(`Every game that saves progress is in the catalog, so schools' settings apply to it (${progressGames.length} games)`, progressGames.length >= 5 && unmapped.length === 0, unmapped.join(', '));
   check('record_attempt checks the school has the activity switched on (org_game_allowed)', /org_game_allowed\(v_org, p_game_id\)/.test(read('supabase/progress.sql')));
-  check('Schools can only switch on what their licence includes (set_resource_enabled checks org_entitled)', /if not public\.org_entitled\(p_org, p_resource\) then\s+raise sqlstate 'PT403'/.test(sqlR));
+  check('Schools can only switch on what their license includes (set_resource_enabled checks org_entitled)', /if not public\.org_entitled\(p_org, p_resource\) then\s+raise sqlstate 'PT403'/.test(sqlR));
   check('Resource tables are read-only from the browser (no insert/update/delete grants)', !/grant (insert|update|delete|all)[^;]*on public\.(resources|plan_resources|organization_entitlements|organization_resource_settings|organization_collections)/i.test(sqlR));
   check('Every resource role check treats "no role" as a refusal', !/public\.org_role\([a-z_]+\) in \(/.test(sqlR));
   check('Logos: images only (no SVG), only into the organization’s own folder', /allowed_mime_types = array\['image\/png', 'image\/jpeg', 'image\/webp'\]/.test(sqlR) && /public\.org_manages_branding_path\(name\)/.test(sqlR) && !/svg\)\$/.test(sqlR));

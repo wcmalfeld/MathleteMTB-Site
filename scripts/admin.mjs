@@ -30,25 +30,25 @@
 //                                                      a goal in words (you mark it done in the Supabase table for now)
 //   node scripts/admin.mjs goals student@example.com   list a student's goals
 //
-// Organizations and licences (needs supabase/organizations.sql; see docs/ORGANIZATIONS.md):
+// Organizations and licenses (needs supabase/organizations.sql; see docs/ORGANIZATIONS.md):
 //   node scripts/admin.mjs org create world-class-academy sports_academy World Class Academy
 //                                                      types: school sports_academy tutoring educational other (starts pending)
-//   node scripts/admin.mjs orgs                        every organization: status, licence, seats
-//   node scripts/admin.mjs org show world-class-academy    overview, members, licence history, recent activity
+//   node scripts/admin.mjs orgs                        every organization: status, license, seats
+//   node scripts/admin.mjs org show world-class-academy    overview, members, license history, recent activity
 //   node scripts/admin.mjs org status world-class-academy active      pending | active | suspended | archived
 //   node scripts/admin.mjs plan pilot 50 term Organization Pilot      id, student seat limit, interval (month year term one_time custom), name
 //   node scripts/admin.mjs plans
 //   node scripts/admin.mjs license world-class-academy pilot 30 2026-12-01 2027-06-30
 //                                                      plan, seats, start, end (or "none"); add "trial" to start as trialing
 //   node scripts/admin.mjs license-status world-class-academy suspended Unpaid invoice
-//                                                      active | past_due | suspended | canceled | expired (of the current licence)
+//                                                      active | past_due | suspended | canceled | expired (of the current license)
 //   node scripts/admin.mjs org add world-class-academy someone@example.com student
 //                                                      owner | admin | instructor | student; makes an account (invite email) if needed
 //   node scripts/admin.mjs org member world-class-academy someone@example.com removed
 //                                                      a role, or active | suspended | removed (records are kept)
 //   node scripts/admin.mjs superadmin you@example.com  make someone a Mathlete platform admin
 //
-// What licences include (needs supabase/resources.sql + catalog.sql; see docs/ORGANIZATIONS.md):
+// What licenses include (needs supabase/resources.sql + catalog.sql; see docs/ORGANIZATIONS.md):
 //   node scripts/admin.mjs catalog                     every resource: id, type, status
 //   node scripts/admin.mjs plan-resources pilot        what a plan includes
 //   node scripts/admin.mjs plan-resources pilot add trail-builder slope-lab course.alg1
@@ -207,7 +207,7 @@ async function orgCommand(sub, ...a) {
     if (!slug || !type || !name.length) die('Usage: org create <slug> <school|sports_academy|tutoring|educational|other> <name>');
     const id = await rpc('create_organization', { p_name: name.join(' '), p_slug: slug, p_type: type, p_status: 'pending' });
     console.log(`\n  Created "${name.join(' ')}" (${slug}), status pending.`);
-    console.log(`  Next: a licence (license ${slug} <plan> <seats> <start> <end>), an owner (org add ${slug} <email> owner), then org status ${slug} active.\n`);
+    console.log(`  Next: a license (license ${slug} <plan> <seats> <start> <end>), an owner (org add ${slug} <email> owner), then org status ${slug} active.\n`);
     return id;
   }
   const org = await orgBySlug(a[0]);
@@ -245,16 +245,16 @@ async function orgCommand(sub, ...a) {
     const emailOf = id => (people.find(p => p.user_id === id) || {}).email || id;
     const users = []; for (const m of members) { const u = await api('GET', `/auth/v1/admin/users/${m.user_id}`).catch(() => null); users.push({ ...m, email: u ? u.email : emailOf(m.user_id) }); }
     console.log(`\n  ${org.name}  (${org.slug}, ${org.org_type})  status: ${org.status}`);
-    console.log(`  Licence: ${o.license.state}${o.license.plan ? ` — plan ${o.license.plan}, ${o.license.starts_on} to ${o.license.ends_on || 'open-ended'}` : ''}`);
+    console.log(`  License: ${o.license.state}${o.license.plan ? ` — plan ${o.license.plan}, ${o.license.starts_on} to ${o.license.ends_on || 'open-ended'}` : ''}`);
     console.log(`  Seats: ${o.seats.active_students} students active, ${o.seats.pending_invitations} invitations reserved, ${o.seats.available} available of ${o.seats.licensed}`);
     console.log('\n  Members:'); users.forEach(m => console.log(`    ${m.role.padEnd(10)} ${m.status.padEnd(9)} ${m.email}`));
-    console.log('\n  Licence history (newest first):'); subs.forEach(x => console.log(`    ${x.created_at.slice(0, 10)}  ${x.plan_id}  ${x.status}  ${x.starts_on} → ${x.ends_on || 'open'}  ${x.seat_allowance} seats${x.cancel_reason ? '  (' + x.cancel_reason + ')' : ''}`));
+    console.log('\n  License history (newest first):'); subs.forEach(x => console.log(`    ${x.created_at.slice(0, 10)}  ${x.plan_id}  ${x.status}  ${x.starts_on} → ${x.ends_on || 'open'}  ${x.seat_allowance} seats${x.cancel_reason ? '  (' + x.cancel_reason + ')' : ''}`));
     console.log('\n  Recent activity:'); (o.recent || []).forEach(r => console.log(`    ${r.at.slice(0, 16).replace('T', ' ')}  ${r.action}  (${r.actor})`));
     console.log('');
   } else if (sub === 'resources') {
     const r = await rpc('org_resources', { p_org: org.id });
     const WORD = { enabled: 'on', disabled: 'off', not_included: 'not included', unavailable: 'unavailable', needs_context: 'on, but its sport is off' };
-    console.log(`\n  ${org.name}: what its licence includes and what it has switched on`);
+    console.log(`\n  ${org.name}: what its license includes and what it has switched on`);
     r.resources.forEach(x => console.log(`    ${(WORD[x.state] || x.state).padEnd(24)} ${x.type.padEnd(8)} ${x.id}`));
     console.log(`\n  Newly included resources start ${r.new_resources_enabled ? 'on' : 'off'}. The school changes on/off on its organization page; you change what's included with plan-resources or entitle.\n`);
   } else die('Usage: org <create|show|status|add|member|resources> ...');
@@ -507,7 +507,7 @@ const commands = {
     console.log('');
     for (const o of rows) {
       const ov = await rpc('organization_overview', { p_org: o.id });
-      console.log(`  ${o.status.padEnd(9)}  ${o.name} (${o.slug})  |  licence: ${ov.license.state}${ov.license.plan ? ' (' + ov.license.plan + ')' : ''}  |  seats ${ov.seats.active_students}+${ov.seats.pending_invitations}/${ov.seats.licensed}`);
+      console.log(`  ${o.status.padEnd(9)}  ${o.name} (${o.slug})  |  license: ${ov.license.state}${ov.license.plan ? ' (' + ov.license.plan + ')' : ''}  |  seats ${ov.seats.active_students}+${ov.seats.pending_invitations}/${ov.seats.licensed}`);
     }
     console.log('');
   },
@@ -559,17 +559,17 @@ const commands = {
     if (!slug || !plan || !/^\d+$/.test(seats || '') || !ymd(start) || !(end === 'none' || ymd(end))) die('Usage: license <org slug> <plan id> <seats> <start YYYY-MM-DD> <end YYYY-MM-DD | none> [trial]');
     const org = await orgBySlug(slug);
     await rpc('activate_license', { p_org: org.id, p_plan: plan, p_seats: Number(seats), p_starts: start, p_ends: end === 'none' ? null : end, p_status: trial === 'trial' ? 'trialing' : 'active', p_note: 'manual activation (admin.mjs)' });
-    console.log(`\n  ${org.name}: ${trial === 'trial' ? 'trial' : 'licence'} on plan ${plan}, ${seats} student seats, ${start} to ${end === 'none' ? 'open-ended' : end}.`);
-    console.log('  Any earlier licence is kept in the history (see org show).' + (org.status !== 'active' ? `\n  The organization is still ${org.status}: run  org status ${slug} active  when it's ready.` : '') + '\n');
+    console.log(`\n  ${org.name}: ${trial === 'trial' ? 'trial' : 'license'} on plan ${plan}, ${seats} student seats, ${start} to ${end === 'none' ? 'open-ended' : end}.`);
+    console.log('  Any earlier license is kept in the history (see org show).' + (org.status !== 'active' ? `\n  The organization is still ${org.status}: run  org status ${slug} active  when it's ready.` : '') + '\n');
   },
 
   async 'license-status'(slug, status, ...why) {
     if (!slug || !status) die('Usage: license-status <org slug> <active|past_due|suspended|canceled|expired> [reason]');
     const org = await orgBySlug(slug);
     const cur = await api('GET', `/rest/v1/subscriptions?organization_id=eq.${org.id}&replaced_by=is.null&order=created_at.desc&limit=1&select=id,status`);
-    if (!cur.length) die(`${org.name} has no licence yet.`);
+    if (!cur.length) die(`${org.name} has no license yet.`);
     await rpc('set_subscription_status', { p_subscription: cur[0].id, p_status: status, p_reason: why.join(' ') || null });
-    console.log(`\n  ${org.name}'s licence: ${cur[0].status} → ${status}.\n`);
+    console.log(`\n  ${org.name}'s license: ${cur[0].status} → ${status}.\n`);
   },
 
   async superadmin(email) {

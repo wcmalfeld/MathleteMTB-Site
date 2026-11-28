@@ -296,10 +296,10 @@ students use their own personal email addresses (normal email invitations).
 **2026-11-13: Step 1 built** (see [ORGANIZATIONS.md](ORGANIZATIONS.md)).
 `supabase/organizations.sql` (organizations, memberships, platform admins,
 plans, subscriptions with history, seats, invitations table, audit log,
-status and licence rules, org-scoped RLS), `organization_id` on learning
+status and license rules, org-scoped RLS), `organization_id` on learning
 records, `record_attempt()` takes and verifies the organization, access
 split into direct vs organization (`setup.sql`), "Working in" switcher
-(`js/org.js`), admin.mjs organization/licence commands, live acceptance test
+(`js/org.js`), admin.mjs organization/license commands, live acceptance test
 `scripts/test-organizations.mjs`. Local tests: 44/44 isolation and licensing
 checks; all earlier database suites pass; switcher 8/8 in Chrome.
 Needs: the four SQL files run in order, the live test, deploy.

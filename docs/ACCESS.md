@@ -51,7 +51,7 @@ The MTB Physics Playground became members-only on 2026-11-15. It is developed
 in its own repository; `node scripts/import-playground.mjs` packs its build
 into `private-tools/physics-playground/index.html` for upload, and
 `learning-lab/physics-playground/` only redirects old links to the player.
-Like every private tool, schools' licences don't include it (private tools
+Like every private tool, schools' licenses don't include it (private tools
 are direct-member access only).
 Summit Expedition is members-only: its file lives in the private bucket, and
 its source is kept (git-ignored) in `private-tools/summit-expedition/`.

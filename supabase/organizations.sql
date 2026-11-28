@@ -11,7 +11,7 @@
 --   * platform_admins            Mathlete super admins (never assignable
 --                                by an organization)
 --   * plans, subscriptions       configurable plans and each organization's
---                                licence history (manual activation now;
+--                                license history (manual activation now;
 --                                payment providers later)
 --   * invitations                (used by PRD 2; here so seat counts are
 --                                complete from the start)
@@ -21,7 +21,7 @@
 --
 -- How access is decided (all on the server):
 --   A person can LEARN in an organization when their membership is active,
---   the organization is active, and its licence is current (active or
+--   the organization is active, and its license is current (active or
 --   trialing within its dates, or past due within the grace period).
 --   Owners and admins can still MANAGE a pending, suspended or unlicensed
 --   organization (to set it up or renew it); students and instructors can't
@@ -113,7 +113,7 @@ create table if not exists public.plans (
   updated_at         timestamptz not null default now()
 );
 
--- One row per licence period. A plan change or renewal creates a new row;
+-- One row per license period. A plan change or renewal creates a new row;
 -- the old one is ended with replaced_by, so history is never overwritten.
 create table if not exists public.subscriptions (
   id               uuid primary key default gen_random_uuid(),
@@ -143,7 +143,7 @@ create table if not exists public.platform_settings (
   note  text
 );
 insert into public.platform_settings (key, value, note) values
-  ('past_due_grace_days', '14', 'Days a past-due licence keeps working before access stops. 0 = none.')
+  ('past_due_grace_days', '14', 'Days a past-due license keeps working before access stops. 0 = none.')
 on conflict (key) do nothing;
 
 -- 4. Invitations (flows in PRD 2; seats count them from now) -------------
@@ -193,9 +193,9 @@ do $$ begin
 end $$;
 
 -- 7. Access helpers ----------------------------------------------------------
--- The licence state of an organization today:
+-- The license state of an organization today:
 --   'active' | 'trialing' | 'grace' (past due, inside the grace period)
---   | 'none' (no current licence) | 'suspended' | 'expired'
+--   | 'none' (no current license) | 'suspended' | 'expired'
 create or replace function public.org_license_state(p_org uuid)
 returns text language plpgsql stable security definer set search_path = '' as $$
 declare
@@ -452,7 +452,7 @@ begin
   select * into v_old from public.organization_memberships m where m.organization_id = p_org and m.user_id = p_user;
   if p_role = 'student' and not (found and v_old.status = 'active' and v_old.role = 'student') then
     v_seats := public.seat_usage(p_org);
-    if (v_seats ->> 'available')::integer < 1 then raise sqlstate 'PT422' using message = 'No student seats available on this organization''s licence.'; end if;
+    if (v_seats ->> 'available')::integer < 1 then raise sqlstate 'PT422' using message = 'No student seats available on this organization''s license.'; end if;
   end if;
   insert into public.organization_memberships (organization_id, user_id, role, status)
   values (p_org, p_user, p_role, 'active')
@@ -491,7 +491,7 @@ begin
   -- Becoming an active student needs a seat.
   if v_role = 'student' and v_status = 'active' and not (m.role = 'student' and m.status = 'active')
      and (public.seat_usage(p_org) ->> 'available')::integer < 1 then
-    raise sqlstate 'PT422' using message = 'No student seats available on this organization''s licence.';
+    raise sqlstate 'PT422' using message = 'No student seats available on this organization''s license.';
   end if;
   update public.organization_memberships x set role = v_role, status = v_status, updated_at = now() where x.id = m.id;
   perform public.audit(p_org, 'member.updated', 'membership', m.id::text,
@@ -500,7 +500,7 @@ begin
 end;
 $$;
 
--- 11. Plans and licences (platform operators) --------------------------------
+-- 11. Plans and licenses (platform operators) --------------------------------
 create or replace function public.save_plan(p_id text, p_name text, p_seat_limit integer default null, p_interval text default 'year',
                                             p_description text default null, p_price_cents integer default null, p_currency text default null,
                                             p_products text[] default '{academics}', p_status text default 'active')
@@ -517,33 +517,33 @@ begin
 end;
 $$;
 
--- Manually activate a licence: a real subscription record. Any current
--- licence is ended (kept in history) and points to the new one.
+-- Manually activate a license: a real subscription record. Any current
+-- license is ended (kept in history) and points to the new one.
 create or replace function public.activate_license(p_org uuid, p_plan text, p_seats integer, p_starts date, p_ends date,
                                                    p_status text default 'active', p_note text default null)
 returns uuid language plpgsql security definer set search_path = '' as $$
 declare
   v_id uuid; v_plan public.plans%rowtype; v_used integer;
 begin
-  if not public.is_platform_operator() then raise sqlstate 'PT403' using message = 'Only Mathlete platform admins activate licences.'; end if;
+  if not public.is_platform_operator() then raise sqlstate 'PT403' using message = 'Only Mathlete platform admins activate licenses.'; end if;
   select * into v_plan from public.plans p where p.id = p_plan and p.status = 'active';
   if not found then raise sqlstate 'PT422' using message = 'No active plan with that id.'; end if;
-  if p_status not in ('active', 'trialing', 'pending') then raise sqlstate 'PT422' using message = 'A licence starts active, trialing or pending.'; end if;
+  if p_status not in ('active', 'trialing', 'pending') then raise sqlstate 'PT422' using message = 'A license starts active, trialing or pending.'; end if;
   if p_seats is null or p_seats < 0 or (v_plan.student_seat_limit is not null and p_seats > v_plan.student_seat_limit) then
     raise sqlstate 'PT422' using message = 'Seats must be 0 or more, and within the plan''s limit.';
   end if;
   if p_starts is null or (p_ends is not null and p_ends < p_starts) then raise sqlstate 'PT422' using message = 'Check the start and end dates.'; end if;
   perform 1 from public.organizations o where o.id = p_org for update;
   if not found then raise sqlstate 'PT404' using message = 'No such organization.'; end if;
-  -- Seat policy: a new licence can't have fewer seats than students already active.
+  -- Seat policy: a new license can't have fewer seats than students already active.
   select count(*) into v_used from public.organization_memberships m where m.organization_id = p_org and m.role = 'student' and m.status = 'active';
-  if p_seats < v_used then raise sqlstate 'PT422' using message = format('%s students are active; the licence needs at least that many seats (suspend or remove students first).', v_used); end if;
+  if p_seats < v_used then raise sqlstate 'PT422' using message = format('%s students are active; the license needs at least that many seats (suspend or remove students first).', v_used); end if;
   insert into public.subscriptions (organization_id, plan_id, status, starts_on, ends_on, billing_interval, seat_allowance, provider, metadata, created_by)
   values (p_org, p_plan, p_status, p_starts, p_ends, v_plan.billing_interval, p_seats, 'manual', jsonb_build_object('note', p_note, 'plan_version', v_plan.version), auth.uid())
   returning id into v_id;
   update public.subscriptions x set replaced_by = v_id, updated_at = now(),
          status = case when x.status in ('active', 'trialing', 'past_due', 'pending', 'suspended') then 'canceled' else x.status end,
-         canceled_at = coalesce(x.canceled_at, now()), cancel_reason = coalesce(x.cancel_reason, 'replaced by a new licence')
+         canceled_at = coalesce(x.canceled_at, now()), cancel_reason = coalesce(x.cancel_reason, 'replaced by a new license')
    where x.organization_id = p_org and x.id <> v_id and x.replaced_by is null;
   perform public.audit(p_org, 'subscription.activated', 'subscription', v_id::text,
                        jsonb_build_object('plan', p_plan, 'seats', p_seats, 'starts_on', p_starts, 'ends_on', p_ends, 'status', p_status, 'note', p_note));
@@ -551,22 +551,22 @@ begin
 end;
 $$;
 
--- Allowed licence transitions. Canceled and expired are final (renew by
--- activating a new licence).
+-- Allowed license transitions. Canceled and expired are final (renew by
+-- activating a new license).
 create or replace function public.set_subscription_status(p_subscription uuid, p_status text, p_reason text default null)
 returns text language plpgsql security definer set search_path = '' as $$
 declare s public.subscriptions%rowtype; v_ok boolean;
 begin
-  if not public.is_platform_operator() then raise sqlstate 'PT403' using message = 'Only Mathlete platform admins change licences.'; end if;
+  if not public.is_platform_operator() then raise sqlstate 'PT403' using message = 'Only Mathlete platform admins change licenses.'; end if;
   select * into s from public.subscriptions x where x.id = p_subscription for update;
-  if not found then raise sqlstate 'PT404' using message = 'No such licence.'; end if;
+  if not found then raise sqlstate 'PT404' using message = 'No such license.'; end if;
   v_ok := (s.status, p_status) in (
     ('pending', 'trialing'), ('pending', 'active'), ('pending', 'canceled'),
     ('trialing', 'active'), ('trialing', 'past_due'), ('trialing', 'suspended'), ('trialing', 'canceled'), ('trialing', 'expired'),
     ('active', 'past_due'), ('active', 'suspended'), ('active', 'canceled'), ('active', 'expired'),
     ('past_due', 'active'), ('past_due', 'suspended'), ('past_due', 'canceled'), ('past_due', 'expired'),
     ('suspended', 'active'), ('suspended', 'canceled'), ('suspended', 'expired'));
-  if not v_ok then raise sqlstate 'PT422' using message = format('A licence can''t go from %s to %s.', s.status, p_status); end if;
+  if not v_ok then raise sqlstate 'PT422' using message = format('A license can''t go from %s to %s.', s.status, p_status); end if;
   update public.subscriptions x set status = p_status, updated_at = now(),
          canceled_at = case when p_status = 'canceled' then now() else x.canceled_at end,
          cancel_reason = case when p_status = 'canceled' then p_reason else x.cancel_reason end
@@ -631,7 +631,7 @@ begin
   select * into v_prev from public.invitations i where i.organization_id = p_org and lower(i.email) = v_email and i.status = 'pending';
   if p_role = 'student' then
     v_avail := (public.seat_usage(p_org) ->> 'available')::integer + case when v_prev.id is not null and v_prev.role = 'student' then 1 else 0 end;
-    if v_avail < 1 then raise sqlstate 'PT422' using message = 'No student seats available on this organization''s licence.'; end if;
+    if v_avail < 1 then raise sqlstate 'PT422' using message = 'No student seats available on this organization''s license.'; end if;
   end if;
   if v_prev.id is not null then update public.invitations i set status = 'revoked' where i.id = v_prev.id; end if;
   v_token := replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', '');
@@ -799,7 +799,7 @@ begin
 end;
 $$;
 
--- The licence and its history: the owner (billing may be owner-only) and Mathlete.
+-- The license and its history: the owner (billing may be owner-only) and Mathlete.
 create or replace function public.org_subscription(p_org uuid)
 returns jsonb language plpgsql security definer set search_path = '' as $$
 begin

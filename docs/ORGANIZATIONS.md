@@ -1,11 +1,11 @@
-# Organizations and licences
+# Organizations and licenses
 
 How schools and academies use Mathlete: one shared platform, a private
-workspace per organization, access controlled by a licence. Plan and audit:
+workspace per organization, access controlled by a license. Plan and audit:
 [MULTI-ORG-PLAN.md](MULTI-ORG-PLAN.md). This page covers **Step 1** (the
-foundation: organizations, memberships, licences, seats, isolation),
+foundation: organizations, memberships, licenses, seats, isolation),
 **Step 2** (invitations, the organization page, CSV import) and **Step 3**
-(the resource catalog, what licences include, what schools switch on,
+(the resource catalog, what licenses include, what schools switch on,
 branding).
 
 ## Setting up the database
@@ -45,14 +45,14 @@ every time.
 ## When can someone use an organization?
 
 They can **learn or teach** in it when all are true: their membership is
-active, the organization is **active**, and its licence is current
+active, the organization is **active**, and its license is current
 (active, or trialing, within its dates; past due keeps working for the grace
 period in `platform_settings.past_due_grace_days`, 14 days by default).
 
 | Organization status | Students and instructors | Owners and admins |
 |---|---|---|
 | pending | not yet | can manage (set it up) |
-| active | yes, if the licence is current | yes |
+| active | yes, if the license is current | yes |
 | suspended | no, from the next request | can still see it (to sort it out) |
 | archived | no; hidden from the switcher | no; records are kept |
 
@@ -65,19 +65,19 @@ Student seats are licensed; instructors, admins and owners don't use seats.
 Used = active students; reserved = pending student invitations (Step 2).
 Adding a student, or reactivating one, needs a free seat, checked under a
 lock so two additions can't take the last seat. Removing or suspending a
-student frees their seat. A new licence can't have fewer seats than students
+student frees their seat. A new license can't have fewer seats than students
 already active.
 
-## Licences
+## Licenses
 
 Plans are configurable (`plans`): seat limit, interval, products
 (`academics`; MTB Coaching would be a separate product), and an optional
-price set by Mathlete (none are invented). A licence is a `subscriptions`
-row. Activating a new licence ends the current one (it stays in the history,
+price set by Mathlete (none are invented). A license is a `subscriptions`
+row. Activating a new license ends the current one (it stays in the history,
 pointing to its replacement). Statuses: pending, trialing, active, past_due,
 suspended, canceled, expired. Canceled and expired are final; renew by
-activating a new licence. Payment providers come later (Step 6); manual
-licences are real subscription records, not a bypass.
+activating a new license. Payment providers come later (Step 6); manual
+licenses are real subscription records, not a bypass.
 
 ## Commands (terminal)
 
@@ -134,8 +134,8 @@ are never written to the log.
 For owners and admins (and platform admins, who get a picker of every
 organization). Tabs:
 
-- **Overview:** seats, instructors, licence; a getting-started checklist
-  that ticks itself off from real data (owner, licence, welcome message,
+- **Overview:** seats, instructors, license; a getting-started checklist
+  that ticks itself off from real data (owner, license, welcome message,
   instructors, students) and "Mark setup complete"; owners and admins;
   recent activity.
 - **Members:** invite one person; filter by role and status, search; change
@@ -151,7 +151,7 @@ organization). Tabs:
   off; recommended topics; collections (Step 3, below).
 - **Settings:** name, welcome message, logo and accent colour.
 - **Student preview:** exactly what students see on their dashboard.
-- **Subscription:** owners and platform admins only; licence and history.
+- **Subscription:** owners and platform admins only; license and history.
 
 Someone who manages an organization but has no learning access of their own
 is sent here after logging in; members see a "Manage …" link under the
@@ -203,7 +203,7 @@ private Summit Expedition isn't listed: it stays direct-accounts-only.
 
 ### Included vs switched on
 
-- **What a licence includes** is Mathlete's call: each plan includes a list
+- **What a license includes** is Mathlete's call: each plan includes a list
   of resources, or everything (`plans.all_resources`). Per organization,
   Mathlete can **grant** an extra or **exclude** one. Plans that existed before
   Step 3 include everything, so nothing changed for schools already set up.
@@ -211,11 +211,11 @@ private Summit Expedition isn't listed: it stays direct-accounts-only.
 - **What's switched on** is the school's call, on its **Resources** tab:
   anything included can be switched on or off. Something not included shows
   "Not in your plan" with no switch; the database refuses it either way.
-  Whether resources added to the licence later start on is the school's
+  Whether resources added to the license later start on is the school's
   choice too.
 
 Students can use a resource when (all checked on the server): their
-membership, the organization and its licence are active; the licence includes
+membership, the organization and its license are active; the license includes
 it; the school has it on; its sport is on; Mathlete hasn't marked it coming
 soon or paused; their role may use it. `record_attempt()` refuses to save work
 done in an organization in any lab that fails this, so a school's settings
@@ -224,7 +224,7 @@ public (we license the platform, not the files).
 
 ### Courses, collections, branding
 
-- **Recommended topics:** chosen from the courses the licence includes;
+- **Recommended topics:** chosen from the courses the license includes;
   students see them on their dashboard and as a "Recommended by …" badge in
   Classes. Courses outside the plan get a note in Classes. Mathlete's
   curriculum itself can't be changed.
@@ -253,7 +253,7 @@ node scripts/admin.mjs org resources world-class-academy  what it includes and h
 ## What's recorded
 
 `audit_events` keeps who did what: organizations created and status
-changes, members added and changed, plans saved, licences activated and
+changes, members added and changed, plans saved, licenses activated and
 their status changes, invitations sent, re-sent, withdrawn and accepted,
 settings changes and setup completion. No passwords, tokens or payment details. Owners and
 admins can read their own organization's log; platform admins all of them.

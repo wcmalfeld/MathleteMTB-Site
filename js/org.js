@@ -4,7 +4,7 @@
 //
 // What this file does NOT do: decide access. The choice is only a hint the
 // server re-checks on every request (record_attempt and friends verify the
-// membership, the organization's status and its licence). Picking another
+// membership, the organization's status and its license). Picking another
 // organization's id here gets you nothing.
 //
 // The choice is kept in localStorage ('mathlete-org'), where js/progress.js
@@ -15,7 +15,7 @@
   var read = function () { try { return localStorage.getItem(KEY); } catch (e) { return null; } };
   var write = function (v) { try { if (v) localStorage.setItem(KEY, v); else localStorage.removeItem(KEY); } catch (e) { /* private mode */ } };
 
-  var LICENSE_WORDS = { none: 'no active licence yet', expired: 'its licence has ended', suspended: 'access is paused' };
+  var LICENSE_WORDS = { none: 'no active license yet', expired: 'its license has ended', suspended: 'access is paused' };
 
   // -> { orgs, individual, current (id or null), choices }
   function load(sb, status) {
@@ -76,7 +76,7 @@
   // Used by the student dashboard and, unchanged, by the organization page's
   // student preview, so the two can't drift apart. The list comes from the
   // database (org_student_view in supabase/resources.sql), which only
-  // returns resources the licence includes and the school has switched on.
+  // returns resources the license includes and the school has switched on.
 
   // Public address of a logo in the org-branding bucket.
   function logoUrl(path, version) {

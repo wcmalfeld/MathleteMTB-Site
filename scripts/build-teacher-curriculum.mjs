@@ -465,7 +465,7 @@ function lessonPage(t, prev, next) {
       <h2 class="tc-sec-title" id="locked-h">The full lesson plan is for teachers</h2>
       <p>Teachers also get the mathematical foundation with worked examples, a ${L.counts.stages}-stage teaching plan with timings, step-by-step activity instructions, ${L.counts.guided} guided examples with solutions, ${L.counts.practice} practice problems, a ${L.counts.exit}-question exit ticket, a printable worksheet, common misconceptions, differentiation ideas and the complete answer key.</p>
       <p data-locked-msg><a class="button" href="login.html?next=${encodeURIComponent(L.href)}">Log in to open it</a></p>
-      <p class="tc-locked-who">Open to Mathlete tutors, and to instructors at partner schools whose licence includes the Teacher Curriculum.</p>
+      <p class="tc-locked-who">Open to Mathlete tutors, and to instructors at partner schools whose license includes the Teacher Curriculum.</p>
     </section>
   </div>
 </div>

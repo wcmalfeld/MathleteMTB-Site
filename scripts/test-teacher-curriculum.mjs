@@ -139,7 +139,7 @@ else {
   ok('school instructor: not a teacher while the plan doesn’t include the Teacher Curriculum (new plans include nothing)', (await st('aInstr')) === 'not_teacher');
   await db.exec(`insert into public.plan_resources (plan_id, resource_id) values ('new-plan', 'feature.teacher-curriculum');
                  insert into public.organization_resource_settings (organization_id, resource_id, enabled) values ('${orgA}', 'feature.teacher-curriculum', true);`);
-  ok('school instructor: a teacher once the licence includes it and it’s switched on', (await st('aInstr')) === 'ok');
+  ok('school instructor: a teacher once the license includes it and it’s switched on', (await st('aInstr')) === 'ok');
   ok('school owner: a teacher too', (await st('aOwner')) === 'ok');
   ok('school student: never a teacher, even with the feature on', (await st('aStu')) === 'not_teacher');
   const acc = (await as('aInstr', 'select public.teacher_curriculum_access() j')).rows[0].j;
@@ -148,7 +148,7 @@ else {
   ok('school switches it off: instructors lose access', (await st('aInstr')) === 'not_teacher');
   await db.exec(`update public.organization_resource_settings set enabled = true where organization_id = '${orgA}';
                  update public.subscriptions set status = 'suspended' where organization_id = '${orgA}'`);
-  ok('licence suspended: instructors lose access', (await st('aInstr')) === 'not_teacher');
+  ok('license suspended: instructors lose access', (await st('aInstr')) === 'not_teacher');
   await db.exec(`update public.subscriptions set status = 'active' where organization_id = '${orgA}';
                  update public.organization_memberships set status = 'removed' where user_id = '${U.aInstr.id}'`);
   ok('instructor removed from the school: loses access', (await st('aInstr')) === 'not_teacher');

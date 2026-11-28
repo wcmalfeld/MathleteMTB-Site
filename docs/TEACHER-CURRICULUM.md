@@ -27,7 +27,7 @@ or a cloud drive): it is the only copy of the lesson sources.
   (objectives, essential question, MTB connection, activity and its launch link).
 - Teachers: the full plan. A teacher is a platform admin, a direct account
   with role `tutor` or `admin`, or an owner/admin/instructor of an
-  organization whose licence includes `feature.teacher-curriculum` and has it
+  organization whose license includes `feature.teacher-curriculum` and has it
   switched on. Students never are. The database decides (`is_teacher()`);
   the page only asks `teacher_lesson(id)`, which returns nothing to anyone else.
 - Lessons with status `review` are visible only to platform admins.

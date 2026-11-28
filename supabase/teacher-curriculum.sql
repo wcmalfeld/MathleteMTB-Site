@@ -12,7 +12,7 @@
 -- answer keys, misconceptions) live only in this table, and only teachers
 -- can read them:
 --   * platform admins, and direct accounts whose role is tutor or admin;
---   * owners, admins and instructors of an organization whose licence
+--   * owners, admins and instructors of an organization whose license
 --     includes the Teacher Curriculum and has it switched on.
 -- Students never can, whatever their organization.
 --

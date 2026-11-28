@@ -64,7 +64,7 @@ async function main() {
   const q = await admin('POST', '/rest/v1/questions', { body: { id: QUESTION, game_id: GAME, title: 'Org test probe' }, headers: { Prefer: 'return=minimal' } });
   if (!q.ok) throw new Error('could not add test question: ' + q.text);
 
-  // --- organizations, plan, licence ---
+  // --- organizations, plan, license ---
   let r = await svc('create_organization', { p_name: 'Test Academy ' + tag, p_slug: 'zz-academy-' + tag, p_type: 'sports_academy' });
   if (!r.ok) throw new Error('create_organization failed (did you run supabase/organizations.sql?): ' + r.text);
   orgs.A = r.data;
@@ -75,7 +75,7 @@ async function main() {
   await svc('save_plan', { p_id: PLAN, p_name: 'Test plan', p_seat_limit: 10, p_interval: 'term' });
   await svc('set_plan_resources', { p_plan: PLAN, p_all: true });   // after resources.sql, new plans include nothing until told
   r = await svc('activate_license', { p_org: orgs.A, p_plan: PLAN, p_seats: 2, p_starts: today, p_ends: inDays(30) });
-  record('manual licence activation (2 seats)', r.ok, r.text);
+  record('manual license activation (2 seats)', r.ok, r.text);
   for (const [who, role] of [['WO', 'owner'], ['WI', 'instructor'], ['X', 'instructor'], ['WS', 'student']]) await svc('add_member', { p_org: orgs.A, p_user: people[who].id, p_role: role });
   r = await rpc('WO', 'add_member', { p_org: orgs.A, p_user: people.WS2.id, p_role: 'student' });
   record('   the owner adds a second student (2 of 2 seats)', r.ok, r.text);
@@ -89,7 +89,7 @@ async function main() {
   r = await rpc('WS2', 'record_attempt', { p_attempt_id: randomUUID(), p_game_id: GAME, p_question_id: QUESTION, p_snapshot: { p: 2 }, p_is_correct: true });
   record('   a student with one organization doesn’t have to name it', r.ok && rows(await admin('GET', `/rest/v1/question_attempts?select=organization_id&student_id=eq.${people.WS2.id}`))[0]?.organization_id === orgs.A, r.text);
 
-  // B with its own licence; X is a student in B and an instructor in A
+  // B with its own license; X is a student in B and an instructor in A
   await svc('activate_license', { p_org: orgs.B, p_plan: PLAN, p_seats: 5, p_starts: today, p_ends: null });
   await svc('add_member', { p_org: orgs.B, p_user: people.BA.id, p_role: 'owner' });
   await svc('set_organization_status', { p_org: orgs.B, p_status: 'active' });
@@ -103,7 +103,7 @@ async function main() {
   // --- isolation (direct API, including tampering with organization ids) ---
   r = await read('BA', `question_attempts?select=id&organization_id=eq.${orgs.A}`);
   const r2 = await read('BA', `organization_memberships?select=id&organization_id=eq.${orgs.A}`), r3 = await read('BA', `subscriptions?select=id&organization_id=eq.${orgs.A}`);
-  record('5 B’s owner can’t read A’s attempts, members or licences', rows(r).length === 0 && rows(r2).length === 0 && rows(r3).length === 0, [rows(r).length, rows(r2).length, rows(r3).length]);
+  record('5 B’s owner can’t read A’s attempts, members or licenses', rows(r).length === 0 && rows(r2).length === 0 && rows(r3).length === 0, [rows(r).length, rows(r2).length, rows(r3).length]);
   r = await rpc('BA', 'organization_overview', { p_org: orgs.A });
   const r4 = await rpc('BA', 'update_member', { p_org: orgs.A, p_user: people.WS.id, p_status: 'removed' });
   record('6 sending A’s id to A’s functions as B’s owner is refused (server-side context check)', code(r) === 'PT403' && code(r4) === 'PT403', [r.text, r4.text]);
@@ -114,7 +114,7 @@ async function main() {
   r = await call('POST', '/rest/v1/organization_memberships', { token: people.WO.token, body: { organization_id: orgs.A, user_id: people.BS.id, role: 'owner' } });
   record('   organization tables can’t be written directly', !r.ok, `HTTP ${r.status}`);
 
-  // --- status and licence affect access at once ---
+  // --- status and license affect access at once ---
   await svc('set_organization_status', { p_org: orgs.A, p_status: 'suspended', p_reason: 'test' });
   r = await rpc('WS', 'has_tool_access');
   const r5 = await attempt('WS', orgs.A), r6 = await rpc('WO', 'organization_overview', { p_org: orgs.A });
@@ -123,7 +123,7 @@ async function main() {
   await svc('activate_license', { p_org: orgs.A, p_plan: PLAN, p_seats: 2, p_starts: inDays(-60), p_ends: inDays(-1) });
   r = await rpc('WS', 'org_license_state', { p_org: orgs.A });
   const r7 = await attempt('WS', orgs.A);
-  record('an expired licence stops access; the history keeps both licences', r.data === 'expired' && !r7.ok && rows(await admin('GET', `/rest/v1/subscriptions?select=id&organization_id=eq.${orgs.A}`)).length === 2, [r.data, r7.status]);
+  record('an expired license stops access; the history keeps both licenses', r.data === 'expired' && !r7.ok && rows(await admin('GET', `/rest/v1/subscriptions?select=id&organization_id=eq.${orgs.A}`)).length === 2, [r.data, r7.status]);
   await svc('activate_license', { p_org: orgs.A, p_plan: PLAN, p_seats: 2, p_starts: today, p_ends: inDays(30) });
   r = await rpc('WO', 'update_member', { p_org: orgs.A, p_user: people.WS2.id, p_status: 'removed' });
   const seats = (await svc('seat_usage', { p_org: orgs.A })).data;

@@ -1,6 +1,6 @@
 // Organization page (organization.html), for a school's owners and admins,
 // and for Mathlete's platform admins. Tabs:
-//   Overview      — seats, licence, getting-started checklist, recent activity
+//   Overview      — seats, license, getting-started checklist, recent activity
 //   Members       — invite one person; members (role, suspend, remove);
 //                   invitations (re-send, revoke)
 //   Import        — invite many from a CSV, with a preview before sending
@@ -8,7 +8,7 @@
 //                   recommended topics; curated collections (PRD 3)
 //   Settings      — name, welcome message, logo and accent colour
 //   Student preview — exactly what students see (js/org.js drawSchool)
-//   Subscription  — the licence and its history (owner and Mathlete only)
+//   Subscription  — the license and its history (owner and Mathlete only)
 //
 // What this file does NOT do: decide who may do what. Every call below is a
 // database function that checks the caller's role, the organization, the
@@ -78,13 +78,13 @@
   }
 
   var ROLE_WORDS = { owner: 'Owner', admin: 'Admin', instructor: 'Instructor', student: 'Student' };
-  var LICENSE_WORDS = { active: 'Active', trialing: 'Trial', grace: 'Payment overdue (grace period)', none: 'No licence yet', suspended: 'Paused', expired: 'Ended' };
+  var LICENSE_WORDS = { active: 'Active', trialing: 'Trial', grace: 'Payment overdue (grace period)', none: 'No license yet', suspended: 'Paused', expired: 'Ended' };
   var ACTION_WORDS = {
     'member.added': 'Member added', 'member.invited': 'Invitation sent', 'member.reinvited': 'Invitation re-sent',
     'member.invitation_revoked': 'Invitation withdrawn', 'member.joined': 'Someone joined', 'member.reactivated': 'Member reactivated',
     'member.updated': 'Member changed', 'organization.created': 'Organization created', 'organization.settings_updated': 'Settings updated',
     'organization.setup_completed': 'Setup marked complete', 'organization.status_changed': 'Status changed by Mathlete',
-    'subscription.activated': 'Licence set up', 'subscription.status_changed': 'Licence status changed', 'plan.saved': 'Plan updated'
+    'subscription.activated': 'License set up', 'subscription.status_changed': 'License status changed', 'plan.saved': 'Plan updated'
   };
 
   // ---------- state ----------
@@ -164,9 +164,9 @@
       titleEl.textContent = o.name;
       document.title = o.name + ' — Mathlete MTB';
       eyebrow.textContent = 'Organization · ' + (myRole() === 'platform' ? 'Mathlete admin' : ROLE_WORDS[myRole()] || 'Manager');
-      ledeEl.textContent = o.status === 'pending' ? 'Being set up. Students can’t use Mathlete until Mathlete opens your organization and a licence is active.'
+      ledeEl.textContent = o.status === 'pending' ? 'Being set up. Students can’t use Mathlete until Mathlete opens your organization and a license is active.'
         : o.status === 'suspended' ? 'Access is paused. Get in touch with Mathlete.'
-        : 'Licence: ' + (LICENSE_WORDS[lic.state] || lic.state) + (lic.ends_on ? ' · until ' + fmtDate(lic.ends_on) : '') + '.';
+        : 'License: ' + (LICENSE_WORDS[lic.state] || lic.state) + (lic.ends_on ? ' · until ' + fmtDate(lic.ends_on) : '') + '.';
     });
   }
 
@@ -190,14 +190,14 @@
         el('p', { class: 'stat-sub', text: plural(seats.pending_invitations || 0, 'invitation') + ' pending · ' + (seats.available || 0) + ' available' })),
       el('li', { class: 'stat' }, el('p', { class: 'stat-label', text: 'Instructors' }), el('p', { class: 'stat-value', text: String(counts.instructor || 0) })),
       el('li', { class: 'stat' }, el('p', { class: 'stat-label', text: 'Owners & admins' }), el('p', { class: 'stat-value', text: String((counts.owner || 0) + (counts.admin || 0)) })),
-      el('li', { class: 'stat' }, el('p', { class: 'stat-label', text: 'Licence' }), el('p', { class: 'stat-value stat-value--word', text: LICENSE_WORDS[lic.state] || lic.state || '—' }),
+      el('li', { class: 'stat' }, el('p', { class: 'stat-label', text: 'License' }), el('p', { class: 'stat-value stat-value--word', text: LICENSE_WORDS[lic.state] || lic.state || '—' }),
         el('p', { class: 'stat-sub', text: lic.ends_on ? 'Until ' + fmtDate(lic.ends_on) : 'Mathlete sets this up with you.' }))));
 
     // Getting started
     var setup = ov.setup || {};
     var steps = [
       { k: 'owner', t: 'Your organization has an owner', d: 'The owner manages admins and the subscription.' },
-      { k: 'license', t: 'Your licence is active', d: 'Mathlete sets this up with you. Students can practice once it’s active.' },
+      { k: 'license', t: 'Your license is active', d: 'Mathlete sets this up with you. Students can practice once it’s active.' },
       { k: 'details', t: 'Add a welcome message', d: 'Shown to your members.', href: '#settings', go: 'Open settings' },
       { k: 'instructors', t: 'Invite your instructors', d: 'Teachers who will run classes (classes arrive in a later update).', href: '#members', go: 'Invite' },
       { k: 'students', t: 'Invite your students', d: 'One at a time, or many at once from a spreadsheet.', href: '#import', go: 'Import a list' }
@@ -236,7 +236,7 @@
     else rec.appendChild(el('p', { class: 'meta', text: 'Nothing yet.' }));
 
     var tc = section('Teacher Curriculum', 'Lesson plans for your instructors.');
-    tc.appendChild(el('p', { text: 'Complete, ready-to-teach lesson plans for Algebra 1, Geometry, Algebra 2 and Precalculus, by quarter, unit and topic, each with an MTB activity, practice, an exit ticket and an answer key. Your owners, admins and instructors can open them when your licence includes the Teacher Curriculum.' }));
+    tc.appendChild(el('p', { text: 'Complete, ready-to-teach lesson plans for Algebra 1, Geometry, Algebra 2 and Precalculus, by quarter, unit and topic, each with an MTB activity, practice, an exit ticket and an answer key. Your owners, admins and instructors can open them when your license includes the Teacher Curriculum.' }));
     tc.appendChild(el('a', { class: 'read-link', href: 'teacher-curriculum/', text: 'Open the Teacher Curriculum' }));
 
     var next = section('Coming next');
@@ -738,7 +738,7 @@
   var TYPE_GROUPS = [['feature', 'Platform features'], ['sport', 'Sports'], ['course', 'Courses'], ['lab', 'Learning labs'], ['module', 'Learning modules']];
   var STATE_WORDS = { enabled: 'On', disabled: 'Off', not_included: 'Not in your plan', unavailable: 'Unavailable', needs_context: 'On, but paused' };
   function drawResources() {
-    var w = section('Learning resources', 'Choose what your students see. You can switch on anything your licence includes; to add more, contact Mathlete.');
+    var w = section('Learning resources', 'Choose what your students see. You can switch on anything your license includes; to add more, contact Mathlete.');
     var hold = el('p', { class: 'meta', text: 'Loading…' });
     w.appendChild(hold);
     var msg = el('div', { 'aria-live': 'polite' });
@@ -759,10 +759,10 @@
           S.sb.rpc('set_new_resources_enabled', { p_org: S.orgId, p_enabled: def.checked }).then(function (x) {
             def.disabled = false;
             if (x.error) { def.checked = !def.checked; return clear(msg).appendChild(notice('error', errText(x.error))); }
-            clear(msg).appendChild(notice('success', def.checked ? 'Resources added to your licence later will start switched on.' : 'Resources added to your licence later will start switched off.'));
+            clear(msg).appendChild(notice('success', def.checked ? 'Resources added to your license later will start switched on.' : 'Resources added to your license later will start switched off.'));
           });
         });
-        body.appendChild(el('p', { class: 'org-check-line' }, def, el('label', { for: 'res-default', text: ' Resources added to our licence later start switched on' })));
+        body.appendChild(el('p', { class: 'org-check-line' }, def, el('label', { for: 'res-default', text: ' Resources added to our license later start switched on' })));
         var byName = {}; data.resources.forEach(function (x) { byName[x.id] = x.name; });
         var out = [];
         TYPE_GROUPS.forEach(function (g) {
@@ -790,7 +790,7 @@
             });
           }
           var why = x.state === 'needs_context' ? 'Paused until ' + x.requires.map(function (q) { return q.name; }).join(' and ') + ' is switched on.'
-            : x.state === 'not_included' ? 'Not included in your licence. Contact Mathlete to add it.'
+            : x.state === 'not_included' ? 'Not included in your license. Contact Mathlete to add it.'
             : x.state === 'unavailable' ? (x.status === 'coming_soon' ? 'Being built. It can be switched on once it’s ready.' : 'Temporarily unavailable from Mathlete.')
             : x.audience === 'staff' ? 'Staff only.' : null;
           var safe = window.MathleteOrg && window.MathleteOrg.safeHref(x.url);
@@ -808,14 +808,14 @@
     }).catch(function (err) { hold.textContent = ''; w.appendChild(notice('error', errText(err))); });
   }
 
-  // Recommended topics: pick topics from the courses your licence includes.
+  // Recommended topics: pick topics from the courses your license includes.
   function drawTopics(data) {
     var w = section('Recommended topics', 'Highlighted for your students on their dashboard and in Courses. Mathlete’s curriculum itself stays the same.');
     var courses = (window.MATHLETE_COURSE_TOPICS || []).filter(function (c) {
       var r = data.resources.filter(function (x) { return x.id === 'course.' + c.id; })[0];
       return r && r.entitled;
     });
-    if (!courses.length) return w.appendChild(el('p', { class: 'meta', text: 'Your licence doesn’t include a course yet.' }));
+    if (!courses.length) return w.appendChild(el('p', { class: 'meta', text: 'Your license doesn’t include a course yet.' }));
     var chosen = {}; (data.recommended_topics || []).forEach(function (t) { chosen[t] = true; });
     var count = el('p', { class: 'meta org-count' });
     var upd = function () { count.textContent = Object.keys(chosen).filter(function (k) { return chosen[k]; }).length + ' chosen (up to 60).'; };
@@ -917,7 +917,7 @@
     S.sb.rpc('org_student_view', { p_org: S.orgId, p_preview: true }).then(function (r) {
       if (r.error) throw r.error;
       hold.remove();
-      if (!r.data.open) w.appendChild(notice('info', 'Students can’t use Mathlete here yet (the organization or its licence isn’t active). This is what they’ll see once it is.'));
+      if (!r.data.open) w.appendChild(notice('info', 'Students can’t use Mathlete here yet (the organization or its license isn’t active). This is what they’ll see once it is.'));
       var frame = el('div', { class: 'org-preview' });
       w.appendChild(frame);
       if (window.MathleteOrg && window.MathleteOrg.drawSchool) window.MathleteOrg.drawSchool(frame, r.data, { preview: true });
@@ -927,7 +927,7 @@
 
   // ---------- Subscription ----------
   function drawSubscription() {
-    var w = section('Subscription', 'Your licence is set up with Mathlete. To change your plan or seats, get in touch.');
+    var w = section('Subscription', 'Your license is set up with Mathlete. To change your plan or seats, get in touch.');
     var hold = el('p', { class: 'meta', text: 'Loading…' });
     w.appendChild(hold);
     S.sb.rpc('org_subscription', { p_org: S.orgId }).then(function (r) {
@@ -935,11 +935,11 @@
       var d = r.data, s = d.seats || {};
       hold.remove();
       w.appendChild(el('ul', { class: 'stat-row' },
-        el('li', { class: 'stat' }, el('p', { class: 'stat-label', text: 'Licence' }), el('p', { class: 'stat-value stat-value--word', text: LICENSE_WORDS[d.state] || d.state })),
+        el('li', { class: 'stat' }, el('p', { class: 'stat-label', text: 'License' }), el('p', { class: 'stat-value stat-value--word', text: LICENSE_WORDS[d.state] || d.state })),
         el('li', { class: 'stat' }, el('p', { class: 'stat-label', text: 'Student seats' }), el('p', { class: 'stat-value', text: String(s.licensed || 0) }),
           el('p', { class: 'stat-sub', text: (s.active_students || 0) + ' in use · ' + (s.pending_invitations || 0) + ' invited · ' + (s.available || 0) + ' free' }))));
       var h = d.history || [];
-      if (!h.length) return w.appendChild(el('p', { class: 'meta org-gap', text: 'No licence yet. Mathlete will set it up with you.' }));
+      if (!h.length) return w.appendChild(el('p', { class: 'meta org-gap', text: 'No license yet. Mathlete will set it up with you.' }));
       var tbody = el('tbody');
       h.forEach(function (x) {
         tbody.appendChild(el('tr', { class: x.current ? null : 'is-muted' },
@@ -950,9 +950,9 @@
           el('td', { 'data-label': 'Ends', text: fmtDate(x.ends_on) })));
       });
       w.appendChild(el('div', { class: 'org-table-wrap org-gap' }, el('table', { class: 'org-table' },
-        el('caption', { class: 'sr-only', text: 'Licence history' }),
+        el('caption', { class: 'sr-only', text: 'License history' }),
         el('thead', null, el('tr', null, ['Plan', 'Status', 'Seats', 'Starts', 'Ends'].map(function (t) { return el('th', { scope: 'col', text: t }); }))), tbody)));
-      w.appendChild(el('p', { class: 'student-note' }, 'Questions about your licence? ', el('a', { href: 'index.html#contact', text: 'Contact Mathlete' }), '.'));
+      w.appendChild(el('p', { class: 'student-note' }, 'Questions about your license? ', el('a', { href: 'index.html#contact', text: 'Contact Mathlete' }), '.'));
     }).catch(function (err) { hold.textContent = ''; w.appendChild(notice('error', errText(err))); });
   }
 })();
