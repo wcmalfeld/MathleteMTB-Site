@@ -47,10 +47,10 @@ Nothing else crosses over:
   looks like when they get there, and a list of steps to tick. A smaller
   goal can be "part of" a bigger one. Goals are never marked achieved
   automatically; the rider (or coach) decides.
-- **My Training**: the plan (things to practise, each for so many
+- **My Training**: the plan (things to practice, each for so many
   sessions, optionally for a goal) and the ride log. A log entry has the
   day, kind of riding, place, minutes, areas worked on and four short
-  prompts: what did you practise, one thing you improved, what challenged
+  prompts: what did you practice, one thing you improved, what challenged
   you, what to try next time. Logging an entry against a plan item
   counts toward it; reaching the number of sessions ticks it off.
 

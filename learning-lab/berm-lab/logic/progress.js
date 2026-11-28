@@ -4,7 +4,7 @@
 // lab's own page (main.js) sends attempts to the student's Mathlete account.
 //
 // Tracked (PRD 11): completed challenges, accuracy, attempts, hints,
-// prediction accuracy, concepts practised and mastered, time spent, the last
+// prediction accuracy, concepts practiced and mastered, time spent, the last
 // configuration, and saved experiments.
 
 import { CHALLENGES, CONCEPTS } from './challenges.js';

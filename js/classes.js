@@ -4,7 +4,7 @@
 //  - For a signed-in student: progress per skill, topic and course, from
 //    the database function curriculum_progress() (supabase/curriculum.sql).
 //    Progress counts questions answered in activities, tagged with the
-//    curriculum skills they practise. Math topics never claim mastery.
+//    curriculum skills they practice. Math topics never claim mastery.
 //  - Physics modules ([data-module]) get one of four states
 //    (PRD 8.4), worked out by moduleState() below from the same data.
 //  - For a student working in a school: which courses its plan leaves out,
@@ -41,7 +41,7 @@
   function guest() {
     if (note && hasActivities) {
       note.textContent = '';
-      note.appendChild(document.createTextNode('Log in while you practise and your progress on this topic is saved and shown here. '));
+      note.appendChild(document.createTextNode('Log in while you practice and your progress on this topic is saved and shown here. '));
       var a = document.createElement('a'); a.href = 'login.html?next=' + encodeURIComponent(location.pathname.replace(/^\//, '')); a.textContent = 'Log in';
       note.appendChild(a); note.hidden = false;
     }
@@ -49,19 +49,19 @@
 
   // Physics: a module's state from its skills' practice.
   //   Not started: nothing answered on any of its skills.
-  //   In progress: some skills practised.     Practised: every skill.
+  //   In progress: some skills practiced.     Practiced: every skill.
   //   Mastered:    every skill, each with at least MASTERY_MIN of its most
   //                recent first tries counted and MASTERY_RATE of them right.
   //                recent/recent_ok cover the 5 latest first tries, so newer
   //                work replaces older (supabase/curriculum.sql).
   var MASTERY_MIN = 2, MASTERY_RATE = 0.8;
-  var STATE_TEXT = { 'not-started': 'Not started', 'in-progress': 'In progress', 'practised': 'Practised', 'mastered': 'Mastered' };
+  var STATE_TEXT = { 'not-started': 'Not started', 'in-progress': 'In progress', 'practiced': 'Practiced', 'mastered': 'Mastered' };
   function moduleState(ids, skills) {
     var done = ids.filter(function (id) { return skills[id] && skills[id].questions; });
     if (!done.length) return 'not-started';
     if (done.length < ids.length) return 'in-progress';
     var solid = ids.every(function (id) { var s = skills[id], n = s.recent || 0; return n >= MASTERY_MIN && (s.recent_ok || 0) / n >= MASTERY_RATE; });
-    return solid ? 'mastered' : 'practised';
+    return solid ? 'mastered' : 'practiced';
   }
   function showState(el, state) {
     var out = el.querySelector('[data-module-state]');
@@ -73,13 +73,13 @@
 
   function show(data) {
     var skills = data.skills || {}, acts = data.activities || {};
-    var practised = function (ids) { return ids.filter(function (id) { return skills[id] && skills[id].questions; }).length; };
+    var practiced = function (ids) { return ids.filter(function (id) { return skills[id] && skills[id].questions; }).length; };
 
     // Topic page: each skill and each activity.
     document.querySelectorAll('[data-skill]').forEach(function (li) {
       var s = skills[li.getAttribute('data-skill')], out = li.querySelector('.cls-skill-status');
       if (!out) return;
-      out.textContent = s ? plural(s.questions, 'question') + ', ' + s.first_try + ' right first try' : 'Not practised yet';
+      out.textContent = s ? plural(s.questions, 'question') + ', ' + s.first_try + ' right first try' : 'Not practiced yet';
       out.hidden = false;
     });
     document.querySelectorAll('[data-activity-status]').forEach(function (p) {
@@ -88,16 +88,16 @@
       p.hidden = false;
     });
     if (topicHead && note) {
-      var ids = skillsOf(topicHead), n = practised(ids);
-      note.textContent = n ? 'You’ve practised ' + n + ' of ' + plural(ids.length, 'skill') + ' in this topic. This shows practice, not a grade.' : (hasActivities ? 'Your practice on this topic will show here once you try an activity.' : '');
+      var ids = skillsOf(topicHead), n = practiced(ids);
+      note.textContent = n ? 'You’ve practiced ' + n + ' of ' + plural(ids.length, 'skill') + ' in this topic. This shows practice, not a grade.' : (hasActivities ? 'Your practice on this topic will show here once you try an activity.' : '');
       note.hidden = !note.textContent;
     }
 
     // Course page: each topic.
     document.querySelectorAll('.cls-topic[data-topic]').forEach(function (li) {
-      var ids = skillsOf(li), n = practised(ids), out = li.querySelector('[data-topic-status]');
+      var ids = skillsOf(li), n = practiced(ids), out = li.querySelector('[data-topic-status]');
       if (!out || !n) return;
-      out.textContent = (li.hasAttribute('data-module') ? STATE_TEXT[moduleState(ids, skills)] + ': ' : '✓ ') + n + ' of ' + ids.length + ' skills practised';
+      out.textContent = (li.hasAttribute('data-module') ? STATE_TEXT[moduleState(ids, skills)] + ': ' : '✓ ') + n + ' of ' + ids.length + ' skills practiced';
       out.hidden = false;
     });
 

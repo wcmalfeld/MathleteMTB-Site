@@ -14,7 +14,7 @@
 --   * athlete_goals,
 --     athlete_goal_steps - a rider's goals (big goal down to this week)
 --                        and the steps toward each.
---   * training_items   - the training plan: things to practise, set by
+--   * training_items   - the training plan: things to practice, set by
 --                        the rider or their coach.
 --   * training_logs    - the ride / practice log, with short reflections.
 --
@@ -265,7 +265,7 @@ create table if not exists public.athlete_goal_steps (
 create index if not exists athlete_goal_steps_goal_idx on public.athlete_goal_steps (goal_id, sort_order, created_at);
 
 -- 5. Training plan and log --------------------------------------------
--- A plan item is something to practise, optionally for a goal. It is
+-- A plan item is something to practice, optionally for a goal. It is
 -- done when the rider logs it sessions_target times, or ticks it off.
 create table if not exists public.training_items (
   id              uuid primary key default gen_random_uuid(),
@@ -720,7 +720,7 @@ begin
 
   p_title := btrim(coalesce(p_title, ''));
   if char_length(p_title) not between 1 and 140 then
-    raise sqlstate 'PT422' using message = 'Say what to practise in a few words (up to 140 characters).';
+    raise sqlstate 'PT422' using message = 'Say what to practice in a few words (up to 140 characters).';
   end if;
   p_details := nullif(btrim(coalesce(p_details, '')), '');
   if char_length(p_details) > 1000 then
@@ -836,7 +836,7 @@ begin
     raise sqlstate 'PT422' using message = 'One of the answers is too long.';
   end if;
   if coalesce(p_practiced, p_improved, p_challenge, p_next_time) is null then
-    raise sqlstate 'PT422' using message = 'Write at least a few words about what you practised.';
+    raise sqlstate 'PT422' using message = 'Write at least a few words about what you practiced.';
   end if;
   if p_minutes is not null and p_minutes not between 1 and 720 then
     raise sqlstate 'PT422' using message = 'Minutes should be between 1 and 720.';

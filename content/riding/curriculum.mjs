@@ -183,7 +183,7 @@ export const LESSONS = [
     release: 'A',
     status: 'draft',
     risk: 2,
-    riskNote: 'Class 2–3 depending on the terrain it is practised on.',
+    riskNote: 'Class 2–3 depending on the terrain it is practiced on.',
     reviewer: 'Race coach or advanced downhill coach',
     sources: { primary: ['x05'], comparison: ['d04', 'd05', 'd01', 'd13'] },
     outcome: 'The rider looks far enough ahead to make decisions early, using near references for control and far references for planning, so braking, line and body position are prepared before each feature arrives.',

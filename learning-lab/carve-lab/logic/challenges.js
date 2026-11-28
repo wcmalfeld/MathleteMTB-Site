@@ -18,7 +18,7 @@ import { carve, calculateTurnRadius, edgeAngleForRadius, toDegrees, fmt } from '
 
 const r1 = x => Math.round(x * 10) / 10;
 
-// The skills each question practises (ids from the site's shared skill list).
+// The skills each question practices (ids from the site's shared skill list).
 export const CONCEPTS = {
   geometry: 'Geometry: circles and radius',
   trigonometry: 'Trigonometry: cosine and inverse cosine',

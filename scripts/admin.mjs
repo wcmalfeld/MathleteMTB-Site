@@ -488,7 +488,7 @@ const commands = {
 
   async 'ride-plan'(email, sessions, ...words) {
     const n = Number(sessions), title = words.join(' ').trim();
-    if (!Number.isInteger(n) || n < 1 || n > 14 || !title || title.length > 140) die('Usage: ride-plan <rider-email> <sessions 1-14> <what to practise, up to 140 characters>');
+    if (!Number.isInteger(n) || n < 1 || n > 14 || !title || title.length > 140) die('Usage: ride-plan <rider-email> <sessions 1-14> <what to practice, up to 140 characters>');
     const rider = await profileOf(email);
     if (rider.role !== 'student') die(`${email} is a ${rider.role}. Riders are student accounts.`);
     const d = new Date(); d.setDate(d.getDate() + ((7 - d.getDay()) % 7 || 7));
@@ -666,7 +666,7 @@ async function main() {
   if (!BASE || !KEY) die('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env (see .env.example).');
   const isEmail = v => !!v && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
   if (['invite', 'create', 'grant', 'restore', 'revoke', 'reset', 'reset-link', 'role', 'name', 'goal', 'goals', 'coach', 'ride-plan', 'superadmin'].includes(cmd)) {
-    if (!isEmail(args[0])) die(`Usage: ${cmd} <email>${cmd === 'role' ? ' <' + ROLES.join('|') + '>' : cmd === 'name' ? ' <first name>' : cmd === 'coach' ? ' <specialties...|off>' : cmd === 'ride-plan' ? ' <sessions> <what to practise>' : ''}`);
+    if (!isEmail(args[0])) die(`Usage: ${cmd} <email>${cmd === 'role' ? ' <' + ROLES.join('|') + '>' : cmd === 'name' ? ' <first name>' : cmd === 'coach' ? ' <specialties...|off>' : cmd === 'ride-plan' ? ' <sessions> <what to practice>' : ''}`);
     args[0] = args[0].trim().toLowerCase();
   }
   if (['assign', 'unassign', 'coach-assign', 'coach-unassign'].includes(cmd)) {

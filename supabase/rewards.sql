@@ -22,7 +22,7 @@
 --     thresholds) is a row in a table here, not code.
 --
 -- Running this file the first time also replays existing history, so
--- students who have already practised start with the XP they earned.
+-- students who have already practiced start with the XP they earned.
 -- ============================================================
 
 -- 1. Configuration ---------------------------------------------------------------
@@ -184,11 +184,11 @@ insert into public.reward_achievements (id, name, description, category, metric,
   ('curriculum-explorer','Curriculum Explorer', 'Complete 25 lessons.',                                 'lessons', 'lessons', 25,  'book', 32),
   ('dedicated-student',  'Dedicated Student',   'Complete 50 lessons.',                                 'lessons', 'lessons', 50,  'book', 33),
   ('academic-shredder',  'Academic Shredder',   'Complete 100 lessons.',                                'lessons', 'lessons', 100, 'book', 34),
-  ('trail-explorer-badge','Trail Explorer',     'Practise in three different units.',                   'exploration', 'units_practiced', 3, 'map', 40),
+  ('trail-explorer-badge','Trail Explorer',     'Practice in three different units.',                   'exploration', 'units_practiced', 3, 'map', 40),
   ('course-conqueror',   'Course Conqueror',    'Solve a problem for every skill Mathlete covers in a unit.', 'exploration', 'units_completed', 1, 'map', 41),
   ('all-mountain-rider', 'All-Mountain Rider',  'Complete lessons or labs in three different courses.', 'exploration', 'courses', 3, 'map', 42),
   ('lab-rat',            'Lab Rat',             'Complete five interactive MTB labs.',                  'exploration', 'labs', 5, 'flask', 43),
-  ('comeback-rider',     'Comeback Rider',      'Come back to practise after seven days away.',         'persistence', 'event', 1, 'arrow', 50),
+  ('comeback-rider',     'Comeback Rider',      'Come back to practice after seven days away.',         'persistence', 'event', 1, 'arrow', 50),
   ('never-give-up',      'Never Give Up',       'Solve a challenge problem you’d missed before.',       'persistence', 'event', 1, 'arrow', 51),
   ('mastery-rider',      'Mastery Rider',       'Get 4 of your last 5 first tries right on a skill.',   'persistence', 'mastery', 1, 'star', 52),
   ('consistency-champion','Consistency Champion','Reach your daily goal on five days in one week.',     'persistence', 'week_goals', 5, 'calendar', 53)

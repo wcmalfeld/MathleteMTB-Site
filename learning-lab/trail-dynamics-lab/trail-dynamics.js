@@ -109,7 +109,7 @@ function landingPage({ q, card, eq, explain, note, sim, para: P_, h3, ...ctx }) 
       q('l-disc-meaning')),
     card('Module E', 'Complex solutions',
       P_('With i² = −1, √(−100) = 10i, so the 5 m equation has solutions 10 + 5i and 10 − 5i: complex conjugates. They are valid algebraic solutions, but they aren’t positions on the trail: the jump simply never reaches 5 m.'),
-      note('key', 'negative Δ isn’t “no solution”', 'A negative discriminant means no REAL solutions. There are still exactly two complex ones. The optional extension practises complex-number arithmetic.')),
+      note('key', 'negative Δ isn’t “no solution”', 'A negative discriminant means no REAL solutions. There are still exactly two complex ones. The optional extension practices complex-number arithmetic.')),
     card('Linear meets quadratic', 'The landing ramp',
       P_(`A target height is a flat line. A landing ramp is a sloped one: y = ${RAMP.m}x + ${RAMP.q}. Setting the line equal to the parabola gives another quadratic.`),
       q('l-system'),

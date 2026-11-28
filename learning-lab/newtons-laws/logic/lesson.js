@@ -219,7 +219,7 @@ export const SCENARIOS = {
 export const DIR_TEXT = { up: '↑ up', down: '↓ straight down', forward: '→ forward', backward: '← backward', perp: 'perpendicular to the slope, outward', uphill: 'up the slope', downhill: 'down the slope' };
 export const NET_TEXT = { zero: 'Zero: the forces balance', forward: 'Forward', backward: 'Backward', uphill: 'Up the slope', downhill: 'Down the slope' };
 
-// Each question's kind -> the ideas it practises (for curriculum skills).
+// Each question's kind -> the ideas it practices (for curriculum skills).
 export function questionKinds() {
   return Object.fromEntries(Object.entries(QUESTIONS).map(([id, q]) => [id, q.ideas]));
 }

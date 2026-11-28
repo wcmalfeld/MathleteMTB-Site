@@ -310,7 +310,7 @@ export function mountMissions(target, L, opts = {}) {
       el('p', { class: 'ls-lede' }, FINAL.doneLede),
       stats(s, cert),
       el('div', { class: 'ls-actions' }, el('a', { class: 'ls-btn ls-btn--primary', href: '#report' }, 'Your full report'),
-        button('Practise a new round', () => { P.setData('finalRound', finalRound() + 1); rerender(); }, 'ls-btn--quiet')));
+        button('Practice a new round', () => { P.setData('finalRound', finalRound() + 1); rerender(); }, 'ls-btn--quiet')));
   }
   function stats(s, cert) {
     const items = [['Missions completed', `${s.missionsDone} of ${N}`], ['Final challenge', cert ? `${cert.right} of ${cert.total} (round ${cert.round})` : `${s.final.right} of ${s.final.total} so far`],
@@ -325,14 +325,14 @@ export function mountMissions(target, L, opts = {}) {
       return el('tr', null, el('th', { scope: 'row' }, IDEAS[i]),
         el('td', { class: 'ms-mono' }, x ? String(x.answered) : '0'), el('td', { class: 'ms-mono' }, x ? String(x.firstTry) : '—'),
         el('td', { class: 'ms-mono' }, x ? String(x.hints) : '—'), el('td', { class: 'ms-mono' }, x ? String(x.revealed) : '—'),
-        el('td', null, !x || !x.answered ? el('span', { class: 'ls-small' }, 'not practised yet') : s.practice.includes(i) ? el('span', { class: 'ms-status ms-status--warn' }, 'worth more practice') : el('span', { class: 'ms-status ms-status--ok' }, 'going well')));
+        el('td', null, !x || !x.answered ? el('span', { class: 'ls-small' }, 'not practiced yet') : s.practice.includes(i) ? el('span', { class: 'ms-status ms-status--warn' }, 'worth more practice') : el('span', { class: 'ms-status ms-status--ok' }, 'going well')));
     });
     return el('article', { class: 'ms-mission' },
       el('header', { class: 'ls-section-head' }, el('p', { class: 'ls-kicker' }, (L.report && L.report.kicker) || 'Report'), el('h1', { class: 'ls-h1' }, s.certified ? FINAL.doneTitle : 'Your progress'),
-        el('p', { class: 'ls-hook' }, `What you’ve practised so far. This shows practice, not mastery: one ${NOUN} is a start, not a finish.`)),
+        el('p', { class: 'ls-hook' }, `What you’ve practiced so far. This shows practice, not mastery: one ${NOUN} is a start, not a finish.`)),
       card(null, null, stats(s, s.certification)),
       L.report && L.report.extra ? L.report.extra(ctx, s) : null,
-      card('By idea', 'Skills practised',
+      card('By idea', 'Skills practiced',
         el('div', { class: 'ls-table-wrap' }, el('table', { class: 'ls-table ms-report' },
           el('thead', null, el('tr', null, ['Idea', 'Answered', 'First try', 'Hints', 'Solutions shown', ''].map(h => el('th', { scope: 'col' }, h)))), el('tbody', null, rows))),
         el('p', { class: 'ls-small' }, '“Worth more practice” means a solution was needed, or fewer than half were right on the first try.')),

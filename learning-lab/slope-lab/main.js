@@ -4,7 +4,7 @@
 //  - Saving progress: if the site's progress tracking is on this page
 //    (js/progress.js, loaded by index.html) every answer is also sent to
 //    the student's account, as question "slope-lab:<id>", which
-//    supabase/curriculum.sql links to the curriculum skills it practises.
+//    supabase/curriculum.sql links to the curriculum skills it practices.
 //    Signed out, or embedded somewhere without it, nothing is sent and the
 //    lab works exactly the same (progress stays in this browser).
 //  - Coming from a Classes topic (?from=classes/...), "Exit" leads back to it.

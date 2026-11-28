@@ -278,7 +278,7 @@ function landing(model) {
     <div class="lab-section-head"><h2 class="label" id="courses-title">Courses</h2></div>
     <ul class="cls-courses tc-courses">${cards}
     </ul>
-    <p class="cls-note">Lessons follow the same courses, units and topics as the <a href="classes/">Courses</a> pages, so what you teach lines up with what students practise. The quarter-by-quarter order is a proposed pacing for a typical school year; tell us your school’s and we’ll match it.</p>
+    <p class="cls-note">Lessons follow the same courses, units and topics as the <a href="classes/">Courses</a> pages, so what you teach lines up with what students practice. The quarter-by-quarter order is a proposed pacing for a typical school year; tell us your school’s and we’ll match it.</p>
   </div>
 </section>
 `

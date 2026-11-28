@@ -36,7 +36,7 @@ ok('Every multiple-choice question has one right answer, feedback on every optio
 ok('PRD 11: five detective stages and the five written parts A–E', L.DETECTIVE_STAGES.map(s => s.id).join() === 'descend,accelerate,corner,jump,brake' && L.DETECTIVE_PARTS.map(p => p[0]).join() === 'identify,investigate,predict,explain,reflect');
 ok('Every detective stage has right and wrong options', L.DETECTIVE_STAGES.every(s => s.options.some(o => o[2]) && s.options.some(o => !o[2])));
 ok('Every graded item is a real question, and every question is graded somewhere', L.SECTIONS.every(s => s.graded.every(id => L.QUESTIONS[id])) && Object.keys(L.QUESTIONS).every(id => L.SECTIONS.some(s => s.graded.includes(id))));
-ok('Every question practises at least one idea; kinds are valid slugs', Object.values(L.QUESTIONS).every(q => q.ideas && q.ideas.length) && Object.keys(L.questionKinds()).every(k => /^[a-z0-9-]+$/.test(k)));
+ok('Every question practices at least one idea; kinds are valid slugs', Object.values(L.QUESTIONS).every(q => q.ideas && q.ideas.length) && Object.keys(L.questionKinds()).every(k => /^[a-z0-9-]+$/.test(k)));
 ok('PRD 12: Explore and Engineer explanations both appear', ['explore', 'engineer'].every(lv => L.SECTIONS.some(s => s.blocks.some(b => b.t === 'level' && b.level === lv))));
 ok('PRD 3: no equations are tested (no numeric questions)', !Object.values(L.QUESTIONS).some(q => q.type === 'number' || q.type === 'fields'));
 

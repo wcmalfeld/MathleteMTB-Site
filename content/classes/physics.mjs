@@ -124,7 +124,7 @@ export const PHYSICS_COURSES = [
             'branches: Name the main branches of physics and connect each to riding']
         }),
         M('mathematics-review', 'Mathematics Review', {
-          desc: 'The algebra, ratios, geometry and trigonometry that every later module uses, practised on riding problems.',
+          desc: 'The algebra, ratios, geometry and trigonometry that every later module uses, practiced on riding problems.',
           hook: 'How steep is that climb, really?',
           mtb: 'Trail grade is rise over run; speed is distance over time; a jump’s height is a side of a right triangle. Riding is full of the maths physics needs.',
           concepts: ['Rearranging equations', 'Ratios and proportions', 'Right-triangle geometry', 'Sine, cosine and tangent', 'Reading graphs'],

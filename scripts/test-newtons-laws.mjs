@@ -87,7 +87,7 @@ ok('Answer parsing: "784.8 N", "−4", "2.5 m/s²" read as numbers', V.parseNumb
 ok('Every question has a solution and a prompt', Object.entries(Q).filter(([, q]) => q.type !== 'forces' && q.type !== 'task' && !q.dynamic).every(([, q]) => q.solution && q.prompt));
 ok('Every graded item in a section is a real question', L.SECTIONS.every(s => s.graded.every(id => Q[id])));
 ok('Every question in the lesson appears somewhere (a block, an activity or a section’s list)', Object.keys(Q).filter(id => id !== 'fbd-net').every(id => L.SECTIONS.some(s => s.graded.includes(id))));
-ok('Every question practises at least one idea', Object.values(Q).every(q => q.ideas && q.ideas.length));
+ok('Every question practices at least one idea', Object.values(Q).every(q => q.ideas && q.ideas.length));
 ok('PRD 3: seven sections, 45–60 minutes in all', L.SECTIONS.length === 7 && (() => { const t = L.SECTIONS.reduce((n, s) => n + s.minutes, 0); return t >= 45 && t <= 60; })());
 ok('PRD 2: 14 learning objectives', L.OBJECTIVES.length === 14);
 ok('PRD 11: three levels (Explore, Apply, Engineer), and both kinds of level block are used', L.LEVELS.map(l => l.id).join() === 'explore,apply,engineer' &&

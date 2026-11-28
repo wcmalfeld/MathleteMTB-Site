@@ -197,7 +197,7 @@
     var setup = ov.setup || {};
     var steps = [
       { k: 'owner', t: 'Your organization has an owner', d: 'The owner manages admins and the subscription.' },
-      { k: 'license', t: 'Your licence is active', d: 'Mathlete sets this up with you. Students can practise once it’s active.' },
+      { k: 'license', t: 'Your licence is active', d: 'Mathlete sets this up with you. Students can practice once it’s active.' },
       { k: 'details', t: 'Add a welcome message', d: 'Shown to your members.', href: '#settings', go: 'Open settings' },
       { k: 'instructors', t: 'Invite your instructors', d: 'Teachers who will run classes (classes arrive in a later update).', href: '#members', go: 'Invite' },
       { k: 'students', t: 'Invite your students', d: 'One at a time, or many at once from a spreadsheet.', href: '#import', go: 'Import a list' }

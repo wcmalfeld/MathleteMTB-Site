@@ -31,7 +31,7 @@ function tidy(qs) {
 }
 const opt = (id, text, correct, code, feedback) => ({ id, text, correct: !!correct, code: correct ? 'correct' : code || 'wrong', feedback: feedback || null });
 
-// The ideas each question practises. These become curriculum skills in
+// The ideas each question practices. These become curriculum skills in
 // content/classes/activities.mjs, and the end-of-workshop report groups
 // results by them.
 export const IDEAS = {

@@ -28,7 +28,7 @@ plain HTML that's committed, and the site check fails if the two drift.
 
 ```
 content/classes/curriculum.mjs   courses, units, topics, skills (data only)
-content/classes/activities.mjs   activities and the skills they practise
+content/classes/activities.mjs   activities and the skills they practice
 content/classes/model.mjs        loads both, checks ids and references
 scripts/build-classes.mjs        writes classes/**/index.html and supabase/curriculum.sql
 css/classes.css, js/classes.js   look, and a signed-in student's progress
@@ -63,7 +63,7 @@ Progress is stored against skill ids, so:
   `art` (one of `climb`, `jump`, `frame`, `wheel`, or add a drawing in
   `build-classes.mjs`).
 - **An activity:** add it to `activities.mjs` with its `route` and the
-  `skills` it practises. It then appears on every topic that has one of
+  `skills` it practices. It then appears on every topic that has one of
   those skills. To count its answers toward skill progress, give it a
   `tracking` block (game id + each question kind → skills), make the game
   call `MathleteProgress.recordQuestionAttempt` with question ids
@@ -72,7 +72,7 @@ Progress is stored against skill ids, so:
 ## Progress
 
 - `supabase/curriculum.sql` (generated) adds `curriculum_skills`,
-  `curriculum_question_skills` (which question practises which skills) and
+  `curriculum_question_skills` (which question practices which skills) and
   `curriculum_progress()`, and registers the Slope Lab's 32 questions.
   **Run it in the Supabase SQL Editor after progress.sql**, and again
   whenever it changes.
@@ -80,7 +80,7 @@ Progress is stored against skill ids, so:
   of activities can add to the same skill.
 - Signed-in students see, per skill, how many questions they've answered
   and how many were right first time; per topic, how many skills they've
-  practised; per course, how many topics they've started. It's practice,
+  practiced; per course, how many topics they've started. It's practice,
   never "mastery". Guests see the pages as they are, with a log-in prompt
   on topics that have activities.
 - Slope Lab answers also appear on the student dashboard (under Algebra)
@@ -112,7 +112,7 @@ Built from [PRDs/collegePhysics.md](../PRDs/collegePhysics.md), Phase 1
   stay registered in `progress.sql`; `curriculum.sql` only links them to
   physics skills.
 - **Progress states** (js/classes.js `moduleState`): Not started, In
-  progress (some skills), Practised (every skill), Mastered (every skill,
+  progress (some skills), Practiced (every skill), Mastered (every skill,
   with at least 2 of its 5 most recent first tries counted and 80% of them
   right). `curriculum_progress()` now also returns `recent` and `recent_ok`
   per skill, so newer work replaces older.

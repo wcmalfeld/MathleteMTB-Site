@@ -158,7 +158,7 @@ a.pr-chip--live:hover { border-color: var(--moss); color: var(--ink); }
 .pr-state { border-color: var(--ink-soft); color: var(--ink); }
 .pr-state[data-state="mastered"] { border-color: var(--contour); color: var(--contour); }
 .pr-state[data-state="mastered"]::before { content: '\2605 '; }
-.pr-state[data-state="practised"]::before { content: '\2713 '; }
+.pr-state[data-state="practiced"]::before { content: '\2713 '; }
 .pr-state[data-state="in-progress"]::before { content: '\25D0 '; }
 .pr-module-n { margin: 0 0 2px; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--contour); }
 .pr-unit-desc { margin: 0; padding: 0 22px 14px; font-size: 14.5px; color: var(--ink-soft); max-width: 46rem; }

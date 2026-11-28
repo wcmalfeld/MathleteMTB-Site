@@ -175,7 +175,7 @@
     return card;
   }
 
-  // A plan item: what to practise, progress in sessions, and (optionally) buttons.
+  // A plan item: what to practice, progress in sessions, and (optionally) buttons.
   function planRow(i, opts) {
     opts = opts || {};
     var open = i.status === 'planned';
@@ -225,7 +225,7 @@
     if (l.areas && l.areas.length) meta.push(l.areas.join(', '));
     if (l.item_title) meta.push('Plan: ' + l.item_title);
     else if (l.goal_title) meta.push('Goal: ' + l.goal_title);
-    var qa = [['Practised', l.practiced], ['Improved', l.improved], ['Challenge', l.challenge], ['Next time', l.next_time]].filter(function (x) { return x[1]; });
+    var qa = [['Practiced', l.practiced], ['Improved', l.improved], ['Challenge', l.challenge], ['Next time', l.next_time]].filter(function (x) { return x[1]; });
     var row = el('li', { class: 'row ride-log' },
       el('div', null,
         el('p', { class: 'row-title' }, head.join(' · ')),
@@ -302,7 +302,7 @@
       next.body.appendChild(el('ul', { class: 'skill-list' }, plan.slice(0, 4).map(function (i) { return planRow(i, { logLink: true }); })));
       next.body.appendChild(el('p', { class: 'student-note' }, el('a', { href: 'training.html' }, plan.length > 4 ? 'See all ' + plan.length + ' on my plan' : 'Open my training')));
     } else {
-      next.body.appendChild(el('div', { class: 'student-empty' }, el('p', null, 'Nothing planned. Add one or two things to practise in your next rides.'),
+      next.body.appendChild(el('div', { class: 'student-empty' }, el('p', null, 'Nothing planned. Add one or two things to practice in your next rides.'),
         el('p', null, link('training.html#plan-add', 'Add to my plan'))));
     }
     main.appendChild(next);
@@ -350,7 +350,7 @@
     var fWhy = el('textarea', { rows: '2', maxlength: '600', placeholder: 'What makes this goal exciting or important to you?' });
     var fStart = el('textarea', { rows: '2', maxlength: '600', placeholder: 'What can you do now? e.g. I can do 180s on the trampoline.' });
     var fOutcome = el('textarea', { rows: '2', maxlength: '600', placeholder: 'How will you know you’ve got it?' });
-    var fSteps = el('textarea', { rows: '3', maxlength: '1400', placeholder: 'One per line, e.g.\nPractise rotations on the trampoline\nSpot the landing' });
+    var fSteps = el('textarea', { rows: '3', maxlength: '1400', placeholder: 'One per line, e.g.\nPractice rotations on the trampoline\nSpot the landing' });
     var hint = el('p', { class: 'format-hint goal-wide' });
     var submit = el('button', { class: 'button', type: 'submit' }, 'Set this goal');
     var cancel = el('button', { class: 'button button--quiet', type: 'button', hidden: true }, 'Cancel');
@@ -447,7 +447,7 @@
   // ---------- My Training ----------
 
   function trainingPage(main) {
-    var planSec = section('plan-title', 'My plan', 'What to practise next. Log a session and it counts toward the item.');
+    var planSec = section('plan-title', 'My plan', 'What to practice next. Log a session and it counts toward the item.');
     var addSec = section('plan-add-title', 'Add to my plan');
     var logSec = section('log-form-title', 'Log a ride', 'Lightweight on purpose: a few words is plenty.');
     var histSec = section('log-title', 'My training log');
@@ -480,14 +480,14 @@
     }
     pCancel.addEventListener('click', resetPlan);
     var planForm = el('form', { class: 'goal-form ride-form', novalidate: true },
-      field('What to practise', pTitle, 'goal-wide'),
+      field('What to practice', pTitle, 'goal-wide'),
       field('How many sessions', pN), field('By when', pDue), field('For which goal', pGoal), field('Riding area', pArea),
       field('Details', pDetails, 'goal-wide'),
       el('div', { class: 'goal-wide ride-form-actions' }, pSubmit, pCancel));
     planForm.addEventListener('submit', function (e) {
       e.preventDefault();
       var n = Math.round(Number(pN.value));
-      if (!pTitle.value.trim()) { pTitle.focus(); return say('wrong', 'Say what to practise first.'); }
+      if (!pTitle.value.trim()) { pTitle.focus(); return say('wrong', 'Say what to practice first.'); }
       if (!(n >= 1 && n <= 14)) { pN.focus(); return say('wrong', 'Pick 1 to 14 sessions.'); }
       pSubmit.disabled = true;
       act('save_training_item', { p_title: pTitle.value, p_details: pDetails.value, p_goal_id: pGoal.value || null, p_area_id: pArea.value || null,
@@ -550,7 +550,7 @@
       field('Day', lDate), field('Kind of riding', lType), field('Where (optional)', lWhere), field('Minutes (optional)', lMin),
       field('Was it on my plan?', lItem), field('For which goal', lGoal),
       lAreas,
-      field('What did you practise?', lPracticed, 'goal-wide'),
+      field('What did you practice?', lPracticed, 'goal-wide'),
       field('What was one thing you improved today?', lImproved, 'goal-wide'),
       field('What challenged you?', lChallenge, 'goal-wide'),
       field('What would you like to try next time?', lNext, 'goal-wide'),
@@ -560,7 +560,7 @@
       var m = lMin.value ? Math.round(Number(lMin.value)) : null;
       if (!lDate.value) { lDate.focus(); return say('wrong', 'Pick the day you rode.'); }
       if (m !== null && !(m >= 1 && m <= 720)) { lMin.focus(); return say('wrong', 'Minutes should be between 1 and 720.'); }
-      if (![lPracticed, lImproved, lChallenge, lNext].some(function (f) { return f.value.trim(); })) { lPracticed.focus(); return say('wrong', 'Write at least a few words about what you practised.'); }
+      if (![lPracticed, lImproved, lChallenge, lNext].some(function (f) { return f.value.trim(); })) { lPracticed.focus(); return say('wrong', 'Write at least a few words about what you practiced.'); }
       lSubmit.disabled = true;
       var wasItem = lItem.value;
       act('save_training_log', {
@@ -608,7 +608,7 @@
         ', ' + S.plural(data.log_count, 'ride') + ' in your log.';
       S.clear(planSec.body);
       if (plan.length) planSec.body.appendChild(el('ul', { class: 'skill-list' }, plan.map(function (i) { return planRow(i, { full: true, onLog: startLog, onEdit: editItem }); })));
-      else planSec.body.appendChild(el('div', { class: 'student-empty' }, el('p', null, 'Nothing planned. Add something to practise below, or ask your coach what to work on.')));
+      else planSec.body.appendChild(el('div', { class: 'student-empty' }, el('p', null, 'Nothing planned. Add something to practice below, or ask your coach what to work on.')));
       doneSec.hidden = !past.length;
       S.clear(doneSec.body);
       if (past.length) doneSec.body.appendChild(el('ul', { class: 'skill-list' }, past.map(function (i) { return planRow(i, { full: true }); })));

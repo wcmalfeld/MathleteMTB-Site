@@ -9,7 +9,7 @@ race-prep problems with equations and inequalities.
 - **Curriculum:** Classes → Algebra 2 → Unit 1: Equations and Inequalities →
   **Solving Equations and Modeling Constraints**. This topic is new: it's the
   unit's first topic and the workshop's home. The workshop is also listed on
-  the topics whose skills it practises:
+  the topics whose skills it practices:
   - Linear Equations Review
   - Absolute Value Equations
   - Radical Equations
@@ -95,7 +95,7 @@ The two Physics lessons are unaffected; their tests still pass.
 - **Signed in:** `main.js` also sends every answer as `race-day-workshop:<id>`.
   - Practice scenarios (`v<n>`) and final rounds (`r<n>`) send a question key, so new numbers count as new questions.
   - Passing the certification ends the session as completed, with the score in its metrics.
-- **Curriculum:** each question lists the ideas it practises. `content/classes/activities.mjs` maps those ideas to Algebra 2 skills in four topics:
+- **Curriculum:** each question lists the ideas it practices. `content/classes/activities.mjs` maps those ideas to Algebra 2 skills in four topics:
   - the new topic
   - Linear Equations Review
   - Absolute Value Equations

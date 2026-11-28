@@ -9,7 +9,7 @@
 //   classes/<course>/index.html              units and topics
 //   classes/<course>/<topic>/index.html      one page per topic (or module)
 //   supabase/curriculum.sql                  curriculum skills, and which
-//                                            activity questions practise them
+//                                            activity questions practice them
 //   docs/PHYSICS-ROADMAP.md                  module statuses and categories,
 //                                            for content developers
 // Like the Lab pages (build-lab.mjs), the output is plain HTML committed to
@@ -145,7 +145,7 @@ function activityCard(a, topic, model) {
           <div><dt>Time</dt><dd>${esc(a.minutes)}</dd></div>
         </dl>
         ${a.parts ? `<ul class="pill-row" aria-label="What’s inside">${a.parts.map(p => `<li class="pill pill--moss">${esc(p)}</li>`).join('')}</ul>` : ''}
-        ${here.length ? `<p class="cls-activity-skills"><b>Practises here:</b> ${here.map(esc).join('; ')}</p>` : ''}
+        ${here.length ? `<p class="cls-activity-skills"><b>Practices here:</b> ${here.map(esc).join('; ')}</p>` : ''}
         ${stage ? `<p class="cls-activity-skills"><b>Opens at:</b> ${esc(stage.label)} &middot; <a href="${esc(a.route + '?from=' + encodeURIComponent(topic.href))}">or start from the beginning</a></p>` : ''}
         <p class="cls-activity-status" data-activity-status="${esc(a.tracking ? a.tracking.gameId : a.id)}" hidden></p>
         <a class="button" href="${esc(href)}">${a.type === 'lesson' ? 'Start the lesson' : 'Launch ' + (a.type === 'lab' ? 'lab' : 'activity')} <span aria-hidden="true">&rarr;</span><span class="visually-hidden"> ${esc(a.title)}</span></a>
@@ -187,7 +187,7 @@ function landing(model) {
   <div class="wrap">
     <p class="eyebrow">Courses</p>
     <h1 class="page-title">Math Curriculum</h1>
-    <p class="hero-lede">Pick the math class you’re taking, find the unit and topic you’re on in school, and practise it with mountain biking labs built for exactly that idea. Then take on the physics of the ride.</p>
+    <p class="hero-lede">Pick the math class you’re taking, find the unit and topic you’re on in school, and practice it with mountain biking labs built for exactly that idea. Then take on the physics of the ride.</p>
   </div>
 </header>
 
@@ -482,9 +482,9 @@ function pathwayPage(model) {
       <h3 class="pr-coming-title">Progress</h3>
       <ul>
         <li><b>Not started</b> No questions answered on this module’s skills yet.</li>
-        <li><b>In progress</b> Some of the module’s skills practised.</li>
-        <li><b>Practised</b> Every skill in the module practised.</li>
-        <li><b>Mastered</b> Every skill practised, and at least 80% of your most recent first tries on each one right. Opening a page or watching an animation never counts. Come back any time: newer work replaces older.</li>
+        <li><b>In progress</b> Some of the module’s skills practiced.</li>
+        <li><b>Practiced</b> Every skill in the module practiced.</li>
+        <li><b>Mastered</b> Every skill practiced, and at least 80% of your most recent first tries on each one right. Opening a page or watching an animation never counts. Come back any time: newer work replaces older.</li>
       </ul>
     </div>
   </div>
@@ -550,7 +550,7 @@ function curriculumSql(model) {
 --
 -- What it adds:
 --   * curriculum_skills           every skill in Classes, by its stable id
---   * curriculum_question_skills  which activity questions practise which
+--   * curriculum_question_skills  which activity questions practice which
 --                                 curriculum skills (an attempt at one
 --                                 question counts for all its skills)
 --   * question kinds for tracked activities (e.g. the Slope Lab), so
@@ -603,7 +603,7 @@ insert into public.question_skills (question_id, skill_id) values
 ${own.map(k => `  (${q(k.id)}, ${q(k.broad)})`).join(',\n')}
 on conflict do nothing;
 
--- 3. Which curriculum skills each question practises.
+-- 3. Which curriculum skills each question practices.
 delete from public.curriculum_question_skills where question_id in (${[...new Set(kinds.map(k => k.game))].map(g => `select id from public.questions where game_id = ${q(g)}`).join(' union ')});
 insert into public.curriculum_question_skills (question_id, skill_id) values
 ${kinds.flatMap(k => k.ss.map(s => `  (${q(k.id)}, ${q(s)})`)).join(',\n')}

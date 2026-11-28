@@ -13,7 +13,7 @@
 // tracking: how the activity reports student attempts (optional).
 //   gameId:    the game id used with js/progress.js
 //   questions: question kind ids (without the "<gameId>:" prefix) mapped
-//              to the curriculum skill ids each one practises. These are
+//              to the curriculum skill ids each one practices. These are
 //              written into supabase/curriculum.sql by build-classes.mjs,
 //              so every attempt counts toward those skills' progress.
 //
@@ -33,7 +33,7 @@ const SLOPE_OBJECTIVES = {
   'equation':      ['alg1.slope-intercept-form.identify-m-and-b', 'alg1.slope-intercept-form.interpret-m-and-b'],
   'rate':          [S + 'real-world-slope', 'alg1.slope-intercept-form.interpret-m-and-b']
 };
-// Questions that practise something more specific than their objective.
+// Questions that practice something more specific than their objective.
 const SLOPE_EXTRA = {
   F2: ['alg1.positive-and-negative-slope.direction'],
   F6: ['alg1.positive-and-negative-slope.classify-slope'],
@@ -84,7 +84,7 @@ const legacySlope = Object.fromEntries(Object.entries(slopeQuestionSkills).map((
 const mapQuestionSkills = Object.fromEntries(Object.entries(mapKinds()).map(([q, ideas]) => [q, legacySlope[q] || [...new Set([...ideas.flatMap(i => MAP_IDEAS[i] || []), ...(/^(tr-und|fc-und)$/.test(q) ? [PNS + 'undefined-slope'] : [])])]]));
 
 // Jump Trajectory Lab: the lab lists its own question kinds and the ideas
-// each practises; here those ideas become curriculum skills.
+// each practices; here those ideas become curriculum skills.
 import { questionKinds as jumpKinds } from '../../learning-lab/jump-trajectory-lab/logic/problems.js';
 const G = 'alg1.graphing-quadratics.', VX = 'alg1.vertex-and-axis-of-symmetry.';
 const JUMP_IDEAS = {
@@ -101,7 +101,7 @@ const jumpQuestionSkills = Object.fromEntries(Object.entries(jumpKinds()).map(([
   [q, [...new Set(ideas.flatMap(i => JUMP_IDEAS[i] || []))]]));
 
 // Physics: Lab tools' question kinds (from supabase/progress.sql)
-// -> physics skills. Kinds that don't practise physics are left out.
+// -> physics skills. Kinds that don't practice physics are left out.
 const PM = 'phys1.projectile-motion.', CM = 'phys1.uniform-circular-motion.', RD = 'phys1.rotational-dynamics.';
 const FR = 'phys1.applications-of-newtons-laws.friction', UNITS = 'phys1.scientific-measurement.unit-conversions', TRIG = 'phys1.mathematics-review.trig-ratios';
 const JUMP_LAB = {
@@ -148,7 +148,7 @@ const GEAR_LAB = {
 };
 
 // Newton's Laws lesson: the lesson lists its own questions and the ideas each
-// practises (learning-lab/newtons-laws/logic/lesson.js); here those ideas
+// practices (learning-lab/newtons-laws/logic/lesson.js); here those ideas
 // become curriculum skills.
 import { questionKinds as newtonKinds } from '../../learning-lab/newtons-laws/logic/lesson.js';
 const N7 = 'phys1.newtons-laws.';
@@ -169,7 +169,7 @@ const INTRO_IDEAS = {
 const introQuestionSkills = Object.fromEntries(Object.entries(introKinds()).map(([q, ideas]) => [q, [...new Set(ideas.flatMap(i => INTRO_IDEAS[i] || []))]]));
 
 // Race-Day Workshop (Algebra 2, Unit 1): the workshop lists its own question
-// ids and the ideas each practises (learning-lab/race-day-workshop/logic/questions.js);
+// ids and the ideas each practices (learning-lab/race-day-workshop/logic/questions.js);
 // here those ideas become curriculum skills.
 import { questionKinds as raceDayKinds } from '../../learning-lab/race-day-workshop/logic/questions.js';
 const EI = 'alg2.solving-equations-and-modeling-constraints.';
@@ -448,7 +448,7 @@ const proQuestionSkills = Object.fromEntries(Object.entries(proKinds()).map(([q,
 
 // Frame the Line: tracked ideas -> curriculum skills
 // (learning-lab/frame-the-line/logic/questions.js), plus a few questions that
-// practise a more specific skill than their idea.
+// practice a more specific skill than their idea.
 import { questionKinds as filmKinds } from '../../learning-lab/frame-the-line/logic/questions.js';
 const WLE = 'alg1.writing-linear-equations.', SIF = 'alg1.slope-intercept-form.', PSF = 'alg1.point-slope-form.', GLE = 'alg1.graphing-linear-equations.', DRA = 'alg1.domain-and-range.', FNO = 'alg1.function-notation.';
 const FILM_IDEAS = {

@@ -6,7 +6,7 @@
 --
 -- What it adds:
 --   * curriculum_skills           every skill in Classes, by its stable id
---   * curriculum_question_skills  which activity questions practise which
+--   * curriculum_question_skills  which activity questions practice which
 --                                 curriculum skills (an attempt at one
 --                                 question counts for all its skills)
 --   * question kinds for tracked activities (e.g. the Slope Lab), so
@@ -3493,7 +3493,7 @@ insert into public.question_skills (question_id, skill_id) values
   ('newtons-laws:final-calc', 'forces-motion')
 on conflict do nothing;
 
--- 3. Which curriculum skills each question practises.
+-- 3. Which curriculum skills each question practices.
 delete from public.curriculum_question_skills where question_id in (select id from public.questions where game_id = 'slope-lab' union select id from public.questions where game_id = 'jump-trajectory-lab' union select id from public.questions where game_id = 'race-day-workshop' union select id from public.questions where game_id = 'ride-systems-lab' union select id from public.questions where game_id = 'bike-park-blueprint-lab' union select id from public.questions where game_id = 'trail-dynamics-lab' union select id from public.questions where game_id = 'pump-track-lab' union select id from public.questions where game_id = 'enduro-route-lab' union select id from public.questions where game_id = 'suspension-systems-lab' union select id from public.questions where game_id = 'race-intelligence-lab' union select id from public.questions where game_id = 'dream-line-project' union select id from public.questions where game_id = 'dream-line-goes-pro' union select id from public.questions where game_id = 'frame-the-line' union select id from public.questions where game_id = 'uplift' union select id from public.questions where game_id = 'project-evolve' union select id from public.questions where game_id = 'wrap-lab' union select id from public.questions where game_id = 'intro-to-physics' union select id from public.questions where game_id = 'newtons-laws' union select id from public.questions where game_id = 'jump-lab' union select id from public.questions where game_id = 'berm-lab' union select id from public.questions where game_id = 'gear-ratio-lab');
 insert into public.curriculum_question_skills (question_id, skill_id) values
   ('slope-lab:f1', 'alg1.slope-and-rate-of-change.slope-as-rate'),
