@@ -32,7 +32,7 @@ export const COURSES = [
     id: 'alg1', slug: 'algebra-1', name: 'Algebra 1', order: 1, art: 'climb',
     // A course can have a photo cover instead of its line drawing (any shape; shown whole), in assets/classes/.
     cover: { src: 'assets/classes/algebra-1-cover.jpg', width: 1200, height: 800,
-      alt: 'Algebra 1 cover: a rider flips a mountain bike at sunset above a dirt jump, with the parabola y = −x² + 2x + 3 traced along the jump and its vertex (1, 4) marked' },
+      alt: 'Algebra 1 cover: a rider flips a mountain bike at sunset at the top of a parabola drawn over a dirt jump, with its vertex marked, while two riders watch, beside the topics quadratic functions, vertex, max and min, and graphing' },
     card: 'Explore equations, variables, functions, graphs, and linear relationships through trail gradients, speed, distance, elevation, and riding scenarios.',
     description: 'Learn the fundamentals of algebra through real-world mountain biking problems involving speed, elevation, distance, jumps, and trail design.',
     intro: 'Explore Algebra 1 through the world of mountain biking. Learn how equations, graphs, and mathematical relationships help explain speed, elevation, jumps, and trail design.',
